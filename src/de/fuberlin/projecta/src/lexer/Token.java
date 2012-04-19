@@ -18,6 +18,7 @@ public @Data class Token {
 	 * SBRR - ]
 	 * CBRL - {
 	 * CBRR - }
+	 * SEMIC - ;
 	 ***reserverd Words*****
 	 * IF
 	 * THEN
@@ -29,7 +30,6 @@ public @Data class Token {
 	 * PRINT 
 	 * INT
 	 * REAL
-	 * SEMIC - ;
 	 ****other*******
 	 * ID - identifier
 	 * STRING - String constant

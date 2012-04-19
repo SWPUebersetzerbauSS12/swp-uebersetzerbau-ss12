@@ -23,10 +23,9 @@ public class Lexer implements ILexer {
 	public Token getNextToken() throws SyntaxErrorException {
 		String peek;
 		do {
+			if(is.isEmpty())
+				return null; // End of input stream - nothing more to read
 			peek = is.getNextChars(1);
-			if (peek.equals("")) {
-				return null;
-			}
 			if (peek.matches("\\n"))
 				this.lineNumber += 1;
 			if (peek.matches("\\s"))
@@ -45,8 +44,8 @@ public class Lexer implements ILexer {
 		if ((t = numConstant()) != null) {
 			return t;
 		}
-		System.out.println("Nothing happened...");
-		return null;
+		//if no rule could be applied there is something wrong!
+		throw new SyntaxErrorException("Undefined something at line " + lineNumber + " near " + peek);
 	}
 
 	private Token numConstant() throws SyntaxErrorException {
@@ -126,7 +125,7 @@ public class Lexer implements ILexer {
 		if (state == 1 || state == 3 || state == 4 || state == 7)
 			return new Token(TYPE.NUM, result);
 		else
-			return null;
+			throw new SyntaxErrorException("Malformed floating point number");
 	}
 
 	private Token identifier() throws SyntaxErrorException {
@@ -181,10 +180,12 @@ public class Lexer implements ILexer {
 		/* if then else while do break return print */
 		String s = is.getNextChars(1);
 		if (s.equals("i")) {
+			// TODO: replace delimiterRegexp with real delimiters (there is no '+' after if!) 
 			if (is.getNextChars(3).matches("if" + delimiterRegexp)) {
 				is.removeChars(2);
 				return new Token(TYPE.IF, null);
 			}
+			// TODO: replace delimiterRegexp with real delimiters
 			if (is.getNextChars(4).matches("int" + delimiterRegexp)) {
 				is.removeChars(3);
 				return new Token(TYPE.INT, null);
@@ -192,21 +193,25 @@ public class Lexer implements ILexer {
 		}
 		if (s.equals("t")) {
 			s = is.getNextChars(5);
+			// TODO: replace delimiterRegexp with real delimiters
 			if (s.matches("then" + delimiterRegexp)) {
 				is.removeChars(4);
 				return new Token(TYPE.THEN, null);
 			}
 		}
+		// TODO: replace delimiterRegexp with real delimiters
 		if (s.equals("e")
 				&& is.getNextChars(5).matches("else" + delimiterRegexp)) {
 			is.removeChars(4);
 			return new Token(TYPE.ELSE, null);
 		}
+		// TODO: replace delimiterRegexp with real delimiters
 		if (s.equals("w")
 				&& is.getNextChars(6).matches("while" + delimiterRegexp)) {
 			is.removeChars(5);
 			return new Token(TYPE.WHILE, null);
 		}
+		// TODO: replace delimiterRegexp with real delimiters
 		if (s.equals("d")) {
 			if (is.getNextChars(3).matches("do" + delimiterRegexp)) {
 				is.removeChars(2);
@@ -216,6 +221,7 @@ public class Lexer implements ILexer {
 				return new Token(TYPE.DEF, null);
 			}
 		}
+		// TODO: replace delimiterRegexp with real delimiters
 		if (s.equals("r")) {
 			if (is.getNextChars(7).matches("return" + delimiterRegexp)) {
 				is.removeChars(6);
@@ -226,11 +232,13 @@ public class Lexer implements ILexer {
 				return new Token(TYPE.REAL, null);
 			}
 		}
+		// TODO: replace delimiterRegexp with real delimiters
 		if (s.equals("b")
 				&& is.getNextChars(6).matches("break" + delimiterRegexp)) {
 			is.removeChars(5);
 			return new Token(TYPE.BREAK, null);
 		}
+		// TODO: replace delimiterRegexp with real delimiters
 		if (s.equals("p")
 				&& is.getNextChars(6).matches("print" + delimiterRegexp)) {
 			is.removeChars(5);

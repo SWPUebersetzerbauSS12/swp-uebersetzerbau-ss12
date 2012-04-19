@@ -1,17 +1,16 @@
-package main;
+import lexer.Lexer;
+import lexer.Token;
 
 import java.io.File;
 import java.io.IOException;
-
-import lexer.*;
 
 public class Start {
 
 	/**
 	 * First parameter should be the source file
-	 * 
+	 *
 	 * @param args
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
 //		if(args.length != 1){
@@ -21,17 +20,17 @@ public class Start {
 //		String path = args[0];
 		String path = "/home/christian/Desktop/quell.txt";
 		File sourceFile = new File(path);
-		if(!sourceFile.exists()){
+		if (!sourceFile.exists()) {
 			System.out.println("File does not exist.");
 			return;
 		}
-		
-		if(!sourceFile.canRead()){
+
+		if (!sourceFile.canRead()) {
 			System.out.println("File is not readable");
 		}
 		Lexer lex = new Lexer(sourceFile);
 		Token t;
-		while((t = lex.nextToken()) != null){
+		while ((t = lex.nextToken()) != null) {
 			System.out.println(t);
 		}
 	}

@@ -1,12 +1,11 @@
 package lexer;
 
-import java.io.File;
-import java.net.Proxy.Type;
-
 import lexer.Token.TYPE;
 import lombok.Getter;
 
-public class Lexer{
+import java.io.File;
+
+public class Lexer {
 
 	@Getter
 	private int lineNumber;
@@ -148,13 +147,13 @@ public class Lexer{
 		String peek = is.getNextChars(1);
 		String delimiter = "'";
 		switch (peek.charAt(0)) {
-		case '\'':
-			break;
-		case '"':
-			delimiter = "\"";
-			break;
-		default:
-			return null;
+			case '\'':
+				break;
+			case '"':
+				delimiter = "\"";
+				break;
+			default:
+				return null;
 		}
 		is.removeChars(1);
 		String result = "";
@@ -328,7 +327,7 @@ public class Lexer{
 			is.removeChars(1);
 			return new Token(TYPE.CBRR, null);
 		}
-		if (s.equals(";")){
+		if (s.equals(";")) {
 			is.removeChars(1);
 			return new Token(TYPE.SEMIC, null);
 		}

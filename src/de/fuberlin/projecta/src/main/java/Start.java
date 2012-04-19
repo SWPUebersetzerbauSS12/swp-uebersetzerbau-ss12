@@ -28,7 +28,7 @@ public class Start {
 		if (!sourceFile.canRead()) {
 			System.out.println("File is not readable");
 		}
-		Lexer lex = new Lexer(sourceFile);
+		Lexer lex = new Lexer(path);
 		Token t;
 		while ((t = lex.nextToken()) != null) {
 			System.out.println(t);

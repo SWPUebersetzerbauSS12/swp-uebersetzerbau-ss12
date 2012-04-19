@@ -1,6 +1,5 @@
 package lexer;
 
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,7 +8,7 @@ public class InputStream {
 
 	ArrayList<Character> text = new ArrayList<Character>();
 
-	public InputStream(File file) {
+	public InputStream(String file) {
 		try {
 			FileReader fr = new FileReader(file);
 			char[] peek = new char[1];

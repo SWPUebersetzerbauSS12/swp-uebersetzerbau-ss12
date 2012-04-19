@@ -3,8 +3,6 @@ package lexer;
 import lexer.Token.TYPE;
 import lombok.Getter;
 
-import java.io.File;
-
 public class Lexer {
 
 	@Getter
@@ -14,7 +12,7 @@ public class Lexer {
 
 	InputStream is;
 
-	public Lexer(File file) {
+	public Lexer(String file) {
 		lineNumber = 0;
 		is = new InputStream(file);
 	}

@@ -1,6 +1,7 @@
 package lexer;
 
 import java.io.File;
+import java.net.Proxy.Type;
 
 import lexer.Token.TYPE;
 import lombok.Getter;
@@ -326,6 +327,10 @@ public class Lexer{
 		if (s.equals("}")) {
 			is.removeChars(1);
 			return new Token(TYPE.CBRR, null);
+		}
+		if (s.equals(";")){
+			is.removeChars(1);
+			return new Token(TYPE.SEMIC, null);
 		}
 		return null;
 

@@ -6,7 +6,7 @@ import lombok.Data;
 @AllArgsConstructor
 public @Data class Token {
 
-	/*
+	/**
 	 ****terminal symbols******
 	 * RELOP - relational operators <(LT), <=(LE), ==(EQ), !=(NE), >(GT), >=(GE)   
 	 * BOOLOP - ||(OR), &&(AND), !(NOT)
@@ -29,6 +29,7 @@ public @Data class Token {
 	 * PRINT 
 	 * INT
 	 * REAL
+	 * SEMIC - ;
 	 ****other*******
 	 * ID - identifier
 	 * STRING - String constant
@@ -37,7 +38,7 @@ public @Data class Token {
 	public enum TYPE {
 		ID, RELOP, BOOLOP, IF, THEN, ELSE, WHILE, DO, BREAK, 
 		RETURN, PRINT, ASSIGN, ARITHOP, STRING, NUM,
-		BRL, BRR, DEF, SBRL, SBRR, CBRL, CBRR, INT, REAL
+		BRL, BRR, DEF, SBRL, SBRR, CBRL, CBRR, INT, REAL, SEMIC
 
 	}
 	

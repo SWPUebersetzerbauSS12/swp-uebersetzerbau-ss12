@@ -1,12 +1,11 @@
 package lexer;
 
 import java.io.File;
-import java.net.Proxy.Type;
 
 import lexer.Token.TYPE;
 import lombok.Getter;
 
-public class Lexer{
+public class Lexer implements ILexer {
 
 	@Getter
 	private int lineNumber;
@@ -16,11 +15,12 @@ public class Lexer{
 	InputStream is;
 
 	public Lexer(File file) {
-		lineNumber = 0;
+		lineNumber = 1;
 		is = new InputStream(file);
 	}
 
-	public Token nextToken() {
+	@Override
+	public Token getNextToken() throws SyntaxErrorException {
 		String peek;
 		do {
 			peek = is.getNextChars(1);
@@ -49,7 +49,7 @@ public class Lexer{
 		return null;
 	}
 
-	private Token numConstant() {
+	private Token numConstant() throws SyntaxErrorException {
 		int state = 0;
 		String result = "";
 		String peek = is.getNextChars(1);
@@ -129,7 +129,7 @@ public class Lexer{
 			return null;
 	}
 
-	private Token identifier() {
+	private Token identifier() throws SyntaxErrorException {
 		String peek = is.getNextChars(1);
 		String id = "";
 		if (peek.matches("[A-Za-z]"))
@@ -144,7 +144,7 @@ public class Lexer{
 
 	}
 
-	private Token stringConstant() {
+	private Token stringConstant() throws SyntaxErrorException {
 		String peek = is.getNextChars(1);
 		String delimiter = "'";
 		switch (peek.charAt(0)) {
@@ -177,7 +177,7 @@ public class Lexer{
 		}
 	}
 
-	private Token reservedAndTerminals() {
+	private Token reservedAndTerminals() throws SyntaxErrorException {
 		/* if then else while do break return print */
 		String s = is.getNextChars(1);
 		if (s.equals("i")) {
@@ -328,11 +328,10 @@ public class Lexer{
 			is.removeChars(1);
 			return new Token(TYPE.CBRR, null);
 		}
-		if (s.equals(";")){
+		if (s.equals(";")) {
 			is.removeChars(1);
 			return new Token(TYPE.SEMIC, null);
 		}
 		return null;
-
 	}
 }

@@ -29,10 +29,14 @@ public class Start {
 		if(!sourceFile.canRead()){
 			System.out.println("File is not readable");
 		}
-		Lexer lex = new Lexer(sourceFile);
+		ILexer lex = new Lexer(sourceFile);
 		Token t;
-		while((t = lex.nextToken()) != null){
-			System.out.println(t);
+		try {
+			while((t = lex.getNextToken()) != null){
+				System.out.println(t);
+			}
+		} catch (SyntaxErrorException e) {
+			System.out.println(e.getMessage());
 		}
 	}
 

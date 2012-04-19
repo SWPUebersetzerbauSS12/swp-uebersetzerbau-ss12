@@ -4,11 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @AllArgsConstructor
-public @Data class Token {
+public
+@Data
+class Token {
 
 	/**
-	 ****terminal symbols******
-	 * RELOP - relational operators <(LT), <=(LE), ==(EQ), !=(NE), >(GT), >=(GE)   
+	 * ***terminal symbols******
+	 * RELOP - relational operators <(LT), <=(LE), ==(EQ), !=(NE), >(GT), >=(GE)
 	 * BOOLOP - ||(OR), &&(AND), !(NOT)
 	 * ASSIGN - =
 	 * ARITHOP - Arithmetic Operator +(SUM) -(SUB) *(MUL) /(DIV) -(NEG)
@@ -18,7 +20,7 @@ public @Data class Token {
 	 * SBRR - ]
 	 * CBRL - {
 	 * CBRR - }
-	 ***reserverd Words*****
+	 * **reserverd Words*****
 	 * IF
 	 * THEN
 	 * ELSE
@@ -26,30 +28,30 @@ public @Data class Token {
 	 * DO
 	 * BREAK
 	 * RETURN
-	 * PRINT 
+	 * PRINT
 	 * INT
 	 * REAL
 	 * SEMIC - ;
-	 ****other*******
+	 * ***other*******
 	 * ID - identifier
 	 * STRING - String constant
 	 * NUM - numeral constant
 	 */
 	public enum TYPE {
-		ID, RELOP, BOOLOP, IF, THEN, ELSE, WHILE, DO, BREAK, 
+		ID, RELOP, BOOLOP, IF, THEN, ELSE, WHILE, DO, BREAK,
 		RETURN, PRINT, ASSIGN, ARITHOP, STRING, NUM,
 		BRL, BRR, DEF, SBRL, SBRR, CBRL, CBRR, INT, REAL, SEMIC
 
 	}
-	
+
 	private TYPE name;
-	
+
 	private String attribute;
-	
+
 	@Override
-	public String toString(){
-		
-		return "<" + name + ", " + attribute +">";
+	public String toString() {
+
+		return "<" + name + ", " + attribute + ">";
 	}
 
 }

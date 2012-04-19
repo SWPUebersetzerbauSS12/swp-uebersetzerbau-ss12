@@ -32,7 +32,7 @@ public class Start {
 		Lexer lex = new Lexer(sourceFile);
 		Token t;
 		while((t = lex.nextToken()) != null){
-			System.out.println("<" + t.toString() + "> ");
+			System.out.println(t);
 		}
 	}
 

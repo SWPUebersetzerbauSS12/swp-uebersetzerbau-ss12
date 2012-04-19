@@ -44,5 +44,11 @@ public @Data class Token {
 	private TYPE name;
 	
 	private String attribute;
+	
+	@Override
+	public String toString(){
+		
+		return "<" + name + ", " + attribute +">";
+	}
 
 }

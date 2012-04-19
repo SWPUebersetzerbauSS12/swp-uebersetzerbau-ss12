@@ -31,7 +31,6 @@ public class Lexer{
 			if (peek.matches("\\s"))
 				is.removeChars(1);
 		} while (peek.matches("\\s"));
-		System.out.println(peek);
 		Token t;
 		if ((t = reservedAndTerminals()) != null) {
 			return t;

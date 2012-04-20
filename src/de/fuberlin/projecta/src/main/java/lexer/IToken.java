@@ -38,4 +38,5 @@ public interface IToken {
 	}
 
 	TokenType getType();
+	String getAttribute();
 }

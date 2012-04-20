@@ -1,8 +1,6 @@
 package lexer;
 
-import java.io.File;
-
-import lexer.Token.TYPE;
+import lexer.IToken.TokenType;
 import lombok.Getter;
 
 public class Lexer implements ILexer {
@@ -122,7 +120,7 @@ public class Lexer implements ILexer {
 			}
 		}
 		if (state == 1 || state == 3 || state == 4 || state == 7)
-			return new Token(TYPE.NUM, result);
+			return new Token(TokenType.NUM, result);
 		else
 			throw new SyntaxErrorException("Malformed floating point number");
 	}
@@ -137,7 +135,7 @@ public class Lexer implements ILexer {
 				peek = is.getNextChars(1);
 			}
 		if (!id.isEmpty())
-			return new Token(TYPE.ID, id);
+			return new Token(TokenType.ID, id);
 		return null;
 
 	}
@@ -166,11 +164,11 @@ public class Lexer implements ILexer {
 				return null;
 			}
 			if (peek.startsWith(delimiter)) {
-				return new Token(TYPE.STRING, result);
+				return new Token(TokenType.STRING, result);
 			}
 			result += new String(peek);
 			if (is.isEmpty()) {
-				return new Token(TYPE.STRING, result);
+				return new Token(TokenType.STRING, result);
 			}
 		}
 	}
@@ -182,12 +180,12 @@ public class Lexer implements ILexer {
 			// TODO: replace delimiterRegexp with real delimiters (there is no '+' after if!) 
 			if (is.getNextChars(3).matches("if" + delimiterRegexp)) {
 				is.removeChars(2);
-				return new Token(TYPE.IF, null);
+				return new Token(TokenType.IF, null);
 			}
 			// TODO: replace delimiterRegexp with real delimiters
 			if (is.getNextChars(4).matches("int" + delimiterRegexp)) {
 				is.removeChars(3);
-				return new Token(TYPE.INT, null);
+				return new Token(TokenType.INT, null);
 			}
 		}
 		if (s.equals("t")) {
@@ -195,153 +193,153 @@ public class Lexer implements ILexer {
 			// TODO: replace delimiterRegexp with real delimiters
 			if (s.matches("then" + delimiterRegexp)) {
 				is.removeChars(4);
-				return new Token(TYPE.THEN, null);
+				return new Token(TokenType.THEN, null);
 			}
 		}
 		// TODO: replace delimiterRegexp with real delimiters
 		if (s.equals("e")
 				&& is.getNextChars(5).matches("else" + delimiterRegexp)) {
 			is.removeChars(4);
-			return new Token(TYPE.ELSE, null);
+			return new Token(TokenType.ELSE, null);
 		}
 		// TODO: replace delimiterRegexp with real delimiters
 		if (s.equals("w")
 				&& is.getNextChars(6).matches("while" + delimiterRegexp)) {
 			is.removeChars(5);
-			return new Token(TYPE.WHILE, null);
+			return new Token(TokenType.WHILE, null);
 		}
 		// TODO: replace delimiterRegexp with real delimiters
 		if (s.equals("d")) {
 			if (is.getNextChars(3).matches("do" + delimiterRegexp)) {
 				is.removeChars(2);
-				return new Token(TYPE.DO, null);
+				return new Token(TokenType.DO, null);
 			} else if (is.getNextChars(4).matches("def ")) {
 				is.removeChars(3);
-				return new Token(TYPE.DEF, null);
+				return new Token(TokenType.DEF, null);
 			}
 		}
 		// TODO: replace delimiterRegexp with real delimiters
 		if (s.equals("r")) {
 			if (is.getNextChars(7).matches("return" + delimiterRegexp)) {
 				is.removeChars(6);
-				return new Token(TYPE.RETURN, null);
+				return new Token(TokenType.RETURN, null);
 			}
 			if (is.getNextChars(5).equals("real ")) {
 				is.removeChars(4);
-				return new Token(TYPE.REAL, null);
+				return new Token(TokenType.REAL, null);
 			}
 		}
 		// TODO: replace delimiterRegexp with real delimiters
 		if (s.equals("b")
 				&& is.getNextChars(6).matches("break" + delimiterRegexp)) {
 			is.removeChars(5);
-			return new Token(TYPE.BREAK, null);
+			return new Token(TokenType.BREAK, null);
 		}
 		// TODO: replace delimiterRegexp with real delimiters
 		if (s.equals("p")
 				&& is.getNextChars(6).matches("print" + delimiterRegexp)) {
 			is.removeChars(5);
-			return new Token(TYPE.PRINT, null);
+			return new Token(TokenType.PRINT, null);
 		}
 		if (s.equals("+")) {
 			is.removeChars(1);
-			return new Token(TYPE.ARITHOP, "ADD");
+			return new Token(TokenType.ARITHOP, "ADD");
 		}
 		if (s.equals("-")) {
 			is.removeChars(1);
-			return new Token(TYPE.ARITHOP, "SUB");
+			return new Token(TokenType.ARITHOP, "SUB");
 		}
 		if (s.equals("*")) {
 			is.removeChars(1);
-			return new Token(TYPE.ARITHOP, "MUL");
+			return new Token(TokenType.ARITHOP, "MUL");
 		}
 		if (s.equals("/")) {
 			is.removeChars(1);
-			return new Token(TYPE.ARITHOP, "DIV");
+			return new Token(TokenType.ARITHOP, "DIV");
 		}
 		if (s.equals("&")) {
 			if (is.getNextChars(2).equals("&&")) {
 				is.removeChars(2);
-				return new Token(TYPE.BOOLOP, "AND");
+				return new Token(TokenType.BOOLOP, "AND");
 			}
 		}
 		if (s.equals("|")) {
 			if (is.getNextChars(2).equals("||")) {
 				is.removeChars(2);
-				return new Token(TYPE.BOOLOP, "OR");
+				return new Token(TokenType.BOOLOP, "OR");
 			}
 		}
 		if (s.equals("!")) {
 			s = is.getNextChars(2);
 			if (s.equals("!=")) {
 				is.removeChars(2);
-				return new Token(TYPE.RELOP, "NE");
+				return new Token(TokenType.RELOP, "NE");
 			} else {
 				is.removeChars(1);
-				return new Token(TYPE.BOOLOP, "NOT");
+				return new Token(TokenType.BOOLOP, "NOT");
 			}
 		}
 		if (s.equals("<")) {
 			s = is.getNextChars(2);
 			if (s.equals("<=")) {
 				is.removeChars(2);
-				return new Token(TYPE.RELOP, "LE");
+				return new Token(TokenType.RELOP, "LE");
 			} else {
 				is.removeChars(1);
-				return new Token(TYPE.RELOP, "LT");
+				return new Token(TokenType.RELOP, "LT");
 			}
 		}
 		if (s.equals(">")) {
 			s = is.getNextChars(2);
 			if (s.equals(">=")) {
 				is.removeChars(2);
-				return new Token(TYPE.RELOP, "GE");
+				return new Token(TokenType.RELOP, "GE");
 			} else {
 				is.removeChars(1);
-				return new Token(TYPE.RELOP, "GT");
+				return new Token(TokenType.RELOP, "GT");
 			}
 		}
 		if (s.equals("=")) {
 			s = is.getNextChars(2);
 			if (s.equals("==")) {
 				is.removeChars(2);
-				return new Token(TYPE.RELOP, "EQ");
+				return new Token(TokenType.RELOP, "EQ");
 			} else {
 				is.removeChars(1);
-				return new Token(TYPE.ASSIGN, null);
+				return new Token(TokenType.ASSIGN, null);
 			}
 		}
 		if (s.equals("(")) {
 			is.removeChars(1);
-			return new Token(TYPE.BRL, null);
+			return new Token(TokenType.BRL, null);
 		}
 		if (s.equals(")")) {
 			is.removeChars(1);
-			return new Token(TYPE.BRR, null);
+			return new Token(TokenType.BRR, null);
 		}
 		if (s.equals("[")) {
 			is.removeChars(1);
-			return new Token(TYPE.SBRL, null);
+			return new Token(TokenType.SBRL, null);
 		}
 		if (s.equals("]")) {
 			is.removeChars(1);
-			return new Token(TYPE.SBRR, null);
+			return new Token(TokenType.SBRR, null);
 		}
 		if (s.equals("{")) {
 			is.removeChars(1);
-			return new Token(TYPE.CBRL, null);
+			return new Token(TokenType.CBRL, null);
 		}
 		if (s.equals("}")) {
 			is.removeChars(1);
-			return new Token(TYPE.CBRR, null);
+			return new Token(TokenType.CBRR, null);
 		}
 		if (s.equals(";")) {
 			is.removeChars(1);
-			return new Token(TYPE.SEMIC, null);
+			return new Token(TokenType.SEMIC, null);
 		}
 		if (s.equals(",")){
 			is.removeChars(1);
-			return new Token(TYPE.COMMA, null);
+			return new Token(TokenType.COMMA, null);
 		}
 		return null;
 	}

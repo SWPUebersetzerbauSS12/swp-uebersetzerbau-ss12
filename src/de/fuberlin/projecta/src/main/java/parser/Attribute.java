@@ -1,21 +1,11 @@
 package parser;
 
-public class Attribute {
-	private String name, value;
-	
-	public Attribute(String name){
-		this.name = name;
-	}
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
-	public String getValue() {
-		return value;
-	}
-
-	public void setValue(String value) {
-		this.value = value;
-	}
+@RequiredArgsConstructor
+public @Data class Attribute {
+	private final String name;
+	private String value;
 	
-	public String getName(){
-		return name;
-	}
 }

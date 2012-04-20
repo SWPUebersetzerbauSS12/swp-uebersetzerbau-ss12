@@ -4,11 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @AllArgsConstructor
-public @Data class Token {
+public
+@Data
+class Token {
 
 	/**
-	 ****terminal symbols******
-	 * RELOP - relational operators <(LT), <=(LE), ==(EQ), !=(NE), >(GT), >=(GE)   
+	 * ***terminal symbols******
+	 * RELOP - relational operators <(LT), <=(LE), ==(EQ), !=(NE), >(GT), >=(GE)
 	 * BOOLOP - ||(OR), &&(AND), !(NOT)
 	 * ASSIGN - =
 	 * ARITHOP - Arithmetic Operator +(SUM) -(SUB) *(MUL) /(DIV) -(NEG)
@@ -28,7 +30,7 @@ public @Data class Token {
 	 * DO
 	 * BREAK
 	 * RETURN
-	 * PRINT 
+	 * PRINT
 	 * INT
 	 * REAL
 	 ****other*******
@@ -42,15 +44,15 @@ public @Data class Token {
 		BRL, BRR, DEF, SBRL, SBRR, CBRL, CBRR, INT, REAL, SEMIC, COMMA
 
 	}
-	
+
 	private TYPE name;
-	
+
 	private String attribute;
-	
+
 	@Override
-	public String toString(){
-		
-		return "<" + name + ", " + attribute +">";
+	public String toString() {
+
+		return "<" + name + ", " + attribute + ">";
 	}
 
 }

@@ -17,32 +17,26 @@ public class NonTerminal implements SyntaxTree {
 		attributes = new ArrayList<Attribute>();
 	}	
 
-	@Override
 	public void addTree(SyntaxTree tree) {
 		children.add(tree);
 	}
 
-	@Override
 	public String getName() {
 		return name;
 	}
 
-	@Override
 	public int getChildrenCount() {
 		return children.size();
 	}
 
-	@Override
 	public SyntaxTree getChildren(int i) {
 		return children.get(i);
 	}
 
-	@Override
 	public void removeTree(int i) {
 		children.remove(i);
 	}
 
-	@Override
 	public Attribute getAttribute(String name) {
 		for(Attribute attr : attributes){
 			if(attr.getName().equals(name)){
@@ -52,7 +46,6 @@ public class NonTerminal implements SyntaxTree {
 		return null;
 	}
 
-	@Override
 	public boolean setAttribute(String name, String value) {
 		for(Attribute attr : attributes){
 			if(attr.getName().equals(name)){
@@ -63,7 +56,6 @@ public class NonTerminal implements SyntaxTree {
 		return false;
 	}
 
-	@Override
 	public boolean addAttribute(String name) {
 		if(getAttribute(name) == null){
 			attributes.add(new Attribute(name));

@@ -15,7 +15,6 @@ public class Terminal implements SyntaxTree {
 	/**
 	 * Should a leaf really implement this method?
 	 */
-	@Override
 	public void addTree(SyntaxTree tree) {
 		throw new UnsupportedOperationException("Can't extend a leaf!");
 	}
@@ -23,27 +22,22 @@ public class Terminal implements SyntaxTree {
 	/**
 	 * Should a leaf really implement this method?
 	 */
-	@Override
 	public void removeTree(int i) {
 		throw new UnsupportedOperationException("Can't remove a subtree from a leaf!");
 	}
 
-	@Override
 	public String getName() {
 		return name;
 	}
 
-	@Override
 	public int getChildrenCount() {
 		return 0;
 	}
 
-	@Override
 	public SyntaxTree getChildren(int i) {
 		return null;
 	}
 
-	@Override
 	public Attribute getAttribute(String name) {
 		for(Attribute attr : attributes){
 			if(attr.getName().equals(name)){
@@ -53,7 +47,6 @@ public class Terminal implements SyntaxTree {
 		return null;
 	}
 
-	@Override
 	public boolean setAttribute(String name, String value) {
 		for(Attribute attr : attributes){
 			if(attr.getName().equals(name)){
@@ -64,7 +57,6 @@ public class Terminal implements SyntaxTree {
 		return false;
 	}
 
-	@Override
 	public boolean addAttribute(String name) {
 		if(getAttribute(name) == null){
 			attributes.add(new Attribute(name));

@@ -5,22 +5,22 @@ public class ParseTable {
 	
 	private static final char DELIM = '#';
 	
-	String nonTerminals, terminals;
+	private String[] nonTerminals, terminals;
 	
-	String[][] table;
+	private String[][] table;
 	
-	public ParseTable(String nonTerminals, String terminals){
+	public ParseTable(String[] nonTerminals, String[] terminals){
 		this.nonTerminals = nonTerminals;
 		this.terminals = terminals;
 		
-		table = new String[nonTerminals.length()][terminals.length()];
+		table = new String[nonTerminals.length][terminals.length];
 	}
 	
-	public void setEntry(char nonT, char t, String entry){
-		for(int i = 0; i < nonTerminals.length(); i++){
-			if(nonTerminals.charAt(i) == nonT){
-				for(int j = 0; j < terminals.length(); j++){
-					if(terminals.charAt(i) == t){
+	public void setEntry(String nonT, String t, String entry){
+		for(int i = 0; i < nonTerminals.length; i++){
+			if(nonTerminals[i].equals(nonT)){
+				for(int j = 0; j < terminals.length; j++){
+					if(terminals[j].equals(t)){
 						table[i][j] += entry + DELIM;
 					}
 				}
@@ -28,11 +28,11 @@ public class ParseTable {
 		}
 	}
 	
-	public String getEntry(char nonT, char t){
-		for(int i = 0; i < nonTerminals.length(); i++){
-			if(nonTerminals.charAt(i) == nonT){
-				for(int j = 0; j < terminals.length(); j++){
-					if(terminals.charAt(i) == t){
+	public String getEntry(String nonT, String t){
+		for(int i = 0; i < nonTerminals.length; i++){
+			if(nonTerminals[i].equals(nonT)){
+				for(int j = 0; j < terminals.length; j++){
+					if(terminals[j].equals(t)){
 						return table[i][j];
 					}
 				}
@@ -40,5 +40,4 @@ public class ParseTable {
 		}
 		return null;
 	}
-
 }

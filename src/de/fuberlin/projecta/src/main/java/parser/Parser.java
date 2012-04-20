@@ -49,10 +49,10 @@ public class Parser {
 		stack = new Stack<String>();
 	}
 
-	public void parse() {
+	public void parse() throws SyntaxErrorException{
 		initStack();
 		String X;
-		Token a;
+		Token a = null;
 		try {
 			a = lexer.getNextToken();
 		} catch (SyntaxErrorException e) {

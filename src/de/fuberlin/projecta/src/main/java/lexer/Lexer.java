@@ -14,12 +14,11 @@ public class Lexer implements ILexer {
 
 	InputStream is;
 
-	public Lexer(File file) {
+	public Lexer(String file) {
 		lineNumber = 1;
 		is = new InputStream(file);
 	}
 
-	@Override
 	public Token getNextToken() throws SyntaxErrorException {
 		String peek;
 		do {

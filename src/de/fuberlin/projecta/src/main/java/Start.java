@@ -1,4 +1,6 @@
+import lexer.ILexer;
 import lexer.Lexer;
+import lexer.SyntaxErrorException;
 import lexer.Token;
 
 import java.io.File;
@@ -28,7 +30,7 @@ public class Start {
 		if (!sourceFile.canRead()) {
 			System.out.println("File is not readable");
 		}
-		ILexer lex = new Lexer(sourceFile);
+		ILexer lex = new Lexer(path);
 		Token t;
 		try {
 			while((t = lex.getNextToken()) != null){

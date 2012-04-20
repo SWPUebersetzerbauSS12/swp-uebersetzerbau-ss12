@@ -2,9 +2,9 @@ package parser;
 
 import java.util.ArrayList;
 
-public class NonTerminal implements SyntaxTree {
+public class NonTerminal implements ISyntaxTree {
 	
-	private ArrayList<SyntaxTree> children = new ArrayList<SyntaxTree>();
+	private ArrayList<ISyntaxTree> children = new ArrayList<ISyntaxTree>();
 	private String name;
 	private ArrayList<Attribute> attributes;
 	
@@ -17,7 +17,7 @@ public class NonTerminal implements SyntaxTree {
 		attributes = new ArrayList<Attribute>();
 	}	
 
-	public void addTree(SyntaxTree tree) {
+	public void addTree(ISyntaxTree tree) {
 		children.add(tree);
 	}
 
@@ -29,7 +29,7 @@ public class NonTerminal implements SyntaxTree {
 		return children.size();
 	}
 
-	public SyntaxTree getChildren(int i) {
+	public ISyntaxTree getChildren(int i) {
 		return children.get(i);
 	}
 

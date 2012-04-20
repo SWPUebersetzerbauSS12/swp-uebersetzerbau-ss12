@@ -2,7 +2,7 @@ package parser;
 
 import java.util.ArrayList;
 
-public class Terminal implements SyntaxTree {
+public class Terminal implements ISyntaxTree {
 	
 	private String name;
 	private ArrayList<Attribute> attributes;
@@ -15,7 +15,7 @@ public class Terminal implements SyntaxTree {
 	/**
 	 * Should a leaf really implement this method?
 	 */
-	public void addTree(SyntaxTree tree) {
+	public void addTree(ISyntaxTree tree) {
 		throw new UnsupportedOperationException("Can't extend a leaf!");
 	}
 
@@ -34,7 +34,7 @@ public class Terminal implements SyntaxTree {
 		return 0;
 	}
 
-	public SyntaxTree getChildren(int i) {
+	public ISyntaxTree getChildren(int i) {
 		return null;
 	}
 

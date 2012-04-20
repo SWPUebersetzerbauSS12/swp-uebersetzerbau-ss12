@@ -7,9 +7,9 @@ package parser;
  * @author Michael Wittig
  * 
  */
-public interface SyntaxTree {
+public interface ISyntaxTree {
 
-	public void addTree(SyntaxTree tree);
+	public void addTree(ISyntaxTree tree);
 
 	public void removeTree(int i);
 
@@ -24,7 +24,7 @@ public interface SyntaxTree {
 	 * @param i
 	 * @return the i'th children of current node, null if none is existing.
 	 */
-	public SyntaxTree getChildren(int i);
+	public ISyntaxTree getChildren(int i);
 
 	/**
 	 * 

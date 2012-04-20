@@ -36,4 +36,6 @@ public interface IToken {
 		/** Semicolon (;) operator */
 		SEMIC
 	}
+
+	TokenType getType();
 }

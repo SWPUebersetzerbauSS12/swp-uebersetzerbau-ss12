@@ -8,13 +8,13 @@ public
 @Data
 class Token implements IToken {
 
-	private TokenType name;
+	private TokenType type;
 
 	private String attribute;
 
 	@Override
 	public String toString() {
-		return "<" + name + ", " + attribute + ">";
+		return "<" + type + ", " + attribute + ">";
 	}
 
 }

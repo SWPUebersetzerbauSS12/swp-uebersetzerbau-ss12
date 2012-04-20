@@ -8,41 +8,39 @@ public
 @Data
 class Token {
 
-	/**
-	 * ***terminal symbols******
-	 * RELOP - relational operators <(LT), <=(LE), ==(EQ), !=(NE), >(GT), >=(GE)
-	 * BOOLOP - ||(OR), &&(AND), !(NOT)
-	 * ASSIGN - =
-	 * ARITHOP - Arithmetic Operator +(SUM) -(SUB) *(MUL) /(DIV) -(NEG)
-	 * BRL - (
-	 * BRR - )
-	 * SBRL - [
-	 * SBRR - ]
-	 * CBRL - {
-	 * CBRR - }
-	 * SEMIC - ;
-	 * COMMA - ,
-	 ***reserverd Words*****
-	 * IF
-	 * THEN
-	 * ELSE
-	 * WHILE
-	 * DO
-	 * BREAK
-	 * RETURN
-	 * PRINT
-	 * INT
-	 * REAL
-	 ****other*******
-	 * ID - identifier
-	 * STRING - String constant
-	 * NUM - numeral constant
-	 */
 	public enum TYPE {
-		ID, RELOP, BOOLOP, IF, THEN, ELSE, WHILE, DO, BREAK, 
-		RETURN, PRINT, ASSIGN, ARITHOP, STRING, NUM,
-		BRL, BRR, DEF, SBRL, SBRR, CBRL, CBRR, INT, REAL, SEMIC, COMMA
-
+		/** relational operators <(LT), <=(LE), ==(EQ), !=(NE), >(GT), >=(GE) */
+		RELOP,
+		/** ||(OR), &&(AND), !(NOT) */
+		BOOLOP,
+		/** Arithmetic Operator +(SUM) -(SUB) *(MUL) /(DIV) -(NEG) */
+		ARITHOP,
+		/** Assignment operator */
+		ASSIGN,
+		/** Other reserverd words */
+		IF, THEN, ELSE,
+		WHILE, DO, BREAK, // no continue?
+		RETURN, PRINT,
+		/** Function definition */
+		DEF,
+		/** Identifier */
+		ID,
+		/** String constant */
+		STRING,
+		/** Integer number */
+		INT,
+		/** Real number */
+		REAL,
+		/**
+		 * For array defintions, this marks the field count
+		 */
+		NUM,
+		/** Terminal symbols */
+		BRL, BRR, SBRL, SBRR, CBRL, CBRR,
+		/** Comma ',' operator */
+		COMMA,
+		/** Semicolon (;) operator */
+		SEMIC
 	}
 
 	private TYPE name;
@@ -51,7 +49,6 @@ class Token {
 
 	@Override
 	public String toString() {
-
 		return "<" + name + ", " + attribute + ">";
 	}
 

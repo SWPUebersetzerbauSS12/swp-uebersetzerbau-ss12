@@ -19,6 +19,7 @@ public @Data class Token {
 	 * CBRL - {
 	 * CBRR - }
 	 * SEMIC - ;
+	 * COMMA - ,
 	 ***reserverd Words*****
 	 * IF
 	 * THEN
@@ -38,7 +39,7 @@ public @Data class Token {
 	public enum TYPE {
 		ID, RELOP, BOOLOP, IF, THEN, ELSE, WHILE, DO, BREAK, 
 		RETURN, PRINT, ASSIGN, ARITHOP, STRING, NUM,
-		BRL, BRR, DEF, SBRL, SBRR, CBRL, CBRR, INT, REAL, SEMIC
+		BRL, BRR, DEF, SBRL, SBRR, CBRL, CBRR, INT, REAL, SEMIC, COMMA
 
 	}
 	

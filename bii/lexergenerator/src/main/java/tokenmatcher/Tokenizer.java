@@ -1,21 +1,18 @@
 package tokenmatcher;
 
-import tokenmatcher.fsm.FiniteStateMachine;
-import tokenmatcher.fsm.Symbol;
-import tokenmatcher.fsm.TransitionTable;
 import bufferedreader.LexemeReader;
 import bufferedreader.SpecialChars;
 
 
 public class Tokenizer implements LexerToParserInterface {
 	
-	private FiniteStateMachine<Character> stateMachine;
+	private DeterministicFiniteAutomata<Character> dfa;
 	
 	private LexemeReader lexemeReader;
 	
-	public Tokenizer( LexemeReader lexemeReader, TransitionTable<Character> transitionTable) throws Exception {
+	public Tokenizer( LexemeReader lexemeReader, DeterministicFiniteAutomata<Character> dfa) throws Exception {
 		super();
-		stateMachine = new FiniteStateMachine<Character>( transitionTable);
+		this.dfa = dfa;
 		this.lexemeReader = lexemeReader;
 	}
 	
@@ -27,9 +24,12 @@ public class Tokenizer implements LexerToParserInterface {
 		Character currentChar;
 		try {
 			while ( ( currentChar = lexemeReader.getNextChar()) != SpecialChars.CHAR_EOF) {
-		  	if ( stateMachine.canChangeStateByElement( currentChar)) {
-		  		stateMachine.changeStateByElement( currentChar);
-		  		stateMachine.getCurrentState().i
+		  	if ( dfa.canChangeStateByElement( currentChar)) {
+		  		dfa.changeStateByElement( currentChar);
+		  		if ( dfa.getCurrentState().isFiniteState()) {
+		  			dfa.getCurrentState().
+		  		}
+		  			
 		  	}
 		  	else 
 		  		

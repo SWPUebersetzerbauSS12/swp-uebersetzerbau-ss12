@@ -35,4 +35,10 @@ public interface DeterministicFiniteAutomata<E> {
 	State getCurrentState();
 	
 	
+	/**
+	 * Setzt den DFA wieder in den Startzustand zurück.
+	 */
+	void reset();
+	
+	
 }

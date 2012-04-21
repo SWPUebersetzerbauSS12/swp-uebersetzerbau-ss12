@@ -30,7 +30,10 @@
  *
  */
 
-package tokenmatcher;
+package regextodfaconverter;
+
+import tokenmatcher.DeterministicFiniteAutomata;
+import tokenmatcher.State;
 
 
 /**
@@ -41,7 +44,7 @@ package tokenmatcher;
  * @param <E>
  * @param <Payload>
  */
-public class MinimalDFA<E, Payload> implements DeterministicFiniteAutomata<E, Payload> {
+public class MinimalDfa<E, Payload> implements DeterministicFiniteAutomata<E, Payload> {
 	
 	
 	public MinimalDFA( FSA fsa) {

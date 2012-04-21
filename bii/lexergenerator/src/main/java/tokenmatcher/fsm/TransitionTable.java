@@ -30,70 +30,93 @@
  *
  */
 
-package TokenMatcher;
+package tokenmatcher.fsm;
 
 import java.util.HashMap;
-import java.util.Set;
+
+import utils.Test;
 
 
-public class TransitionTable {
+
+
+public class TransitionTable<E> {
 	
-	private HashMap<State,HashMap<Symbol,State>> transitions = new HashMap<State, HashMap<Symbol,State>>();  
+	private HashMap<State,HashMap<E,State>> transitions = new HashMap<State, HashMap<E,State>>();  
 	
-	public TransitionTable( Set<Symbol> symbols) {
+	private static State startState = null;
+	
+	public TransitionTable() {
 		super();
 	}
 	
 	/**
-	 * Erzeugt einen Übergang vom fromState zum toState über das symbol.
+	 * Erzeugt einen Übergang vom fromState zum toState über das element.
 	 * Wenn es bereits ein Übergang in der Übergangstabelle für fromState 
-	 * beim Lesen von symbol definiert wurde, dann wird der Übergang mit 
+	 * beim Lesen von element definiert wurde, dann wird der Übergang mit 
 	 * dem neuen toState überschrieben.
 	 * 
 	 * @param fromState
 	 * @param toState
-	 * @param symbol
+	 * @param element
 	 */
-	public void enterTransition( State fromState, State toState, Symbol symbol) {
+	public void enterTransition( State fromState, State toState, E element) {
+		// check for correct use of start state
+		checkAndEnsureUniqueStartState( toState);
+		checkAndEnsureUniqueStartState( fromState);
+		// insert transition into table 
 		if ( !transitions.containsKey( fromState)) 
-			transitions.put( fromState, new HashMap<Symbol, State>());
-		transitions.get( fromState).put( symbol, toState);	
+			transitions.put( fromState, new HashMap<E, State>());
+		transitions.get( fromState).put( element, toState);	
 	}
 	
 	
 
+	private void checkAndEnsureUniqueStartState( State theState) {
+		if ( theState.isStartState()) {
+			if ( Test.isAssigned( startState)) {
+			  startState.unsetStart();
+			  startState = theState;
+		  }
+		}
+	}
+
 	public boolean hasTransition( State fromState, State toState) {
 		if ( transitions.containsKey( fromState))
-			for ( Symbol symbol : transitions.get( fromState).keySet()) {
-				if ( transitions.get( fromState).get( symbol).equals( toState))
+			for ( E element : transitions.get( fromState).keySet()) {
+				if ( transitions.get( fromState).get( element).equals( toState))
 					return true;
 			}
 		return false;
 	}
 
-	public Symbol getSymbolOfTransition( State fromState, State toState) {
+	public E getElementOfTransition( State fromState, State toState) {
 		try {
-			for ( Symbol symbol : transitions.get( fromState).keySet()) {
-				if ( transitions.get( fromState).get( symbol).equals( toState))
-					return symbol;
+			for ( E element : transitions.get( fromState).keySet()) {
+				if ( transitions.get( fromState).get( element).equals( toState))
+					return element;
 			}
 		} catch( Exception e) {}
 		return null;
 		// throw new Exception( "No transition defined between the given states.");
 	}
 
-	public boolean hasTransitionForSymbol( State fromState, Symbol symbol) {
+	public boolean hasTransitionForElement( State fromState, E element) {
 		return transitions.containsKey( fromState) && 
-  			   transitions.get( fromState).containsKey( symbol);
+  			   transitions.get( fromState).containsKey( element);
 	}
 
-	public State getNewStateOfTransitionForSymbol( State fromState, Symbol symbol) {
+	public State getNewStateOfTransitionForElement( State fromState, E element) {
 		try {
-			return transitions.get( fromState).get( symbol);	
+			return transitions.get( fromState).get( element);	
 		} catch( Exception e) {	
 			return null;
 			// throw new Exception( "No transition defined between the given states.");		
 		}
+	}
+	
+	
+	public static State getStartState() {
+		return startState;
 	}
 	
 }

@@ -30,8 +30,19 @@
  *
  */
 
-package TokenMatcher;
+package tokenmatcher.fsm;
 
+import utils.Test;
+
+
+/**
+ * Modelliert einen Zustand der Finite State Machine. 
+ * Ein Zustand kann als Endzustand und Startzustand gekennzeichnet sein 
+ * und mit einem Objekt assoziert sein.
+ * 
+ * @author Joihannes Dahlke
+ *
+ */
 public class State {
 	
 	public static final int STATE_NORMAL = 0;
@@ -44,6 +55,10 @@ public class State {
 	 
 	public State( int kind, Object payload) {
 		super();
+		setKind( kind);
+	}
+	
+	private void setKind( int kind) {
 		this.kind = kind;
 	}
 	
@@ -63,8 +78,17 @@ public class State {
 		kind |= STATE_FINAL;
 	}
 	
+	public void unsetFinal() {
+		kind ^= STATE_FINAL;
+	}
+	
 	public void setStart() {
+		// set this state as start state
 		kind |= STATE_START;
+	}
+	
+	public void unsetStart() {
+		kind ^= STATE_START;
 	}
 	
 	 

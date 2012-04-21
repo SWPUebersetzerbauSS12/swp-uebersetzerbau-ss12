@@ -30,7 +30,7 @@
  *
  */
 
-package TokenMatcher;
+package tokenmatcher.fsm;
 
 /**
  * Ein Symbol vereint eine Sequenz an Zeichen, mit der in der 
@@ -48,6 +48,17 @@ public class Symbol {
 	 *  lässt sich eine nichtverzweigte Zustandsequenz ersetzen.  
 	 */
 	public String characterSequence; 
+	
+	
+	public Symbol() {
+		super();
+		this.characterSequence = "";
+	}
+	
+	public Symbol( String characterSequence) {
+		super();
+		this.characterSequence = characterSequence;
+	}
 
 	
 	/**

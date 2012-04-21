@@ -32,6 +32,7 @@
 
 package regextodfaconverter;
 
+import regextodfaconverter.fsm.FiniteStateMachine;
 import tokenmatcher.DeterministicFiniteAutomata;
 import tokenmatcher.State;
 
@@ -44,34 +45,38 @@ import tokenmatcher.State;
  * @param <E>
  * @param <Payload>
  */
-public class MinimalDfa<E, Payload> implements DeterministicFiniteAutomata<E, Payload> {
+public class MinimalDfa<E extends Comparable<E>, Payload> implements DeterministicFiniteAutomata<E, Payload> {
 	
+	private FiniteStateMachine finiteStateMachine;
 	
-	public MinimalDFA( FSA fsa) {
+  
+	public MinimalDfa( FiniteStateMachine<E, Payload> finiteStateMachine) throws ConvertExecption {
 		super();
+		this.finiteStateMachine = finiteStateMachine;
 		try {
-		if ( fsa.isNondeterministic())
-			fsa = NfaToDfaConverter.convertToDfa( fsa);
-		fsa = minimizeDfa( fsa);
+			if ( !finiteStateMachine.isDeterministic())
+				finiteStateMachine = NfaToDfaConverter.convertToDfa( finiteStateMachine);
+			finiteStateMachine = DfaMinimizer.convertToMimimumDfa( finiteStateMachine);
 		} catch( Exception e) {
-			throw new FsaConvertExecption( "Cannot convert given fsa to minimal dfa.");
+			throw new ConvertExecption( "Cannot convert given fsa to minimal dfa.");
 		}
 	}
+	
 
 	public State<Payload> changeStateByElement( E element) {
-		return fsa.changeStateByElement( element);
+		return finiteStateMachine.changeState( element);
 	}
 
 	public boolean canChangeStateByElement( E element) {
-		return fsa.canChangeStateByElement( element);
+		return finiteStateMachine.canChangeState( element);
 	}
 
 	public State<Payload> getCurrentState() {
-		return fsa.getCurrentState();
+		return finiteStateMachine.getCurrentState();
 	}
 
 	public void resetToInitialState() {
-		fsa.resetToInitialState();
+		finiteStateMachine.resetToInitialState();
 	}
 
 }

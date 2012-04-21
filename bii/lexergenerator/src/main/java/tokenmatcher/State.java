@@ -59,7 +59,7 @@ public interface State<E> {
 	 * um einen Startzustand handelt.
 	 * @return true, wenn es ein Startzustand ist, sonst false
 	 */ 
-	boolean isStartState();
+	boolean isInitialState();
 	
 	
   /**

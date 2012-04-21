@@ -38,7 +38,7 @@ public interface DeterministicFiniteAutomata<E,Payload> {
 	/**
 	 * Setzt den DFA wieder in den Startzustand zurück.
 	 */
-	void reset();
+	void resetToInitialState();
 	
 	
 }

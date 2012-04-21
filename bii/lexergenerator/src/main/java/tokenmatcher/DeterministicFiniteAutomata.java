@@ -2,7 +2,7 @@ package tokenmatcher;
 
 
 
-public interface DeterministicFiniteAutomata<E> {
+public interface DeterministicFiniteAutomata<E,Payload> {
 	
 	
 	
@@ -15,7 +15,7 @@ public interface DeterministicFiniteAutomata<E> {
 	 * @return 	Den neuen Zustand oder null, falls es keinen 
 	 * 					Übergang in der Übergangstabelle gibt.
 	 */
-	State changeStateByElement( E element);
+	State<Payload> changeStateByElement( E element);
 	
 	
 	
@@ -32,7 +32,7 @@ public interface DeterministicFiniteAutomata<E> {
 	/**
 	 * @return Liefert den aktuellen Zustand.
 	 */
-	State getCurrentState();
+	State<Payload> getCurrentState();
 	
 	
 	/**

@@ -27,7 +27,7 @@ public class Tokenizer implements LexerToParserInterface {
 		  	if ( dfa.canChangeStateByElement( currentChar)) {
 		  		dfa.changeStateByElement( currentChar);
 		  		if ( dfa.getCurrentState().isFiniteState()) {
-		  			dfa.getCurrentState().
+		  			dfa.getCurrentState().getPayload();
 		  		}
 		  			
 		  	}

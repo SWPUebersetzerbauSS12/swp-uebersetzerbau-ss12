@@ -32,8 +32,6 @@
 
 package tokenmatcher;
 
-import utils.Test;
-
 
 /**
  * Modelliert einen Zustand der Finite State Machine. 

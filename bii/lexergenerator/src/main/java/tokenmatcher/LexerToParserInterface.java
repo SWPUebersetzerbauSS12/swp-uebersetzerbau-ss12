@@ -1,8 +1,10 @@
 package tokenmatcher;
 
+import bufferedreader.EndOfFileException;
+
 
 public interface LexerToParserInterface {
 	
-	Token getNextToken();
+	Token getNextToken() throws EndOfFileException;
 
 }

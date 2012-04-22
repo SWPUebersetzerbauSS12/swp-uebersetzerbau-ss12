@@ -44,6 +44,17 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 	}
 
 	/**
+	 * Setzt den Startzustand dieses endlichen Automatens.
+	 * 
+	 * @param state
+	 *            Der neue Startzustand dieses endlichen Automatens.
+	 */
+	protected void setInitialState(
+			State<TransitionConditionType, StatePayloadType> initialState) {
+		_initialState = initialState;
+	}
+
+	/**
 	 * Gibt den aktuelle Zustand, in dem sich dieser endlichen Automatens
 	 * befindet zurück.
 	 * 
@@ -75,6 +86,30 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 		if (!containsStateWithUUID(state.getUUID()))
 			throw new StateNotReachableException();
 		_currentState = state;
+	}
+
+	/**
+	 * Gibt die HashMap die alle Zustände dieses endlichen Automaten, geordnet
+	 * nach ihren eindetige ID enthält zurück..
+	 * 
+	 * @return Die HashMap die alle Zustände dieses endlichen Automaten,
+	 *         geordnet nach ihren eindetige ID enthält.
+	 */
+	protected HashMap<UUID, State<TransitionConditionType, StatePayloadType>> getStates() {
+		return _states;
+	}
+
+	/**
+	 * Setzt die HashMap die alle Zustände dieses endlichen Automaten, geordnet
+	 * nach ihren eindetige ID enthält fest.
+	 * 
+	 * @param states
+	 *            Die HashMap die alle Zustände dieses endlichen Automaten,
+	 *            geordnet nach ihren eindetige ID enthält.
+	 */
+	protected void setStates(
+			HashMap<UUID, State<TransitionConditionType, StatePayloadType>> states) {
+		_states = states;
 	}
 
 	/**
@@ -149,12 +184,22 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 			TransitionConditionType condition) {
 		for (Transition<TransitionConditionType, StatePayloadType> transition : getCurrentState()
 				.getTransitions()) {
-			if (transition.getCondition().equals(condition)) {
-				State<TransitionConditionType, StatePayloadType> state = transition
-						.getState();
-				_currentState = state;
-				return state;
+			if (transition.getCondition() != null) {
+				if (transition.getCondition().equals(condition)) {
+					State<TransitionConditionType, StatePayloadType> state = transition
+							.getState();
+					_currentState = state;
+					return state;
+				}
+			} else {
+				if (condition == null) {
+					State<TransitionConditionType, StatePayloadType> state = transition
+							.getState();
+					_currentState = state;
+					return state;
+				}
 			}
+
 		}
 
 		return null;
@@ -250,6 +295,64 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 			addTransition(_currentState, destinationState, condition);
 		} catch (StateNotReachableException e) {
 			// Dieser Fall kann niemals eintreten!
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Vereinigt diesen endlichen Automaten mit dem angegebenen endlichen
+	 * Automaten.
+	 * 
+	 * @param fsm
+	 *            Der endliche Automat, mit dem dieser endliche Automat verenigt
+	 *            werden soll.
+	 */
+	public void union(
+			FiniteStateMachine<TransitionConditionType, StatePayloadType> fsm) {
+		try {
+			State<TransitionConditionType, StatePayloadType> state = new State<TransitionConditionType, StatePayloadType>();
+
+			getStates().put(state.getUUID(), state);
+
+			addTransition(state, getInitialState(), null);
+			getInitialState().SetTypeToDefault();
+
+			setInitialState(state);
+			state.SetTypeToInitial();
+
+			getStates().putAll(fsm.getStates());
+
+			addTransition(state, fsm.getInitialState(), null);
+			fsm.getInitialState().SetTypeToDefault();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Verbindet diesen endlichen Automaten mit dem angegebenen endlichen
+	 * Automaten.
+	 * 
+	 * @param fsm
+	 *            Der endliche Automat, mit dem dieser endliche Automat
+	 *            verbunden werden soll.
+	 */
+	public void concat(
+			FiniteStateMachine<TransitionConditionType, StatePayloadType> fsm) {
+		try {
+			for (State<TransitionConditionType, StatePayloadType> state : getStates().values())
+			{
+				if (state.isFiniteState())
+				{
+					//state.setPayload(null);
+					state.SetTypeToDefault();
+					addTransition(state, fsm.getInitialState(), null);
+				}
+			}
+			
+			getStates().putAll(fsm.getStates());
+			fsm.getInitialState().SetTypeToDefault();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

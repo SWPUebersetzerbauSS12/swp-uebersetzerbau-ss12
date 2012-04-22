@@ -99,6 +99,13 @@ public class State<TransitionConditionType extends Comparable<TransitionConditio
 	}
 
 	/**
+	 * Legt den Zustandstyp auf INITIAL fest.
+	 */
+	protected void SetTypeToInitial() {
+		_type = StateType.INITIAL;
+	}
+
+	/**
 	 * Legt den Zustandstyp auf FINITE fest.
 	 */
 	public void SetTypeToFinite() {

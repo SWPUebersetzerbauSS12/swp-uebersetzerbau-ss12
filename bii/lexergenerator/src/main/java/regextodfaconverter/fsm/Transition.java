@@ -34,12 +34,33 @@ public class Transition<ConditionType extends Comparable<ConditionType>, StatePa
 	}
 
 	/**
+	 * Setzt die Bedingung für den Zustandsübergang fest.
+	 * 
+	 * @param condition
+	 *            Die Bedingung für den Zustandsübergang (null für einen
+	 *            Epsilon-Übergang).
+	 */
+	protected void setCondition(ConditionType condition) {
+		_condition = condition;
+	}
+
+	/**
 	 * Gibt den Folgezustand zurück.
 	 * 
 	 * @return Der Folgezustand.
 	 */
 	public State<ConditionType, StatePayloadType> getState() {
 		return _state;
+	}
+
+	/**
+	 * Setzt den Folgezustand fest.
+	 * 
+	 * @param state
+	 *            Der Folgezustand.
+	 */
+	protected void setState(State<ConditionType, StatePayloadType> state) {
+
 	}
 
 	public int compareTo(Transition<ConditionType, StatePayloadType> o) {

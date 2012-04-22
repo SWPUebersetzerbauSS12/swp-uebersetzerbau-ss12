@@ -3,11 +3,11 @@ package tokenmatcher;
 
 public class Token {
 	
-	public int type;
+	public TokenType type;
 	public String lexem;
 
 	
-	public Token( int type, String Lexem) {
+	public Token( TokenType type, String lexem) {
 		super();
 		this.type = type;
 		this.lexem = lexem;

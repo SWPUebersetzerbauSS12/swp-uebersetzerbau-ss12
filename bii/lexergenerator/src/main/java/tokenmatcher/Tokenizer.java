@@ -2,6 +2,7 @@ package tokenmatcher;
 
 import bufferedreader.EndOfFileException;
 import bufferedreader.LexemeReader;
+import bufferedreader.LexemeReaderException;
 import bufferedreader.SpecialChars;
 
 
@@ -11,7 +12,7 @@ public class Tokenizer implements LexerToParserInterface {
 	
 	private LexemeReader lexemeReader;
 	
-	private int newLines = 0;
+	private int newLines = 1;
 	
 	
 	public Tokenizer( LexemeReader lexemeReader, DeterministicFiniteAutomata<Character, StatePayload> dfa) throws Exception {
@@ -22,48 +23,54 @@ public class Tokenizer implements LexerToParserInterface {
 	
 	
 
-	public Token getNextToken() throws EndOfFileException {
+	public Token getNextToken() throws EndOfFileException, LexemeReaderException, LexemIdentificationException {
 		Character currentChar;
 		String currentLexem = "";
 		int preliminaryNewLines = 0;
 		
-		try {
+		dfa.resetToInitialState();
+		
 			while ( ( currentChar = lexemeReader.getNextChar()) != SpecialChars.CHAR_EOF) {
 				
 				// handle white spaces
-				if ( SpecialChars.isWhiteSpace( currentChar)) {
+				if ( currentLexem.isEmpty() 
+						// Nur wenn nicht bereits ein Lexem verarbeitet wird. 
+						// Soll ermöglichen, dass auch ein Zeichen über das Ende deszu lesenen Lexem 
+						// gelesen werden kann, auch wenn es ein whitespace ist.
+						&& SpecialChars.isWhiteSpace( currentChar)) {
+				  
+					// count newlines
 					if ( SpecialChars.isNewLine( currentChar)) {
-						// count newlines
 						// bei windowssystemen muss dann am Ende durch 2 geteilt werden , wegen \r\n
 						preliminaryNewLines++;
 					}
+					
 					// skip whitespaces
 					continue;
 				}
 				
+				// hier, damit ein fehlerhaftes Lexem auch in der Fehlermeldung erscheint
+				currentLexem += currentChar;
 				
 		  	if ( dfa.canChangeStateByElement( currentChar)) {
 		  		
-		  		currentLexem += currentChar;
 		  		dfa.changeStateByElement( currentChar);
 		  		
 		  		if ( dfa.getCurrentState().isFiniteState()) {
 		  			StatePayload payload = dfa.getCurrentState().getPayload();
 		  			
 		  			// Korregieren, was zuviel gelesen wurde.
-		  			currentLexem = currentLexem.substring( currentLexem.length() - payload.getBacksteps());
+		  			currentLexem = currentLexem.substring( 0, currentLexem.length() - payload.getBacksteps());
 		  			lexemeReader.stepBackward( payload.getBacksteps());
 		  			
 		  			// Token erstellen
-		  			int tokenType = payload.getTokenKind();
+		  			TokenType tokenType = payload.getTokenType();
 		  			Token recognisedToken = new Token( tokenType, currentLexem);
 		  			
 		  			// gelesenenes Lexem akzeptieren
 		  			lexemeReader.accept();
-		  			currentLexem = "";
-		  			// reset local newline counter.
+		  			// accumulate newlines from local counter.
 		  			newLines += preliminaryNewLines;
-		  			preliminaryNewLines = 0;
 		  			
 		  			return recognisedToken;
 		  		}
@@ -74,9 +81,7 @@ public class Tokenizer implements LexerToParserInterface {
 		  		throw new LexemIdentificationException( String.format( "Cannot assign lexem %s in line %d  to a token.", currentLexem, newLines + preliminaryNewLines));
 		  	}	
 		  }
-		} catch( Exception e) {
-			
-		}
+		
 		throw new EndOfFileException();
 		
 	}

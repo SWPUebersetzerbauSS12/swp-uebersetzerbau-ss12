@@ -3,7 +3,7 @@ package tokenmatcher;
 
 public interface StatePayload {
 	
-	int getTokenKind();
+	TokenType getTokenType();
 	
   int getBacksteps();
 	

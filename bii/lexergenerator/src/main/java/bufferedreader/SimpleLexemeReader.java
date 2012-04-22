@@ -25,7 +25,7 @@ public class SimpleLexemeReader implements LexemeReader {
 			if ( file.getFilePointer() >= file.length())
 			  return SpecialChars.CHAR_EOF;
 			// anderenfalls gib das aktuelle Zeichen zurück.
-			return file.readChar();
+			return (char) file.read();
 		} catch ( IOException e) {
 			Notification.printDebugException( e);
 			throw new LexemeReaderException( "Cannot read next char.");

@@ -13,6 +13,7 @@ public enum TokenType
 	OP,
 	FUN,
 	NUMBER,
-	WORD
+	WORD,
+	RELOP
 	
 }

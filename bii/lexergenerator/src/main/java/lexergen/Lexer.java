@@ -86,7 +86,7 @@ public class Lexer {
 
 			state1 = fsm.getCurrentState();
 			state2 = new State<Character, StatePayload>( 
-					new regextodfaconverter.fsm.StatePayload( TokenType.WORD, 1), true);
+					new regextodfaconverter.fsm.StatePayload( TokenType.WORD, 0), true);
 			
 
 			ArrayList<Character> validChars = new ArrayList<Character>(); 
@@ -98,14 +98,49 @@ public class Lexer {
 			}
 			
 			for ( Character c : validChars) {
-				fsm.addTransition( state1, state1, c);	
+				fsm.addTransition( state1, state2, c);	
+			}
+			for ( Character c : validChars) {
+				fsm.addTransition( state2, state2, c);	
 			}
 		
-			for ( char c = 0x00; c < 0xFF; c++) {
-				if ( !validChars.contains( c))
-				  fsm.addTransition( state1, state2, c);
-			}
+		} catch ( Exception e) {
+			e.printStackTrace();
+		}
 
+		return fsm;
+	}
+	
+	
+	/**
+	 * Erstellt einen Automaten für relationale Operatoren.
+	 * 
+	 * @return Ein endlicher Automat der die Wörter
+	 *         (<|<=|<>) erkennt.
+	 */
+	public static FiniteStateMachine<Character, StatePayload> generateRelopFSM() {
+		FiniteStateMachine<Character, StatePayload> fsm = new FiniteStateMachine<Character, StatePayload>();
+
+		try {
+			State<Character, StatePayload> state1, state2, state3, state4, state5;
+			
+			state1 = fsm.getCurrentState();
+			state2 = new State<Character, StatePayload>();
+			state3 = new State<Character, StatePayload>( 
+					new regextodfaconverter.fsm.StatePayload( TokenType.RELOP, 0), true);
+			state4 = new State<Character, StatePayload>( 
+					new regextodfaconverter.fsm.StatePayload( TokenType.RELOP, 0), true);
+			state5 = new State<Character, StatePayload>( 
+					new regextodfaconverter.fsm.StatePayload( TokenType.RELOP, 1), true);
+			
+    	fsm.addTransition( state1, state2, '<');
+    	fsm.addTransition( state2, state3, '=');
+    	fsm.addTransition( state2, state4, '>');
+    	for ( char c = 0x00; c <= 0xFF; c++) {
+				if ( c != '>' && c != '=') 
+					fsm.addTransition( state2, state5, c);	
+			}
+    	
 		} catch ( Exception e) {
 			e.printStackTrace();
 		}
@@ -121,16 +156,15 @@ public class Lexer {
 		System.out.println( "Hello World!");
 		System.out.println( "Hallo Welt!");
 
-		FiniteStateMachine<Character, StatePayload> fsm = generateWordFSM();
+		FiniteStateMachine<Character, StatePayload> fsm = generateRelopFSM();
 		
-		LexemeReader lexemeReader = new SimpleLexemeReader( "testwords.fun");
+		LexemeReader lexemeReader = new SimpleLexemeReader( "testrelop.fun");
 		Tokenizer tokenizer = new Tokenizer( lexemeReader,
 				new MinimalDfa<Character, StatePayload>( fsm));
 
 		Token currentToken;
 		while ( true) {
 			currentToken = tokenizer.getNextToken();
-			System.out.println( "s");
 			System.out.println( currentToken.lexem);
 		}
 	}

@@ -1,12 +1,12 @@
-import java.io.File;
-import java.io.IOException;
-
 import lexer.ILexer;
 import lexer.Lexer;
 import lexer.SyntaxErrorException;
 import lexer.Token;
 
-public class ManualLexerTest {
+import java.io.File;
+import java.io.IOException;
+
+public class LexerMain {
 
 	/**
 	 * First parameter should be the source file
@@ -15,7 +15,7 @@ public class ManualLexerTest {
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
-		if(args.length != 1){
+		if (args.length != 1) {
 			System.out.println("Wrong number of parameters.");
 			return;
 		}
@@ -33,7 +33,7 @@ public class ManualLexerTest {
 		ILexer lex = new Lexer(path);
 		Token t;
 		try {
-			while((t = lex.getNextToken()) != null){
+			while ((t = lex.getNextToken()) != null) {
 				System.out.println(t);
 			}
 		} catch (SyntaxErrorException e) {

@@ -2,12 +2,12 @@ package regextodfaconverter.fsm;
 
 /**
  * Stellt die Zustandstypen dar, die ein Zustand annehmen kann.
+ * 
  * @author Daniel Rotar
- *
+ * 
  */
-public enum StateType 
-{
-	
+public enum StateType {
+
 	/**
 	 * Standardzustand.
 	 */
@@ -20,5 +20,5 @@ public enum StateType
 	 * Endzustand.
 	 */
 	FINITE
-	
+
 }

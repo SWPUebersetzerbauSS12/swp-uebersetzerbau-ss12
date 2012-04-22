@@ -30,7 +30,8 @@ public class Tokenizer implements LexerToParserInterface {
 		
 		dfa.resetToInitialState();
 		
-			while ( ( currentChar = lexemeReader.getNextChar()) != SpecialChars.CHAR_EOF) {
+			while (true) {
+				currentChar = lexemeReader.getNextChar(); 
 				
 				// handle white spaces
 				if ( currentLexem.isEmpty() 
@@ -80,9 +81,10 @@ public class Tokenizer implements LexerToParserInterface {
 		  		// TODO: Fehlerbehandlung implementieren 
 		  		throw new LexemIdentificationException( String.format( "Cannot assign lexem %s in line %d  to a token.", currentLexem, newLines + preliminaryNewLines));
 		  	}	
-		  }
-		
-		throw new EndOfFileException();
+		  	
+		  	if ( currentChar == SpecialChars.CHAR_EOF) 
+		  		throw new EndOfFileException();
+		 }
 		
 	}
 	

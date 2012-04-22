@@ -2,6 +2,9 @@ package lexergen;
 
 import java.io.IOException;
 import java.io.ObjectInputStream.GetField;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import bufferedreader.LexemeReader;
 import bufferedreader.SimpleLexemeReader;
@@ -86,14 +89,22 @@ public class Lexer {
 					new regextodfaconverter.fsm.StatePayload( TokenType.WORD, 1), true);
 			
 
+			ArrayList<Character> validChars = new ArrayList<Character>(); 
 			for ( char c = 'a'; c <= 'z'; c++) {
-				fsm.addTransition( state1, state1, c);
+				validChars.add( c);
 			}
 			for ( char c = 'A'; c <= 'Z'; c++) {
-				fsm.addTransition( state1, state1, c);
+				validChars.add( c);
 			}
 			
-			fsm.addTransition( state1, state2, ' ');
+			for ( Character c : validChars) {
+				fsm.addTransition( state1, state1, c);	
+			}
+		
+			for ( char c = 0x00; c < 0xFF; c++) {
+				if ( !validChars.contains( c))
+				  fsm.addTransition( state1, state2, c);
+			}
 
 		} catch ( Exception e) {
 			e.printStackTrace();

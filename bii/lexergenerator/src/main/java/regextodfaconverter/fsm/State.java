@@ -1,3 +1,35 @@
+/*
+ * 
+ * Copyright 2012 lexergen.
+ * This file is part of lexergen.
+ * 
+ * lexergen is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * lexergen is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with lexergen.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ * lexergen:
+ * A tool to chunk source code into tokens for further processing in a compiler chain.
+ * 
+ * Projectgroup: bi, bii
+ * 
+ * Authors: Daniel Rotar
+ * 
+ * Module:  Softwareprojekt Übersetzerbau 2012 
+ * 
+ * Created: Apr. 2012 
+ * Version: 1.0
+ *
+ */
+
 package regextodfaconverter.fsm;
 
 import java.util.HashSet;
@@ -9,7 +41,7 @@ import regextodfaconverter.fsm.excpetions.TransitionAlreadyExistsException;
  * Stellt einen Zustand eines endlicher Automaten (bzw. einer Zustandsmaschine) dar.
  * @author Daniel Rotar
  *
- * @param <TransitionConditionType> Der Typ der Bedingung f�r einen Zustand�bergang.
+ * @param <TransitionConditionType> Der Typ der Bedingung für einen Zustandübergang.
  * @param <PayloadType> Der Typ des Inhalts.
  */
 public class State
@@ -31,7 +63,7 @@ public class State
 	 */
 	private PayloadType _payload;
 	/**
-	 * Die �berg�nge, die von diesem Zustand m�glich sind.
+	 * Die Übergünge, die von diesem Zustand möglich sind.
 	 */
 	private HashSet<Transition<TransitionConditionType, PayloadType>> _transitions;
 	/**
@@ -42,7 +74,7 @@ public class State
 	
 	
 	/**
-	 * Gibt die eindetige UUID dieses Zustandes zur�ck.
+	 * Gibt die eindetige UUID dieses Zustandes zurück.
 	 * @return Die eindetige UUID dieses Zustandes.
 	 */
 	public UUID getUUID()
@@ -50,7 +82,7 @@ public class State
 		return _uuid;
 	}
 	/**
-	 * Gibt den in diesem Zustand hinterlegte Inhalt zur�ck.
+	 * Gibt den in diesem Zustand hinterlegte Inhalt zurück.
 	 * @return Der in diesem Zustand hinterlegte Inhalt.
 	 */
 	public PayloadType getPayload()
@@ -66,20 +98,20 @@ public class State
 		_payload = payload;
 	}
 	/**
-	 * Gibt die �berg�nge, die von diesem Zustand m�glich sind zur�ck.
-	 * @return Die �berg�nge, die von diesem Zustand m�glich sind.
+	 * Gibt die Übergänge, die von diesem Zustand möglich sind zurück.
+	 * @return Die Übergänge, die von diesem Zustand möglich sind.
 	 */
 	public HashSet<Transition<TransitionConditionType, PayloadType>> getTransitions()
 	{
 		return _transitions;
 	}
 	/**
-	 * Gibt den Zustandstyp zur�ck.
+	 * Gibt den Zustandstyp zurück.
 	 * @return Der Zustandstyp.
 	 */
 	public StateType getType()
 	{
-		//Ein Zustand ohne ausgehende �berg�nge ist immer ein Endzustand, es sei den er ist ein Startzustand.
+		//Ein Zustand ohne ausgehende Übergänge ist immer ein Endzustand, es sei den er ist ein Startzustand.
 		if (_type != StateType.INITIAL && _transitions.isEmpty())
 		{
 			return StateType.FINITE;
@@ -151,10 +183,10 @@ public class State
 
 	
 	/**
-	 * F�gt dem aktuellen Zustand einen Nachfolgezustand hinzu.
-	 * @param condition Die Bedingung f�r den Zustand�bergang.
-	 * @param state Der einzuf�gende Nachfolgezustand.
-	 * @throws TransitionAlreadyExistsException Wenn der �bergang bereits vorhanden ist.
+	 * Fügt dem aktuellen Zustand einen Nachfolgezustand hinzu.
+	 * @param condition Die Bedingung für den Zustandübergang.
+	 * @param state Der einzufügende Nachfolgezustand.
+	 * @throws TransitionAlreadyExistsException Wenn der Übergang bereits vorhanden ist.
 	 */
 	void addState(TransitionConditionType condition, State<TransitionConditionType, PayloadType> state) throws TransitionAlreadyExistsException
 	{

@@ -1,3 +1,35 @@
+/*
+ * 
+ * Copyright 2012 lexergen.
+ * This file is part of lexergen.
+ * 
+ * lexergen is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * lexergen is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with lexergen.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ * lexergen:
+ * A tool to chunk source code into tokens for further processing in a compiler chain.
+ * 
+ * Projectgroup: bi, bii
+ * 
+ * Authors: Johannes Dahlke
+ * 
+ * Module:  Softwareprojekt Übersetzerbau 2012 
+ * 
+ * Created: Apr. 2012 
+ * Version: 1.0
+ *
+ */
+
 package bufferedreader;
 
 import java.io.BufferedInputStream;
@@ -15,66 +47,49 @@ public class MemoryStreamLexemeReader implements LexemeReader {
 	
 
 	
-	private long lexemeBeginMarker;
+	private int lexemeBeginMarker;
+	private int streamPointer;
+	private char[] buffer;
 	
 	public MemoryStreamLexemeReader( String SourceFile) throws IOException {
 		// we open the file read only
-		File file = new File( SourceFile, "r");
+		File file = new File( SourceFile);
 		loadFileIntoMemory( file);
-		lexemeBeginMarker = file.getFilePointer();
+		lexemeBeginMarker = 0;
+		streamPointer = 0;
 	}
 	
 
-	private void loadFileIntoMemory( File file) {
-		char[] buffer = new char[1024]; 
-		file.get
+	private void loadFileIntoMemory( File file) throws IOException {
+		// attention: int to long cast. Assume, that source code file stay below 
+		buffer = new char[(int) file.length()];
+		
 		FileReader fileReader = new FileReader( file);
 		fileReader.read( buffer);
-		
-		while 
-		
 		
 	}
 
 
 	public char getNextChar() throws LexemeReaderException {
-		try {
-			// Wenn nicht bereits zuvor EOF zurückgegeben wurde, dann spätestens jetzt.
-			if ( file.getFilePointer() >= file.length())
-			  return SpecialChars.CHAR_EOF;
-			// anderenfalls gib das aktuelle Zeichen zurück.
-			return file.readChar();
-		} catch ( IOException e) {
-			Notification.printDebugException( e);
-			throw new LexemeReaderException( "Cannot read next char.");
-		}
+		// Wenn nicht bereits zuvor EOF zurückgegeben wurde, dann spätestens jetzt.
+		if ( streamPointer >= buffer.length)
+			return SpecialChars.CHAR_EOF;
+		// anderenfalls gib das aktuelle Zeichen zurück.
+		return buffer[streamPointer++];
 	}
 
 	public void reset() throws LexemeReaderException {
-		try {
-			file.seek( lexemeBeginMarker);
-		} catch ( IOException e) {
-			Notification.printDebugException( e);
-			throw new LexemeReaderException( "Cannot seek to lexem begin marker.");
-		}
+		streamPointer = lexemeBeginMarker;
 	}
 
 	public void accept() throws LexemeReaderException {
-		try {
-			lexemeBeginMarker = file.getFilePointer();
-		} catch ( IOException e) {
-			Notification.printDebugException( e);
-			throw new LexemeReaderException( "Cannot accept lexem.");
-		}
+  	lexemeBeginMarker = streamPointer;
 	}
 
 	public void stepBackward( int steps) throws LexemeReaderException {
-		try {
-			file.seek( file.getFilePointer() -steps);
-		} catch ( IOException e) {
-			Notification.printDebugException( e);
-			throw new LexemeReaderException( "Cannot accept lexem.");
-		}
+		streamPointer -= steps;
+		if (streamPointer < 0)
+			streamPointer = 0;
 	}
 	
 	

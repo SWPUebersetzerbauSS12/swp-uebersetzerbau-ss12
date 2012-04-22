@@ -40,7 +40,7 @@ import tokenmatcher.State;
 /**
  * Adapter zur Anpassung an das DFA Interface des TokenMatchers. 
  * Garantiert, dass der gekapselte FSA auch sicher ein DFA ist.
- * @author workstation
+ * @author Johannes Dahlke
  *
  * @param <E>
  * @param <Payload>

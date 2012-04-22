@@ -1,8 +1,11 @@
 package parser;
 
+import lombok.Getter;
+
 public class ParseTable {
 
 	private static final char DELIM = '#';
+	@Getter private boolean isAmbigous;
 
 	private String[] nonTerminals, terminals;
 
@@ -11,6 +14,8 @@ public class ParseTable {
 	public ParseTable(String[] nonTerminals, String[] terminals) {
 		this.nonTerminals = nonTerminals;
 		this.terminals = terminals;
+		
+		isAmbigous = false;
 
 		table = new String[nonTerminals.length][terminals.length];
 	}
@@ -24,6 +29,7 @@ public class ParseTable {
 							table[i][j] = entry;
 						} else {
 							table[i][j] += DELIM + entry;
+							isAmbigous = true;
 						}
 					}
 				}

@@ -132,6 +132,7 @@ public class Lexer implements ILexer {
 	private Token identifier() throws SyntaxErrorException {
 		String peek = is.getNextChars(1);
 		String id = "";
+		final int offset = is.getOffset();
 		if (peek.matches("[A-Za-z]"))
 			while (!is.isEmpty() && peek.matches("[A-Za-z0-9_]")) {
 				id += peek;
@@ -139,7 +140,7 @@ public class Lexer implements ILexer {
 				peek = is.getNextChars(1);
 			}
 		if (!id.isEmpty())
-			return new Token(TokenType.ID, id, this.line, is.getOffset());
+			return new Token(TokenType.ID, id, this.line, offset);
 		return null;
 
 	}
@@ -147,6 +148,8 @@ public class Lexer implements ILexer {
 	private Token stringConstant() throws SyntaxErrorException {
 		String peek = is.getNextChars(1);
 		String delimiter = "'";
+		final int offset = is.getOffset();
+
 		switch (peek.charAt(0)) {
 		case '\'':
 			break;
@@ -168,31 +171,30 @@ public class Lexer implements ILexer {
 				return null;
 			}
 			if (peek.startsWith(delimiter)) {
-				return new Token(TokenType.STRING, result, this.line,
-						is.getOffset());
+				return new Token(TokenType.STRING, result, this.line, offset);
 			}
 			result += new String(peek);
 			if (is.isEmpty()) {
-				return new Token(TokenType.STRING, result, this.line,
-						is.getOffset());
+				return new Token(TokenType.STRING, result, this.line, offset);
 			}
 		}
 	}
 
 	private Token reservedAndTerminals() throws SyntaxErrorException {
 		/* if then else while do break return print */
+		final int offset = is.getOffset();
 		String s = is.getNextChars(1);
 		if (s.equals("i")) {
 			// TODO: replace delimiterRegexp with real delimiters (there is no
 			// '+' after if!)
 			if (is.getNextChars(3).matches("if" + delimiterRegexp)) {
 				is.consumeChars(2);
-				return new Token(TokenType.IF, null, this.line, is.getOffset());
+				return new Token(TokenType.IF, null, this.line, offset);
 			}
 			// TODO: replace delimiterRegexp with real delimiters
 			if (is.getNextChars(4).matches("int" + delimiterRegexp)) {
 				is.consumeChars(3);
-				return new Token(TokenType.INT, null, this.line, is.getOffset());
+				return new Token(TokenType.INT, null, this.line, offset);
 			}
 		}
 		if (s.equals("t")) {
@@ -200,174 +202,157 @@ public class Lexer implements ILexer {
 			// TODO: replace delimiterRegexp with real delimiters
 			if (s.matches("then" + delimiterRegexp)) {
 				is.consumeChars(4);
-				return new Token(TokenType.THEN, null, this.line,
-						is.getOffset());
+				return new Token(TokenType.THEN, null, this.line, offset);
 			}
 		}
 		// TODO: replace delimiterRegexp with real delimiters
 		if (s.equals("e")
 				&& is.getNextChars(5).matches("else" + delimiterRegexp)) {
 			is.consumeChars(4);
-			return new Token(TokenType.ELSE, null, this.line, is.getOffset());
+			return new Token(TokenType.ELSE, null, this.line, offset);
 		}
 		// TODO: replace delimiterRegexp with real delimiters
 		if (s.equals("w")
 				&& is.getNextChars(6).matches("while" + delimiterRegexp)) {
 			is.consumeChars(5);
-			return new Token(TokenType.WHILE, null, this.line, is.getOffset());
+			return new Token(TokenType.WHILE, null, this.line, offset);
 		}
 		// TODO: replace delimiterRegexp with real delimiters
 		if (s.equals("d")) {
 			if (is.getNextChars(3).matches("do" + delimiterRegexp)) {
 				is.consumeChars(2);
-				return new Token(TokenType.DO, null, this.line, is.getOffset());
+				return new Token(TokenType.DO, null, this.line, offset);
 			} else if (is.getNextChars(4).matches("def ")) {
 				is.consumeChars(3);
-				return new Token(TokenType.DEF, null, this.line, is.getOffset());
+				return new Token(TokenType.DEF, null, this.line, offset);
 			}
 		}
 		// TODO: replace delimiterRegexp with real delimiters
 		if (s.equals("r")) {
 			if (is.getNextChars(7).matches("return" + delimiterRegexp)) {
 				is.consumeChars(6);
-				return new Token(TokenType.RETURN, null, this.line,
-						is.getOffset());
+				return new Token(TokenType.RETURN, null, this.line, offset);
 			}
 			if (is.getNextChars(5).equals("real ")) {
 				is.consumeChars(4);
-				return new Token(TokenType.REAL, null, this.line,
-						is.getOffset());
+				return new Token(TokenType.REAL, null, this.line, offset);
 			}
 		}
 		// TODO: replace delimiterRegexp with real delimiters
 		if (s.equals("b")
 				&& is.getNextChars(6).matches("break" + delimiterRegexp)) {
 			is.consumeChars(5);
-			return new Token(TokenType.BREAK, null, this.line, is.getOffset());
+			return new Token(TokenType.BREAK, null, this.line, offset);
 		}
 		// TODO: replace delimiterRegexp with real delimiters
 		if (s.equals("p")
 				&& is.getNextChars(6).matches("print" + delimiterRegexp)) {
 			is.consumeChars(5);
-			return new Token(TokenType.PRINT, null, this.line, is.getOffset());
+			return new Token(TokenType.PRINT, null, this.line, offset);
 		}
 		if (s.equals("+")) {
 			is.consumeChars(1);
-			return new Token(TokenType.ARITHOP, "ADD", this.line,
-					is.getOffset());
+			return new Token(TokenType.ARITHOP, "ADD", this.line, offset);
 		}
 		if (s.equals("-")) {
 			is.consumeChars(1);
-			return new Token(TokenType.ARITHOP, "SUB", this.line,
-					is.getOffset());
+			return new Token(TokenType.ARITHOP, "SUB", this.line, offset);
 		}
 		if (s.equals("*")) {
 			is.consumeChars(1);
-			return new Token(TokenType.ARITHOP, "MUL", this.line,
-					is.getOffset());
+			return new Token(TokenType.ARITHOP, "MUL", this.line, offset);
 		}
 		if (s.equals("/")) {
 			is.consumeChars(1);
-			return new Token(TokenType.ARITHOP, "DIV", this.line,
-					is.getOffset());
+			return new Token(TokenType.ARITHOP, "DIV", this.line, offset);
 		}
 		if (s.equals("&")) {
 			if (is.getNextChars(2).equals("&&")) {
 				is.consumeChars(2);
-				return new Token(TokenType.BOOLOP, "AND", this.line,
-						is.getOffset());
+				return new Token(TokenType.BOOLOP, "AND", this.line, offset);
 			}
 		}
 		if (s.equals("|")) {
 			if (is.getNextChars(2).equals("||")) {
 				is.consumeChars(2);
-				return new Token(TokenType.BOOLOP, "OR", this.line,
-						is.getOffset());
+				return new Token(TokenType.BOOLOP, "OR", this.line, offset);
 			}
 		}
 		if (s.equals("!")) {
 			s = is.getNextChars(2);
 			if (s.equals("!=")) {
 				is.consumeChars(2);
-				return new Token(TokenType.RELOP, "NE", this.line,
-						is.getOffset());
+				return new Token(TokenType.RELOP, "NE", this.line, offset);
 			} else {
 				is.consumeChars(1);
-				return new Token(TokenType.BOOLOP, "NOT", this.line,
-						is.getOffset());
+				return new Token(TokenType.BOOLOP, "NOT", this.line, offset);
 			}
 		}
 		if (s.equals("<")) {
 			s = is.getNextChars(2);
 			if (s.equals("<=")) {
 				is.consumeChars(2);
-				return new Token(TokenType.RELOP, "LE", this.line,
-						is.getOffset());
+				return new Token(TokenType.RELOP, "LE", this.line, offset);
 			} else {
 				is.consumeChars(1);
-				return new Token(TokenType.RELOP, "LT", this.line,
-						is.getOffset());
+				return new Token(TokenType.RELOP, "LT", this.line, offset);
 			}
 		}
 		if (s.equals(">")) {
 			s = is.getNextChars(2);
 			if (s.equals(">=")) {
 				is.consumeChars(2);
-				return new Token(TokenType.RELOP, "GE", this.line,
-						is.getOffset());
+				return new Token(TokenType.RELOP, "GE", this.line, offset);
 			} else {
 				is.consumeChars(1);
-				return new Token(TokenType.RELOP, "GT", this.line,
-						is.getOffset());
+				return new Token(TokenType.RELOP, "GT", this.line, offset);
 			}
 		}
 		if (s.equals("=")) {
 			s = is.getNextChars(2);
 			if (s.equals("==")) {
 				is.consumeChars(2);
-				return new Token(TokenType.RELOP, "EQ", this.line,
-						is.getOffset());
+				return new Token(TokenType.RELOP, "EQ", this.line, offset);
 			} else {
 				is.consumeChars(1);
-				return new Token(TokenType.ASSIGN, null, this.line,
-						is.getOffset());
+				return new Token(TokenType.ASSIGN, null, this.line, offset);
 			}
 		}
 		if (s.equals("(")) {
 			is.consumeChars(1);
-			return new Token(TokenType.BRL, null, this.line, is.getOffset());
+			return new Token(TokenType.BRL, null, this.line, offset);
 		}
 		if (s.equals(")")) {
 			is.consumeChars(1);
-			return new Token(TokenType.BRR, null, this.line, is.getOffset());
+			return new Token(TokenType.BRR, null, this.line, offset);
 		}
 		if (s.equals("[")) {
 			is.consumeChars(1);
-			return new Token(TokenType.SBRL, null, this.line, is.getOffset());
+			return new Token(TokenType.SBRL, null, this.line, offset);
 		}
 		if (s.equals("]")) {
 			is.consumeChars(1);
-			return new Token(TokenType.SBRR, null, this.line, is.getOffset());
+			return new Token(TokenType.SBRR, null, this.line, offset);
 		}
 		if (s.equals("{")) {
 			is.consumeChars(1);
-			return new Token(TokenType.CBRL, null, this.line, is.getOffset());
+			return new Token(TokenType.CBRL, null, this.line, offset);
 		}
 		if (s.equals("}")) {
 			is.consumeChars(1);
-			return new Token(TokenType.CBRR, null, this.line, is.getOffset());
+			return new Token(TokenType.CBRR, null, this.line, offset);
 		}
 		if (s.equals(";")) {
 			is.consumeChars(1);
-			return new Token(TokenType.SEMIC, null, this.line, is.getOffset());
+			return new Token(TokenType.SEMIC, null, this.line, offset);
 		}
 		if (s.equals(",")) {
 			is.consumeChars(1);
-			return new Token(TokenType.COMMA, null, this.line, is.getOffset());
+			return new Token(TokenType.COMMA, null, this.line, offset);
 		}
 		if (s.equals(".")) {
 			is.consumeChars(1);
-			return new Token(TokenType.DOT, null, this.line, is.getOffset());
+			return new Token(TokenType.DOT, null, this.line, offset);
 		}
 		return null;
 	}

@@ -43,8 +43,10 @@ public class LexerTest {
 		ArrayList<Token> tokenList = tokenize(lexer);
 		assertEquals(tokenList.size(), 12);
 		assertEquals(tokenList.get(0).getType(), TokenType.DEF);
-		assertEquals(tokenList.get(tokenList.size()-2).getType(), TokenType.SEMIC);
-		assertEquals(tokenList.get(tokenList.size()-1).getType(), TokenType.EOF);
+		assertEquals(tokenList.get(tokenList.size() - 2).getType(),
+				TokenType.SEMIC);
+		assertEquals(tokenList.get(tokenList.size() - 1).getType(),
+				TokenType.EOF);
 	}
 
 	@Test
@@ -66,10 +68,28 @@ public class LexerTest {
 		assertEquals(tokenList.get(++index).getType(), TokenType.EOF);
 	}
 
-	@Test(expected=SyntaxErrorException.class)
+	@Test(expected = SyntaxErrorException.class)
 	public void testInvalidSentence() {
 		String code = "a:";
 		tokenize(code);
+	}
+
+	@Test
+	public void testCharacterPositions() {
+		final String code = "def int foo();\ndef int bar();";
+
+		ArrayList<Token> tokenList = tokenize(code);
+		assertEquals(tokenList.get(0).getType(), TokenType.DEF);
+		assertEquals(tokenList.get(0).getLineNumber(), 1);
+		assertEquals(tokenList.get(0).getOffset(), 0);
+		assertEquals(tokenList.get(1).getLineNumber(), 1);
+		assertEquals(tokenList.get(1).getOffset(), 4);
+
+		final int index = 8; // expected token index for bar
+		assertEquals(tokenList.get(index).getType(), TokenType.ID);
+		assertEquals(tokenList.get(index).getAttribute(), "bar");
+		assertEquals(tokenList.get(index).getLineNumber(), 2);
+		assertEquals(tokenList.get(index).getOffset(), 9);
 	}
 
 }

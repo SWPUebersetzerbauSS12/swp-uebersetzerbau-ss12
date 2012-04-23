@@ -1,17 +1,15 @@
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.util.ArrayList;
-
 import lexer.IToken.TokenType;
 import lexer.Lexer;
 import lexer.SyntaxErrorException;
 import lexer.Token;
 import lexer.io.FileCharStream;
 import lexer.io.StringCharStream;
-
 import org.junit.Test;
+
+import java.io.File;
+import java.util.ArrayList;
+
+import static org.junit.Assert.*;
 
 public class LexerTest {
 
@@ -78,18 +76,22 @@ public class LexerTest {
 	public void testCharacterPositions() {
 		final String code = "def int foo();\ndef int bar();";
 
-		ArrayList<Token> tokenList = tokenize(code);
-		assertEquals(tokenList.get(0).getType(), TokenType.DEF);
-		assertEquals(tokenList.get(0).getLineNumber(), 1);
-		assertEquals(tokenList.get(0).getOffset(), 0);
-		assertEquals(tokenList.get(1).getLineNumber(), 1);
-		assertEquals(tokenList.get(1).getOffset(), 4);
-
-		final int index = 8; // expected token index for bar
-		assertEquals(tokenList.get(index).getType(), TokenType.ID);
-		assertEquals(tokenList.get(index).getAttribute(), "bar");
-		assertEquals(tokenList.get(index).getLineNumber(), 2);
-		assertEquals(tokenList.get(index).getOffset(), 9);
+		Token[] expected = new Token[]{
+				new Token(TokenType.DEF, null, 1, 0),
+				new Token(TokenType.INT, null, 1, 4),
+				new Token(TokenType.ID, "foo", 1, 8),
+				new Token(TokenType.LPAREN, null, 1, 11),
+				new Token(TokenType.RPAREN, null, 1, 12),
+				new Token(TokenType.OP_SEMIC, null, 1, 13),
+				new Token(TokenType.DEF, null, 2, 0),
+				new Token(TokenType.INT, null, 2, 4),
+				new Token(TokenType.ID, "bar", 2, 8),
+				new Token(TokenType.LPAREN, null, 2, 11),
+				new Token(TokenType.RPAREN, null, 2, 12),
+				new Token(TokenType.OP_SEMIC, null, 2, 13),
+				new Token(TokenType.EOF, null, 2, 14)
+		};
+		assertArrayEquals(expected, tokenize(code).toArray());
 	}
 
 }

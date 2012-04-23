@@ -33,6 +33,8 @@ public interface IToken {
 		BRL, BRR, SBRL, SBRR, CBRL, CBRR,
 		/** Comma ',' operator */
 		COMMA,
+		/** Dot operator */
+		DOT,
 		/** Semicolon (;) operator */
 		SEMIC
 	}

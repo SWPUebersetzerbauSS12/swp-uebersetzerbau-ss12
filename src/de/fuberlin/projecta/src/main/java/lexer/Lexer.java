@@ -341,6 +341,10 @@ public class Lexer implements ILexer {
 			is.removeChars(1);
 			return new Token(TokenType.COMMA, null);
 		}
+		if (s.equals(".")) {
+			is.removeChars(1);
+			return new Token(TokenType.DOT, null);
+		}
 		return null;
 	}
 }

@@ -1,10 +1,10 @@
 package lexer.io;
 
+import lombok.Getter;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import lombok.Getter;
 
 public class FileCharStream implements ICharStream {
 
@@ -53,7 +53,7 @@ public class FileCharStream implements ICharStream {
 
 	@Override
 	public void resetOffset() {
-		this.offset = 0;
+		this.offset = -1;
 	}
 
 }

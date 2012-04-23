@@ -30,7 +30,7 @@ public class StringCharStream implements ICharStream {
 
 	@Override
 	public void resetOffset() {
-		this.offset = 0;
+		this.offset = -1;
 	}
 
 	@Override

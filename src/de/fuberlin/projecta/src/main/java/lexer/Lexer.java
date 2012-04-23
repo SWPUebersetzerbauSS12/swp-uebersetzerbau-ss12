@@ -151,13 +151,13 @@ public class Lexer implements ILexer {
 		final int offset = is.getOffset();
 
 		switch (peek.charAt(0)) {
-		case '\'':
-			break;
-		case '"':
-			delimiter = "\"";
-			break;
-		default:
-			return null;
+			case '\'':
+				break;
+			case '"':
+				delimiter = "\"";
+				break;
+			default:
+				return null;
 		}
 		is.consumeChars(1);
 		String result = "";

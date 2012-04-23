@@ -60,7 +60,7 @@ public class Transition<ConditionType extends Comparable<ConditionType>, StatePa
 	 *            Der Folgezustand.
 	 */
 	protected void setState(State<ConditionType, StatePayloadType> state) {
-
+		_state = state;
 	}
 
 	public int compareTo(Transition<ConditionType, StatePayloadType> o) {
@@ -82,8 +82,8 @@ public class Transition<ConditionType extends Comparable<ConditionType>, StatePa
 	 */
 	public Transition(ConditionType condition,
 			State<ConditionType, StatePayloadType> state) {
-		_condition = condition;
-		_state = state;
+		setCondition(condition);
+		setState(state);
 	}
 
 }

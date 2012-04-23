@@ -3,8 +3,6 @@ package parser;
 /**
  * Using composite pattern as tree data-structure. Leafs are indicated by a
  * childCount of 0.
- *
- * @author Michael Wittig
  */
 public interface ISyntaxTree {
 

@@ -1,7 +1,5 @@
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 import lexer.ILexer;
 import lexer.IToken.TokenType;
@@ -10,23 +8,12 @@ import lexer.SyntaxErrorException;
 import lexer.Token;
 import lexer.io.FileCharStream;
 import lexer.io.StringCharStream;
+import utils.IOUtils;
 
 public class LexerMain {
 
 	private static void readStdin() {
-		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-		String data = "";
-		String line;
-		try {
-			while ((line = in.readLine()) != null && line.length() != 0) {
-				data += line + '\n';
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return;
-		}
-
+		String data = IOUtils.readMultilineStringFromStdin();
 		Lexer lexer = new Lexer(new StringCharStream(data));
 		printTokens(lexer);
 	}

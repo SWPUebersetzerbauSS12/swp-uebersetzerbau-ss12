@@ -7,9 +7,9 @@ public interface IToken {
 		OP_LT, OP_LE, OP_EQ, OP_NE, OP_GT, OP_GE,
 		/** ||(OR), &&(AND), !(NOT) */
 		OP_OR, OP_AND, OP_NOT,
-		/** Arithmetic Operator +(ADD) -(SUB) *(MUL) /(DIV) -(NEG) */
+		/** Arithmetic operators +(ADD) -(SUB) *(MUL) /(DIV) -(NEG) */
 		OP_ADD, OP_SUB, OP_MUL, OP_DIV, OP_NEG,
-		/** Assignment operator */
+		/** Assignment (=) operator */
 		OP_ASSIGN,
 		/** Comma (,) operator */
 		OP_COMMA,
@@ -17,7 +17,7 @@ public interface IToken {
 		OP_DOT,
 		/** Semicolon (;) operator */
 		OP_SEMIC,
-		/** Other reserverd words */
+		/** Other reserverd key words */
 		IF, THEN, ELSE, WHILE, DO, BREAK,
 		RETURN, PRINT,
 		/** Function definition */
@@ -32,11 +32,19 @@ public interface IToken {
 		REAL,
 		/** For array definitions, this marks the field count */
 		NUM,
-		/** Terminal symbols */
-		LPAREN, RPAREN,
-		LBRACKET, RBRACKET,
-		LBRACE, RBRACE,
-		/** End of file */
+		/** "(" */
+		LPAREN,
+		/** ")" */
+		RPAREN,
+		/** "[" */
+		LBRACKET,
+		/** "]" */
+		RBRACKET,
+		/** "{" */
+		LBRACE,
+		/** "}" */
+		RBRACE,
+		/** End-of-file marker */
 		EOF
 	}
 

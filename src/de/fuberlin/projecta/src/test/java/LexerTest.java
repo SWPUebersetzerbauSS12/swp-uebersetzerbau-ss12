@@ -1,30 +1,66 @@
-import java.io.File;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import lexer.ILexer;
+import java.io.File;
+import java.util.ArrayList;
+
 import lexer.IToken.TokenType;
-import lexer.io.FileCharStream;
 import lexer.Lexer;
 import lexer.SyntaxErrorException;
 import lexer.Token;
+import lexer.io.FileCharStream;
+import lexer.io.StringCharStream;
 
 import org.junit.Test;
 
 public class LexerTest {
 
+	private ArrayList<Token> tokenize(String data) {
+		Lexer lexer = new Lexer(new StringCharStream(data));
+		return tokenize(lexer);
+	}
+
+	private ArrayList<Token> tokenize(Lexer lexer) {
+		ArrayList<Token> tokenList = new ArrayList<Token>();
+
+		Token t;
+		do {
+			t = lexer.getNextToken();
+			tokenList.add(t);
+		} while (t.getType() != TokenType.EOF);
+		return tokenList;
+	}
+
 	@Test
-	public void test() throws SyntaxErrorException {
+	public void testReadSourceFile() throws SyntaxErrorException {
 		final String path = Config.TEST_DATA_FOLDER + "LexerTestFile1.txt";
 
 		File sourceFile = new File(path);
-		assert (sourceFile.exists());
-		assert (sourceFile.canRead());
+		assertTrue(sourceFile.exists());
+		assertTrue(sourceFile.canRead());
 
-		ILexer lex = new Lexer(new FileCharStream(path));
-		Token t;
-		do {
-			t = lex.getNextToken();
-			System.out.println(t);
-		} while (t.getType() != TokenType.EOF);
+		Lexer lexer = new Lexer(new FileCharStream(path));
+		ArrayList<Token> tokenList = tokenize(lexer);
+		assertEquals(tokenList.size(), 11);
+	}
+
+	@Test
+	public void testFunctionDeclaration() {
+		final String code = "def int function();";
+		ArrayList<Token> tokenList = tokenize(code);
+
+		int index = -1;
+		assertEquals(tokenList.size(), 7);
+		assertEquals(tokenList.get(++index).getType(), TokenType.DEF);
+		assertEquals(tokenList.get(++index).getType(), TokenType.INT);
+
+		assertEquals(tokenList.get(++index).getType(), TokenType.ID);
+		assertEquals(tokenList.get(index).getAttribute(), "function");
+
+		assertEquals(tokenList.get(++index).getType(), TokenType.BRL);
+		assertEquals(tokenList.get(++index).getType(), TokenType.BRR);
+		assertEquals(tokenList.get(++index).getType(), TokenType.SEMIC);
+		assertEquals(tokenList.get(++index).getType(), TokenType.EOF);
 	}
 
 }

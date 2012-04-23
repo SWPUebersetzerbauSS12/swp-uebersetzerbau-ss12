@@ -1,12 +1,13 @@
+import java.io.File;
+
 import lexer.ILexer;
+import lexer.IToken.TokenType;
+import lexer.InputStream;
 import lexer.Lexer;
 import lexer.SyntaxErrorException;
 import lexer.Token;
-import lexer.IToken.TokenType;
 
 import org.junit.Test;
-
-import java.io.File;
 
 public class LexerTest {
 
@@ -18,7 +19,7 @@ public class LexerTest {
 		assert (sourceFile.exists());
 		assert (sourceFile.canRead());
 
-		ILexer lex = new Lexer(path);
+		ILexer lex = new Lexer(new InputStream(path));
 		Token t;
 		do {
 			t = lex.getNextToken();

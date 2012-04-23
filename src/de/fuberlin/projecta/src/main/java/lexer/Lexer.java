@@ -10,9 +10,9 @@ public class Lexer implements ILexer {
 
 	InputStream is;
 
-	public Lexer(String file) {
+	public Lexer(InputStream is) {
 		line = 1;
-		is = new InputStream(file);
+		this.is = is;
 	}
 
 	public Token getNextToken() {

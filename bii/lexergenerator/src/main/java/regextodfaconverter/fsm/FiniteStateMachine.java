@@ -385,10 +385,10 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 	public FiniteStateMachine() {
 		State<TransitionConditionType, StatePayloadType> state = new State<TransitionConditionType, StatePayloadType>();
 		state.setType(StateType.INITIAL);
-		
+
 		setStates(new HashMap<UUID, State<TransitionConditionType, StatePayloadType>>());
 		getStates().put(state.getUUID(), state);
-		
+
 		try {
 			setInitialState(state);
 			setCurrentState(state);

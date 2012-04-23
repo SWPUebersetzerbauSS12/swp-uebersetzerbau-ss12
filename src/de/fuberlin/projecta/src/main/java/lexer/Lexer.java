@@ -19,7 +19,7 @@ public class Lexer implements ILexer {
 		String peek;
 		do {
 			if (is.isEmpty())
-				return null; // End of input stream - nothing more to read
+				return new Token(TokenType.EOF, null, this.line, is.getOffset()); // End of input stream - nothing more to read
 			peek = is.getNextChars(1);
 			if (peek.matches("\\n")) {
 				this.line += 1;

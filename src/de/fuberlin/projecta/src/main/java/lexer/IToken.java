@@ -35,7 +35,9 @@ public interface IToken {
 		/** Dot operator */
 		DOT,
 		/** Semicolon (;) operator */
-		SEMIC
+		SEMIC,
+		/** End of file */
+		EOF
 	}
 
 	/**

@@ -2,6 +2,8 @@ import lexer.ILexer;
 import lexer.Lexer;
 import lexer.SyntaxErrorException;
 import lexer.Token;
+import lexer.IToken.TokenType;
+
 import org.junit.Test;
 
 import java.io.File;
@@ -18,10 +20,10 @@ public class LexerTest {
 
 		ILexer lex = new Lexer(path);
 		Token t;
-		while ((t = lex.getNextToken()) != null) {
+		do {
+			t = lex.getNextToken();
 			System.out.println(t);
-		}
+		} while (t.getType() != TokenType.EOF);
 	}
-
 
 }

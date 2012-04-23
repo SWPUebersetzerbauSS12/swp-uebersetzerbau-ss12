@@ -4,7 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @AllArgsConstructor
-public @Data
+public
+@Data
 class Token implements IToken {
 
 	private TokenType type;
@@ -16,7 +17,7 @@ class Token implements IToken {
 
 	@Override
 	public String toString() {
-		return "<" + type + ", " + attribute + ">";
+		return "<" + type + ", " + attribute + ", " + lineNumber + ", " + offset + ">";
 	}
 
 }

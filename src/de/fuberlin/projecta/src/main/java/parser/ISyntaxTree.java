@@ -1,5 +1,7 @@
 package parser;
 
+import java.util.List;
+
 /**
  * Using composite pattern as tree data-structure. Leafs are indicated by a
  * childCount of 0.
@@ -17,14 +19,17 @@ public interface ISyntaxTree {
 
 	/**
 	 * @param i
-	 * @return the i'th children of current node, null if none is existing.
+	 * @return the i'th child of current node, null if none is existing.
 	 */
-	public ISyntaxTree getChildren(int i);
+	public ISyntaxTree getChild(int i);
 
 	/**
 	 * @return The desired attribute. Null if none is found.
 	 */
-	public Attribute getAttribute(String name);
+	public IAttribute getAttribute(String name);
+
+
+	public List<ISyntaxTree> getChildrenByName(String name);
 
 	/**
 	 * Changes the value of the attribute

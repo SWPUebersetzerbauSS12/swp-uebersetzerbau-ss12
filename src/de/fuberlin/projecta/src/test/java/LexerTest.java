@@ -41,7 +41,10 @@ public class LexerTest {
 
 		Lexer lexer = new Lexer(new FileCharStream(path));
 		ArrayList<Token> tokenList = tokenize(lexer);
-		assertEquals(tokenList.size(), 11);
+		assertEquals(tokenList.size(), 12);
+		assertEquals(tokenList.get(0).getType(), TokenType.DEF);
+		assertEquals(tokenList.get(tokenList.size()-2).getType(), TokenType.SEMIC);
+		assertEquals(tokenList.get(tokenList.size()-1).getType(), TokenType.EOF);
 	}
 
 	@Test

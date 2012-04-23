@@ -2,6 +2,7 @@ import java.io.File;
 
 import lexer.ILexer;
 import lexer.Lexer;
+import lexer.io.FileCharStream;
 import parser.Parser;
 import parser.ParserException;
 

@@ -9,3 +9,6 @@
 *.BASE.*
 *.LOCAL.*
 *.REMOTE.*
+
+# project-specific
+target/

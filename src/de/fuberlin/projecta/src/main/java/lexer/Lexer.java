@@ -252,70 +252,70 @@ public class Lexer implements ILexer {
 		}
 		if (s.equals("+")) {
 			is.consumeChars(1);
-			return new Token(TokenType.ARITHOP, "ADD", this.line, offset);
+			return new Token(TokenType.OP_ADD, null, this.line, offset);
 		}
 		if (s.equals("-")) {
 			is.consumeChars(1);
-			return new Token(TokenType.ARITHOP, "SUB", this.line, offset);
+			return new Token(TokenType.OP_SUB, null, this.line, offset);
 		}
 		if (s.equals("*")) {
 			is.consumeChars(1);
-			return new Token(TokenType.ARITHOP, "MUL", this.line, offset);
+			return new Token(TokenType.OP_MUL, null, this.line, offset);
 		}
 		if (s.equals("/")) {
 			is.consumeChars(1);
-			return new Token(TokenType.ARITHOP, "DIV", this.line, offset);
+			return new Token(TokenType.OP_DIV, null, this.line, offset);
 		}
 		if (s.equals("&")) {
 			if (is.getNextChars(2).equals("&&")) {
 				is.consumeChars(2);
-				return new Token(TokenType.BOOLOP, "AND", this.line, offset);
+				return new Token(TokenType.OP_AND, "AND", this.line, offset);
 			}
 		}
 		if (s.equals("|")) {
 			if (is.getNextChars(2).equals("||")) {
 				is.consumeChars(2);
-				return new Token(TokenType.BOOLOP, "OR", this.line, offset);
+				return new Token(TokenType.OP_OR, null, this.line, offset);
 			}
 		}
 		if (s.equals("!")) {
 			s = is.getNextChars(2);
 			if (s.equals("!=")) {
 				is.consumeChars(2);
-				return new Token(TokenType.RELOP, "NE", this.line, offset);
+				return new Token(TokenType.OP_NE, null, this.line, offset);
 			} else {
 				is.consumeChars(1);
-				return new Token(TokenType.BOOLOP, "NOT", this.line, offset);
+				return new Token(TokenType.OP_NOT, null, this.line, offset);
 			}
 		}
 		if (s.equals("<")) {
 			s = is.getNextChars(2);
 			if (s.equals("<=")) {
 				is.consumeChars(2);
-				return new Token(TokenType.RELOP, "LE", this.line, offset);
+				return new Token(TokenType.OP_LE, null, this.line, offset);
 			} else {
 				is.consumeChars(1);
-				return new Token(TokenType.RELOP, "LT", this.line, offset);
+				return new Token(TokenType.OP_LT, null, this.line, offset);
 			}
 		}
 		if (s.equals(">")) {
 			s = is.getNextChars(2);
 			if (s.equals(">=")) {
 				is.consumeChars(2);
-				return new Token(TokenType.RELOP, "GE", this.line, offset);
+				return new Token(TokenType.OP_GE, null, this.line, offset);
 			} else {
 				is.consumeChars(1);
-				return new Token(TokenType.RELOP, "GT", this.line, offset);
+				return new Token(TokenType.OP_GT, null, this.line, offset);
 			}
 		}
 		if (s.equals("=")) {
 			s = is.getNextChars(2);
 			if (s.equals("==")) {
 				is.consumeChars(2);
-				return new Token(TokenType.RELOP, "EQ", this.line, offset);
+				return new Token(TokenType.OP_EQ, null, this.line, offset);
 			} else {
 				is.consumeChars(1);
-				return new Token(TokenType.ASSIGN, null, this.line, offset);
+				return new Token(TokenType.OP_ASSIGN, null, this.line, offset);
 			}
 		}
 		if (s.equals("(")) {
@@ -344,15 +344,15 @@ public class Lexer implements ILexer {
 		}
 		if (s.equals(";")) {
 			is.consumeChars(1);
-			return new Token(TokenType.SEMIC, null, this.line, offset);
+			return new Token(TokenType.OP_SEMIC, null, this.line, offset);
 		}
 		if (s.equals(",")) {
 			is.consumeChars(1);
-			return new Token(TokenType.COMMA, null, this.line, offset);
+			return new Token(TokenType.OP_COMMA, null, this.line, offset);
 		}
 		if (s.equals(".")) {
 			is.consumeChars(1);
-			return new Token(TokenType.DOT, null, this.line, offset);
+			return new Token(TokenType.OP_DOT, null, this.line, offset);
 		}
 		return null;
 	}

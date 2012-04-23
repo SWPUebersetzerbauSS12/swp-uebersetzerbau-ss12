@@ -4,13 +4,19 @@ public interface IToken {
 
 	public enum TokenType {
 		/** relational operators <(LT), <=(LE), ==(EQ), !=(NE), >(GT), >=(GE) */
-		RELOP,
+		OP_LT, OP_LE, OP_EQ, OP_NE, OP_GT, OP_GE,
 		/** ||(OR), &&(AND), !(NOT) */
-		BOOLOP,
-		/** Arithmetic Operator +(SUM) -(SUB) *(MUL) /(DIV) -(NEG) */
-		ARITHOP,
+		OP_OR, OP_AND, OP_NOT,
+		/** Arithmetic Operator +(ADD) -(SUB) *(MUL) /(DIV) -(NEG) */
+		OP_ADD, OP_SUB, OP_MUL, OP_DIV, OP_NEG,
 		/** Assignment operator */
-		ASSIGN,
+		OP_ASSIGN,
+		/** Comma (,) operator */
+		OP_COMMA,
+		/** Dot (.) operator */
+		OP_DOT,
+		/** Semicolon (;) operator */
+		OP_SEMIC,
 		/** Other reserverd words */
 		IF, THEN, ELSE, WHILE, DO, BREAK,
 		RETURN, PRINT,
@@ -30,12 +36,6 @@ public interface IToken {
 		LPAREN, RPAREN,
 		LBRACKET, RBRACKET,
 		LBRACE, RBRACE,
-		/** Comma (,) operator */
-		COMMA,
-		/** Dot (.) operator */
-		DOT,
-		/** Semicolon (;) operator */
-		SEMIC,
 		/** End of file */
 		EOF
 	}

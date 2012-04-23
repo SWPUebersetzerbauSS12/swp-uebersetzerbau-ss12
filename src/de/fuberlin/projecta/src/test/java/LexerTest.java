@@ -44,7 +44,7 @@ public class LexerTest {
 		assertEquals(tokenList.size(), 12);
 		assertEquals(tokenList.get(0).getType(), TokenType.DEF);
 		assertEquals(tokenList.get(tokenList.size() - 2).getType(),
-				TokenType.SEMIC);
+				TokenType.OP_SEMIC);
 		assertEquals(tokenList.get(tokenList.size() - 1).getType(),
 				TokenType.EOF);
 	}
@@ -64,7 +64,7 @@ public class LexerTest {
 
 		assertEquals(tokenList.get(++index).getType(), TokenType.LPAREN);
 		assertEquals(tokenList.get(++index).getType(), TokenType.RPAREN);
-		assertEquals(tokenList.get(++index).getType(), TokenType.SEMIC);
+		assertEquals(tokenList.get(++index).getType(), TokenType.OP_SEMIC);
 		assertEquals(tokenList.get(++index).getType(), TokenType.EOF);
 	}
 

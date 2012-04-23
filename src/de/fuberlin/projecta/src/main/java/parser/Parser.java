@@ -149,7 +149,7 @@ public class Parser {
 	 */
 	private String getStringFromType(TokenType type) {
 		switch (type) {
-		case ASSIGN:
+		case OP_ASSIGN:
 			return "=";
 		case LPAREN:
 			return "(";
@@ -163,9 +163,9 @@ public class Parser {
 			return "{";
 		case RBRACE:
 			return "}";
-		case COMMA:
+		case OP_COMMA:
 			return ",";
-		case SEMIC:
+		case OP_SEMIC:
 			return ";";
 		default:
 			return "";

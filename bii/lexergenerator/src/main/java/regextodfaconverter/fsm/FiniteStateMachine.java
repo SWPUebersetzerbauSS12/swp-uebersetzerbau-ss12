@@ -379,7 +379,6 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 		for (State<TransitionConditionType, StatePayloadType> state : states
 				.values()) {
 			if (state.isFiniteState()) {
-				System.out.println("MATCH");
 				// state.setPayload(null);
 				state.SetTypeToDefault();
 				try {

@@ -56,6 +56,7 @@ public class Parser {
 
 		stack = new Stack<String>();
 		outputs = new Vector<String>();
+		syntaxTree = new NonTerminal("program");
 	}
 
 	public void parse() throws ParserException {

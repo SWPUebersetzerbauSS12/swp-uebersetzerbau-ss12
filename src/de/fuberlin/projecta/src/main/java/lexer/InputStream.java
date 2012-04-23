@@ -4,12 +4,18 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import lombok.Getter;
+
 public class InputStream {
 
 	ArrayList<Character> text = new ArrayList<Character>();
 
+	@Getter
+	private int offset;
+
 	public InputStream(String file) {
 		try {
+			this.offset = 0;
 			FileReader fr = new FileReader(file);
 			char[] peek = new char[1];
 			while (fr.read(peek) > -1) {
@@ -29,15 +35,16 @@ public class InputStream {
 		return result;
 	}
 
-
 	/**
 	 * removes an amount of characters at the beginning
 	 *
-	 * @param numberOfChars how many characters should be removed
+	 * @param numberOfChars
+	 *            how many characters should be removed
 	 * @return how many characters were actually removed
 	 */
 	public int removeChars(int numberOfChars) {
 		int result = 0;
+		this.offset += numberOfChars;
 		while (!text.isEmpty() && result < numberOfChars) {
 			text.remove(0);
 			result++;
@@ -47,6 +54,10 @@ public class InputStream {
 
 	public boolean isEmpty() {
 		return text.isEmpty();
+	}
+
+	public void resetOffset() {
+		this.offset = 0;
 	}
 
 }

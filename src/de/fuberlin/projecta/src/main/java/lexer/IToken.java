@@ -12,8 +12,7 @@ public interface IToken {
 		/** Assignment operator */
 		ASSIGN,
 		/** Other reserverd words */
-		IF, THEN, ELSE,
-		WHILE, DO, BREAK, // no continue?
+		IF, THEN, ELSE, WHILE, DO, BREAK, // no continue?
 		RETURN, PRINT,
 		/** Function definition */
 		DEF,
@@ -40,5 +39,20 @@ public interface IToken {
 	}
 
 	TokenType getType();
+
 	String getAttribute();
+
+	/**
+	 * Get the start offset of this Token's attribute
+	 *
+	 * @return Start offset
+	 */
+	int getOffset();
+
+	/**
+	 * Get the nine number of this Token's attribute
+	 *
+	 * @return End offset
+	 */
+	int getLineNumber();
 }

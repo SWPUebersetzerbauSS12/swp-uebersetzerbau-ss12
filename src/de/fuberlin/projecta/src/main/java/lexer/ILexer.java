@@ -2,6 +2,9 @@ package lexer;
 
 public interface ILexer {
 
-	Token getNextToken() throws SyntaxErrorException;
-
+	/**
+	 * @return the next Token
+	 * @throws SyntaxErrorException
+	 */
+	Token getNextToken();
 }

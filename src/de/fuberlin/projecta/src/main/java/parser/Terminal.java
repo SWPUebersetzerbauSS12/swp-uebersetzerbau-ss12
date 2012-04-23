@@ -3,11 +3,11 @@ package parser;
 import java.util.ArrayList;
 
 public class Terminal implements ISyntaxTree {
-	
+
 	private String name;
 	private ArrayList<Attribute> attributes;
-	
-	public Terminal(String name){
+
+	public Terminal(String name) {
 		this.name = name;
 		attributes = new ArrayList<Attribute>();
 	}
@@ -17,13 +17,6 @@ public class Terminal implements ISyntaxTree {
 	 */
 	public void addTree(ISyntaxTree tree) {
 		throw new UnsupportedOperationException("Can't extend a leaf!");
-	}
-
-	/**
-	 * Should a leaf really implement this method?
-	 */
-	public void removeTree(int i) {
-		throw new UnsupportedOperationException("Can't remove a subtree from a leaf!");
 	}
 
 	public String getName() {
@@ -39,8 +32,8 @@ public class Terminal implements ISyntaxTree {
 	}
 
 	public Attribute getAttribute(String name) {
-		for(Attribute attr : attributes){
-			if(attr.getName().equals(name)){
+		for (Attribute attr : attributes) {
+			if (attr.getName().equals(name)) {
 				return attr;
 			}
 		}
@@ -48,8 +41,8 @@ public class Terminal implements ISyntaxTree {
 	}
 
 	public boolean setAttribute(String name, String value) {
-		for(Attribute attr : attributes){
-			if(attr.getName().equals(name)){
+		for (Attribute attr : attributes) {
+			if (attr.getName().equals(name)) {
 				attr.setValue(value);
 				return true;
 			}
@@ -58,10 +51,10 @@ public class Terminal implements ISyntaxTree {
 	}
 
 	public boolean addAttribute(String name) {
-		if(getAttribute(name) == null){
+		if (getAttribute(name) == null) {
 			attributes.add(new Attribute(name));
 			return true;
-		} 
+		}
 		return false;
 	}
 

@@ -1,6 +1,7 @@
 package parser;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class NonTerminal implements ISyntaxTree {
 
@@ -30,7 +31,7 @@ public class NonTerminal implements ISyntaxTree {
 		return children.size();
 	}
 
-	public ISyntaxTree getChildren(int i) {
+	public ISyntaxTree getChild(int i) {
 		return children.get(i);
 	}
 
@@ -41,6 +42,10 @@ public class NonTerminal implements ISyntaxTree {
 			}
 		}
 		return null;
+	}
+
+	public List<ISyntaxTree> getChildrenByName(String name) {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
 	}
 
 	public boolean setAttribute(String name, String value) {

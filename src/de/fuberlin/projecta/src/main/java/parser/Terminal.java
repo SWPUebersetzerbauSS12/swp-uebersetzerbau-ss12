@@ -1,6 +1,7 @@
 package parser;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Terminal implements ISyntaxTree {
 
@@ -27,7 +28,7 @@ public class Terminal implements ISyntaxTree {
 		return 0;
 	}
 
-	public ISyntaxTree getChildren(int i) {
+	public ISyntaxTree getChild(int i) {
 		return null;
 	}
 
@@ -38,6 +39,10 @@ public class Terminal implements ISyntaxTree {
 			}
 		}
 		return null;
+	}
+
+	public List<ISyntaxTree> getChildrenByName(String name) {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
 	}
 
 	public boolean setAttribute(String name, String value) {

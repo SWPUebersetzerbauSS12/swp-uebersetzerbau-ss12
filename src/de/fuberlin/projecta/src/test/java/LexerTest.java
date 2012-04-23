@@ -9,7 +9,7 @@ import java.io.File;
 public class LexerTest {
 
 	@Test
-	public void test() {
+	public void test() throws SyntaxErrorException {
 		final String path = Config.TEST_DATA_FOLDER + "LexerTestFile1.txt";
 
 		File sourceFile = new File(path);
@@ -18,13 +18,10 @@ public class LexerTest {
 
 		ILexer lex = new Lexer(path);
 		Token t;
-		try {
-			while ((t = lex.getNextToken()) != null) {
-				System.out.println(t);
-			}
-		} catch (SyntaxErrorException e) {
-			System.out.println(e.getMessage());
+		while ((t = lex.getNextToken()) != null) {
+			System.out.println(t);
 		}
 	}
+
 
 }

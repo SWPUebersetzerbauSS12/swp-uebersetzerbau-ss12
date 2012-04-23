@@ -3,9 +3,6 @@ package parser;
 import java.util.Stack;
 import java.util.Vector;
 
-import ast.ISyntaxTree;
-import ast.NonTerminal;
-
 import lexer.ILexer;
 import lexer.IToken.TokenType;
 import lexer.SyntaxErrorException;

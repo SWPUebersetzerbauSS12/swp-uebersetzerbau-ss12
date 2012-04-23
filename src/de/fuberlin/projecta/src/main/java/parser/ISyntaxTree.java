@@ -1,8 +1,6 @@
-package ast;
+package parser;
 
 import java.util.List;
-
-import parser.IAttribute;
 
 /**
  * Using composite pattern as tree data-structure. Leafs are indicated by a

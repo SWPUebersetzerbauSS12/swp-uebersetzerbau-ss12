@@ -1,25 +1,26 @@
-package ast;
+package parser;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import parser.Attribute;
+public class NonTerminal implements ISyntaxTree {
 
-public class Terminal implements ISyntaxTree {
-
+	private ArrayList<ISyntaxTree> children = new ArrayList<ISyntaxTree>();
 	private String name;
 	private ArrayList<Attribute> attributes;
 
-	public Terminal(String name) {
+	/**
+	 * Creates a new empty node for non-terminals.
+	 *
+	 * @param name
+	 */
+	public NonTerminal(String name) {
 		this.name = name;
 		attributes = new ArrayList<Attribute>();
 	}
 
-	/**
-	 * Should a leaf really implement this method?
-	 */
 	public void addTree(ISyntaxTree tree) {
-		throw new UnsupportedOperationException("Can't extend a leaf!");
+		children.add(tree);
 	}
 
 	public String getName() {
@@ -27,11 +28,11 @@ public class Terminal implements ISyntaxTree {
 	}
 
 	public int getChildrenCount() {
-		return 0;
+		return children.size();
 	}
 
 	public ISyntaxTree getChild(int i) {
-		return null;
+		return children.get(i);
 	}
 
 	public Attribute getAttribute(String name) {

@@ -48,9 +48,19 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 	 * 
 	 * @param state
 	 *            Der neue Startzustand dieses endlichen Automatens.
+	 * @throws NullStateException
+	 *             Wenn null als Parameter für den neuen Zustand übergeben wird.
+	 * @throws StateNotReachableException
+	 *             Wenn der Zustand nicht erreichbar oder Teil des endlichen
+	 *             Automats ist.
 	 */
 	protected void setInitialState(
-			State<TransitionConditionType, StatePayloadType> initialState) {
+			State<TransitionConditionType, StatePayloadType> initialState)
+			throws NullStateException, StateNotReachableException {
+		if (initialState == null)
+			throw new NullStateException();
+		if (!containsStateWithUUID(initialState.getUUID()))
+			throw new StateNotReachableException();
 		_initialState = initialState;
 	}
 
@@ -121,11 +131,7 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 	 */
 	public State<TransitionConditionType, StatePayloadType> getStateByUUID(
 			UUID uuid) {
-		if (_states.containsKey(uuid)) {
-			return _states.get(uuid);
-		} else {
-			return null;
-		}
+		return getStates().get(uuid);
 	}
 
 	/**
@@ -139,7 +145,7 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 	 *         false.
 	 */
 	public boolean containsStateWithUUID(UUID uuid) {
-		return _states.containsKey(uuid);
+		return getStates().containsKey(uuid);
 	}
 
 	/**
@@ -151,7 +157,7 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 	 *         (deterministic finite automaton, kurz DFA) handelt, sonst false.
 	 */
 	public boolean isDeterministic() {
-		for (State<TransitionConditionType, StatePayloadType> state : _states
+		for (State<TransitionConditionType, StatePayloadType> state : getStates()
 				.values()) {
 			HashSet<TransitionConditionType> conditions = new HashSet<TransitionConditionType>();
 			for (Transition<TransitionConditionType, StatePayloadType> transition : state
@@ -188,14 +194,24 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 				if (transition.getCondition().equals(condition)) {
 					State<TransitionConditionType, StatePayloadType> state = transition
 							.getState();
-					_currentState = state;
+					try {
+						setCurrentState(state);
+					} catch (Exception e) {
+						// Dieser Fall kann niemals eintreten!
+						e.printStackTrace();
+					}
 					return state;
 				}
 			} else {
 				if (condition == null) {
 					State<TransitionConditionType, StatePayloadType> state = transition
 							.getState();
-					_currentState = state;
+					try {
+						setCurrentState(state);
+					} catch (Exception e) {
+						// Dieser Fall kann niemals eintreten!
+						e.printStackTrace();
+					}
 					return state;
 				}
 			}
@@ -231,7 +247,12 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 	 * Setzt den aktuellen Zustand auf den Startzustand zurück.
 	 */
 	public void resetToInitialState() {
-		_currentState = _initialState;
+		try {
+			setCurrentState(getInitialState());
+		} catch (Exception e) {
+			// Dieser Fall kann niemals eintreten!
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -266,7 +287,7 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 			throw new StateNotReachableException();
 
 		if (!containsStateWithUUID(destinationState.getUUID())) {
-			_states.put(destinationState.getUUID(), destinationState);
+			getStates().put(destinationState.getUUID(), destinationState);
 		}
 		sourceState.addState(condition, destinationState);
 	}
@@ -292,7 +313,7 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 		if (destinationState == null)
 			throw new NullStateException();
 		try {
-			addTransition(_currentState, destinationState, condition);
+			addTransition(getCurrentState(), destinationState, condition);
 		} catch (StateNotReachableException e) {
 			// Dieser Fall kann niemals eintreten!
 			e.printStackTrace();
@@ -340,16 +361,15 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 	public void concat(
 			FiniteStateMachine<TransitionConditionType, StatePayloadType> fsm) {
 		try {
-			for (State<TransitionConditionType, StatePayloadType> state : getStates().values())
-			{
-				if (state.isFiniteState())
-				{
-					//state.setPayload(null);
+			for (State<TransitionConditionType, StatePayloadType> state : getStates()
+					.values()) {
+				if (state.isFiniteState()) {
+					// state.setPayload(null);
 					state.SetTypeToDefault();
 					addTransition(state, fsm.getInitialState(), null);
 				}
 			}
-			
+
 			getStates().putAll(fsm.getStates());
 			fsm.getInitialState().SetTypeToDefault();
 		} catch (Exception e) {
@@ -365,9 +385,16 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 	public FiniteStateMachine() {
 		State<TransitionConditionType, StatePayloadType> state = new State<TransitionConditionType, StatePayloadType>();
 		state.setType(StateType.INITIAL);
-		_initialState = state;
-		_currentState = state;
-		_states = new HashMap<UUID, State<TransitionConditionType, StatePayloadType>>();
-		_states.put(state.getUUID(), state);
+		
+		setStates(new HashMap<UUID, State<TransitionConditionType, StatePayloadType>>());
+		getStates().put(state.getUUID(), state);
+		
+		try {
+			setInitialState(state);
+			setCurrentState(state);
+		} catch (Exception e) {
+			// Dieser Fall kann niemals eintreten!
+			e.printStackTrace();
+		}
 	}
 }

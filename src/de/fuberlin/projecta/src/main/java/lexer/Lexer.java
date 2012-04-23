@@ -49,6 +49,10 @@ public class Lexer implements ILexer {
 				+ " near " + peek);
 	}
 
+	/**
+	 * FIXME: Totally broken at the moment, does not disambiguate between REAL/INT
+	 * TODO: Get rid off the complex "state" logic?
+	 */
 	private Token numConstant() throws SyntaxErrorException {
 		int state = 0;
 		String result = "";
@@ -124,7 +128,7 @@ public class Lexer implements ILexer {
 			}
 		}
 		if (state == 1 || state == 3 || state == 4 || state == 7)
-			return new Token(TokenType.NUM, result, this.line, is.getOffset());
+			return new Token(TokenType.REAL, result, this.line, is.getOffset());
 		else
 			throw new SyntaxErrorException("Malformed floating point number");
 	}

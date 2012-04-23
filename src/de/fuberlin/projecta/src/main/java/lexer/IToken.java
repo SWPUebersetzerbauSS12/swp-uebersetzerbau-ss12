@@ -31,7 +31,7 @@ public interface IToken {
 		/** Real number */
 		REAL,
 		/** For array definitions, this marks the field count */
-		NUM,
+		INDEX,
 		/** "(" */
 		LPAREN,
 		/** ")" */

@@ -14,7 +14,9 @@ public class Parser {
 	private ParseTable table;
 	private Stack<String> stack;
 	private Vector<String> outputs;
-	@Getter private ISyntaxTree syntaxTree;
+
+	@Getter
+	private ISyntaxTree syntaxTree;
 
 	private static final String[] nonTerminals = { "program", "funcs", "func",
 			"optparams", "params", "block", "decls", "decl", "type", "stmts",
@@ -66,43 +68,51 @@ public class Parser {
 		}
 
 		initStack();
-		String X;
-		Token a = null;
+		String peek;
+		Token token = null;
 		try {
-			a = lexer.getNextToken();
+			token = lexer.getNextToken();
 		} catch (SyntaxErrorException e) {
 			e.printStackTrace();
 		}
 
 		do {
-			X = stack.peek();
-			if (isTerminal(X) || X.equals("$")) {
-				if (a.getAttribute() != null) {
-					if (X.equals(a.getAttribute())
-							|| X.equals(a.getType().toString().toLowerCase())
-							|| X.equals(getStringFromType(a.getType())) 
-							|| X.equals("$") && a == null) /** null is returned if input ended  */ {
+			peek = stack.peek();
+			if (isTerminal(peek) || peek.equals("$")) {
+				if (token.getAttribute() != null) {
+					if (peek.equals(token.getAttribute())
+							|| peek.equals(token.getType().toString()
+									.toLowerCase())
+							|| peek.equals(getStringFromType(token.getType()))
+							|| peek.equals("$") && token == null) /**
+					 * null is
+					 * returned if input ended
+					 */
+					{
 						stack.pop();
 						try {
-							a = lexer.getNextToken();
+							token = lexer.getNextToken();
 						} catch (SyntaxErrorException e) {
 							e.printStackTrace();
 						}
 					} else {
-						throw new ParserException("Wrong token "
-								+ a + " in input");
+						throw new ParserException("Wrong token " + token
+								+ " in input");
 					}
 				}
-			} else /** stack symbol is non-terminal  */{
+			} else /** stack symbol is non-terminal */
+			{
 				String prod;
-				if ((prod = table.getEntry(X, a.getAttribute())) != null){
+				if ((prod = table.getEntry(peek, token.getAttribute())) != null) {
 					// my heart skips skips..
-				} else if ((prod = table.getEntry(X, a.getType().toString().toLowerCase())) != null){
+				} else if ((prod = table.getEntry(peek, token.getType()
+						.toString().toLowerCase())) != null) {
 					// skips skips..
-				} else if ((prod = table.getEntry(X, getStringFromType(a.getType()))) != null){
+				} else if ((prod = table.getEntry(peek,
+						getStringFromType(token.getType()))) != null) {
 					// skips skips a beat
 				}
-				
+
 				if (prod != null) {
 					stack.pop();
 					String[] tmp = prod.split("::=");
@@ -117,18 +127,18 @@ public class Parser {
 								"Wrong structur in parsing table! Productions should be of the form: X ::= Y1 Y2 ... Yk");
 					}
 				} else {
-					throw new ParserException(" Syntax error: No Rule in parsing table ");
+					throw new ParserException(
+							" Syntax error: No Rule in parsing table ");
 				}
 			}
 		} while (!stack.peek().equals("$"));
-		
+
 		createSyntaxTree();
 	}
 
-	private void createSyntaxTree(){
-		
+	private void createSyntaxTree() {
 	}
-	
+
 	/**
 	 * Helper function to re-extract string from token.
 	 * 

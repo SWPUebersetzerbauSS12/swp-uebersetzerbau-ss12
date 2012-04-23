@@ -1,5 +1,3 @@
-import java.io.File;
-
 import lexer.ILexer;
 import lexer.Lexer;
 import lexer.io.FileCharStream;
@@ -8,6 +6,8 @@ import lexer.io.StringCharStream;
 import parser.Parser;
 import parser.ParserException;
 import utils.IOUtils;
+
+import java.io.File;
 
 public class ParserMain {
 

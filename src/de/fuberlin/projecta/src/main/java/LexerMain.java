@@ -1,6 +1,3 @@
-import java.io.File;
-import java.io.IOException;
-
 import lexer.ILexer;
 import lexer.IToken.TokenType;
 import lexer.Lexer;
@@ -9,6 +6,9 @@ import lexer.Token;
 import lexer.io.FileCharStream;
 import lexer.io.StringCharStream;
 import utils.IOUtils;
+
+import java.io.File;
+import java.io.IOException;
 
 public class LexerMain {
 
@@ -46,7 +46,7 @@ public class LexerMain {
 
 	/**
 	 * First parameter should be the source file
-	 * 
+	 *
 	 * @param args
 	 * @throws IOException
 	 */
@@ -54,12 +54,10 @@ public class LexerMain {
 		if (args.length == 0) {
 			System.out.println("Reading from stdin. Exit with new line and Ctrl+D.");
 			readStdin();
-		}
-		else if (args.length == 1) {
+		} else if (args.length == 1) {
 			final String path = args[0];
 			readFile(path);
-		}
-		else {
+		} else {
 			System.out.println("Wrong number of arguments!");
 		}
 	}

@@ -151,17 +151,17 @@ public class Parser {
 		switch (type) {
 		case ASSIGN:
 			return "=";
-		case BRL:
+		case LPAREN:
 			return "(";
-		case BRR:
+		case RPAREN:
 			return ")";
-		case SBRL:
+		case LBRACKET:
 			return "[";
-		case SBRR:
+		case RBRACKET:
 			return "]";
-		case CBRL:
+		case LBRACE:
 			return "{";
-		case CBRR:
+		case RBRACE:
 			return "}";
 		case COMMA:
 			return ",";

@@ -62,8 +62,8 @@ public class LexerTest {
 		assertEquals(tokenList.get(++index).getType(), TokenType.ID);
 		assertEquals(tokenList.get(index).getAttribute(), "function");
 
-		assertEquals(tokenList.get(++index).getType(), TokenType.BRL);
-		assertEquals(tokenList.get(++index).getType(), TokenType.BRR);
+		assertEquals(tokenList.get(++index).getType(), TokenType.LPAREN);
+		assertEquals(tokenList.get(++index).getType(), TokenType.RPAREN);
 		assertEquals(tokenList.get(++index).getType(), TokenType.SEMIC);
 		assertEquals(tokenList.get(++index).getType(), TokenType.EOF);
 	}

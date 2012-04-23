@@ -24,15 +24,15 @@ public interface IToken {
 		INT,
 		/** Real number */
 		REAL,
-		/**
-		 * For array definitions, this marks the field count
-		 */
+		/** For array definitions, this marks the field count */
 		NUM,
 		/** Terminal symbols */
-		BRL, BRR, SBRL, SBRR, CBRL, CBRR,
-		/** Comma ',' operator */
+		LPAREN, RPAREN,
+		LBRACKET, RBRACKET,
+		LBRACE, RBRACE,
+		/** Comma (,) operator */
 		COMMA,
-		/** Dot operator */
+		/** Dot (.) operator */
 		DOT,
 		/** Semicolon (;) operator */
 		SEMIC,

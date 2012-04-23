@@ -320,27 +320,27 @@ public class Lexer implements ILexer {
 		}
 		if (s.equals("(")) {
 			is.consumeChars(1);
-			return new Token(TokenType.BRL, null, this.line, offset);
+			return new Token(TokenType.LPAREN, null, this.line, offset);
 		}
 		if (s.equals(")")) {
 			is.consumeChars(1);
-			return new Token(TokenType.BRR, null, this.line, offset);
+			return new Token(TokenType.RPAREN, null, this.line, offset);
 		}
 		if (s.equals("[")) {
 			is.consumeChars(1);
-			return new Token(TokenType.SBRL, null, this.line, offset);
+			return new Token(TokenType.LBRACKET, null, this.line, offset);
 		}
 		if (s.equals("]")) {
 			is.consumeChars(1);
-			return new Token(TokenType.SBRR, null, this.line, offset);
+			return new Token(TokenType.RBRACKET, null, this.line, offset);
 		}
 		if (s.equals("{")) {
 			is.consumeChars(1);
-			return new Token(TokenType.CBRL, null, this.line, offset);
+			return new Token(TokenType.LBRACE, null, this.line, offset);
 		}
 		if (s.equals("}")) {
 			is.consumeChars(1);
-			return new Token(TokenType.CBRR, null, this.line, offset);
+			return new Token(TokenType.RBRACE, null, this.line, offset);
 		}
 		if (s.equals(";")) {
 			is.consumeChars(1);

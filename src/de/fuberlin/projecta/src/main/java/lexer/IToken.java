@@ -25,7 +25,7 @@ public interface IToken {
 		/** Real number */
 		REAL,
 		/**
-		 * For array defintions, this marks the field count
+		 * For array definitions, this marks the field count
 		 */
 		NUM,
 		/** Terminal symbols */

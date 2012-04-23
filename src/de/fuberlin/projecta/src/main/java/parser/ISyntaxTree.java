@@ -18,7 +18,7 @@ public interface ISyntaxTree {
 	public int getChildrenCount();
 
 	/**
-	 * @param i
+	 * @param i child index
 	 * @return the i'th child of current node, null if none is existing.
 	 */
 	public ISyntaxTree getChild(int i);
@@ -34,7 +34,7 @@ public interface ISyntaxTree {
 	/**
 	 * Changes the value of the attribute
 	 *
-	 * @param name  the attribute's name
+	 * @param name the attribute's name
 	 * @param value the value to change the attribute to.
 	 * @return True if change was successful, False otherwise.
 	 */

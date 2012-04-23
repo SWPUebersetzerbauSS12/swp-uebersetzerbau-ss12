@@ -63,7 +63,7 @@ public class Lexer implements ILexer {
 			else {
 				state = 8;
 			}
-			while (new String(peek).matches("\\d")) {
+			while (peek.matches("\\d")) {
 				is.consumeChars(1);
 				result += peek;
 				peek = is.getNextChars(1);
@@ -177,7 +177,7 @@ public class Lexer implements ILexer {
 			if (peek.startsWith(delimiter)) {
 				return new Token(TokenType.STRING, result, this.line, offset);
 			}
-			result += new String(peek);
+			result += peek;
 			if (is.isEmpty()) {
 				return new Token(TokenType.STRING, result, this.line, offset);
 			}

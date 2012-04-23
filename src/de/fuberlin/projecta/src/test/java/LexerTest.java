@@ -13,22 +13,6 @@ import static org.junit.Assert.*;
 
 public class LexerTest {
 
-	private ArrayList<Token> tokenize(String data) {
-		Lexer lexer = new Lexer(new StringCharStream(data));
-		return tokenize(lexer);
-	}
-
-	private ArrayList<Token> tokenize(Lexer lexer) {
-		ArrayList<Token> tokenList = new ArrayList<Token>();
-
-		Token t;
-		do {
-			t = lexer.getNextToken();
-			tokenList.add(t);
-		} while (t.getType() != TokenType.EOF);
-		return tokenList;
-	}
-
 	@Test
 	public void testReadSourceFile() throws SyntaxErrorException {
 		final String path = Config.TEST_DATA_FOLDER + "LexerTestFile1.txt";
@@ -50,20 +34,17 @@ public class LexerTest {
 	@Test
 	public void testFunctionDeclaration() {
 		final String code = "def int function();";
-		ArrayList<Token> tokenList = tokenize(code);
 
-		int index = -1;
-		assertEquals(tokenList.size(), 7);
-		assertEquals(tokenList.get(++index).getType(), TokenType.DEF);
-		assertEquals(tokenList.get(++index).getType(), TokenType.INT);
-
-		assertEquals(tokenList.get(++index).getType(), TokenType.ID);
-		assertEquals(tokenList.get(index).getAttribute(), "function");
-
-		assertEquals(tokenList.get(++index).getType(), TokenType.LPAREN);
-		assertEquals(tokenList.get(++index).getType(), TokenType.RPAREN);
-		assertEquals(tokenList.get(++index).getType(), TokenType.OP_SEMIC);
-		assertEquals(tokenList.get(++index).getType(), TokenType.EOF);
+		Token[] expected = new Token[]{
+				new Token(TokenType.DEF, null, 1, 0),
+				new Token(TokenType.INT, null, 1, 4),
+				new Token(TokenType.ID, "function", 1, 8),
+				new Token(TokenType.LPAREN, null, 1, 16),
+				new Token(TokenType.RPAREN, null, 1, 17),
+				new Token(TokenType.OP_SEMIC, null, 1, 18),
+				new Token(TokenType.EOF, null, 1, 19)
+		};
+		assertArrayEquals(expected, tokenize(code).toArray());
 	}
 
 	@Test(expected = SyntaxErrorException.class)
@@ -94,4 +75,19 @@ public class LexerTest {
 		assertArrayEquals(expected, tokenize(code).toArray());
 	}
 
+	private ArrayList<Token> tokenize(String data) {
+		Lexer lexer = new Lexer(new StringCharStream(data));
+		return tokenize(lexer);
+	}
+
+	private ArrayList<Token> tokenize(Lexer lexer) {
+		ArrayList<Token> tokenList = new ArrayList<Token>();
+
+		Token t;
+		do {
+			t = lexer.getNextToken();
+			tokenList.add(t);
+		} while (t.getType() != TokenType.EOF);
+		return tokenList;
+	}
 }

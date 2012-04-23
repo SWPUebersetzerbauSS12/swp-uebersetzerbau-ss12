@@ -38,20 +38,34 @@ public interface IToken {
 		SEMIC
 	}
 
+	/**
+	 * Get the type of this Token
+	 * 
+	 * @return Token type
+	 */
 	TokenType getType();
 
+	/**
+	 * Get the Token attribute value
+	 * 
+	 * E.g. for a Token of type REAL this can be "0.0"
+	 * 
+	 * @return Attribute value
+	 */
 	String getAttribute();
 
 	/**
 	 * Get the start offset of this Token's attribute
-	 *
+	 * 
+	 * @note The position is relative to the beginning of the line
+	 * 
 	 * @return Start offset
 	 */
 	int getOffset();
 
 	/**
-	 * Get the nine number of this Token's attribute
-	 *
+	 * Get the line number of this Token's attribute
+	 * 
 	 * @return End offset
 	 */
 	int getLineNumber();

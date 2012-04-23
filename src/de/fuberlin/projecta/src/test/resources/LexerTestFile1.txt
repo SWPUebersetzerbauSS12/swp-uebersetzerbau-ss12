@@ -1,1 +1,1 @@
-def basic someFunction(basic arg1, basic arg2);
+def int someFunction(int arg1, int arg2);

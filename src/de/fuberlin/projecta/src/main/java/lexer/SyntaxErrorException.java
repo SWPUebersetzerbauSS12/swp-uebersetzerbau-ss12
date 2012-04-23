@@ -1,6 +1,6 @@
 package lexer;
 
-public class SyntaxErrorException extends Exception {
+public class SyntaxErrorException extends RuntimeException {
 
 	private static final long serialVersionUID = 6675624905821545289L;
 

@@ -17,10 +17,10 @@ public class Lexer implements ILexer {
 		is = new InputStream(file);
 	}
 
-	public Token getNextToken() throws SyntaxErrorException {
+	public Token getNextToken() {
 		String peek;
 		do {
-			if(is.isEmpty())
+			if (is.isEmpty())
 				return null; // End of input stream - nothing more to read
 			peek = is.getNextChars(1);
 			if (peek.matches("\\n"))
@@ -144,13 +144,13 @@ public class Lexer implements ILexer {
 		String peek = is.getNextChars(1);
 		String delimiter = "'";
 		switch (peek.charAt(0)) {
-		case '\'':
-			break;
-		case '"':
-			delimiter = "\"";
-			break;
-		default:
-			return null;
+			case '\'':
+				break;
+			case '"':
+				delimiter = "\"";
+				break;
+			default:
+				return null;
 		}
 		is.removeChars(1);
 		String result = "";
@@ -337,7 +337,7 @@ public class Lexer implements ILexer {
 			is.removeChars(1);
 			return new Token(TokenType.SEMIC, null);
 		}
-		if (s.equals(",")){
+		if (s.equals(",")) {
 			is.removeChars(1);
 			return new Token(TokenType.COMMA, null);
 		}

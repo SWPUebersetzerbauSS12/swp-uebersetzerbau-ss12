@@ -27,7 +27,7 @@ public class ParserMain {
 		assert (sourceFile.exists());
 		assert (sourceFile.canRead());
 
-		ILexer lex = new Lexer(path);
+		ILexer lex = new Lexer(new FileCharStream(path));
 		Parser parser = new Parser(lex);
 		try {
 			parser.parse();

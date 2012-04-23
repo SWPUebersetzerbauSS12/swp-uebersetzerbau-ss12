@@ -1,10 +1,11 @@
+import java.io.File;
+import java.io.IOException;
+
 import lexer.ILexer;
 import lexer.Lexer;
 import lexer.SyntaxErrorException;
 import lexer.Token;
-
-import java.io.File;
-import java.io.IOException;
+import lexer.io.FileCharStream;
 
 public class LexerMain {
 
@@ -30,7 +31,7 @@ public class LexerMain {
 		if (!sourceFile.canRead()) {
 			System.out.println("File is not readable");
 		}
-		ILexer lex = new Lexer(path);
+		ILexer lex = new Lexer(new FileCharStream(path));
 		Token t;
 		try {
 			while ((t = lex.getNextToken()) != null) {

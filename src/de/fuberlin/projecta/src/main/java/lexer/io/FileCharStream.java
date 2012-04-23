@@ -1,4 +1,4 @@
-package lexer;
+package lexer.io;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -6,14 +6,14 @@ import java.util.ArrayList;
 
 import lombok.Getter;
 
-public class InputStream {
+public class FileCharStream implements ICharStream {
 
 	ArrayList<Character> text = new ArrayList<Character>();
 
 	@Getter
 	private int offset;
 
-	public InputStream(String file) {
+	public FileCharStream(String file) {
 		try {
 			this.offset = 0;
 			FileReader fr = new FileReader(file);
@@ -26,23 +26,18 @@ public class InputStream {
 		}
 	}
 
+	@Override
 	public String getNextChars(int numberOfChars) {
 		String result = "";
-		int count = Math.min(numberOfChars, text.size());
+		final int count = Math.min(numberOfChars, text.size());
 		for (int i = 0; i < count; i++) {
 			result += text.get(i).toString();
 		}
 		return result;
 	}
 
-	/**
-	 * removes an amount of characters at the beginning
-	 *
-	 * @param numberOfChars
-	 *            how many characters should be removed
-	 * @return how many characters were actually removed
-	 */
-	public int removeChars(int numberOfChars) {
+	@Override
+	public int consumeChars(int numberOfChars) {
 		int result = 0;
 		this.offset += numberOfChars;
 		while (!text.isEmpty() && result < numberOfChars) {
@@ -56,6 +51,7 @@ public class InputStream {
 		return text.isEmpty();
 	}
 
+	@Override
 	public void resetOffset() {
 		this.offset = 0;
 	}

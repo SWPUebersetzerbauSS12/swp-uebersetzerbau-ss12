@@ -12,7 +12,7 @@ public interface IToken {
 		/** Assignment operator */
 		ASSIGN,
 		/** Other reserverd words */
-		IF, THEN, ELSE, WHILE, DO, BREAK, // no continue?
+		IF, THEN, ELSE, WHILE, DO, BREAK,
 		RETURN, PRINT,
 		/** Function definition */
 		DEF,

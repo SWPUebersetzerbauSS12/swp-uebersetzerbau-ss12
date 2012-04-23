@@ -63,4 +63,10 @@ public class LexerTest {
 		assertEquals(tokenList.get(++index).getType(), TokenType.EOF);
 	}
 
+	@Test(expected=SyntaxErrorException.class)
+	public void testInvalidSentence() {
+		String code = "a:";
+		tokenize(code);
+	}
+
 }

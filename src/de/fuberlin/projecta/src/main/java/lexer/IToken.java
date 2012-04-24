@@ -30,8 +30,6 @@ public interface IToken {
 		INT,
 		/** Real number */
 		REAL,
-		/** For array definitions, this marks the field count */
-		INDEX,
 		/** "(" */
 		LPAREN,
 		/** ")" */

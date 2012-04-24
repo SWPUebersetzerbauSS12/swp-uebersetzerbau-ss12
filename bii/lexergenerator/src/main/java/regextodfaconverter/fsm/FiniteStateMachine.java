@@ -330,24 +330,36 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 	 */
 	public void union(
 			FiniteStateMachine<TransitionConditionType, StatePayloadType> fsm) {
+
+		State<TransitionConditionType, StatePayloadType> state = new State<TransitionConditionType, StatePayloadType>();
+
+		getStates().put(state.getUUID(), state);
 		try {
-			State<TransitionConditionType, StatePayloadType> state = new State<TransitionConditionType, StatePayloadType>();
-
-			getStates().put(state.getUUID(), state);
-
 			addTransition(state, getInitialState(), null);
-			getInitialState().SetTypeToDefault();
-
-			setInitialState(state);
-			state.SetTypeToInitial();
-
-			getStates().putAll(fsm.getStates());
-
-			addTransition(state, fsm.getInitialState(), null);
-			fsm.getInitialState().SetTypeToDefault();
 		} catch (Exception e) {
+			// Dieser Fall kann niemals eintreten!
 			e.printStackTrace();
 		}
+		getInitialState().SetTypeToDefault();
+
+		try {
+			setInitialState(state);
+		} catch (Exception e) {
+			// Dieser Fall kann niemals eintreten!
+			e.printStackTrace();
+		}
+		state.SetTypeToInitial();
+
+		getStates().putAll(fsm.getStates());
+
+		try {
+			addTransition(state, fsm.getInitialState(), null);
+		} catch (Exception e) {
+			// Dieser Fall kann niemals eintreten!
+			e.printStackTrace();
+		}
+		fsm.getInitialState().SetTypeToDefault();
+
 	}
 
 	/**
@@ -360,21 +372,26 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 	 */
 	public void concat(
 			FiniteStateMachine<TransitionConditionType, StatePayloadType> fsm) {
-		try {
-			for (State<TransitionConditionType, StatePayloadType> state : getStates()
-					.values()) {
-				if (state.isFiniteState()) {
-					// state.setPayload(null);
-					state.SetTypeToDefault();
+
+		HashMap<UUID, State<TransitionConditionType, StatePayloadType>> states = new HashMap<UUID, State<TransitionConditionType, StatePayloadType>>();
+		states.putAll(getStates());
+
+		for (State<TransitionConditionType, StatePayloadType> state : states
+				.values()) {
+			if (state.isFiniteState()) {
+				// state.setPayload(null);
+				state.SetTypeToDefault();
+				try {
 					addTransition(state, fsm.getInitialState(), null);
+				} catch (Exception e) {
+					// Dieser Fall kann niemals eintreten!
+					e.printStackTrace();
 				}
 			}
-
-			getStates().putAll(fsm.getStates());
-			fsm.getInitialState().SetTypeToDefault();
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
+
+		getStates().putAll(fsm.getStates());
+		fsm.getInitialState().SetTypeToDefault();
 	}
 
 	/**

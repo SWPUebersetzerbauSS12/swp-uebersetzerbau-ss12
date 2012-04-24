@@ -129,14 +129,22 @@ public class NfaToDfaConverter<TransitionConditionType extends Comparable<Transi
 				{
 					if (depth > 0 || condition == null)
 					{
-						visited.put(transition.getState().getUUID(),transition.getState());
+						if (!visited.containsKey(transition.getState().getUUID()))
+						{
+							visited.put(transition.getState().getUUID(),transition.getState());
+							tasks.add(transition.getState());
+						}											
 					}
 				}
 				else
 				{
 					if (transition.getCondition().equals(condition))
 					{
-						visited.put(transition.getState().getUUID(),transition.getState());
+						if (!visited.containsKey(transition.getState().getUUID()))
+						{
+							visited.put(transition.getState().getUUID(),transition.getState());
+							tasks.add(transition.getState());
+						}	
 					}
 				}
 			}

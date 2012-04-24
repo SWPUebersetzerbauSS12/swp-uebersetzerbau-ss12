@@ -49,88 +49,57 @@ public class Lexer implements ILexer {
 				+ " near " + peek);
 	}
 
-	/**
-	 * FIXME: Totally broken at the moment, does not disambiguate between REAL/INT
-	 * TODO: Get rid off the complex "state" logic?
-	 */
 	private Token numConstant() throws SyntaxErrorException {
-		int state = 0;
-		String result = "";
 		String peek = is.getNextChars(1);
-		if (peek.matches("\\d")) {
-			if (state == 0)
-				state = 1;
-			else {
-				state = 8;
-			}
+		String result = "";
+		if(!peek.matches("[\\d\\.]")){
+			return null;
+		}
+		while (peek.matches("\\d")) {
+			result += peek;
+			is.consumeChars(1);
+			peek = is.getNextChars(1);
+		}
+		// We now have read a series of digits
+		// if we read a dot or an e/E now we have a real value
+		// every other character will indicate that we have an int value
+		if (!peek.matches("[eE\\.]")) {
+			return new Token(TokenType.INT, "result", line, is.getOffset());
+		}
+		if (peek.matches("\\.")) {
+			result += peek;
+			is.consumeChars(1);
+			peek = is.getNextChars(1);
 			while (peek.matches("\\d")) {
-				is.consumeChars(1);
 				result += peek;
+				is.consumeChars(1);
 				peek = is.getNextChars(1);
 			}
 		}
-
-		if (peek.equals(".")) {
-			if (state == 0)
-				state = 2;
-			else if (state == 1)
-				state = 4;
-			else
-				state = 8;
-			is.consumeChars(1);
+		if (peek.matches("[eE]")) {
 			result += peek;
+			is.consumeChars(1);
 			peek = is.getNextChars(1);
+			if (peek.matches("[+-]")) {
+				// optional sign
+				result += peek;
+				is.consumeChars(1);
+				peek = is.getNextChars(1);
+			}
 			if (peek.matches("\\d")) {
-				if (state == 2)
-					state = 3;
-				else if (state == 4)
-					state = 4;
-				else
-					state = 8;
-			}
-			while (peek.matches("\\d")) {
-				is.consumeChars(1);
-				result += peek;
-				peek = is.getNextChars(1);
-			}
-		}
-		if (peek.equals("e") || peek.equals("E")) {
-			if (state == 3 || state == 4)
-				state = 5;
-			else
-				state = 8;
-			is.consumeChars(1);
-			result += peek;
-			peek = is.getNextChars(1);
-			if (peek.equals("+") || peek.equals("-")) {
-				if (state == 5)
-					state = 6;
-				else
-					state = 8;
-				result += peek;
-				is.consumeChars(1);
-				peek = is.getNextChars(1);
-			}
-			if (!(peek.matches("\\d"))) {
-				// TODO: throw new
-				// SyntaxErrorException("Malformed floating point number");
-				state = 8;
+				while (peek.matches("\\d")) {
+					result += peek;
+					is.consumeChars(1);
+					peek = is.getNextChars(1);
+				}
 			} else {
-				if (state == 6)
-					state = 7;
-				else
-					state = 8;
+				throw new SyntaxErrorException(
+						"Maleformed real value at line: " + this.line
+								+ " near: " + is.getOffset());
 			}
-			while (peek.matches("\\d")) {
-				is.consumeChars(1);
-				result += peek;
-				peek = is.getNextChars(1);
-			}
-		}
-		if (state == 1 || state == 3 || state == 4 || state == 7)
 			return new Token(TokenType.REAL, result, this.line, is.getOffset());
-		else
-			throw new SyntaxErrorException("Malformed floating point number");
+		}
+		return new Token(TokenType.REAL, result, this.line, is.getOffset());
 	}
 
 	private Token identifier() throws SyntaxErrorException {
@@ -155,13 +124,13 @@ public class Lexer implements ILexer {
 		final int offset = is.getOffset();
 
 		switch (peek.charAt(0)) {
-			case '\'':
-				break;
-			case '"':
-				delimiter = "\"";
-				break;
-			default:
-				return null;
+		case '\'':
+			break;
+		case '"':
+			delimiter = "\"";
+			break;
+		default:
+			return null;
 		}
 		is.consumeChars(1);
 		String result = "";

@@ -32,18 +32,36 @@ public class LexerTest {
 	}
 
 	@Test
+	public void testNumericalValues() throws SyntaxErrorException {
+		// 23
+		// 3.14
+		// 2.
+		// 22e+4
+		// 31.4e-1
+		String source = "23 \n3.14+ \n2. \n22e+4 \n31.4e-1";
+
+		Lexer lexer = new Lexer(new StringCharStream(source));
+		ArrayList<Token> tokenList = tokenize(lexer);
+
+		assertEquals(tokenList.get(0).getType(), TokenType.INT);
+		assertEquals(tokenList.get(1).getType(), TokenType.REAL);
+		assertEquals(tokenList.get(2).getType(), TokenType.OP_ADD);
+		assertEquals(tokenList.get(3).getType(), TokenType.REAL);
+		assertEquals(tokenList.get(4).getType(), TokenType.REAL);
+		assertEquals(tokenList.get(5).getType(), TokenType.REAL);
+	}
+
+	@Test
 	public void testFunctionDeclaration() {
 		final String code = "def int function();";
 
-		Token[] expected = new Token[]{
-				new Token(TokenType.DEF, null, 1, 0),
+		Token[] expected = new Token[] { new Token(TokenType.DEF, null, 1, 0),
 				new Token(TokenType.INT, null, 1, 4),
 				new Token(TokenType.ID, "function", 1, 8),
 				new Token(TokenType.LPAREN, null, 1, 16),
 				new Token(TokenType.RPAREN, null, 1, 17),
 				new Token(TokenType.OP_SEMIC, null, 1, 18),
-				new Token(TokenType.EOF, null, 1, 19)
-		};
+				new Token(TokenType.EOF, null, 1, 19) };
 		assertArrayEquals(expected, tokenize(code).toArray());
 	}
 
@@ -57,8 +75,7 @@ public class LexerTest {
 	public void testCharacterPositions() {
 		final String code = "def int foo();\ndef int bar();";
 
-		Token[] expected = new Token[]{
-				new Token(TokenType.DEF, null, 1, 0),
+		Token[] expected = new Token[] { new Token(TokenType.DEF, null, 1, 0),
 				new Token(TokenType.INT, null, 1, 4),
 				new Token(TokenType.ID, "foo", 1, 8),
 				new Token(TokenType.LPAREN, null, 1, 11),
@@ -70,8 +87,7 @@ public class LexerTest {
 				new Token(TokenType.LPAREN, null, 2, 11),
 				new Token(TokenType.RPAREN, null, 2, 12),
 				new Token(TokenType.OP_SEMIC, null, 2, 13),
-				new Token(TokenType.EOF, null, 2, 14)
-		};
+				new Token(TokenType.EOF, null, 2, 14) };
 		assertArrayEquals(expected, tokenize(code).toArray());
 	}
 

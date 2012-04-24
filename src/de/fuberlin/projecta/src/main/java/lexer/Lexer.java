@@ -229,7 +229,7 @@ public class Lexer implements ILexer {
 		}
 		if (s.equals("-")) {
 			is.consumeChars(1);
-			return new Token(TokenType.OP_SUB, null, this.line, offset);
+			return new Token(TokenType.OP_MINUS, null, this.line, offset);
 		}
 		if (s.equals("*")) {
 			is.consumeChars(1);

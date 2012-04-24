@@ -7,8 +7,14 @@ public interface IToken {
 		OP_LT, OP_LE, OP_EQ, OP_NE, OP_GT, OP_GE,
 		/** ||(OR), &&(AND), !(NOT) */
 		OP_OR, OP_AND, OP_NOT,
-		/** Arithmetic operators +(ADD) -(SUB) *(MUL) /(DIV) -(NEG) */
-		OP_ADD, OP_SUB, OP_MUL, OP_DIV, OP_NEG,
+		/** Plus (+) operator */
+		OP_ADD,
+		/** Minus (-) operator. Both for unary and binary operations */
+		OP_MINUS,
+		/** Multiplication (*) operator */
+		OP_MUL,
+		/** Division (/) operator */
+		OP_DIV,
 		/** Assignment (=) operator */
 		OP_ASSIGN,
 		/** Comma (,) operator */

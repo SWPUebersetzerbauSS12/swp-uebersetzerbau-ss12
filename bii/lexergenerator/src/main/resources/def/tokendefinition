@@ -1,7 +1,8 @@
-"("             	{return ("bracket", "(")}
-")"             	{return ("bracket", ")")}
-"{"             	{return ("bracket", "{")}
-"}"             	{return ("bracket", "}")}
+"("             	{return ("BRACKET", "(")}
+")"             	{return ("BRACKET", ")")}
+"{"             	{return ("BRACKET", "{")}
+"}"             	{return ("BRACKET", "}")}
+"="                     {return ("ASSIGNEMENT", "=")}
 "<"             	{return ("OP", "L")}
 ">"             	{return ("OP", "G")}
 "<="            	{return ("OP", "LE")}
@@ -20,9 +21,5 @@
 "return" 		{return ("KEYWORD", "RETURN")}
 "break"  		{return ("KEYWORD", "BREAK")}
 "while"                 {return ("KEYWORD", "WHILE")}
-0 | [1-9]+[0-9]         {return ("NUM", "parseInt")}
-[a-z]+[a-zA-Z0-9]*      {return ("id", "parseString")}
-
-
-
-
+0 | [1-9]+[0-9]         {return ("NUM", parseInt())}
+[a-z]+[a-zA-Z0-9]*      {return ("ID", parseString())

@@ -38,7 +38,15 @@ import java.io.IOException;
 
 import utils.Notification;
 
-
+/**
+ * Eingabeleser arbeitet mit einem Pufferpaar und Wächtern 
+ * wie im Drachenbuch beschrieben.
+ * 
+ * TODO test it. Reader ist noch nicht vollständig getestet.
+ * 
+ * @author Johannes Dahlke
+ *
+ */
 public class BufferedLexemeReader implements LexemeReader {
 	
 	private static final int NUM_BUFFER_SIZE = 1024;
@@ -92,7 +100,7 @@ public class BufferedLexemeReader implements LexemeReader {
 		}	else {
 			if ( readedChars < NUM_BUFFER_SIZE -1)
         // the end of file must be reached after readedChars chars
-        buffer[readedChars+1] = EOF_CHAR;
+        buffer[readedChars] = EOF_CHAR;
 		}
 		// anyway mark the end of buffer with EOF
 		buffer[NUM_BUFFER_SIZE-1] = EOF_CHAR;
@@ -108,6 +116,14 @@ public class BufferedLexemeReader implements LexemeReader {
 	  throw new Exception( "Not yet implemented");
 	}   
 	
+	
+	/**
+	 * Liefert das nächste Zeichen der Eingabe.
+	 * 
+	 * @return das nächste Zeichen.
+	 * @throw LexemeReaderException wenn das Ende der Datei erreicht ist oder 
+	 * ein IO-Fehler beim Lesen der Datei aufgetreten ist.
+	 */
 	public char getNextChar() throws LexemeReaderException {
 		char result;
 		char readedChar = readCharFromBufferAtPosition( forwardPosition);
@@ -164,6 +180,9 @@ public class BufferedLexemeReader implements LexemeReader {
 		 }
 	}
 	
+	/**
+	 * Setzt den Zeiger der aktuellen Leseposition um die angegebene Anzahl an Schritten zurück. 
+	 */
 	public void stepBackward( int steps) throws LexemeReaderException {
 		// todo: check if this func is error free
 		forwardPosition = Math.max( lexemeBeginMarker-1, forwardPosition -steps);      

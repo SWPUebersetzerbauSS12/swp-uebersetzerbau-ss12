@@ -1,4 +1,5 @@
 0|([1-9]+[0-9]*)        num
+
 %%
 
 "("                     {return("BRACKET", "(")}
@@ -26,4 +27,5 @@
 "while"                 {return("KEYWORD", "WHILE")}
 {num}                   {return("NUM", parseInt())}
 {num}?"."{num}          {return("RAT", parseDouble())}
-[a-z]+[a-zA-Z0-9]*      {return("ID", parseString())
+[a-z]+[a-zA-Z0-9]*      {return("ID", parseString()))
+

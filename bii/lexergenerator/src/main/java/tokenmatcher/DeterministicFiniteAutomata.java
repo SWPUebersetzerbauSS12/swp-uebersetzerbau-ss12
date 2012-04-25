@@ -32,6 +32,8 @@
 
 package tokenmatcher;
 
+import java.util.Collection;
+
 
 
 public interface DeterministicFiniteAutomata<E,Payload> {
@@ -71,6 +73,16 @@ public interface DeterministicFiniteAutomata<E,Payload> {
 	 * Setzt den DFA wieder in den Startzustand zurück.
 	 */
 	void resetToInitialState();
+	
+	
+	/**
+	 * Liefert eine Liste mit allen Elementen, die den vom Zustand state 
+	 * ausgehenden Übergängen zugeordnet sind. 
+	 * 
+	 * @param state der Zustand, von dem die Übergange ausgehen.
+	 * @return Eine Sammlung von Elementen.
+	 */
+	Collection<E> getElementsOfOutgoingTransitionFromState( State state); 
 	
 	
 }

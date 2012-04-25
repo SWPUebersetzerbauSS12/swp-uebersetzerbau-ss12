@@ -32,6 +32,8 @@
 
 package regextodfaconverter;
 
+import java.util.Collection;
+
 import regextodfaconverter.fsm.FiniteStateMachine;
 import tokenmatcher.DeterministicFiniteAutomata;
 import tokenmatcher.State;
@@ -101,6 +103,12 @@ public class MinimalDfa<ConditionType extends Comparable<ConditionType>, Payload
 
 	public void resetToInitialState() {
 		finiteStateMachine.resetToInitialState();
+	}
+	
+ 	public Collection<ConditionType> getElementsOfOutgoingTransitionFromState(
+			State state) {
+ 		// TODO: implement method
+		return null;
 	}
 
 }

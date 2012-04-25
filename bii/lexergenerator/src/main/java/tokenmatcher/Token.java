@@ -32,17 +32,50 @@
 
 package tokenmatcher;
 
+import parser.IToken;
 
-public class Token {
+
+public class Token implements IToken {
 	
-	public TokenType type;
-	public String lexem;
+	private TokenType type;
+	private String attribute;
+	private int line;
+	private int offset;
+	
 
 	
-	public Token( TokenType type, String lexem) {
+	public Token( TokenType type, String attribute, int  line, int offset) {
 		super();
 		this.type = type;
-		this.lexem = lexem;
+		this.attribute = attribute;
+		this.line = line;
+		this.offset = offset;
+	}
+
+	public Token( TokenType type, int  line, int offset) {
+		super();
+		this.type = type;
+		this.line = line;
+		this.offset = offset;
+	}
+
+	public TokenType getType() {
+		return type;
+	}
+
+
+	public String getAttribute() {
+		return attribute;
+	}
+
+
+	public int getOffset() {
+		return offset;
+	}
+
+
+	public int getLineNumber() {
+    return line;
 	}
 	
 }

@@ -107,7 +107,8 @@ public class Tokenizer implements LexerToParserInterface {
 
 				// Token erstellen
 				TokenType tokenType = payload.getTokenType();
-				Token recognisedToken = new Token( tokenType, currentLexem);
+				// TODO: convert lexem to corresponding value
+				Token recognisedToken = new Token( tokenType, currentLexem, currentLine, currentPositionInLine);
 
 				// gelesenenes Lexem akzeptieren
 				lexemeReader.accept();

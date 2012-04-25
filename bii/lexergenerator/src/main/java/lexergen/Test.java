@@ -66,7 +66,7 @@ public class Test {
 			State<Character, TokenType> state2;
 
 			state1 = fsm.getCurrentState();
-			state2 = new State<Character, TokenType>( TokenType.NUMBER, true);
+			state2 = new State<Character, TokenType>( TokenType.INT, true);
 
 			fsm.addTransition( state1, state2, '1');
 			fsm.addTransition( state1, state2, '2');
@@ -112,7 +112,7 @@ public class Test {
 
 			state1 = fsm.getCurrentState();
 			state2 = new State<Character, StatePayload>( 
-					new regextodfaconverter.fsm.StatePayload( TokenType.WORD, 0), true);
+					new regextodfaconverter.fsm.StatePayload( TokenType.STRING, 0), true);
 			
 
 			ArrayList<Character> validChars = new ArrayList<Character>(); 
@@ -153,11 +153,11 @@ public class Test {
 			state1 = fsm.getCurrentState();
 			state2 = new State<Character, StatePayload>();
 			state3 = new State<Character, StatePayload>( 
-					new regextodfaconverter.fsm.StatePayload( TokenType.RELOP, 0), true);
+					new regextodfaconverter.fsm.StatePayload( TokenType.OP_LE, 0), true);
 			state4 = new State<Character, StatePayload>( 
-					new regextodfaconverter.fsm.StatePayload( TokenType.RELOP, 0), true);
+					new regextodfaconverter.fsm.StatePayload( TokenType.OP_NE, 0), true);
 			state5 = new State<Character, StatePayload>( 
-					new regextodfaconverter.fsm.StatePayload( TokenType.RELOP, 1), true);
+					new regextodfaconverter.fsm.StatePayload( TokenType.OP_LT, 1), true);
 			
     	fsm.addTransition( state1, state2, '<');
     	fsm.addTransition( state2, state3, '=');
@@ -188,7 +188,8 @@ public class Test {
 		Token currentToken;
 		while ( true) {
 			currentToken = tokenizer.getNextToken();
-			System.out.println( currentToken.lexem);
+			System.out.print( currentToken.getAttribute()); 
+			System.out.println( "  " + currentToken.getAttribute());
 		}
 	}
 

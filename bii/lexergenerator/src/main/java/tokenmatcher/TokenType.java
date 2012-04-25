@@ -21,8 +21,7 @@
  * 
  * Projectgroup: bi, bii
  * 
- * Authors: Daniel Rotar,
- * 					Johannes Dahlke
+ * Authors: Kevin Funk (Parsergruppe)
  * 
  * Module:  Softwareprojekt Übersetzerbau 2012 
  * 
@@ -33,20 +32,54 @@
 
 package tokenmatcher;
 
-
 /**
  * Stellt Tokentypen dar (sehr unvollständig, nur zu Testzwecken!).
- * @author Daniel Rotar
- * 				 Johannes Dahlke
- *
+ * 
+ * @author Vorgegeben durch Parsergruppe
+ * 
+ * 
  */
-public enum TokenType 
-
-{
+public enum TokenType {
+	/** relational operators <(LT), <=(LE), ==(EQ), !=(NE), >(GT), >=(GE) */
+	OP_LT, OP_LE, OP_EQ, OP_NE, OP_GT, OP_GE,
+	/** ||(OR), &&(AND), !(NOT) */
+	OP_OR, OP_AND, OP_NOT,
+	/** Arithmetic operators +(ADD) -(SUB) *(MUL) /(DIV) -(NEG) */
+	OP_ADD, OP_SUB, OP_MUL, OP_DIV, OP_NEG,
+	/** Assignment (=) operator */
+	OP_ASSIGN,
+	/** Comma (,) operator */
+	OP_COMMA,
+	/** Dot (.) operator */
+	OP_DOT,
+	/** Semicolon (;) operator */
+	OP_SEMIC,
+	/** Other reserverd key words */
+	IF, THEN, ELSE, WHILE, DO, BREAK, RETURN, PRINT,
+	/** Function definition */
+	DEF,
+	/** Identifier */
 	ID,
-	OP,
-	FUN,
-	NUMBER,
-	WORD,
-	RELOP
+	/** String constant */
+	STRING,
+	/** Integer number */
+	INT,
+	/** Real number */
+	REAL,
+	/** For array definitions, this marks the field count */
+	INDEX,
+	/** "(" */
+	LPAREN,
+	/** ")" */
+	RPAREN,
+	/** "[" */
+	LBRACKET,
+	/** "]" */
+	RBRACKET,
+	/** "{" */
+	LBRACE,
+	/** "}" */
+	RBRACE,
+	/** End-of-file marker */
+	EOF
 }

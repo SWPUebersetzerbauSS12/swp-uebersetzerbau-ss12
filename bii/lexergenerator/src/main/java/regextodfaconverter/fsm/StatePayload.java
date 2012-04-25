@@ -34,6 +34,7 @@ package regextodfaconverter.fsm;
 
 import tokenmatcher.TokenType;
 
+
 /**
  * Implementiert  Interface {@link tokenmatcher.StatePayload} 
  * @author Johannes Dahlke
@@ -42,16 +43,15 @@ import tokenmatcher.TokenType;
 public class StatePayload implements tokenmatcher.StatePayload {
 
 	private TokenType tokenType;
-	
+
 	private int backsteps = 0;
-	
-  
-	public StatePayload( TokenType tokenType, int backsteps) {
+
+	public StatePayload(TokenType tokenType, int backsteps) {
 		super();
 		this.tokenType = tokenType;
 		this.backsteps = backsteps;
 	}
-	
+
 	public TokenType getTokenType() {
 		return tokenType;
 	}
@@ -59,6 +59,5 @@ public class StatePayload implements tokenmatcher.StatePayload {
 	public int getBacksteps() {
 		return backsteps;
 	}
-	
 
 }

@@ -3,4 +3,8 @@
 1. Bitte nutzt für Doku und Konzeptionelles das Wiki
 2. Für Bugs, Features unter Issues Tickets anlegen
 
-Weitere Infos folgen.
+= Projektaufbau =
+- Jedes Team bekommt einen eigenen src Unterordner sowie auch doc für Doku
+- eigenen Fork anlegen, sobald erste Features verfügbar sind wieder in den master zurückführen
+- Interfaces und Implementierungen, die gruppenübergreifend sind, in commons oder andere Packages einbringen
+- lib für genutzte jars, wie Logger, usw. 

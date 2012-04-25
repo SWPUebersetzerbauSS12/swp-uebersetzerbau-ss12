@@ -107,7 +107,7 @@ public class BufferedLexemeReader implements LexemeReader {
 	private int getCurrentPosition() throws Exception {
 	  throw new Exception( "Not yet implemented");
 	}   
-
+	
 	public char getNextChar() throws LexemeReaderException {
 		char result;
 		char readedChar = readCharFromBufferAtPosition( forwardPosition);

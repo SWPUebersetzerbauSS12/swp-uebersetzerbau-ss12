@@ -33,7 +33,6 @@
 package tokenmatcher;
 
 /**
- * Stellt Tokentypen dar (sehr unvollständig, nur zu Testzwecken!).
  * 
  * @author Vorgegeben durch Parsergruppe
  * 

@@ -32,6 +32,8 @@
 
 package tokenmatcher;
 
+import lexergen.Settings;
+import tokenmatcher.errorhandler.ErrorCorrector;
 import bufferedreader.EndOfFileException;
 import bufferedreader.LexemeReader;
 import bufferedreader.LexemeReaderException;
@@ -43,11 +45,12 @@ public class Tokenizer implements LexerToParserInterface {
 	private DeterministicFiniteAutomata<Character, StatePayload> dfa;
 
 	private LexemeReader lexemeReader;
-
+	private ErrorCorrector errorCorrector;
+	
 	private int currentLine = 1;
 	private int currentPositionInLine = 0;
 	private int lastLine = 1;
-	private int lastPositionInLine = 0;
+	private int lastPositionInLine = 0; 
 	
 
 
@@ -57,6 +60,7 @@ public class Tokenizer implements LexerToParserInterface {
 		super();
 		this.dfa = dfa;
 		this.lexemeReader = lexemeReader;
+		errorCorrector = new ErrorCorrector( Settings.ERROR_CORRECTION_MODE);
 	}
 	
 	
@@ -115,19 +119,16 @@ public class Tokenizer implements LexerToParserInterface {
 				// update position counter
 				lastLine = currentLine;
 				lastPositionInLine = currentPositionInLine;
-
+				
+        // Fehlerbehandler rücksetzen
+				errorCorrector.reset();
+				
 				return recognisedToken;
 			} else if ( currentChar == SpecialChars.CHAR_EOF) {
 				throw new EndOfFileException();
 		  } else {
-        
-				// TODO: Fehlerbehandlung implementieren
-				throw new LexemIdentificationException( String.format(
-						"Cannot assign lexem %s in line %d at position %d to a token.", currentLexem +currentChar,
-						currentLine, currentPositionInLine));
-			}
-
-			
+		  	errorCorrector.handleMismatch( currentChar, lexemeReader, dfa);	
+		  }
 		}
 
 	}

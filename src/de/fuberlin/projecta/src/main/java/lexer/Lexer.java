@@ -17,20 +17,14 @@ public class Lexer implements ILexer {
 	}
 
 	public Token getNextToken() {
-		String peek;
-		do {
-			if (is.isEmpty()) {
-				// End of input stream - nothing more to read
-				return new Token(TokenType.EOF, null, this.line, is.getOffset());
-			}
-			peek = is.getNextChars(1);
-			if (peek.matches("\\n")) {
-				this.line += 1;
-				is.resetOffset();
-			}
-			if (peek.matches("\\s"))
-				is.consumeChars(1);
-		} while (peek.matches("\\s"));
+		skipWhiteSpaceAndCommentary();
+		if (is.isEmpty()) {
+			// End of input stream - nothing more to read
+			return new Token(TokenType.EOF, null, this.line, is.getOffset());
+		}
+		
+		String peek = is.getNextChars(1);
+
 		Token t;
 		if ((t = reservedAndTerminals()) != null) {
 			return t;
@@ -47,6 +41,46 @@ public class Lexer implements ILexer {
 		// if no rule could be applied there is something wrong!
 		throw new SyntaxErrorException("Undefined something at line " + line
 				+ " near " + peek);
+	}
+
+	private void skipWhiteSpaceAndCommentary() {
+		String peek;
+		if(is.isEmpty())
+			return;
+		do {
+			do {
+				peek = is.getNextChars(1);
+				if (peek.matches("\\n")) {
+					this.line += 1;
+					is.resetOffset();
+				}
+				if (peek.matches("\\s"))
+					is.consumeChars(1);
+			} while (peek.matches("\\s"));
+			peek = is.getNextChars(2);
+			if (peek.equals("//")) {
+				do {
+					is.consumeChars(1);
+					peek = is.getNextChars(2);
+				} while (!peek.endsWith("\n"));
+				is.consumeChars(1);
+				this.line += 1;
+				is.resetOffset();
+			} else if (peek.equals("/*")) {
+				do {
+					is.consumeChars(1);
+					peek = is.getNextChars(2);
+					if (peek.endsWith("\n")) {
+						this.line += 1;
+						is.resetOffset();
+					}
+				} while (!peek.equals("*/"));
+				is.consumeChars(2);
+			}
+			peek = is.getNextChars(2);
+		} while (peek.matches("\\s.")
+				|| peek.equals("//") || peek.equals("/*"));
+
 	}
 
 	private Token numConstant() throws SyntaxErrorException {

@@ -50,6 +50,28 @@ public class LexerTest {
 		assertEquals(tokenList.get(4).getType(), TokenType.REAL);
 		assertEquals(tokenList.get(5).getType(), TokenType.REAL);
 	}
+	
+	@Test
+	public void testCommentary(){
+		final String code = "def int function();\n/*this should be \nignored*/ def real func();";
+		
+		Token[] expected = new Token[]{
+				new Token(TokenType.DEF, null, 1,0),
+				new Token(TokenType.INT, null, 1, 4),
+				new Token(TokenType.ID, "function", 1, 8),
+				new Token(TokenType.LPAREN, null, 1, 16),
+				new Token(TokenType.RPAREN, null, 1, 17),
+				new Token(TokenType.OP_SEMIC, null, 1, 18),
+				new Token(TokenType.DEF, null, 3,11),
+				new Token(TokenType.REAL, null, 3, 15),
+				new Token(TokenType.ID, "func", 3, 20),
+				new Token(TokenType.LPAREN, null, 3, 24),
+				new Token(TokenType.RPAREN, null, 3, 25),
+				new Token(TokenType.OP_SEMIC, null, 3, 26),
+				new Token(TokenType.EOF, null, 3, 27)
+		};
+		assertArrayEquals(expected, tokenize(code).toArray());
+	}
 
 	@Test
 	public void testFunctionDeclaration() {

@@ -32,7 +32,7 @@
 
 package tokenmatcher;
 
-import lexergen.Settings;
+import lexergen.Settings2;
 import tokenmatcher.errorhandler.ErrorCorrector;
 import bufferedreader.EndOfFileException;
 import bufferedreader.LexemeReader;
@@ -60,7 +60,7 @@ public class Tokenizer implements LexerToParserInterface {
 		super();
 		this.dfa = dfa;
 		this.lexemeReader = lexemeReader;
-		errorCorrector = new ErrorCorrector( Settings.ERROR_CORRECTION_MODE);
+		errorCorrector = new ErrorCorrector( Settings2.ERROR_CORRECTION_MODE);
 	}
 	
 	

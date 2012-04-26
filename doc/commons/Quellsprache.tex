@@ -47,7 +47,7 @@ loc &\rightarrow loc \: \left[ assign \right] \:|\: \textbf{id} \:|\: loc.\textb
 \end{align*}
 \section{Ausdrücke}
 \begin{align*}
-  assign &\rightarrow loc = assign \:|\: bool \\
+  assign &\rightarrow assign = assign \:|\: bool \\
 bool &\rightarrow bool \: || \: join \:|\: join \nonumber \\
 join &\rightarrow join \: \&\& \: equality \:|\: equality \nonumber \\
 equality &\rightarrow equality \: == \: rel \:|\: equality \: != \: rel \:|\: rel \nonumber \\
@@ -55,9 +55,8 @@ rel &\rightarrow expr < expr \:|\: expr <= expr \:|\: expr >= expr \:|\: expr > 
 expr &\rightarrow expr + term \:|\: expr - term \:|\: term \nonumber \\
 term &\rightarrow term * unary \:|\: term / unary \:|\: unary \nonumber \\
 unary &\rightarrow \:! \: unary\:|\: - \: unary \:|\: factor \nonumber \\
-factor &\rightarrow ( \: assign \: ) \:|\: loc \:|\: \textbf{num} \:|\: \textbf{real} \:|\:
-\textbf{true} \:|\: \textbf{false} \:|\: \textbf{string} \:|\: funccall\\
-funccall &\rightarrow \textbf{id} (\:optargs\:)\\
+factor &\rightarrow ( \: assign \: ) \:|\: loc \:|\: loc \:( \: optargs \:)  \:|\: \textbf{num} \:|\: \textbf{real} \:|\:
+\textbf{true} \:|\: \textbf{false} \:|\: \textbf{string}\\
 optargs &\rightarrow args \: |\: \varepsilon\\
 args &\rightarrow assign,\: args \:|\: assign
 \end{align*}

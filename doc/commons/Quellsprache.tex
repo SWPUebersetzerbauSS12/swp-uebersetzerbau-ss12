@@ -1,0 +1,64 @@
+\documentclass[a4paper]{article}
+\usepackage{setspace}
+\doublespacing
+\usepackage[]{geometry}
+\usepackage[german]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{textcomp}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[pdftex]{color,graphicx}
+%\author{Ansgar Schneider \& Tim Rakowski}
+\title{Softwareprojekt Übersetzerbau: \\Quellsprache}
+\date{Sommersemester 2012}
+\begin{document}
+\maketitle
+\section{Programmstruktur}
+\begin{align*}
+program &\rightarrow funcs \nonumber \\
+  funcs &\rightarrow func\: funcs \:|\: \varepsilon\\
+  func &\rightarrow \textbf{def} \ type \ \textbf{id}\ (\: optparams\:)\ block \\
+  & \:|\: \textbf{def}\ type \ \textbf{id}\ (\: optparams\:) ;\ \ \left[  \text{Optional:
+  Funktionsprototypen} \right]\\
+  optparams &\rightarrow params \: | \: \varepsilon\\
+  params &\rightarrow type\: \textbf{id}, params \: | \: type\: \textbf{id}\\
+block &\rightarrow \{ decls \: stmts \} \nonumber \\
+decls &\rightarrow decls \: decl \:|\: \varepsilon \nonumber \\
+decl &\rightarrow type \: \textbf{id} \: ; \nonumber \\
+type &\rightarrow type \: \left[ \textbf{num} \right] \:|\: \textbf{basic} \:|\: \textbf{record} \left\{ \:
+decls \right\}\\
+stmts &\rightarrow stmts \: stmt \:|\: \varepsilon \nonumber
+\end{align*}
+
+\section{Anweisungen}
+\begin{align*}
+stmt &\rightarrow assign \:; \nonumber \\
+&\:|\: \textbf{if} \: ( \: assign \: ) \: stmt \nonumber \\
+&\:|\: \textbf{if} \: ( \: assign \: ) \: stmt \: \textbf{else} \: stmt \nonumber \\
+&\:|\: \textbf{while} \: ( \: assign \: ) \: stmt \nonumber \\
+&\:|\: \textbf{do} \: stmt \: \textbf{while} \: ( \: assign \: ) \: ; \nonumber \\
+&\:|\: \textbf{break} \: ; \nonumber \\
+&\:|\: \textbf{return} \: ; \nonumber \\
+&\:|\: \textbf{return} \: loc\:; \nonumber \\
+&\:|\: \textbf{print} \: loc\:; \nonumber \\
+&\:|\: block  \nonumber \\
+loc &\rightarrow loc \: \left[ assign \right] \:|\: \textbf{id} \:|\: loc.\textbf{id}
+\end{align*}
+\section{Ausdrücke}
+\begin{align*}
+  assign &\rightarrow loc = assign \:|\: bool \\
+bool &\rightarrow bool \: || \: join \:|\: join \nonumber \\
+join &\rightarrow join \: \&\& \: equality \:|\: equality \nonumber \\
+equality &\rightarrow equality \: == \: rel \:|\: equality \: != \: rel \:|\: rel \nonumber \\
+rel &\rightarrow expr < expr \:|\: expr <= expr \:|\: expr >= expr \:|\: expr > expr \:|\: expr \nonumber \\
+expr &\rightarrow expr + term \:|\: expr - term \:|\: term \nonumber \\
+term &\rightarrow term * unary \:|\: term / unary \:|\: unary \nonumber \\
+unary &\rightarrow \:! \: unary\:|\: - \: unary \:|\: factor \nonumber \\
+factor &\rightarrow ( \: assign \: ) \:|\: loc \:|\: \textbf{num} \:|\: \textbf{real} \:|\:
+\textbf{true} \:|\: \textbf{false} \:|\: \textbf{string} \:|\: funccall\\
+funccall &\rightarrow \textbf{id} (\:optargs\:)\\
+optargs &\rightarrow args \: |\: \varepsilon\\
+args &\rightarrow assign,\: args \:|\: assign
+\end{align*}
+\end{document}

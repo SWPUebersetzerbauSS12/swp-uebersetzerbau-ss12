@@ -80,5 +80,12 @@ public enum TokenType {
 	/** "}" */
 	RBRACE,
 	/** End-of-file marker */
-	EOF
+	EOF,
+	// next enums only required for lexer 
+	/* mark the start ofa block comment */
+	BLOCKCOMMENT_BEGIN,
+	/* mark the end of a block comment */
+	BLOCKCOMMENT_END,
+	/* mark the start of a line comment */
+	LINECOMMENT_BEGIN
 }

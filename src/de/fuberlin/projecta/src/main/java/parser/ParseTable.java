@@ -21,7 +21,7 @@ public class ParseTable {
 		table = new String[nonTerminals.length][terminals.length];
 		for (int i = 0; i < nonTerminals.length; i++) {
 			for (int j = 0; j < terminals.length; j++) {
-				table[i][j]= "";
+				table[i][j] = "";
 			}
 		}
 	}
@@ -48,6 +48,10 @@ public class ParseTable {
 						} else {
 							table[i][j] += DELIM + entry;
 							isAmbigous = true;
+							throw new ParserException(
+									"parsing table is ambigous in cell ["
+											+ nonT + "," + t + "]");
+
 						}
 					}
 				}

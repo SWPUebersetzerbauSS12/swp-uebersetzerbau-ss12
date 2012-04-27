@@ -24,7 +24,7 @@ public class Parser {
 			"loc'", "loc''", "assign", "assign'", "bool", "bool'", "join",
 			"join'", "equality", "equality'", "rel", "rel'", "expr", "expr'",
 			"term", "term'", "unary", "factor", "factor'", "optargs", "args",
-			"args'" };
+			"args'", "basic" };
 	private static final String[] terminals = { "DEF", "ID", "LPAREN",
 			"RPAREN", "OP_SEMIC", "LBRACE", "RBRACE", "LBRACKET", "RBRACKET",
 			"INT", "IF", "WHILE", "DO", "BREAK", "RETURN", "PRINT", "ELSE",
@@ -51,7 +51,7 @@ public class Parser {
 
 	private void initStack() {
 		stack.clear();
-		stack.push("EOF");
+		stack.push("$");
 		stack.push("program");
 	}
 
@@ -83,42 +83,34 @@ public class Parser {
 		do {
 			peek = stack.peek();
 			if (isTerminal(peek) || peek.equals("$")) {
-				if (token.getAttribute() != null) {
-					if (peek.equals(token.getAttribute())
-							|| peek.equals(token.getType().toString()
-									.toLowerCase()) || peek.equals("$")
-							&& token == null) /**
-					 * null is returned if input ended
-					 */
-					{
-						stack.pop();
-						try {
-							token = lexer.getNextToken();
-						} catch (SyntaxErrorException e) {
-							e.printStackTrace();
-						}
-					} else {
-						throw new ParserException("Wrong token " + token
-								+ " in input");
+				if (peek.equals(token.getType().toString())
+						|| (peek.equals("$") && token.getType() == TokenType.EOF)) {
+
+					stack.pop();
+					try {
+						token = lexer.getNextToken();
+					} catch (SyntaxErrorException e) {
+						e.printStackTrace();
 					}
+				} else {
+					throw new ParserException("Wrong token " + token
+							+ " in input");
 				}
+
 			} else /** stack symbol is non-terminal */
 			{
 				String prod;
-				if ((prod = table.getEntry(peek, token.getAttribute())) != null) {
-					// my heart skips skips skips..
-				} else if ((prod = table.getEntry(peek, token.getType()
-						.toString().toLowerCase())) != null) {
-					// skips skips skips a beat
-				}
-
-				if (prod != null) {
+				if ((prod = table.getEntry(peek, token.getType().toString())) != null) {
 					stack.pop();
+
 					String[] tmp = prod.split("::=");
 					if (tmp.length == 2) {
 						String[] prods = tmp[1].split(" ");
 						for (int i = prods.length - 1; i >= 0; i--) {
-							stack.push(prods[i]);
+							if (!prods[i].trim().equals("")
+									&& !prods[i].equals(EPSILON)) {
+								stack.push(prods[i]);
+							}
 						}
 						outputs.add(prod);
 					} else {
@@ -127,12 +119,17 @@ public class Parser {
 					}
 				} else {
 					throw new ParserException(
-							" Syntax error: No Rule in parsing table ");
+							" Syntax error: No Rule in parsing table (Stack: "
+									+ peek + ", token: " + token + ")");
 				}
 			}
 		} while (!stack.peek().equals("$"));
 
 		createSyntaxTree();
+
+		for (String t : outputs) {
+			System.out.println(t);
+		}
 	}
 
 	private void createSyntaxTree() {
@@ -271,7 +268,7 @@ public class Parser {
 		table.setEntry("assign'", "RPAREN", "assign' ::= ε ");
 		table.setEntry("assign'", "RBRACKET", "assign' ::= ε ");
 		table.setEntry("assign'", "OP_COMMA", "assign' ::= ε ");
-		table.setEntry("assign'", "OP_ASSIGN", "assign' ::= ε ");
+		// table.setEntry("assign'", "OP_ASSIGN", "assign' ::= ε ");
 		// TODO: This is right but still leads to errors
 
 		// bool
@@ -304,7 +301,7 @@ public class Parser {
 		table.setEntry("join'", "RBRACKET", "join' ::= ε ");
 		table.setEntry("join'", "OP_ASSIGN", "join' ::= ε ");
 		table.setEntry("join'", "OP_COMMA", "join' ::= ε ");
-		table.setEntry("join'", "OP_OR	", "join' ::= ε ");
+		table.setEntry("join'", "OP_OR", "join' ::= ε ");
 
 		// equality
 		table.setEntry("equality", "ID", "equality ::= rel equality'");
@@ -366,7 +363,7 @@ public class Parser {
 		table.setEntry("expr'", "OP_GT", "expr' ::= ε ");
 		table.setEntry("expr'", "OP_ADD", "expr' ::= OP_ADD term expr'");
 		table.setEntry("expr'", "OP_MINUS", "expr' ::= OP_MINUS term expr'");
-		
+
 		// term
 		table.setEntry("term", "ID", "expr ::= unary term'");
 		table.setEntry("term", "LPAREN", "expr ::= unary term'");
@@ -375,7 +372,7 @@ public class Parser {
 		table.setEntry("term", "OP_NOT", "expr ::= unary term'");
 		table.setEntry("term", "REAL", "expr ::= unary term'");
 		table.setEntry("term", "STRING", "expr ::= unary term'");
-		
+
 		// term'
 		table.setEntry("term'", "OP_LT", "term' ::= ε ");
 		table.setEntry("term'", "OP_LE", "term' ::= ε ");
@@ -385,7 +382,7 @@ public class Parser {
 		table.setEntry("term'", "OP_MINUS", "term' ::= ε ");
 		table.setEntry("term'", "OP_MUL", "term' ::= OP_MUL unary term'");
 		table.setEntry("term'", "OP_DIV", "term' ::= OP_DIV unary term'");
-		
+
 		// unary
 		table.setEntry("unary", "ID", "unary ::= factor");
 		table.setEntry("unary", "LPAREN", "unary ::= factor");
@@ -394,16 +391,17 @@ public class Parser {
 		table.setEntry("unary", "STRING", "unary ::= factor");
 		table.setEntry("unary", "OP_MINUS", "unary ::= OP_MINUS unary");
 		table.setEntry("unary", "OP_NOT", "unary ::= OP_NOT unary");
-		
+
 		// factor
 		table.setEntry("factor", "ID", "factor ::= loc factor'");
 		table.setEntry("factor", "LPAREN", "factor ::= LPAREN assign RPAREN");
 		table.setEntry("factor", "INT", "factor ::= INT");
 		table.setEntry("factor", "REAL", "factor ::= REAL");
 		table.setEntry("factor", "STRING", "factor ::= STRING");
-		
+
 		// factor'
-		table.setEntry("factor'", "LPAREN", "factor' ::= LPAREN optargs RPAREN ");
+		table.setEntry("factor'", "LPAREN",
+				"factor' ::= LPAREN optargs RPAREN ");
 		table.setEntry("factor'", "OP_LT", "factor' ::= ε ");
 		table.setEntry("factor'", "OP_LE", "factor' ::= ε ");
 		table.setEntry("factor'", "OP_GE", "factor' ::= ε ");
@@ -412,11 +410,11 @@ public class Parser {
 		table.setEntry("factor'", "OP_MINUS", "factor' ::= ε ");
 		table.setEntry("factor'", "OP_MUL", "factor' ::= ε ");
 		table.setEntry("factor'", "OP_DIV", "factor' ::= ε ");
-		
+
 		// optargs
 		table.setEntry("optargs", "ID", "optargs ::= args");
 		table.setEntry("optargs", "RPAREN", "optargs ::= ε");
-		
+
 		// args
 		table.setEntry("args", "ID", "args ::= assign args'");
 		table.setEntry("args", "LPAREN", "args ::= assign args'");
@@ -425,10 +423,16 @@ public class Parser {
 		table.setEntry("args", "OP_NOT", "args ::= assign args'");
 		table.setEntry("args", "REAL", "args ::= assign args'");
 		table.setEntry("args", "STRING", "args ::= assign args'");
-		
+
 		// args'
 		table.setEntry("args'", "RPAREN", "agrs' ::= ε");
 		table.setEntry("args'", "OP_COMMA", "args' ::= OP_COMMA args");
+
+		// this is just for testing !!!
+		// type
+		table.setEntry("basic", "INT", "basic ::=  INT");
+		table.setEntry("basic", "REAL", "basic ::= REAL");
+		table.setEntry("basic", "STRING", "basic ::=  STRING");
 	}
 
 }

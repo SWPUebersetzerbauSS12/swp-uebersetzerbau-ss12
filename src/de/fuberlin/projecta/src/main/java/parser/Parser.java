@@ -8,6 +8,7 @@ import lexer.IToken.TokenType;
 import lexer.SyntaxErrorException;
 import lexer.Token;
 import lombok.Getter;
+import lombok.javac.FindTypeVarScanner;
 
 public class Parser {
 	private ILexer lexer;
@@ -126,13 +127,87 @@ public class Parser {
 		} while (!stack.peek().equals("$"));
 
 		createSyntaxTree();
-
-		for (String t : outputs) {
-			System.out.println(t);
-		}
 	}
 
+	/**
+	 * Call to create the corresponding parse tree from the previous parse call.
+	 */
 	private void createSyntaxTree() {
+		for (String t : outputs) {
+
+			String[] tmp = t.split("::=");
+			String[] tmp2 = tmp[1].split(" ");
+
+			ISyntaxTree node = getNextOccurrence(tmp[0].trim());
+			for (int i = 0; i < tmp2.length; i++) {
+				if (!tmp2[i].equals("")) {
+					ISyntaxTree newNode;
+					if (isAllUpper(tmp2[i]) || tmp2[i].equals(EPSILON)) {
+						newNode = new Terminal(tmp2[i]);
+					} else {
+						newNode = new NonTerminal(tmp2[i]);
+					}
+					node.addTree(newNode);
+				}
+			}
+		}
+
+		printParseTree(syntaxTree);
+	}
+
+	private boolean isAllUpper(String s) {
+		for (char c : s.toCharArray()) {
+			if (Character.isLetter(c) && Character.isLowerCase(c)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Using Depth-First search to find the node.
+	 * 
+	 * @param name
+	 * @return the next occurrence of the given node, if it has no children yet.
+	 */
+	private ISyntaxTree getNextOccurrence(String name) {
+
+		if (syntaxTree.getName().equals(name)
+				&& syntaxTree.getChildrenCount() == 0) {
+			return syntaxTree;
+		}
+
+		Stack<ISyntaxTree> stack = new Stack<ISyntaxTree>();
+		stack.push(syntaxTree);
+
+		while (!stack.isEmpty()) {
+			ISyntaxTree tmp = stack.pop();
+			if (tmp.getName().equals(name) && tmp.getChildrenCount() == 0) {
+				return tmp;
+			} else // push all children onto the stack backwards
+			{
+				int count = tmp.getChildrenCount();
+				for (int i = count - 1; i >= 0; i--) {
+					stack.push(tmp.getChild(i));
+				}
+			}
+		}
+		return null;
+	}
+
+	private void printParseTree(ISyntaxTree tree) {
+		System.out.print(tree.getName());
+
+		int count = tree.getChildrenCount();
+		if (count != 0) {
+			System.out.print("[");
+			for (int i = 0; i < count; i++) {
+				printParseTree(tree.getChild(i));
+				if (i != count - 1)
+					System.out.print(",");
+			}
+			System.out.print("]");
+		}
 	}
 
 	/**

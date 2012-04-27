@@ -5,7 +5,8 @@ import lombok.Getter;
 public class ParseTable {
 
 	private static final char DELIM = '#';
-	@Getter private boolean isAmbigous;
+	@Getter
+	private boolean isAmbigous;
 
 	private String[] nonTerminals, terminals;
 
@@ -14,19 +15,36 @@ public class ParseTable {
 	public ParseTable(String[] nonTerminals, String[] terminals) {
 		this.nonTerminals = nonTerminals;
 		this.terminals = terminals;
-		
+
 		isAmbigous = false;
 
 		table = new String[nonTerminals.length][terminals.length];
+		for (int i = 0; i < nonTerminals.length; i++) {
+			for (int j = 0; j < terminals.length; j++) {
+				table[i][j]= "";
+			}
+		}
 	}
 
-	public void setEntry(String nonT, String t, String entry) {
+	/**
+	 * Stores the BNF String into the right cell, only if terminals and
+	 * nonTerminals are unique! (Otherwise it takes the first occurrence).
+	 * 
+	 * @param nonT
+	 * @param t
+	 * @param entry
+	 * @throws ParserException
+	 */
+	public void setEntry(String nonT, String t, String entry)
+			throws ParserException {
+		boolean found = false;
 		for (int i = 0; i < nonTerminals.length; i++) {
 			if (nonTerminals[i].equals(nonT)) {
 				for (int j = 0; j < terminals.length; j++) {
 					if (terminals[j].equals(t)) {
 						if (table[i][j].equals("")) {
 							table[i][j] = entry;
+							found = true;
 						} else {
 							table[i][j] += DELIM + entry;
 							isAmbigous = true;
@@ -35,6 +53,9 @@ public class ParseTable {
 				}
 			}
 		}
+		if (!found)
+			throw new ParserException("Missing parsing table field [" + nonT
+					+ "," + t + "]");
 	}
 
 	/**

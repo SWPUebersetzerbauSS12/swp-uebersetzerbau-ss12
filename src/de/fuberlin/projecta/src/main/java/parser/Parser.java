@@ -8,7 +8,6 @@ import lexer.IToken.TokenType;
 import lexer.SyntaxErrorException;
 import lexer.Token;
 import lombok.Getter;
-import lombok.javac.FindTypeVarScanner;
 
 public class Parser {
 	private ILexer lexer;
@@ -114,9 +113,18 @@ public class Parser {
 							}
 						}
 						outputs.add(prod);
-					} else {
+					} else if (prod.trim().equals("")) {
+						printParseTree(syntaxTree);
 						throw new ParserException(
-								"Wrong structur in parsing table! Productions should be of the form: X ::= Y1 Y2 ... Yk");
+								" Syntax error: No Rule in parsing table (Stack: "
+										+ peek + ", token: " + token + ")");
+					} else {
+						printParseTree(syntaxTree);
+						throw new ParserException(
+								"Wrong structur in parsing table! Productions should "
+										+ "be of the form: X ::= Y1 Y2 ... Yk! Problem with: "
+										+ prod + "(Stack: " + peek
+										+ ", token: " + token + ")");
 					}
 				} else {
 					throw new ParserException(
@@ -155,6 +163,12 @@ public class Parser {
 		printParseTree(syntaxTree);
 	}
 
+	/**
+	 * Helper function to distinguish between terminals and non-terminals.
+	 * 
+	 * @param s
+	 * @return
+	 */
 	private boolean isAllUpper(String s) {
 		for (char c : s.toCharArray()) {
 			if (Character.isLetter(c) && Character.isLowerCase(c)) {

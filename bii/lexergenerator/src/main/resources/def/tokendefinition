@@ -1,7 +1,10 @@
+<<<<<<< HEAD
 0|([1-9]+[0-9]*)        num
 
 %%
 
+=======
+>>>>>>> origin/parse_tokdef
 "("                     {return("BRACKET", "(")}
 ")"                     {return("BRACKET", ")")}
 "{"                     {return("BRACKET", "{")}
@@ -25,7 +28,12 @@
 "return"                {return("KEYWORD", "RETURN")}
 "break"                 {return("KEYWORD", "BREAK")}
 "while"                 {return("KEYWORD", "WHILE")}
+<<<<<<< HEAD
 {num}                   {return("NUM", parseInt())}
 {num}?"."{num}          {return("RAT", parseDouble())}
 [a-z]+[a-zA-Z0-9]*      {return("ID", parseString()))
 
+=======
+0|[1-9]+[0-9]           {return("NUM", parseInt())}
+[a-z]+[a-zA-Z0-9]*      {return("ID", parseString())
+>>>>>>> origin/parse_tokdef

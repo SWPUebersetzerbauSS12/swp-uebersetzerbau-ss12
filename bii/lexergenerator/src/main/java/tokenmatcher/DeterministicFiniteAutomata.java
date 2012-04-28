@@ -34,55 +34,66 @@ package tokenmatcher;
 
 import java.util.Collection;
 
+/**
+ * Stellt das Interface eines endlichen Automaten (finite state machine, kurz
+ * FSM) dar.
+ * 
+ * @author Johannes Dahlke
+ * @author (Daniel Rotar)
+ * 
+ * @param <ConditionType>
+ *            Der Typ der Bedingung für einen Zustandsübergang beim verwendeten
+ *            endlichen Automaten.
+ * @param <PayloadType>
+ *            Der Typ des Inhalts der Zustände beim verwendeten endlichen
+ *            Automaten.
+ */
+public interface DeterministicFiniteAutomata<ConditionType extends Comparable<ConditionType>, PayloadType> {
 
-
-public interface DeterministicFiniteAutomata<E,Payload> {
-	
-	
-	
 	/**
-	 * Wechselt in einen anderen Zustand, sofern 
-	 * es einen Übergang in der Übergangstabelle ausgehend vom aktuellen Zustand in 
-	 * den angegebenen Element gibt. 
+	 * Wechselt in einen anderen Zustand, sofern es einen Übergang in der
+	 * Übergangstabelle ausgehend vom aktuellen Zustand in den angegebenen
+	 * Element gibt.
 	 * 
-	 * @param element Das Element, welches den Übergang definiert.
-	 * @return 	Den neuen Zustand oder null, falls es keinen 
-	 * 					Übergang in der Übergangstabelle gibt.
+	 * @param element
+	 *            Das Element, welches den Übergang definiert.
+	 * @return Den neuen Zustand oder null, falls es keinen Übergang in der
+	 *         Übergangstabelle gibt.
 	 */
-	State<Payload> changeStateByElement( E element);
-	
-	
-	
+	State<ConditionType, PayloadType> changeStateByElement(ConditionType element);
+
 	/**
-	 * Prüft, ob ein Übergang für das Lesen des 
-	 * spezifizierten Elementes definiert ist. 
-	 * @param element Das Element, für das geprüft werden soll, ob ein Übergang 
-	 *               aus dem aktuellen Zustand durch Lesen des Elementes definiert ist.
+	 * Prüft, ob ein Übergang für das Lesen des spezifizierten Elementes
+	 * definiert ist.
+	 * 
+	 * @param element
+	 *            Das Element, für das geprüft werden soll, ob ein Übergang aus
+	 *            dem aktuellen Zustand durch Lesen des Elementes definiert ist.
 	 * @return true, wenn es einen Übergang gibt, anderenfalls false.
 	 */
-	boolean canChangeStateByElement( E element);
-	
-	
+	boolean canChangeStateByElement(ConditionType element);
+
 	/**
-	 * @return Liefert den aktuellen Zustand.
+	 * Gibt den aktuellen Zustand zurück.
+	 * 
+	 * @return Der aktuelle Zustand zurück.
 	 */
-	State<Payload> getCurrentState();
-	
-	
+	State<ConditionType, PayloadType> getCurrentState();
+
 	/**
 	 * Setzt den DFA wieder in den Startzustand zurück.
 	 */
 	void resetToInitialState();
-	
-	
+
 	/**
-	 * Liefert eine Liste mit allen Elementen, die den vom Zustand state 
-	 * ausgehenden Übergängen zugeordnet sind. 
+	 * Liefert eine Liste mit allen Elementen, die den vom Zustand state
+	 * ausgehenden Übergängen zugeordnet sind.
 	 * 
-	 * @param state der Zustand, von dem die Übergange ausgehen.
-	 * @return Eine Sammlung von Elementen.
+	 * @param state
+	 *            Der Zustand, von dem die Übergange ausgehen.
+	 * @return Alle ausgehenden Elemente zu dem angegebenen Zustand.
 	 */
-	Collection<E> getElementsOfOutgoingTransitionsFromState( State state); 
-	
-	
+	Collection<ConditionType> getElementsOfOutgoingTransitionsFromState(
+			State<ConditionType, PayloadType> state);
+
 }

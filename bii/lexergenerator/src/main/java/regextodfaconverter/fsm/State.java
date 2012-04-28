@@ -51,7 +51,7 @@ import regextodfaconverter.fsm.excpetions.TransitionAlreadyExistsException;
  */
 public class State<TransitionConditionType extends Comparable<TransitionConditionType>, PayloadType>
 		implements Comparable<State<TransitionConditionType, PayloadType>>,
-		tokenmatcher.State<PayloadType> {
+		tokenmatcher.State<TransitionConditionType, PayloadType> {
 
 	/**
 	 * Die eindetige UUID dieses Zustandes.
@@ -80,8 +80,8 @@ public class State<TransitionConditionType extends Comparable<TransitionConditio
 	}
 
 	/**
-	 * Gibt den in diesem Zustand hinterlegte Inhalt zurück.
-	 * Setzt die eindetige UUID dieses Zustandes fest.
+	 * Gibt den in diesem Zustand hinterlegte Inhalt zurück. Setzt die eindetige
+	 * UUID dieses Zustandes fest.
 	 * 
 	 * @param uuid
 	 *            Die eindetige UUID dieses Zustandes.
@@ -134,6 +134,24 @@ public class State<TransitionConditionType extends Comparable<TransitionConditio
 	private void setTransitiosn(
 			HashSet<Transition<TransitionConditionType, PayloadType>> transitions) {
 		_transitions = transitions;
+	}
+
+	/**
+	 * Gibt alle Elemente, die den ausgehenden Übergängen zugeordnet sind
+	 * zurück.
+	 * 
+	 * @return Alle Elemente, die den ausgehenden Übergängen zugeordnet sind
+	 *         zurück.
+	 */
+	public Collection<TransitionConditionType> getElementsOfOutgoingTransitions() {
+		HashSet<TransitionConditionType> elements = new HashSet<TransitionConditionType>();
+		
+		for (Transition<TransitionConditionType, PayloadType> tran : getTransitions())
+		{
+			elements.add(tran.getCondition());
+		}
+		
+		return elements;
 	}
 
 	/**
@@ -278,11 +296,6 @@ public class State<TransitionConditionType extends Comparable<TransitionConditio
 		setPayload(payload);
 		if (isFinite)
 			SetTypeToFinite();
-	}
-
-	public Collection<PayloadType> getElementsOfOutgoingTransitions() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

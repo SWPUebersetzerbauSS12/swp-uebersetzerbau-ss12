@@ -427,6 +427,68 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 	}
 
 	/**
+	 * Fügt diesem eindlichen Automaten eine Wiederholung hinzu.
+	 */
+	public void closure() {
+		HashMap<UUID, State<TransitionConditionType, StatePayloadType>> states = new HashMap<UUID, State<TransitionConditionType, StatePayloadType>>();
+		states.putAll(getStates());
+
+		State<TransitionConditionType, StatePayloadType> initState = new State<TransitionConditionType, StatePayloadType>();
+		State<TransitionConditionType, StatePayloadType> finiteState = new State<TransitionConditionType, StatePayloadType>();
+		State<TransitionConditionType, StatePayloadType> old_initState = getInitialState();
+		
+		initState.SetTypeToInitial();
+		finiteState.SetTypeToFinite();
+
+		getStates().put(initState.getUUID(), initState);
+		getStates().put(initState.getUUID(), finiteState);
+
+		try {
+			addTransition(initState, finiteState, null);
+		} catch (Exception e) {
+			// Dieser Fall kann niemals eintreten!
+			e.printStackTrace();
+		}
+
+		try {
+			addTransition(initState, getInitialState(), null);
+		} catch (Exception e) {
+			// Dieser Fall kann niemals eintreten!
+			e.printStackTrace();
+		}
+		getInitialState().SetTypeToDefault();
+
+		try {
+			setInitialState(initState);
+		} catch (Exception e) {
+			// Dieser Fall kann niemals eintreten!
+			e.printStackTrace();
+		}
+
+		for (State<TransitionConditionType, StatePayloadType> state : states
+				.values()) {
+			if (state.isFiniteState()) {
+				// state.setPayload(null);
+				finiteState.setPayload(state.getPayload());
+				state.SetTypeToDefault();
+				try {
+					addTransition(state, finiteState, null);
+				} catch (Exception e) {
+					// Dieser Fall kann niemals eintreten!
+					e.printStackTrace();
+				}
+
+				try {
+					addTransition(state, old_initState, null);
+				} catch (Exception e) {
+					// Dieser Fall kann niemals eintreten!
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	/**
 	 * Erstellt ein neues FiniteStateMachine Objekt. Dabei wird direkt ein
 	 * Startzustand für diesen endlichen Automaten erstellt und als aktuellen
 	 * Zustand gesetzt.

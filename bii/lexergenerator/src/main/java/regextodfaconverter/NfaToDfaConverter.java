@@ -40,6 +40,7 @@ import java.util.UUID;
 
 import regextodfaconverter.fsm.FiniteStateMachine;
 import regextodfaconverter.fsm.State;
+import regextodfaconverter.fsm.StatePayload;
 import regextodfaconverter.fsm.Transition;
 
 /**
@@ -109,8 +110,25 @@ public class NfaToDfaConverter<TransitionConditionType extends Comparable<Transi
 							if (s.isFiniteState())
 							{
 								state.SetTypeToFinite();
-								state.setPayload(s.getPayload());
-								break;
+								if (state.getPayload() == null)
+								{
+									state.setPayload(s.getPayload());
+								}
+								
+								if (s.getPayload() != null)
+								{
+									if (s.getPayload() instanceof StatePayload) 
+									{										
+										if (state.getPayload() instanceof StatePayload) 
+										{
+											if (((StatePayload) s.getPayload() ).getPriority() > ((StatePayload) state.getPayload() ).getPriority())
+											{
+												state.setPayload(s.getPayload());												
+											}
+										}
+									}
+								}
+							
 							}							
 						}
 						mergedStates.put(reachableStates, state);

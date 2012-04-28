@@ -137,6 +137,60 @@ public class Test {
 		return fsm;
 	}
 	
+	/**
+	 * Erstellt einen Automaten zur Erkennung von Block- und Zeilenkommentaren.
+	 * 
+	 * @return Ein endlicher Automat der die Wörter
+	 *         (/*|* /|{-|-})|//|--) erkennt.
+	 */
+	public static FiniteStateMachine<Character, StatePayload> generateCommentFSM() {
+		FiniteStateMachine<Character, StatePayload> fsm = new FiniteStateMachine<Character, StatePayload>();
+
+		try {
+			State<Character, StatePayload> state1, state2, state3, state4, state5;
+			
+			state1 = fsm.getCurrentState();
+			
+			state2 = new State<Character, StatePayload>();
+			state3 = new State<Character, StatePayload>( 
+					new regextodfaconverter.fsm.StatePayload( TokenType.LINECOMMENT_BEGIN, 0), true);
+			state4 = new State<Character, StatePayload>( 
+					new regextodfaconverter.fsm.StatePayload( TokenType.BLOCKCOMMENT_BEGIN, 0), true);
+			
+			state5 = new State<Character, StatePayload>();
+			state5 = new State<Character, StatePayload>();
+			
+			
+			
+			state4 = new State<Character, StatePayload>( 
+					new regextodfaconverter.fsm.StatePayload( TokenType.OP_NE, 0), true);
+			state5 = new State<Character, StatePayload>( 
+					new regextodfaconverter.fsm.StatePayload( TokenType.OP_LT, 1), true);
+			
+    	fsm.addTransition( state1, state2, '/');
+    	fsm.addTransition( state2, state3, '/');
+    	fsm.addTransition( state2, state4, '*');
+    	
+    	
+    	
+    	fsm.addTransition( state1, state5, '*');
+    	fsm.addTransition( state5, state6, '/');
+    	
+    	
+    	
+    	fsm.addTransition( state2, state4, '>');
+    	for ( char c = 0x00; c <= 0xFF; c++) {
+				if ( c != '>' && c != '=') 
+					fsm.addTransition( state2, state5, c);	
+			}
+    	
+		} catch ( Exception e) {
+			e.printStackTrace();
+		}
+
+		return fsm;
+	}
+	
 	
 	/**
 	 * Erstellt einen Automaten für relationale Operatoren.
@@ -188,7 +242,7 @@ public class Test {
 		Token currentToken;
 		while ( true) {
 			currentToken = tokenizer.getNextToken();
-			System.out.print( currentToken.getAttribute()); 
+			System.out.print( currentToken.getType()); 
 			System.out.println( "  " + currentToken.getAttribute());
 		}
 	}

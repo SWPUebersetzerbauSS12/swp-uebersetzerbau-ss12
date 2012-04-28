@@ -52,6 +52,14 @@ public class Tokenizer implements LexerToParserInterface {
 	private int lastLine = 1;
 	private int lastPositionInLine = 0; 
 	
+	private enum ReadMode {
+		read_normal,
+		read_block_comment,
+    read_line_comment
+	}
+	
+	private ReadMode readMode = ReadMode.read_normal;
+	
 
 
 	public Tokenizer( LexemeReader lexemeReader,
@@ -87,7 +95,7 @@ public class Tokenizer implements LexerToParserInterface {
 				// bei windowssystemen muss dann am Ende durch 2 geteilt werden ,
 				// wegen \r\n
 				if( SpecialChars.isNewLine( currentChar)) {
-					currentPositionInLine++;
+					currentLine++;
 					currentPositionInLine = 0;
 				}
 
@@ -123,7 +131,26 @@ public class Tokenizer implements LexerToParserInterface {
         // Fehlerbehandler rücksetzen
 				errorCorrector.reset();
 				
-				return recognisedToken;
+				
+				// filter comments
+				if ( ( readMode == ReadMode.read_normal) &&
+						 ( recognisedToken.getType() == TokenType.BLOCKCOMMENT_BEGIN)) {
+					readMode = ReadMode.read_block_comment;
+					while ( getNextToken().getType() != TokenType.BLOCKCOMMENT_END){
+						// ignore comment block
+					}
+					readMode = ReadMode.read_normal;
+				} else if ( ( readMode == ReadMode.read_normal) &&
+						        ( recognisedToken.getType() == TokenType.BLOCKCOMMENT_BEGIN)) {
+					readMode = ReadMode.read_line_comment;
+					int thisLine = currentLine;
+					while ( thisLine == currentLine){
+						// ignore line block
+					} 
+					readMode = ReadMode.read_normal;
+				} else
+				  return recognisedToken;
+				
 			} else if ( currentChar == SpecialChars.CHAR_EOF) {
 				throw new EndOfFileException();
 		  } else {

@@ -39,7 +39,7 @@ public class TokenAttributor {
 			// some of them like INT needs a special conversion
 			case INT:
 				return Integer.valueOf( lexem);
-			// but aware: An In an INT we can store just as well an lexem in HEX-format like 0xA0F4 or 
+			// but aware: In an INT we can store just as well an lexem in HEX-format like 0xA0F4 or 
 			// tip: use Integer.valueOf( lexem, 16);
 			// and so on for all defined token types
 			default:

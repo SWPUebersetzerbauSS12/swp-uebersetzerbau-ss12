@@ -7,7 +7,8 @@ public class Lexer implements ILexer {
 
 	private int line;
 
-	private String delimiterRegexp = "[\\s(=)+-/\\*]";
+	// TODO: replace delimiterRegexp with real delimiters
+	private String delimiterRegexp = "[\\s(=)+-/;\\*]";
 
 	ICharStream is;
 
@@ -98,7 +99,7 @@ public class Lexer implements ILexer {
 		// if we read a dot or an e/E now we have a real value
 		// every other character will indicate that we have an int value
 		if (!peek.matches("[eE\\.]")) {
-			return new Token(TokenType.INT, "result", line, is.getOffset());
+			return new Token(TokenType.INT_LITERAL, "result", line, is.getOffset());
 		}
 		if (peek.matches("\\.")) {
 			result += peek;
@@ -131,9 +132,9 @@ public class Lexer implements ILexer {
 						"Maleformed real value at line: " + this.line
 								+ " near: " + is.getOffset());
 			}
-			return new Token(TokenType.REAL, result, this.line, is.getOffset());
+			return new Token(TokenType.REAL_LITERAL, result, this.line, is.getOffset());
 		}
-		return new Token(TokenType.REAL, result, this.line, is.getOffset());
+		return new Token(TokenType.REAL_LITERAL, result, this.line, is.getOffset());
 	}
 
 	private Token identifier() throws SyntaxErrorException {
@@ -178,11 +179,11 @@ public class Lexer implements ILexer {
 				return null;
 			}
 			if (peek.startsWith(delimiter)) {
-				return new Token(TokenType.STRING, result, this.line, offset);
+				return new Token(TokenType.STRING_LITERAL, result, this.line, offset);
 			}
 			result += peek;
 			if (is.isEmpty()) {
-				return new Token(TokenType.STRING, result, this.line, offset);
+				return new Token(TokenType.STRING_LITERAL, result, this.line, offset);
 			}
 		}
 	}
@@ -198,33 +199,31 @@ public class Lexer implements ILexer {
 				is.consumeChars(2);
 				return new Token(TokenType.IF, null, this.line, offset);
 			}
-			// TODO: replace delimiterRegexp with real delimiters
 			if (is.getNextChars(4).matches("int" + delimiterRegexp)) {
 				is.consumeChars(3);
-				return new Token(TokenType.INT, null, this.line, offset);
+				return new Token(TokenType.INT_TYPE, null, this.line, offset);
 			}
 		}
 		if (s.equals("t")) {
-			s = is.getNextChars(5);
-			// TODO: replace delimiterRegexp with real delimiters
-			if (s.matches("then" + delimiterRegexp)) {
+			if (is.getNextChars(5).matches("then" + delimiterRegexp)) {
 				is.consumeChars(4);
 				return new Token(TokenType.THEN, null, this.line, offset);
 			}
+			if (is.getNextChars(5).matches("true" + delimiterRegexp)) {
+				is.consumeChars(4);
+				return new Token(TokenType.BOOL_LITERAL, "true", this.line, offset);
+			}
 		}
-		// TODO: replace delimiterRegexp with real delimiters
 		if (s.equals("e")
 				&& is.getNextChars(5).matches("else" + delimiterRegexp)) {
 			is.consumeChars(4);
 			return new Token(TokenType.ELSE, null, this.line, offset);
 		}
-		// TODO: replace delimiterRegexp with real delimiters
 		if (s.equals("w")
 				&& is.getNextChars(6).matches("while" + delimiterRegexp)) {
 			is.consumeChars(5);
 			return new Token(TokenType.WHILE, null, this.line, offset);
 		}
-		// TODO: replace delimiterRegexp with real delimiters
 		if (s.equals("d")) {
 			if (is.getNextChars(3).matches("do" + delimiterRegexp)) {
 				is.consumeChars(2);
@@ -234,7 +233,6 @@ public class Lexer implements ILexer {
 				return new Token(TokenType.DEF, null, this.line, offset);
 			}
 		}
-		// TODO: replace delimiterRegexp with real delimiters
 		if (s.equals("r")) {
 			if (is.getNextChars(7).matches("return" + delimiterRegexp)) {
 				is.consumeChars(6);
@@ -242,20 +240,27 @@ public class Lexer implements ILexer {
 			}
 			if (is.getNextChars(5).equals("real ")) {
 				is.consumeChars(4);
-				return new Token(TokenType.REAL, null, this.line, offset);
+				return new Token(TokenType.REAL_TYPE, null, this.line, offset);
+			}
+			if (is.getNextChars(7).matches("record" + delimiterRegexp)) {
+				is.consumeChars(6);
+				return new Token(TokenType.RECORD, null, this.line, offset);
 			}
 		}
-		// TODO: replace delimiterRegexp with real delimiters
 		if (s.equals("b")
 				&& is.getNextChars(6).matches("break" + delimiterRegexp)) {
 			is.consumeChars(5);
 			return new Token(TokenType.BREAK, null, this.line, offset);
 		}
-		// TODO: replace delimiterRegexp with real delimiters
 		if (s.equals("p")
 				&& is.getNextChars(6).matches("print" + delimiterRegexp)) {
 			is.consumeChars(5);
 			return new Token(TokenType.PRINT, null, this.line, offset);
+		}
+		if (s.equals("f")
+				&& is.getNextChars(6).matches("false" + delimiterRegexp)) {
+			is.consumeChars(5);
+			return new Token(TokenType.BOOL_LITERAL, "false", this.line, offset);
 		}
 		if (s.equals("+")) {
 			is.consumeChars(1);

@@ -23,19 +23,44 @@ public interface IToken {
 		OP_DOT,
 		/** Semicolon (;) operator */
 		OP_SEMIC,
+
 		/** Other reserverd key words */
 		IF, THEN, ELSE, WHILE, DO, BREAK,
 		RETURN, PRINT,
 		/** Function definition */
 		DEF,
+		/** Record keyword */
+		RECORD,
 		/** Identifier */
 		ID,
+
+		/** Bool (bool) type */
+		BOOL_TYPE,
+		/** String (string) type */
+		STRING_TYPE,
+		/** Integer (int) type) */
+		INT_TYPE,
+		/** Real (real) type */
+		REAL_TYPE,
+
+		/** Boolean literal */
+		BOOL_LITERAL,
 		/** String constant */
-		STRING,
+		STRING_LITERAL,
 		/** Integer number */
-		INT,
+		INT_LITERAL,
 		/** Real number */
-		REAL,
+		REAL_LITERAL,
+
+		/**
+		 * For Java-style comments 
+		 * @note Review if we really need them
+		 * @note The parser-generator group asked for those types
+		 */
+		MULTILINE_COMMENT_START,
+		MULTILINE_COMMENT_END,
+		SINGLELINE_COMMENT,
+
 		/** "(" */
 		LPAREN,
 		/** ")" */
@@ -48,6 +73,7 @@ public interface IToken {
 		LBRACE,
 		/** "}" */
 		RBRACE,
+
 		/** End-of-file marker */
 		EOF
 	}

@@ -57,6 +57,19 @@ public class StatePayload implements tokenmatcher.StatePayload {
 		this.backsteps = backsteps;
 		this.priority = priority;
 	}
+	
+	
+	/**
+	 * Erstellt ein Payload-Objekt mit Standardpriorität
+	 * @param tokenType
+	 * @param backsteps
+	 */
+	public StatePayload(TokenType tokenType, int backsteps) {
+		super();
+		this.tokenType = tokenType;
+		this.backsteps = backsteps;
+		this.priority = 0;
+	}
 
 	public TokenType getTokenType() {
 		return tokenType;

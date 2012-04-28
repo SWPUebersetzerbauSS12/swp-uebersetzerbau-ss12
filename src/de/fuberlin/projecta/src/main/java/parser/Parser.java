@@ -8,7 +8,6 @@ import lexer.IToken.TokenType;
 import lexer.SyntaxErrorException;
 import lexer.Token;
 import lombok.Getter;
-import lombok.javac.FindTypeVarScanner;
 
 public class Parser {
 	private ILexer lexer;

@@ -146,10 +146,10 @@ public class State<TransitionConditionType extends Comparable<TransitionConditio
 	public Collection<TransitionConditionType> getElementsOfOutgoingTransitions() {
 		HashSet<TransitionConditionType> elements = new HashSet<TransitionConditionType>();
 		
-//		for (Transition<TransitionConditionType, PayloadType>> tran : getTransitions())
-//		{
-//			
-//		}
+		for (Transition<TransitionConditionType, PayloadType> tran : getTransitions())
+		{
+			elements.add(tran.getCondition());
+		}
 		
 		return elements;
 	}

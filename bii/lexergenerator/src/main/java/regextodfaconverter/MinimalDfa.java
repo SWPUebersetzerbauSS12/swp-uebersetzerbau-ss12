@@ -111,4 +111,10 @@ public class MinimalDfa<ConditionType extends Comparable<ConditionType>, Payload
 		return null;
 	}
 
+	public Collection<ConditionType> getElementsOfOutgoingTransitionsFromState(
+			State state) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

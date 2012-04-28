@@ -32,6 +32,7 @@
 
 package regextodfaconverter.fsm;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.UUID;
 
@@ -277,6 +278,11 @@ public class State<TransitionConditionType extends Comparable<TransitionConditio
 		setPayload(payload);
 		if (isFinite)
 			SetTypeToFinite();
+	}
+
+	public Collection<PayloadType> getElementsOfOutgoingTransitions() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

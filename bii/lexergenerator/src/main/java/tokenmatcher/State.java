@@ -32,6 +32,11 @@
 
 package tokenmatcher;
 
+import java.util.Collection;
+import java.util.HashSet;
+
+import regextodfaconverter.fsm.Transition;
+
 
 /**
  * Modelliert einen Zustand der Finite State Machine. 
@@ -65,5 +70,12 @@ public interface State<E> {
    * @param payload
    */
   E getPayload();
+  
 	 
+  /**
+   * Liefert alle Elemente, die den ausgehenden Übergängen zugeordnet sind.
+   */
+  Collection<E> getElementsOfOutgoingTransitions();
+  
+  
 }

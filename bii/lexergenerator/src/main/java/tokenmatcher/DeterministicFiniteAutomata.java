@@ -82,7 +82,7 @@ public interface DeterministicFiniteAutomata<E,Payload> {
 	 * @param state der Zustand, von dem die Übergange ausgehen.
 	 * @return Eine Sammlung von Elementen.
 	 */
-	Collection<E> getElementsOfOutgoingTransitionFromState( State state); 
+	Collection<E> getElementsOfOutgoingTransitionsFromState( State state); 
 	
 	
 }

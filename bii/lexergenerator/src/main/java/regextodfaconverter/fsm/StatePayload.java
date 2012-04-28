@@ -38,7 +38,7 @@ import tokenmatcher.TokenType;
 /**
  * Implementiert  Interface {@link tokenmatcher.StatePayload} 
  * @author Johannes Dahlke
- *
+ * @author Daniel Rotar
  */
 public class StatePayload implements tokenmatcher.StatePayload {
 
@@ -46,10 +46,16 @@ public class StatePayload implements tokenmatcher.StatePayload {
 
 	private int backsteps = 0;
 
-	public StatePayload(TokenType tokenType, int backsteps) {
+	/**
+	 * Die Priorität dieses Objekts (je größer die Zahl desto größer die Priorität).
+	 */
+	private int priority = 0;
+	
+	public StatePayload(TokenType tokenType, int backsteps, int priority) {
 		super();
 		this.tokenType = tokenType;
 		this.backsteps = backsteps;
+		this.priority = priority;
 	}
 
 	public TokenType getTokenType() {
@@ -59,5 +65,28 @@ public class StatePayload implements tokenmatcher.StatePayload {
 	public int getBacksteps() {
 		return backsteps;
 	}
-
+	
+	/**
+	 * Gibt die Priorität dieses Objekts zurück. 
+	 * @return Die Priorität dieses Objekts (je größer die Zahl desto größer die Priorität).
+	 */
+	public int getPriority()
+	{
+		return priority;
+	}
+	
+	/**
+	 * Setzt die Priorität dieses Objekts fest. 
+	 * @param priority Die Priorität dieses Objekts (je größer die Zahl desto größer die Priorität).
+	 */
+	public void setPriority(int priority)
+	{
+		this.priority = priority;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return tokenType.toString();
+	}
 }

@@ -94,6 +94,42 @@ public class LexerTest {
 	}
 
 	@Test
+	public void testBooleanLiterals() {
+		final String code = "return true;\nreturn false;";
+		Token[] expected = new Token[] {
+				new Token(TokenType.RETURN, null, 1, 0),
+				new Token(TokenType.TRUE, null, 1, 7),
+				new Token(TokenType.OP_SEMIC, null, 1, 11),
+
+				new Token(TokenType.RETURN, null, 2, 0),
+				new Token(TokenType.FALSE, null, 2, 7),
+				new Token(TokenType.OP_SEMIC, null, 2, 12),
+				new Token(TokenType.EOF, null, 2, 13)
+		};
+		assertArrayEquals(expected, tokenize(code).toArray());
+	}
+
+	@Test
+	public void testRecordKeyword() {
+		final String code = "record { int a; real b; } r;";
+		Token[] expected = new Token[] {
+				new Token(TokenType.RECORD, null, 1, 0),
+				new Token(TokenType.LBRACE, null, 1, 7),
+				new Token(TokenType.INT, null, 1, 9),
+				new Token(TokenType.ID, "a", 1, 13),
+				new Token(TokenType.OP_SEMIC, null, 1, 14),
+				new Token(TokenType.REAL, null, 1, 16),
+				new Token(TokenType.ID, "b", 1, 21),
+				new Token(TokenType.OP_SEMIC, null, 1, 22),
+				new Token(TokenType.RBRACE, null, 1, 24),
+				new Token(TokenType.ID, "r", 1, 26),
+				new Token(TokenType.OP_SEMIC, null, 1, 27),
+				new Token(TokenType.EOF, null, 1, 28)
+		};
+		assertArrayEquals(expected, tokenize(code).toArray());
+	}
+
+	@Test
 	public void testCharacterPositions() {
 		final String code = "def int foo();\ndef int bar();";
 

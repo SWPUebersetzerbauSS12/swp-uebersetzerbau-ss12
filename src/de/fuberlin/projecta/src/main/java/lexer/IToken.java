@@ -26,8 +26,14 @@ public interface IToken {
 		/** Other reserverd key words */
 		IF, THEN, ELSE, WHILE, DO, BREAK,
 		RETURN, PRINT,
+		/** True literal - handle as keyword */
+		TRUE,
+		/** False literal - handle as keyword */
+		FALSE,
 		/** Function definition */
 		DEF,
+		/** Record keyword */
+		RECORD,
 		/** Identifier */
 		ID,
 		/** String constant */

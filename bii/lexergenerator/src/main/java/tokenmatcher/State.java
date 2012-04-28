@@ -33,49 +33,54 @@
 package tokenmatcher;
 
 import java.util.Collection;
-import java.util.HashSet;
-
-import regextodfaconverter.fsm.Transition;
-
 
 /**
- * Modelliert einen Zustand der Finite State Machine. 
- * Ein Zustand kann als Endzustand und Startzustand gekennzeichnet sein 
- * und mit einem Objekt assoziert sein.
+ * Modelliert einen Zustand der Finite State Machine. Ein Zustand kann als
+ * Endzustand und Startzustand gekennzeichnet sein und mit einem Objekt
+ * assoziert sein.
  * 
  * @author Johannes Dahlke
- *
+ * @author (Daniel Rotar)
+ * 
+ * @param <ConditionType>
+ *            Der Typ der Bedingung für einen Zustandsübergang beim verwendeten
+ *            endlichen Automaten.
+ * @param <PayloadType>
+ *            Der Typ des Inhalts der Zustände beim verwendeten endlichen
+ *            Automaten.
  */
-public interface State<E> {
-	
-	
+public interface State<ConditionType extends Comparable<ConditionType>, PayloadType> {
+
 	/**
-	 * Dient der Abfrage, ob es sich bei dem Zustand 
-	 * um einen Endzustand handelt.
+	 * Dient der Abfrage, ob es sich bei dem Zustand um einen Endzustand
+	 * handelt.
+	 * 
 	 * @return true, wenn es ein Endzustand ist, sonst false
 	 */
 	boolean isFiniteState();
-	
 
 	/**
-	 * Dient der Abfrage, ob es sich bei dem Zustand 
-	 * um einen Startzustand handelt.
+	 * Dient der Abfrage, ob es sich bei dem Zustand um einen Startzustand
+	 * handelt.
+	 * 
 	 * @return true, wenn es ein Startzustand ist, sonst false
-	 */ 
+	 */
 	boolean isInitialState();
-	
-	
-  /**
-   * Liefert die mit dem Zustand assoziierte Ladung
-   * @param payload
-   */
-  E getPayload();
-  
-	 
-  /**
-   * Liefert alle Elemente, die den ausgehenden Übergängen zugeordnet sind.
-   */
-  Collection<E> getElementsOfOutgoingTransitions();
-  
-  
+
+	/**
+	 * Gibt die mit dem Zustand assoziierte Ladung zurück.
+	 * 
+	 * @return Die mit dem Zustand assoziierte Ladung.
+	 */
+	PayloadType getPayload();
+
+	/**
+	 * Gibt alle Elemente, die den ausgehenden Übergängen zugeordnet sind
+	 * zurück.
+	 * 
+	 * @return Alle Elemente, die den ausgehenden Übergängen zugeordnet sind
+	 *         zurück.
+	 */
+	Collection<ConditionType> getElementsOfOutgoingTransitions();
+
 }

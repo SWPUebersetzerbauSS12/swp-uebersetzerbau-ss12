@@ -131,6 +131,7 @@ public class Tokenizer implements LexerToParserInterface {
         // Fehlerbehandler rücksetzen
 				errorCorrector.reset();
 				
+			//	System.out.println( recognisedToken.getType());
 				
 				// filter comments
 				if ( ( readMode == ReadMode.read_normal) &&
@@ -140,21 +141,26 @@ public class Tokenizer implements LexerToParserInterface {
 						// ignore comment block
 					}
 					readMode = ReadMode.read_normal;
+					return getNextToken();
 				} else if ( ( readMode == ReadMode.read_normal) &&
-						        ( recognisedToken.getType() == TokenType.BLOCKCOMMENT_BEGIN)) {
+						        ( recognisedToken.getType() == TokenType.LINECOMMENT_BEGIN)) {
 					readMode = ReadMode.read_line_comment;
 					int thisLine = currentLine;
 					while ( thisLine == currentLine){
-						// ignore line block
+						// ignore remaining line
+						recognisedToken = getNextToken();
 					} 
 					readMode = ReadMode.read_normal;
+					return recognisedToken;
 				} else
 				  return recognisedToken;
 				
 			} else if ( currentChar == SpecialChars.CHAR_EOF) {
 				throw new EndOfFileException();
-		  } else {
+		  } else if ( readMode == ReadMode.read_normal){
 		  	errorCorrector.handleMismatch( currentChar, lexemeReader, dfa);	
+		  } else {
+		  	// ignore, cause we scan a comment
 		  }
 		}
 

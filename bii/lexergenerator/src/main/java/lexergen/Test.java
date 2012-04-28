@@ -37,6 +37,7 @@ import java.util.ArrayList;
 
 import regextodfaconverter.ConvertExecption;
 import regextodfaconverter.MinimalDfa;
+import regextodfaconverter.NfaToDfaConverter;
 import regextodfaconverter.fsm.FiniteStateMachine;
 import regextodfaconverter.fsm.State;
 import tokenmatcher.StatePayload;
@@ -147,7 +148,8 @@ public class Test {
 		FiniteStateMachine<Character, StatePayload> fsm = new FiniteStateMachine<Character, StatePayload>();
 
 		try {
-			State<Character, StatePayload> state1, state2, state3, state4, state5;
+			State<Character, StatePayload> state1, state2, state3, state4, state5, state6,
+																		 state7, state8, state9, state10, state11, state12;
 			
 			state1 = fsm.getCurrentState();
 			
@@ -156,33 +158,47 @@ public class Test {
 					new regextodfaconverter.fsm.StatePayload( TokenType.LINECOMMENT_BEGIN, 0), true);
 			state4 = new State<Character, StatePayload>( 
 					new regextodfaconverter.fsm.StatePayload( TokenType.BLOCKCOMMENT_BEGIN, 0), true);
-			
-			state5 = new State<Character, StatePayload>();
-			state5 = new State<Character, StatePayload>();
-			
-			
-			
-			state4 = new State<Character, StatePayload>( 
-					new regextodfaconverter.fsm.StatePayload( TokenType.OP_NE, 0), true);
-			state5 = new State<Character, StatePayload>( 
-					new regextodfaconverter.fsm.StatePayload( TokenType.OP_LT, 1), true);
-			
-    	fsm.addTransition( state1, state2, '/');
+		
+			fsm.addTransition( state1, state2, '/');
     	fsm.addTransition( state2, state3, '/');
     	fsm.addTransition( state2, state4, '*');
     	
+			
     	
-    	
-    	fsm.addTransition( state1, state5, '*');
+    	state5 = new State<Character, StatePayload>();
+			state6 = new State<Character, StatePayload>( 
+					new regextodfaconverter.fsm.StatePayload( TokenType.BLOCKCOMMENT_END, 0), true);
+			
+			fsm.addTransition( state1, state5, '*');
     	fsm.addTransition( state5, state6, '/');
     	
     	
     	
-    	fsm.addTransition( state2, state4, '>');
-    	for ( char c = 0x00; c <= 0xFF; c++) {
-				if ( c != '>' && c != '=') 
-					fsm.addTransition( state2, state5, c);	
-			}
+    	state7 = new State<Character, StatePayload>();
+			state8 = new State<Character, StatePayload>( 
+					new regextodfaconverter.fsm.StatePayload( TokenType.BLOCKCOMMENT_BEGIN, 0), true);
+			
+			fsm.addTransition( state1, state7, '{');
+    	fsm.addTransition( state7, state8, '-');
+    	
+    	
+    	
+    	state9 = new State<Character, StatePayload>();
+			state10 = new State<Character, StatePayload>( 
+					new regextodfaconverter.fsm.StatePayload( TokenType.BLOCKCOMMENT_END, 0), true);
+			
+			fsm.addTransition( state1, state9, '-');
+    	fsm.addTransition( state9, state10, '}');
+    	
+    	
+    	state11 = new State<Character, StatePayload>();
+			state12 = new State<Character, StatePayload>( 
+					new regextodfaconverter.fsm.StatePayload( TokenType.LINECOMMENT_BEGIN, 0), true);
+			
+			fsm.addTransition( state1, state11, '-');
+    	fsm.addTransition( state11, state12, '-');
+    	
+    	
     	
 		} catch ( Exception e) {
 			e.printStackTrace();
@@ -234,6 +250,11 @@ public class Test {
 	public static void runTest() throws ConvertExecption, Exception {
 
 		FiniteStateMachine<Character, StatePayload> fsm = generateRelopFSM();
+		//FiniteStateMachine<Character, StatePayload> fsm = generateCommentFSM();
+		fsm.union( generateCommentFSM());
+		NfaToDfaConverter<Character, StatePayload>  nfaToDfaConverter = new NfaToDfaConverter<Character, StatePayload>();
+		fsm = nfaToDfaConverter.convertToDfa(fsm);
+		System.out.println( fsm.isDeterministic());
 		
 		LexemeReader lexemeReader = new BufferedLexemeReader( "testrelop.fun");//new SimpleLexemeReader( "testrelop.fun");
 		Tokenizer tokenizer = new Tokenizer( lexemeReader,

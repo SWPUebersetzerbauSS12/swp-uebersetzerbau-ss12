@@ -3,6 +3,7 @@ package tokenmatcher.errorhandler;
 import tokenmatcher.DeterministicFiniteAutomata;
 import tokenmatcher.LexemIdentificationException;
 import tokenmatcher.StatePayload;
+import utils.Notification;
 import bufferedreader.LexemeReader;
 
 
@@ -45,6 +46,7 @@ public class ErrorCorrector {
 	private void handleMismatchInPanicMode( Character currentChar,
 			LexemeReader lexemeReader,
 			DeterministicFiniteAutomata<Character, StatePayload> dfa) {
+		Notification.printErrorMessage( "Mismatch: " + currentChar);
 		//TODO
 		//throw new LexemIdentificationException( "Panic mode not yet implemented!");
 	}
@@ -52,6 +54,7 @@ public class ErrorCorrector {
 	private void handleMismatchOnPhraseLevel( Character currentChar,
 			LexemeReader lexemeReader,
 			DeterministicFiniteAutomata<Character, StatePayload> dfa) {
+		Notification.printErrorMessage( "Mismatch: " + currentChar);
 		//TODO
 	//throw new LexemIdentificationException( "Panic mode not yet implemented!");	
 	}

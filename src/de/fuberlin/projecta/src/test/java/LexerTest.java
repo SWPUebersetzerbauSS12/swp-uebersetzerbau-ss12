@@ -43,12 +43,12 @@ public class LexerTest {
 		Lexer lexer = new Lexer(new StringCharStream(source));
 		ArrayList<Token> tokenList = tokenize(lexer);
 
-		assertEquals(tokenList.get(0).getType(), TokenType.INT);
-		assertEquals(tokenList.get(1).getType(), TokenType.REAL);
+		assertEquals(tokenList.get(0).getType(), TokenType.INT_LITERAL);
+		assertEquals(tokenList.get(1).getType(), TokenType.REAL_LITERAL);
 		assertEquals(tokenList.get(2).getType(), TokenType.OP_ADD);
-		assertEquals(tokenList.get(3).getType(), TokenType.REAL);
-		assertEquals(tokenList.get(4).getType(), TokenType.REAL);
-		assertEquals(tokenList.get(5).getType(), TokenType.REAL);
+		assertEquals(tokenList.get(3).getType(), TokenType.REAL_LITERAL);
+		assertEquals(tokenList.get(4).getType(), TokenType.REAL_LITERAL);
+		assertEquals(tokenList.get(5).getType(), TokenType.REAL_LITERAL);
 	}
 	
 	@Test
@@ -57,13 +57,13 @@ public class LexerTest {
 		
 		Token[] expected = new Token[]{
 				new Token(TokenType.DEF, null, 1,0),
-				new Token(TokenType.INT, null, 1, 4),
+				new Token(TokenType.INT_TYPE, null, 1, 4),
 				new Token(TokenType.ID, "function", 1, 8),
 				new Token(TokenType.LPAREN, null, 1, 16),
 				new Token(TokenType.RPAREN, null, 1, 17),
 				new Token(TokenType.OP_SEMIC, null, 1, 18),
 				new Token(TokenType.DEF, null, 3,11),
-				new Token(TokenType.REAL, null, 3, 15),
+				new Token(TokenType.REAL_TYPE, null, 3, 15),
 				new Token(TokenType.ID, "func", 3, 20),
 				new Token(TokenType.LPAREN, null, 3, 24),
 				new Token(TokenType.RPAREN, null, 3, 25),
@@ -78,7 +78,7 @@ public class LexerTest {
 		final String code = "def int function();";
 
 		Token[] expected = new Token[] { new Token(TokenType.DEF, null, 1, 0),
-				new Token(TokenType.INT, null, 1, 4),
+				new Token(TokenType.INT_TYPE, null, 1, 4),
 				new Token(TokenType.ID, "function", 1, 8),
 				new Token(TokenType.LPAREN, null, 1, 16),
 				new Token(TokenType.RPAREN, null, 1, 17),
@@ -98,11 +98,11 @@ public class LexerTest {
 		final String code = "return true;\nreturn false;";
 		Token[] expected = new Token[] {
 				new Token(TokenType.RETURN, null, 1, 0),
-				new Token(TokenType.TRUE, null, 1, 7),
+				new Token(TokenType.BOOL_LITERAL, "true", 1, 7),
 				new Token(TokenType.OP_SEMIC, null, 1, 11),
 
 				new Token(TokenType.RETURN, null, 2, 0),
-				new Token(TokenType.FALSE, null, 2, 7),
+				new Token(TokenType.BOOL_LITERAL, "false", 2, 7),
 				new Token(TokenType.OP_SEMIC, null, 2, 12),
 				new Token(TokenType.EOF, null, 2, 13)
 		};
@@ -115,10 +115,10 @@ public class LexerTest {
 		Token[] expected = new Token[] {
 				new Token(TokenType.RECORD, null, 1, 0),
 				new Token(TokenType.LBRACE, null, 1, 7),
-				new Token(TokenType.INT, null, 1, 9),
+				new Token(TokenType.INT_TYPE, null, 1, 9),
 				new Token(TokenType.ID, "a", 1, 13),
 				new Token(TokenType.OP_SEMIC, null, 1, 14),
-				new Token(TokenType.REAL, null, 1, 16),
+				new Token(TokenType.REAL_TYPE, null, 1, 16),
 				new Token(TokenType.ID, "b", 1, 21),
 				new Token(TokenType.OP_SEMIC, null, 1, 22),
 				new Token(TokenType.RBRACE, null, 1, 24),
@@ -134,13 +134,13 @@ public class LexerTest {
 		final String code = "def int foo();\ndef int bar();";
 
 		Token[] expected = new Token[] { new Token(TokenType.DEF, null, 1, 0),
-				new Token(TokenType.INT, null, 1, 4),
+				new Token(TokenType.INT_TYPE, null, 1, 4),
 				new Token(TokenType.ID, "foo", 1, 8),
 				new Token(TokenType.LPAREN, null, 1, 11),
 				new Token(TokenType.RPAREN, null, 1, 12),
 				new Token(TokenType.OP_SEMIC, null, 1, 13),
 				new Token(TokenType.DEF, null, 2, 0),
-				new Token(TokenType.INT, null, 2, 4),
+				new Token(TokenType.INT_TYPE, null, 2, 4),
 				new Token(TokenType.ID, "bar", 2, 8),
 				new Token(TokenType.LPAREN, null, 2, 11),
 				new Token(TokenType.RPAREN, null, 2, 12),

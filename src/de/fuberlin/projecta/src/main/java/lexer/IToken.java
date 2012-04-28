@@ -26,22 +26,28 @@ public interface IToken {
 		/** Other reserverd key words */
 		IF, THEN, ELSE, WHILE, DO, BREAK,
 		RETURN, PRINT,
-		/** True literal - handle as keyword */
-		TRUE,
-		/** False literal - handle as keyword */
-		FALSE,
 		/** Function definition */
 		DEF,
 		/** Record keyword */
 		RECORD,
 		/** Identifier */
 		ID,
+		/** Bool (bool) type */
+		BOOL_TYPE,
+		/** String (string) type */
+		STRING_TYPE,
+		/** Integer (int) type) */
+		INT_TYPE,
+		/** Real (real) type */
+		REAL_TYPE,
+		/** Boolean literal */
+		BOOL_LITERAL,
 		/** String constant */
-		STRING,
+		STRING_LITERAL,
 		/** Integer number */
-		INT,
+		INT_LITERAL,
 		/** Real number */
-		REAL,
+		REAL_LITERAL,
 		/** "(" */
 		LPAREN,
 		/** ")" */

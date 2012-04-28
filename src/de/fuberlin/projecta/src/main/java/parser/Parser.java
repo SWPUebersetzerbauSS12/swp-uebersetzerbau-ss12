@@ -114,12 +114,10 @@ public class Parser {
 						}
 						outputs.add(prod);
 					} else if (prod.trim().equals("")) {
-						printParseTree(syntaxTree);
 						throw new ParserException(
 								" Syntax error: No Rule in parsing table (Stack: "
 										+ peek + ", token: " + token + ")");
 					} else {
-						printParseTree(syntaxTree);
 						throw new ParserException(
 								"Wrong structur in parsing table! Productions should "
 										+ "be of the form: X ::= Y1 Y2 ... Yk! Problem with: "
@@ -160,7 +158,7 @@ public class Parser {
 			}
 		}
 
-		printParseTree(syntaxTree);
+		printParseTree(syntaxTree,0);
 	}
 
 	/**
@@ -209,18 +207,25 @@ public class Parser {
 		return null;
 	}
 
-	private void printParseTree(ISyntaxTree tree) {
+	/**
+	 * Prints the generated parse tree turned by 90 degree clockwise.
+	 * Read direction is still from the top to the bottom.
+	 * 
+	 * @param tree
+	 * @param depth
+	 */
+	private void printParseTree(ISyntaxTree tree, int depth) {
+		
+		for(int i = 0; i <= depth; i++ ){
+			System.out.print("\t");
+		}
 		System.out.print(tree.getName());
-
+		System.out.println("");
 		int count = tree.getChildrenCount();
 		if (count != 0) {
-			System.out.print("[");
 			for (int i = 0; i < count; i++) {
-				printParseTree(tree.getChild(i));
-				if (i != count - 1)
-					System.out.print(",");
+				printParseTree(tree.getChild(i), depth +1);
 			}
-			System.out.print("]");
 		}
 	}
 

@@ -359,6 +359,8 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 	 * @param fsm
 	 *            Der endliche Automat, mit dem dieser endliche Automat verenigt
 	 *            werden soll.
+	 * @remarks: Durch diese Methode wird der aktuelle Zustand auf den
+	 *           Startzustand zurückgesetzt.
 	 */
 	public void union(
 			FiniteStateMachine<TransitionConditionType, StatePayloadType> fsm) {
@@ -372,7 +374,7 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 			// Dieser Fall kann niemals eintreten!
 			e.printStackTrace();
 		}
-		getInitialState().SetTypeToDefault();
+		getInitialState().setTypeToDefault();
 
 		try {
 			setInitialState(state);
@@ -380,7 +382,7 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 			// Dieser Fall kann niemals eintreten!
 			e.printStackTrace();
 		}
-		state.SetTypeToInitial();
+		state.setTypeToInitial();
 
 		getStates().putAll(fsm.getStates());
 
@@ -390,8 +392,9 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 			// Dieser Fall kann niemals eintreten!
 			e.printStackTrace();
 		}
-		fsm.getInitialState().SetTypeToDefault();
+		fsm.getInitialState().setTypeToDefault();
 
+		resetToInitialState();
 	}
 
 	/**
@@ -401,6 +404,8 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 	 * @param fsm
 	 *            Der endliche Automat, mit dem dieser endliche Automat
 	 *            verbunden werden soll.
+	 * @remarks: Durch diese Methode wird der aktuelle Zustand auf den
+	 *           Startzustand zurückgesetzt.
 	 */
 	public void concat(
 			FiniteStateMachine<TransitionConditionType, StatePayloadType> fsm) {
@@ -412,7 +417,7 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 				.values()) {
 			if (state.isFiniteState()) {
 				// state.setPayload(null);
-				state.SetTypeToDefault();
+				state.setTypeToDefault();
 				try {
 					addTransition(state, fsm.getInitialState(), null);
 				} catch (Exception e) {
@@ -423,11 +428,16 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 		}
 
 		getStates().putAll(fsm.getStates());
-		fsm.getInitialState().SetTypeToDefault();
+		fsm.getInitialState().setTypeToDefault();
+
+		resetToInitialState();
 	}
 
 	/**
 	 * Fügt diesem eindlichen Automaten eine Wiederholung hinzu.
+	 * 
+	 * @remarks: Durch diese Methode wird der aktuelle Zustand auf den
+	 *           Startzustand zurückgesetzt.
 	 */
 	public void closure() {
 		HashMap<UUID, State<TransitionConditionType, StatePayloadType>> states = new HashMap<UUID, State<TransitionConditionType, StatePayloadType>>();
@@ -436,12 +446,12 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 		State<TransitionConditionType, StatePayloadType> initState = new State<TransitionConditionType, StatePayloadType>();
 		State<TransitionConditionType, StatePayloadType> finiteState = new State<TransitionConditionType, StatePayloadType>();
 		State<TransitionConditionType, StatePayloadType> old_initState = getInitialState();
-		
-		initState.SetTypeToInitial();
-		finiteState.SetTypeToFinite();
+
+		initState.setTypeToInitial();
+		finiteState.setTypeToFinite();
 
 		getStates().put(initState.getUUID(), initState);
-		getStates().put(initState.getUUID(), finiteState);
+		getStates().put(finiteState.getUUID(), finiteState);
 
 		try {
 			addTransition(initState, finiteState, null);
@@ -456,7 +466,7 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 			// Dieser Fall kann niemals eintreten!
 			e.printStackTrace();
 		}
-		getInitialState().SetTypeToDefault();
+		getInitialState().setTypeToDefault();
 
 		try {
 			setInitialState(initState);
@@ -470,7 +480,7 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 			if (state.isFiniteState()) {
 				// state.setPayload(null);
 				finiteState.setPayload(state.getPayload());
-				state.SetTypeToDefault();
+				state.setTypeToDefault();
 				try {
 					addTransition(state, finiteState, null);
 				} catch (Exception e) {
@@ -486,6 +496,8 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 				}
 			}
 		}
+
+		resetToInitialState();
 	}
 
 	/**
@@ -495,7 +507,7 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 	 */
 	public FiniteStateMachine() {
 		State<TransitionConditionType, StatePayloadType> state = new State<TransitionConditionType, StatePayloadType>();
-		state.setType(StateType.INITIAL);
+		state.setTypeToInitial();
 
 		setStates(new HashMap<UUID, State<TransitionConditionType, StatePayloadType>>());
 		getStates().put(state.getUUID(), state);

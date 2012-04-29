@@ -51,7 +51,7 @@ import regextodfaconverter.fsm.excpetions.TransitionAlreadyExistsException;
  */
 public class State<TransitionConditionType extends Comparable<TransitionConditionType>, PayloadType>
 		implements Comparable<State<TransitionConditionType, PayloadType>>,
-		tokenmatcher.State<PayloadType> {
+		tokenmatcher.State<TransitionConditionType, PayloadType> {
 
 	/**
 	 * Die eindetige UUID dieses Zustandes.
@@ -66,9 +66,13 @@ public class State<TransitionConditionType extends Comparable<TransitionConditio
 	 */
 	private HashSet<Transition<TransitionConditionType, PayloadType>> _transitions;
 	/**
-	 * Der Zustandstyp.
+	 * Die Flag für den Startzusand.
 	 */
-	private StateType _type;
+	private boolean _initial = false;
+	/**
+	 * Die Flag für den Endzustand.
+	 */
+	private boolean _finite = false;
 
 	/**
 	 * Gibt die eindetige UUID dieses Zustandes zurück.
@@ -80,8 +84,8 @@ public class State<TransitionConditionType extends Comparable<TransitionConditio
 	}
 
 	/**
-	 * Gibt den in diesem Zustand hinterlegte Inhalt zurück.
-	 * Setzt die eindetige UUID dieses Zustandes fest.
+	 * Gibt den in diesem Zustand hinterlegte Inhalt zurück. Setzt die eindetige
+	 * UUID dieses Zustandes fest.
 	 * 
 	 * @param uuid
 	 *            Die eindetige UUID dieses Zustandes.
@@ -137,69 +141,118 @@ public class State<TransitionConditionType extends Comparable<TransitionConditio
 	}
 
 	/**
-	 * Gibt den Zustandstyp zurück.
+	 * Gibt alle Elemente, die den ausgehenden Übergängen zugeordnet sind
+	 * zurück.
 	 * 
-	 * @return Der Zustandstyp.
+	 * @return Alle Elemente, die den ausgehenden Übergängen zugeordnet sind
+	 *         zurück.
 	 */
-	public StateType getType() {
-		// // Ein Zustand ohne ausgehende Übergänge ist immer ein Endzustand, es
-		// // sei den er ist ein Startzustand.
-		// if (_type != StateType.INITIAL && _transitions.isEmpty()) {
-		// return StateType.FINITE;
-		// }
-		return _type;
+	public Collection<TransitionConditionType> getElementsOfOutgoingTransitions() {
+		HashSet<TransitionConditionType> elements = new HashSet<TransitionConditionType>();
+
+		for (Transition<TransitionConditionType, PayloadType> tran : getTransitions()) {
+			elements.add(tran.getCondition());
+		}
+
+		return elements;
 	}
 
 	/**
-	 * Legt den Zustandstyp fest.
+	 * Gibt die Flag für den Startzusand zurück.
 	 * 
-	 * @param type
-	 *            Der Zustandstyp.
+	 * @return Die Flag für den Startzusand.
 	 */
-	protected void setType(StateType type) {
-		_type = type;
+	protected boolean getInitial() {
+		return _initial;
 	}
 
 	/**
-	 * Legt den Zustandstyp auf INITIAL fest.
+	 * Setzt die Flag für den Startzusand fest.
+	 * 
+	 * @param initial
+	 *            Die Flag für den Startzusand.
 	 */
-	protected void SetTypeToInitial() {
-		setType(StateType.INITIAL);
+	protected void setInitial(boolean initial) {
+		_initial = initial;
 	}
 
 	/**
-	 * Legt den Zustandstyp auf FINITE fest.
+	 * Gibt die Flag für den Endzustand zurück.
+	 * 
+	 * @return Die Flag für den Endzustand.
 	 */
-	public void SetTypeToFinite() {
-		setType(StateType.FINITE);
+	public boolean getFinite() {
+		return _finite;
 	}
 
 	/**
-	 * Legt den Zustandstyp auf DEFAULT fest.
+	 * Setzt die Flag für den Endzustand fest.
+	 * 
+	 * @param finite
+	 *            Die Flag für den Endzustand.
 	 */
-	public void SetTypeToDefault() {
-		setType(StateType.DEFAULT);
+	public void setFinite(boolean finite) {
+		_finite = finite;
 	}
 
 	/**
-	 * Gibt an, ob der Zustandtyp dieses Zustands FINITE ist.
+	 * Setzt den Zustandtypen dieses Zustands auf einen exklusiven Startzustand.
+	 */
+	protected void setTypeToInitial() {
+		setInitial(true);
+		setFinite(false);
+	}
+
+	/**
+	 * Setzt den Zustandtypen dieses Zustands auf einen exklusiven Endzustand.
+	 */
+	public void setTypeToFinite() {
+		setInitial(false);
+		setFinite(true);
+	}
+
+	/**
+	 * Setzt den Zustandtypen dieses Zustands auf einen exklusiven Default-Zustand.
+	 */
+	public void setTypeToDefault() {
+		setInitial(false);
+		setFinite(false);
+	}
+
+	/**
+	 * Legt den Zustandstyp auf INITIAL und FINITE fest.
+	 */
+	protected void setTypeToInitialAndFinite() {
+		setInitial(true);
+		setFinite(true);
+	}
+
+	/**
+	 * Gibt an, ob es sich bei diesem Zustand um einen Anfangszustand handelt.
+	 * 
+	 * @return true, wenn es sich um einen Anfangszustand handelt, sonst false.
 	 */
 	public boolean isFiniteState() {
-		return (getType() == StateType.FINITE);
+		return getFinite();
 	}
 
 	/**
-	 * Gibt an, ob der Zustandtyp dieses Zustands INITIAL ist.
+	 * Gibt an, ob es sich bei diesem Zustand um einen Endzustand handelt.
+	 * 
+	 * @return true, wenn es sich um einen Endzustand handelt, sonst false.
 	 */
 	public boolean isInitialState() {
-		return (getType() == StateType.INITIAL);
+		return getInitial();
 	}
 
 	/**
-	 * Gibt an, ob der Zustandtyp dieses Zustands DEFAULT ist.
+	 * Gibt an, ob es sich bei diesem Zustand um einen Default-Zustand handelt.
+	 * 
+	 * @return true, wenn es sich um keinen Anfangszustand und keinen Endzustand
+	 *         handelt, sonst false.
 	 */
 	public boolean isDefaultState() {
-		return (getType() == StateType.DEFAULT);
+		return (!(getInitial() && getFinite()));
 	}
 
 	/**
@@ -237,7 +290,7 @@ public class State<TransitionConditionType extends Comparable<TransitionConditio
 		generateNewUUID();
 		setPayload(null);
 		setTransitiosn(new HashSet<Transition<TransitionConditionType, PayloadType>>());
-		SetTypeToDefault();
+		setTypeToDefault();
 	}
 
 	/**
@@ -261,7 +314,7 @@ public class State<TransitionConditionType extends Comparable<TransitionConditio
 	public State(boolean isFinite) {
 		this();
 		if (isFinite)
-			SetTypeToFinite();
+			setTypeToFinite();
 	}
 
 	/**
@@ -277,12 +330,7 @@ public class State<TransitionConditionType extends Comparable<TransitionConditio
 		this();
 		setPayload(payload);
 		if (isFinite)
-			SetTypeToFinite();
-	}
-
-	public Collection<PayloadType> getElementsOfOutgoingTransitions() {
-		// TODO Auto-generated method stub
-		return null;
+			setTypeToFinite();
 	}
 
 }

@@ -43,6 +43,7 @@ import tokenmatcher.State;
  * dass der gekapselte FSA auch sicher ein DFA ist.
  * 
  * @author Johannes Dahlke
+ * @author Daniel Rotar
  * 
  * @param <ConditionType>
  *            Der Typ der Bedingung für einen Zustandsübergang beim verwendeten
@@ -76,45 +77,74 @@ public class MinimalDfa<ConditionType extends Comparable<ConditionType>, Payload
 		super();
 		this.finiteStateMachine = finiteStateMachine;
 		try {
-			if (!finiteStateMachine.isDeterministic()) {
+			if (!this.finiteStateMachine.isDeterministic()) {
 				NfaToDfaConverter<ConditionType, PayloadType> converter = new NfaToDfaConverter<ConditionType, PayloadType>();
-				finiteStateMachine = converter.convertToDfa(finiteStateMachine);
+				this.finiteStateMachine = converter.convertToDfa(this.finiteStateMachine);
 			}
 			DfaMinimizer<ConditionType, PayloadType> minimizer = new DfaMinimizer<ConditionType, PayloadType>();
-			finiteStateMachine = minimizer
-					.convertToMimimumDfa(finiteStateMachine);
+			this.finiteStateMachine = minimizer
+					.convertToMimimumDfa(this.finiteStateMachine);
 		} catch (Exception e) {
 			throw new ConvertExecption(
 					"Cannot convert given fsa to minimal dfa.");
 		}
 	}
 
-	public State<PayloadType> changeStateByElement(ConditionType element) {
+	/**
+	 * Wechselt in einen anderen Zustand, sofern es einen Übergang in der
+	 * Übergangstabelle ausgehend vom aktuellen Zustand in den angegebenen
+	 * Element gibt.
+	 * 
+	 * @param element
+	 *            Das Element, welches den Übergang definiert.
+	 * @return Den neuen Zustand oder null, falls es keinen Übergang in der
+	 *         Übergangstabelle gibt.
+	 */
+	public State<ConditionType, PayloadType> changeStateByElement(
+			ConditionType element) {
 		return finiteStateMachine.changeState(element);
 	}
 
+	/**
+	 * Prüft, ob ein Übergang für das Lesen des spezifizierten Elementes
+	 * definiert ist.
+	 * 
+	 * @param element
+	 *            Das Element, für das geprüft werden soll, ob ein Übergang aus
+	 *            dem aktuellen Zustand durch Lesen des Elementes definiert ist.
+	 * @return true, wenn es einen Übergang gibt, anderenfalls false.
+	 */
 	public boolean canChangeStateByElement(ConditionType element) {
 		return finiteStateMachine.canChangeState(element);
 	}
 
-	public State<PayloadType> getCurrentState() {
+	/**
+	 * Gibt den aktuellen Zustand zurück.
+	 * 
+	 * @return Der aktuelle Zustand.
+	 */
+	public State<ConditionType, PayloadType> getCurrentState() {
 		return finiteStateMachine.getCurrentState();
 	}
 
+	/**
+	 * Setzt den DFA wieder in den Startzustand zurück.
+	 */
 	public void resetToInitialState() {
 		finiteStateMachine.resetToInitialState();
 	}
-	
- 	public Collection<ConditionType> getElementsOfOutgoingTransitionFromState(
-			State state) {
- 		// TODO: implement method
-		return null;
-	}
 
+	/**
+	 * Liefert eine Liste mit allen Elementen, die den vom Zustand state
+	 * ausgehenden Übergängen zugeordnet sind.
+	 * 
+	 * @param state
+	 *            Der Zustand, von dem die Übergange ausgehen.
+	 * @return Alle ausgehenden Elemente zu dem angegebenen Zustand.
+	 */
 	public Collection<ConditionType> getElementsOfOutgoingTransitionsFromState(
-			State state) {
-		// TODO Auto-generated method stub
-		return null;
+			State<ConditionType, PayloadType> state) {
+		return state.getElementsOfOutgoingTransitions();
 	}
 
 }

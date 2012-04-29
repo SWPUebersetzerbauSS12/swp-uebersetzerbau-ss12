@@ -80,6 +80,7 @@ public class NfaToDfaConverter<TransitionConditionType extends Comparable<Transi
 				finiteStateMachine.getInitialState(), null);
 		initialNFAStates.put(finiteStateMachine.getInitialState().getUUID(),
 				finiteStateMachine.getInitialState());
+		setFiniteStates(dfa.getInitialState(), initialNFAStates);
 		tasks.add(new DFATask(dfa.getInitialState(), initialNFAStates));
 
 		mergedStates.put(initialNFAStates, dfa.getInitialState());
@@ -105,32 +106,7 @@ public class NfaToDfaConverter<TransitionConditionType extends Comparable<Transi
 					if (!mergedStates.containsKey(reachableStates)) {
 						State<TransitionConditionType, StatePayloadType> state = new State<TransitionConditionType, StatePayloadType>();
 
-						for (State<TransitionConditionType, StatePayloadType> s : reachableStates.values())
-						{
-							if (s.isFiniteState())
-							{
-								state.SetTypeToFinite();
-								if (state.getPayload() == null)
-								{
-									state.setPayload(s.getPayload());
-								}
-								
-								if (s.getPayload() != null)
-								{
-									if (s.getPayload() instanceof StatePayload) 
-									{										
-										if (state.getPayload() instanceof StatePayload) 
-										{
-											if (((StatePayload) s.getPayload() ).getPriority() > ((StatePayload) state.getPayload() ).getPriority())
-											{
-												state.setPayload(s.getPayload());												
-											}
-										}
-									}
-								}
-							
-							}							
-						}
+						setFiniteStates(state, reachableStates);
 						mergedStates.put(reachableStates, state);
 						tasks.add(new DFATask(state, reachableStates));
 					}
@@ -146,6 +122,32 @@ public class NfaToDfaConverter<TransitionConditionType extends Comparable<Transi
 		}
 
 		return dfa;
+	}
+
+	private void setFiniteStates(
+			State<TransitionConditionType, StatePayloadType> state,
+			HashMap<UUID, State<TransitionConditionType, StatePayloadType>> reachableStates) {
+		for (State<TransitionConditionType, StatePayloadType> s : reachableStates
+				.values()) {
+			if (s.isFiniteState()) {
+				state.setFinite(true);
+				if (state.getPayload() == null) {
+					state.setPayload(s.getPayload());
+				}
+
+				if (s.getPayload() != null) {
+					if (s.getPayload() instanceof StatePayload) {
+						if (state.getPayload() instanceof StatePayload) {
+							if (((StatePayload) s.getPayload()).getPriority() > ((StatePayload) state
+									.getPayload()).getPriority()) {
+								state.setPayload(s.getPayload());
+							}
+						}
+					}
+				}
+
+			}
+		}
 	}
 
 	/**
@@ -175,26 +177,23 @@ public class NfaToDfaConverter<TransitionConditionType extends Comparable<Transi
 
 			for (Transition<TransitionConditionType, StatePayloadType> transition : task
 					.getTransitions()) {
-				if (transition.getCondition() == null)
-				{
-					if (depth > 0 || condition == null)
-					{
-						if (!visited.containsKey(transition.getState().getUUID()))
-						{
-							visited.put(transition.getState().getUUID(),transition.getState());
+				if (transition.getCondition() == null) {
+					if (depth > 0 || condition == null) {
+						if (!visited.containsKey(transition.getState()
+								.getUUID())) {
+							visited.put(transition.getState().getUUID(),
+									transition.getState());
 							tasks.add(transition.getState());
-						}											
+						}
 					}
-				}
-				else
-				{
-					if (transition.getCondition().equals(condition))
-					{
-						if (!visited.containsKey(transition.getState().getUUID()))
-						{
-							visited.put(transition.getState().getUUID(),transition.getState());
+				} else {
+					if (transition.getCondition().equals(condition)) {
+						if (!visited.containsKey(transition.getState()
+								.getUUID())) {
+							visited.put(transition.getState().getUUID(),
+									transition.getState());
 							tasks.add(transition.getState());
-						}	
+						}
 					}
 				}
 			}

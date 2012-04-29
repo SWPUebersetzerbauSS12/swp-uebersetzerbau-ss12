@@ -39,6 +39,7 @@ public class ReadTokDefinition {
 
 		path = (path == null) ? Helper.getDefaultTokenDef() : path;
 		Scanner s = new Scanner(new File(path));
+
 		// new delimeter for getting the tokens
 		s.useDelimiter("(\\n+)|(\\s+\\{)");
 
@@ -73,21 +74,7 @@ public class ReadTokDefinition {
 
 			// try to make a definition entry
 			if (!definitions.containsKey(name)) {
-
-				if (pattern.matches(".*\\{.*\\}.*")) {
-
-					String[] defs = pattern.split("(.*\\{)|(\\}.*)");
-
-					for (int i = 0; i < defs.length; i++) {
-
-						if (!definitions.containsKey(defs[i]))
-							continue;
-
-						String tmpPattern = definitions.get(defs[i]);
-						pattern = pattern.replace("{" + defs[i] + "}", tmpPattern);
-					}
-				}
-
+				pattern = replaceDef(pattern);
 				definitions.put(name, pattern);
 			}
 		}
@@ -100,8 +87,35 @@ public class ReadTokDefinition {
 		while (s.hasNextLine()) {
 			String pattern = s.next();
 			String action = s.next().replace("}", "");
+			pattern = replaceDef(pattern);
 			Line tpl = new Line(pattern, action);
 			rules.add(tpl);
 		}
 	}
+
+	/**
+	 * Replaces the definitions in the pattern.
+	 * 
+	 * @param pattern
+	 * @return returns something, which is only including regular expressions
+	 */
+	private String replaceDef(String pattern) {
+
+		if (!pattern.matches("\".*\"") && pattern.matches(".*\\{.*\\}.*")) {
+
+			String[] defs = pattern.split("(.*\\{)|(\\}.*)");
+
+			for (int i = 0; i < defs.length; i++) {
+
+				if (!definitions.containsKey(defs[i]))
+					continue;
+
+				String tmpPattern = definitions.get(defs[i]);
+				return pattern.replace("{" + defs[i] + "}", tmpPattern);
+			}
+		}
+
+		return pattern;
+	}
+
 }

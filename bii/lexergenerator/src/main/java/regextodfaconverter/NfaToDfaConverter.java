@@ -109,7 +109,7 @@ public class NfaToDfaConverter<TransitionConditionType extends Comparable<Transi
 						{
 							if (s.isFiniteState())
 							{
-								state.SetTypeToFinite();
+								state.setTypeToFinite();
 								if (state.getPayload() == null)
 								{
 									state.setPayload(s.getPayload());

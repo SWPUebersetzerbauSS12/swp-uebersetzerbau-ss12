@@ -374,7 +374,7 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 			// Dieser Fall kann niemals eintreten!
 			e.printStackTrace();
 		}
-		getInitialState().SetTypeToDefault();
+		getInitialState().setTypeToDefault();
 
 		try {
 			setInitialState(state);
@@ -382,7 +382,7 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 			// Dieser Fall kann niemals eintreten!
 			e.printStackTrace();
 		}
-		state.SetTypeToInitial();
+		state.setTypeToInitial();
 
 		getStates().putAll(fsm.getStates());
 
@@ -392,7 +392,7 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 			// Dieser Fall kann niemals eintreten!
 			e.printStackTrace();
 		}
-		fsm.getInitialState().SetTypeToDefault();
+		fsm.getInitialState().setTypeToDefault();
 
 		resetToInitialState();
 	}
@@ -417,7 +417,7 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 				.values()) {
 			if (state.isFiniteState()) {
 				// state.setPayload(null);
-				state.SetTypeToDefault();
+				state.setTypeToDefault();
 				try {
 					addTransition(state, fsm.getInitialState(), null);
 				} catch (Exception e) {
@@ -428,7 +428,7 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 		}
 
 		getStates().putAll(fsm.getStates());
-		fsm.getInitialState().SetTypeToDefault();
+		fsm.getInitialState().setTypeToDefault();
 
 		resetToInitialState();
 	}
@@ -447,8 +447,8 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 		State<TransitionConditionType, StatePayloadType> finiteState = new State<TransitionConditionType, StatePayloadType>();
 		State<TransitionConditionType, StatePayloadType> old_initState = getInitialState();
 
-		initState.SetTypeToInitial();
-		finiteState.SetTypeToFinite();
+		initState.setTypeToInitial();
+		finiteState.setTypeToFinite();
 
 		getStates().put(initState.getUUID(), initState);
 		getStates().put(finiteState.getUUID(), finiteState);
@@ -466,7 +466,7 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 			// Dieser Fall kann niemals eintreten!
 			e.printStackTrace();
 		}
-		getInitialState().SetTypeToDefault();
+		getInitialState().setTypeToDefault();
 
 		try {
 			setInitialState(initState);
@@ -480,7 +480,7 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 			if (state.isFiniteState()) {
 				// state.setPayload(null);
 				finiteState.setPayload(state.getPayload());
-				state.SetTypeToDefault();
+				state.setTypeToDefault();
 				try {
 					addTransition(state, finiteState, null);
 				} catch (Exception e) {
@@ -507,7 +507,7 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 	 */
 	public FiniteStateMachine() {
 		State<TransitionConditionType, StatePayloadType> state = new State<TransitionConditionType, StatePayloadType>();
-		state.setType(StateType.INITIAL);
+		state.setTypeToInitial();
 
 		setStates(new HashMap<UUID, State<TransitionConditionType, StatePayloadType>>());
 		getStates().put(state.getUUID(), state);

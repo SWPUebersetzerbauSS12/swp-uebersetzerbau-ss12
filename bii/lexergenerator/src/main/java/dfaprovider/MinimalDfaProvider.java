@@ -25,7 +25,13 @@ public class MinimalDfaProvider {
 		//@Max: So vorderst du die Erstellung eines DFA basierend auf der Eingabedatei an.
 		//Das ist "orangene" Kasten in dem Übergangsdiagramm.
 		//Diese drei Kommentarzeilen bitte anschließend löschen.
-		mDfa = MinimalDfaBuilder.buildMinimalDfa(regularDefinitionFile);
+		MinimalDfaBuilder builder = new IndirectMinimalDfaBuilder();
+		try {
+			mDfa = builder.buildMinimalDfa(regularDefinitionFile);
+		} catch (MinimalDfaBuilderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		return mDfa;
 	}

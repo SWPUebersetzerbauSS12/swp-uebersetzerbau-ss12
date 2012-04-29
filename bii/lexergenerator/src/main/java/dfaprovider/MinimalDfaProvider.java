@@ -19,7 +19,14 @@ public class MinimalDfaProvider {
 	 */
 	public static MinimalDfa<Character,StatePayload> getMinimalDfa(File regularDefinitionFile)
 	{
-		//TODO: getMinimalDfa implementieren
-		return null;
+		MinimalDfa<Character,StatePayload> mDfa = null;
+		//TODO: @Maximilian: getMinimalDfa implementieren.
+		
+		//@Max: So vorderst du die Erstellung eines DFA basierend auf der Eingabedatei an.
+		//Das ist "orangene" Kasten in dem Übergangsdiagramm.
+		//Diese drei Kommentarzeilen bitte anschließend löschen.
+		mDfa = MinimalDfaBuilder.buildMinimalDfa(regularDefinitionFile);
+		
+		return mDfa;
 	}
 }

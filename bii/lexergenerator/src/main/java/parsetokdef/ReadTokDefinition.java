@@ -38,29 +38,70 @@ public class ReadTokDefinition {
 	public void readFile(String path) throws FileNotFoundException {
 
 		path = (path == null) ? Helper.getDefaultTokenDef() : path;
-		Scanner s = new Scanner(new File(path));	
-		
-		readDefinition(s);		
+		Scanner s = new Scanner(new File(path));
+		// new delimeter for getting the tokens
+		s.useDelimiter("(\\n+)|(\\s+\\{)");
+
+		readDefinition(s);
 		readRules(s);
 	}
 
 	private void readDefinition(Scanner s) {
-		// TODO Auto-generated method stub		
+
+		HashMap<String, Boolean> seenPattern = new HashMap<String, Boolean>();
+		definitions = (definitions == null) ? new HashMap<String, String>()
+				: definitions;
+
+		while (s.hasNextLine()) {
+			String pattern = s.next();
+			String name = null;
+
+			// check, if line is empty
+			if (pattern.matches("\\t+|\\s+|\n")) {
+				continue;
+			}
+
+			// check, if the end of defenition is reached
+			if (pattern.equals("%%"))
+				return;
+
+			name = s.next().replace("{", "").replace("}", "");
+
+			// check, if this pattern was already read
+			if (seenPattern.containsKey(pattern))
+				continue;
+
+			// try to make a definition entry
+			if (!definitions.containsKey(name)) {
+
+				if (pattern.matches(".*\\{.*\\}.*")) {
+
+					String[] defs = pattern.split("(.*\\{)|(\\}.*)");
+
+					for (int i = 0; i < defs.length; i++) {
+
+						if (!definitions.containsKey(defs[i]))
+							continue;
+
+						String tmpPattern = definitions.get(defs[i]);
+						pattern = pattern.replace("{" + defs[i] + "}", tmpPattern);
+					}
+				}
+
+				definitions.put(name, pattern);
+			}
+		}
 	}
 
 	private void readRules(Scanner s) {
 
 		rules = (rules == null) ? new ArrayList<Line>() : rules;
 
-		// new delimeter for getting the tokens
-		s.useDelimiter("(\\n+)|(\\s+\\{)");
-
 		while (s.hasNextLine()) {
 			String pattern = s.next();
-			String action = s.next();
+			String action = s.next().replace("}", "");
 			Line tpl = new Line(pattern, action);
 			rules.add(tpl);
 		}
-
 	}
 }

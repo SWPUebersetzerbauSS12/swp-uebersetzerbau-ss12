@@ -6,12 +6,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Stack;
 import lexergen.helper.Helper;
 import lexergen.helper.Line;
 
 /**
  * 
- * @author benjamin
+ * @author Benjamin Weißenfels
  */
 public class ReadTokDefinition {
 
@@ -63,14 +64,16 @@ public class ReadTokDefinition {
 			}
 
 			// check, if the end of defenition is reached
-			if (pattern.equals("%%"))
+			if (pattern.equals("%%")) {
 				return;
+			}
 
 			name = s.next().replace("{", "").replace("}", "");
 
 			// check, if this pattern was already read
-			if (seenPattern.containsKey(pattern))
+			if (seenPattern.containsKey(pattern)) {
 				continue;
+			}
 
 			// try to make a definition entry
 			if (!definitions.containsKey(name)) {
@@ -101,21 +104,40 @@ public class ReadTokDefinition {
 	 */
 	private String replaceDef(String pattern) {
 
-		if (!pattern.matches("\".*\"") && pattern.matches(".*\\{.*\\}.*")) {
+		Stack<String> stack = new Stack();
 
-			String[] defs = pattern.split("(.*\\{)|(\\}.*)");
-
-			for (int i = 0; i < defs.length; i++) {
-
-				if (!definitions.containsKey(defs[i]))
-					continue;
-
-				String tmpPattern = definitions.get(defs[i]);
-				return pattern.replace("{" + defs[i] + "}", tmpPattern);
+		int i = 0;
+		while (i < pattern.length()) {
+			if ('"' == pattern.charAt(i)) {
+				while (i < pattern.length() && '"' != pattern.charAt(i)) {
+					i++;
+				}
 			}
+
+			if (i < pattern.length() && '{' == pattern.charAt(i)) {
+				i++;
+				String def = new String();
+
+				while (i < pattern.length() && '}' != pattern.charAt(i)) {
+					def = def + pattern.charAt(i);
+					i++;
+				}
+				stack.push(def);
+			}
+
+			i++;
+		}
+
+		for (String def : stack) {
+
+			if (!definitions.containsKey(def)) {
+				continue;
+			}
+
+			String tmpPattern = definitions.get(def);
+			pattern = pattern.replace("{" + def + "}", tmpPattern);
 		}
 
 		return pattern;
 	}
-
 }

@@ -25,6 +25,8 @@ public class RegexToNfaConverter<StatePayloadType> {
 	 * 
 	 * @param Regex
 	 *            Der reguläre Ausdruck, aus dem der NFA erstellt werden soll.
+	 * @param payload
+	 *            Der Inhalt, der in jedem Endzustand verknüpft werden soll.
 	 * @return Der NFA, der durch den regulären Ausdruck abgebildet wird. Bei
 	 *         einem leeren Regex wird null zurückgegeben.
 	 * @remakrs Es werden nur die folgenden regulären Muster unterstützt: A|B,
@@ -34,7 +36,7 @@ public class RegexToNfaConverter<StatePayloadType> {
 	 *             einen NFA auftritt.
 	 */
 	public FiniteStateMachine<Character, StatePayloadType> convertToNFA(
-			String regex) throws ConvertExecption {
+			String regex, StatePayloadType payload) throws ConvertExecption {
 		ArrayList<FiniteStateMachine<Character, StatePayloadType>> nfas = new ArrayList<FiniteStateMachine<Character, StatePayloadType>>();
 
 		// Die nachfolgenden Character werden als Hilfs-Character verwendet und
@@ -118,21 +120,10 @@ public class RegexToNfaConverter<StatePayloadType> {
 		// Verarbeite den regex bis keine Klammern (bzw. geschlossene Klammern)
 		// mehr vorhanden sind.
 		while (regex.indexOf(cClose) != -1) {
-			// TODO: Sleep entfernen
-//			try {
-//				Thread.sleep(1000);
-//			} catch (InterruptedException e1) {
-//				e1.printStackTrace();
-//			}
-
 			int indexClose = regex.indexOf(cClose);
 			int indexOpen = regex.substring(0, indexClose + 1).lastIndexOf(
 					cOpen);
 			String subRegex = regex.substring(indexOpen, indexClose + 1);
-
-			// TODO: println wieder löschen
-//			System.out.println("Working regex: " + regex);
-//			System.out.println("Sub regex: " + subRegex);
 
 			if (subRegex.length() < 3) {
 				// Dieser Fall sollte im Prinzip nicht eintreten können.
@@ -151,9 +142,8 @@ public class RegexToNfaConverter<StatePayloadType> {
 					State<Character, StatePayloadType> state2;
 
 					state1 = nfa.getCurrentState();
-					state2 = new State<Character, StatePayloadType>(null, true); // TODO:
-																					// Payload
-																					// überarbeiten
+					state2 = new State<Character, StatePayloadType>(payload,
+							true);
 
 					try {
 						nfa.addTransition(state1, state2, subRegex.charAt(1));
@@ -223,6 +213,26 @@ public class RegexToNfaConverter<StatePayloadType> {
 			throw new ConvertExecption(
 					"Unbekannter Ausnahmefehler. Fehlercode: r-s2");
 		}
+	}
+
+	/**
+	 * Erstellt aus dem angegebenen regulären Ausdruck einen
+	 * nichtdeterministischen endlichen Automaten (nondeterministic finite
+	 * automaton, kurz NFA).
+	 * 
+	 * @param Regex
+	 *            Der reguläre Ausdruck, aus dem der NFA erstellt werden soll.
+	 * @return Der NFA, der durch den regulären Ausdruck abgebildet wird. Bei
+	 *         einem leeren Regex wird null zurückgegeben.
+	 * @remakrs Es werden nur die folgenden regulären Muster unterstützt: A|B,
+	 *          AB, A*
+	 * @throws ConvertExecption
+	 *             Wenn ein Fehler beim Übersetzen des regulären Asudrucks in
+	 *             einen NFA auftritt.
+	 */
+	public FiniteStateMachine<Character, StatePayloadType> convertToNFA(
+			String regex) throws ConvertExecption {
+		return convertToNFA(regex, null);
 	}
 
 	/**

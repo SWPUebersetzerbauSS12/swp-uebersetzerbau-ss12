@@ -73,6 +73,7 @@ public class State<TransitionConditionType extends Comparable<TransitionConditio
 	 * Die Flag für den Endzustand.
 	 */
 	private boolean _finite = false;
+
 	/**
 	 * Gibt die eindetige UUID dieses Zustandes zurück.
 	 * 
@@ -148,53 +149,54 @@ public class State<TransitionConditionType extends Comparable<TransitionConditio
 	 */
 	public Collection<TransitionConditionType> getElementsOfOutgoingTransitions() {
 		HashSet<TransitionConditionType> elements = new HashSet<TransitionConditionType>();
-		
-		for (Transition<TransitionConditionType, PayloadType> tran : getTransitions())
-		{
+
+		for (Transition<TransitionConditionType, PayloadType> tran : getTransitions()) {
 			elements.add(tran.getCondition());
 		}
-		
+
 		return elements;
 	}
 
 	/**
 	 * Gibt die Flag für den Startzusand zurück.
+	 * 
 	 * @return Die Flag für den Startzusand.
 	 */
-	protected boolean getInitial()
-	{
+	protected boolean getInitial() {
 		return _initial;
 	}
-	
+
 	/**
 	 * Setzt die Flag für den Startzusand fest.
-	 * @param initial Die Flag für den Startzusand.
+	 * 
+	 * @param initial
+	 *            Die Flag für den Startzusand.
 	 */
-	protected void setInitial(boolean initial)
-	{
+	protected void setInitial(boolean initial) {
 		_initial = initial;
 	}
-	
+
 	/**
 	 * Gibt die Flag für den Endzustand zurück.
+	 * 
 	 * @return Die Flag für den Endzustand.
 	 */
-	protected boolean getFinite()
-	{
+	public boolean getFinite() {
 		return _finite;
 	}
-	
+
 	/**
 	 * Setzt die Flag für den Endzustand fest.
-	 * @param finite Die Flag für den Endzustand.
+	 * 
+	 * @param finite
+	 *            Die Flag für den Endzustand.
 	 */
-	protected void setFinite(boolean finite)
-	{
+	public void setFinite(boolean finite) {
 		_finite = finite;
 	}
-	
+
 	/**
-	 * Legt den Zustandstyp auf INITIAL fest.
+	 * Setzt den Zustandtypen dieses Zustands auf einen exklusiven Startzustand.
 	 */
 	protected void setTypeToInitial() {
 		setInitial(true);
@@ -202,7 +204,7 @@ public class State<TransitionConditionType extends Comparable<TransitionConditio
 	}
 
 	/**
-	 * Legt den Zustandstyp auf FINITE fest.
+	 * Setzt den Zustandtypen dieses Zustands auf einen exklusiven Endzustand.
 	 */
 	public void setTypeToFinite() {
 		setInitial(false);
@@ -210,13 +212,13 @@ public class State<TransitionConditionType extends Comparable<TransitionConditio
 	}
 
 	/**
-	 * Legt den Zustandstyp auf DEFAULT fest.
+	 * Setzt den Zustandtypen dieses Zustands auf einen exklusiven Default-Zustand.
 	 */
 	public void setTypeToDefault() {
 		setInitial(false);
 		setFinite(false);
 	}
-	
+
 	/**
 	 * Legt den Zustandstyp auf INITIAL und FINITE fest.
 	 */
@@ -226,21 +228,28 @@ public class State<TransitionConditionType extends Comparable<TransitionConditio
 	}
 
 	/**
-	 * Gibt an, ob der Zustandtyp dieses Zustands FINITE ist.
+	 * Gibt an, ob es sich bei diesem Zustand um einen Anfangszustand handelt.
+	 * 
+	 * @return true, wenn es sich um einen Anfangszustand handelt, sonst false.
 	 */
 	public boolean isFiniteState() {
 		return getFinite();
 	}
 
 	/**
-	 * Gibt an, ob der Zustandtyp dieses Zustands INITIAL ist.
+	 * Gibt an, ob es sich bei diesem Zustand um einen Endzustand handelt.
+	 * 
+	 * @return true, wenn es sich um einen Endzustand handelt, sonst false.
 	 */
 	public boolean isInitialState() {
 		return getInitial();
 	}
 
 	/**
-	 * Gibt an, ob der Zustandtyp dieses Zustands DEFAULT ist.
+	 * Gibt an, ob es sich bei diesem Zustand um einen Default-Zustand handelt.
+	 * 
+	 * @return true, wenn es sich um keinen Anfangszustand und keinen Endzustand
+	 *         handelt, sonst false.
 	 */
 	public boolean isDefaultState() {
 		return (!(getInitial() && getFinite()));

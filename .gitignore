@@ -12,3 +12,5 @@
 
 # project-specific
 target/
+.classpath
+.project

@@ -359,6 +359,8 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 	 * @param fsm
 	 *            Der endliche Automat, mit dem dieser endliche Automat verenigt
 	 *            werden soll.
+	 * @remarks: Durch diese Methode wird der aktuelle Zustand auf den
+	 *           Startzustand zurückgesetzt.
 	 */
 	public void union(
 			FiniteStateMachine<TransitionConditionType, StatePayloadType> fsm) {
@@ -392,6 +394,7 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 		}
 		fsm.getInitialState().SetTypeToDefault();
 
+		resetToInitialState();
 	}
 
 	/**
@@ -401,6 +404,8 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 	 * @param fsm
 	 *            Der endliche Automat, mit dem dieser endliche Automat
 	 *            verbunden werden soll.
+	 * @remarks: Durch diese Methode wird der aktuelle Zustand auf den
+	 *           Startzustand zurückgesetzt.
 	 */
 	public void concat(
 			FiniteStateMachine<TransitionConditionType, StatePayloadType> fsm) {
@@ -424,10 +429,15 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 
 		getStates().putAll(fsm.getStates());
 		fsm.getInitialState().SetTypeToDefault();
+
+		resetToInitialState();
 	}
 
 	/**
 	 * Fügt diesem eindlichen Automaten eine Wiederholung hinzu.
+	 * 
+	 * @remarks: Durch diese Methode wird der aktuelle Zustand auf den
+	 *           Startzustand zurückgesetzt.
 	 */
 	public void closure() {
 		HashMap<UUID, State<TransitionConditionType, StatePayloadType>> states = new HashMap<UUID, State<TransitionConditionType, StatePayloadType>>();
@@ -436,12 +446,12 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 		State<TransitionConditionType, StatePayloadType> initState = new State<TransitionConditionType, StatePayloadType>();
 		State<TransitionConditionType, StatePayloadType> finiteState = new State<TransitionConditionType, StatePayloadType>();
 		State<TransitionConditionType, StatePayloadType> old_initState = getInitialState();
-		
+
 		initState.SetTypeToInitial();
 		finiteState.SetTypeToFinite();
 
 		getStates().put(initState.getUUID(), initState);
-		getStates().put(initState.getUUID(), finiteState);
+		getStates().put(finiteState.getUUID(), finiteState);
 
 		try {
 			addTransition(initState, finiteState, null);
@@ -486,6 +496,8 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 				}
 			}
 		}
+
+		resetToInitialState();
 	}
 
 	/**

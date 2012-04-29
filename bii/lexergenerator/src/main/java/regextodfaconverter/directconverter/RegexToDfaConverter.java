@@ -10,7 +10,7 @@ import regextodfaconverter.fsm.FiniteStateMachine;
  * @see <a href="http://kontext.fraunhofer.de/haenelt/kurs/folien/Haenelt_FSA_RegExFSA.pdf">Fraunhofer Institut: Überführung regulärer Ausdrücke in endliche Automaten</a>
  * @see <a href="http://kontext.fraunhofer.de/haenelt/kurs/folien/Haenelt_RegEx-FSA-GMY.pdf">Fraunhofer Institut: Der Algorithmus von Glushkov und McNaughton/Yamada</a>
  * @see <a href="http://kontext.fraunhofer.de/haenelt/kurs/folien/FSA-RegA-6.pdf">Endliche Automaten: Reguläre Mengen, Reguläre Ausdrücke, reguläre Sprachen und endliche Automaten</a>
- *
+ * @see <a href="http://kontext.fraunhofer.de/haenelt/kurs/Skripten/FSA-Skript/Haenelt_EA_RegEx2EA.pdf">Überführung regulärer Ausdrücke in endliche Automaten</a>
  */
 public class RegexToDfaConverter {
 	
@@ -30,7 +30,11 @@ public class RegexToDfaConverter {
 		return dfa;
 	}
 	
-
+  /**
+   * 
+   * @param Regex
+   * @return
+   */
 	private static SyntaxTree convertRegexToSyntaxTree( String Regex) {
 		return null;
 	}

@@ -221,7 +221,8 @@ public class Test {
 			State<Character, StatePayload> state1, state2, state3, state4, state5;
 			
 			state1 = fsm.getCurrentState();
-			state2 = new State<Character, StatePayload>();
+			state2 = new State<Character, StatePayload>(
+					new regextodfaconverter.fsm.StatePayload( TokenType.OP_LT, 0), true);
 			state3 = new State<Character, StatePayload>( 
 					new regextodfaconverter.fsm.StatePayload( TokenType.OP_LE, 0), true);
 			state4 = new State<Character, StatePayload>( 
@@ -232,10 +233,10 @@ public class Test {
     	fsm.addTransition( state1, state2, '<');
     	fsm.addTransition( state2, state3, '=');
     	fsm.addTransition( state2, state4, '>');
-    	for ( char c = 0x00; c <= 0xFF; c++) {
+    /*	for ( char c = 0x00; c <= 0xFF; c++) {
 				if ( c != '>' && c != '=') 
 					fsm.addTransition( state2, state5, c);	
-			}
+			}*/
     	
 		} catch ( Exception e) {
 			e.printStackTrace();

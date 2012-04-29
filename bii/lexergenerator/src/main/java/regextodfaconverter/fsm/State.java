@@ -66,9 +66,13 @@ public class State<TransitionConditionType extends Comparable<TransitionConditio
 	 */
 	private HashSet<Transition<TransitionConditionType, PayloadType>> _transitions;
 	/**
-	 * Der Zustandstyp.
+	 * Die Flag für den Startzusand.
 	 */
-	private StateType _type;
+	private boolean _initial = false;
+	/**
+	 * Die Flag für den Endzustand.
+	 */
+	private boolean _finite = false;
 
 	/**
 	 * Gibt die eindetige UUID dieses Zustandes zurück.
@@ -145,79 +149,110 @@ public class State<TransitionConditionType extends Comparable<TransitionConditio
 	 */
 	public Collection<TransitionConditionType> getElementsOfOutgoingTransitions() {
 		HashSet<TransitionConditionType> elements = new HashSet<TransitionConditionType>();
-		
-		for (Transition<TransitionConditionType, PayloadType> tran : getTransitions())
-		{
+
+		for (Transition<TransitionConditionType, PayloadType> tran : getTransitions()) {
 			elements.add(tran.getCondition());
 		}
-		
+
 		return elements;
 	}
 
 	/**
-	 * Gibt den Zustandstyp zurück.
+	 * Gibt die Flag für den Startzusand zurück.
 	 * 
-	 * @return Der Zustandstyp.
+	 * @return Die Flag für den Startzusand.
 	 */
-	public StateType getType() {
-		// // Ein Zustand ohne ausgehende Übergänge ist immer ein Endzustand, es
-		// // sei den er ist ein Startzustand.
-		// if (_type != StateType.INITIAL && _transitions.isEmpty()) {
-		// return StateType.FINITE;
-		// }
-		return _type;
+	protected boolean getInitial() {
+		return _initial;
 	}
 
 	/**
-	 * Legt den Zustandstyp fest.
+	 * Setzt die Flag für den Startzusand fest.
 	 * 
-	 * @param type
-	 *            Der Zustandstyp.
+	 * @param initial
+	 *            Die Flag für den Startzusand.
 	 */
-	protected void setType(StateType type) {
-		_type = type;
+	protected void setInitial(boolean initial) {
+		_initial = initial;
 	}
 
 	/**
-	 * Legt den Zustandstyp auf INITIAL fest.
+	 * Gibt die Flag für den Endzustand zurück.
+	 * 
+	 * @return Die Flag für den Endzustand.
 	 */
-	protected void SetTypeToInitial() {
-		setType(StateType.INITIAL);
+	public boolean getFinite() {
+		return _finite;
 	}
 
 	/**
-	 * Legt den Zustandstyp auf FINITE fest.
+	 * Setzt die Flag für den Endzustand fest.
+	 * 
+	 * @param finite
+	 *            Die Flag für den Endzustand.
 	 */
-	public void SetTypeToFinite() {
-		setType(StateType.FINITE);
+	public void setFinite(boolean finite) {
+		_finite = finite;
 	}
 
 	/**
-	 * Legt den Zustandstyp auf DEFAULT fest.
+	 * Setzt den Zustandtypen dieses Zustands auf einen exklusiven Startzustand.
 	 */
-	public void SetTypeToDefault() {
-		setType(StateType.DEFAULT);
+	protected void setTypeToInitial() {
+		setInitial(true);
+		setFinite(false);
 	}
 
 	/**
-	 * Gibt an, ob der Zustandtyp dieses Zustands FINITE ist.
+	 * Setzt den Zustandtypen dieses Zustands auf einen exklusiven Endzustand.
+	 */
+	public void setTypeToFinite() {
+		setInitial(false);
+		setFinite(true);
+	}
+
+	/**
+	 * Setzt den Zustandtypen dieses Zustands auf einen exklusiven Default-Zustand.
+	 */
+	public void setTypeToDefault() {
+		setInitial(false);
+		setFinite(false);
+	}
+
+	/**
+	 * Legt den Zustandstyp auf INITIAL und FINITE fest.
+	 */
+	protected void setTypeToInitialAndFinite() {
+		setInitial(true);
+		setFinite(true);
+	}
+
+	/**
+	 * Gibt an, ob es sich bei diesem Zustand um einen Anfangszustand handelt.
+	 * 
+	 * @return true, wenn es sich um einen Anfangszustand handelt, sonst false.
 	 */
 	public boolean isFiniteState() {
-		return (getType() == StateType.FINITE);
+		return getFinite();
 	}
 
 	/**
-	 * Gibt an, ob der Zustandtyp dieses Zustands INITIAL ist.
+	 * Gibt an, ob es sich bei diesem Zustand um einen Endzustand handelt.
+	 * 
+	 * @return true, wenn es sich um einen Endzustand handelt, sonst false.
 	 */
 	public boolean isInitialState() {
-		return (getType() == StateType.INITIAL);
+		return getInitial();
 	}
 
 	/**
-	 * Gibt an, ob der Zustandtyp dieses Zustands DEFAULT ist.
+	 * Gibt an, ob es sich bei diesem Zustand um einen Default-Zustand handelt.
+	 * 
+	 * @return true, wenn es sich um keinen Anfangszustand und keinen Endzustand
+	 *         handelt, sonst false.
 	 */
 	public boolean isDefaultState() {
-		return (getType() == StateType.DEFAULT);
+		return (!(getInitial() && getFinite()));
 	}
 
 	/**
@@ -255,7 +290,7 @@ public class State<TransitionConditionType extends Comparable<TransitionConditio
 		generateNewUUID();
 		setPayload(null);
 		setTransitiosn(new HashSet<Transition<TransitionConditionType, PayloadType>>());
-		SetTypeToDefault();
+		setTypeToDefault();
 	}
 
 	/**
@@ -279,7 +314,7 @@ public class State<TransitionConditionType extends Comparable<TransitionConditio
 	public State(boolean isFinite) {
 		this();
 		if (isFinite)
-			SetTypeToFinite();
+			setTypeToFinite();
 	}
 
 	/**
@@ -295,7 +330,7 @@ public class State<TransitionConditionType extends Comparable<TransitionConditio
 		this();
 		setPayload(payload);
 		if (isFinite)
-			SetTypeToFinite();
+			setTypeToFinite();
 	}
 
 }

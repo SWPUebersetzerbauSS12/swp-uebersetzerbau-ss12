@@ -77,13 +77,13 @@ public class MinimalDfa<ConditionType extends Comparable<ConditionType>, Payload
 		super();
 		this.finiteStateMachine = finiteStateMachine;
 		try {
-			if (!finiteStateMachine.isDeterministic()) {
+			if (!this.finiteStateMachine.isDeterministic()) {
 				NfaToDfaConverter<ConditionType, PayloadType> converter = new NfaToDfaConverter<ConditionType, PayloadType>();
-				finiteStateMachine = converter.convertToDfa(finiteStateMachine);
+				this.finiteStateMachine = converter.convertToDfa(this.finiteStateMachine);
 			}
 			DfaMinimizer<ConditionType, PayloadType> minimizer = new DfaMinimizer<ConditionType, PayloadType>();
-			finiteStateMachine = minimizer
-					.convertToMimimumDfa(finiteStateMachine);
+			this.finiteStateMachine = minimizer
+					.convertToMimimumDfa(this.finiteStateMachine);
 		} catch (Exception e) {
 			throw new ConvertExecption(
 					"Cannot convert given fsa to minimal dfa.");

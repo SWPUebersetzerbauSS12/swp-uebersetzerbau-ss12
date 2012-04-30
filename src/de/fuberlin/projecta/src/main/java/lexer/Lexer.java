@@ -247,10 +247,15 @@ public class Lexer implements ILexer {
 				return new Token(TokenType.RECORD, null, this.line, offset);
 			}
 		}
-		if (s.equals("b")
-				&& is.getNextChars(6).matches("break" + delimiterRegexp)) {
-			is.consumeChars(5);
-			return new Token(TokenType.BREAK, null, this.line, offset);
+		if (s.equals("b")) {
+			if (is.getNextChars(6).matches("break" + delimiterRegexp)) {
+				is.consumeChars(5);
+				return new Token(TokenType.BREAK, null, this.line, offset);
+			}
+			if(is.getNextChars(5).matches("bool" + delimiterRegexp)){
+				is.consumeChars(4);
+				return new Token(TokenType.BOOL_TYPE, null, line, offset);
+			}
 		}
 		if (s.equals("p")
 				&& is.getNextChars(6).matches("print" + delimiterRegexp)) {

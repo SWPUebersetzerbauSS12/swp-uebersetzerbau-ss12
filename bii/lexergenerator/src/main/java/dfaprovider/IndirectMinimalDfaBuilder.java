@@ -8,7 +8,6 @@ import regextodfaconverter.MinimalDfa;
 import regextodfaconverter.RegexToNfaConverter;
 import regextodfaconverter.fsm.FiniteStateMachine;
 import regextodfaconverter.fsm.StatePayload;
-import tokenmatcher.TokenType;
 
 /**
  * Stellt einen MinimalDFA-Builder dar, der den DFA über den indirekten Weg von Regex zu NFA zu DFA erstellt.

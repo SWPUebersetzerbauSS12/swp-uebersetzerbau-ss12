@@ -8,7 +8,7 @@ public class MinimalDfaProviderException extends Exception {
 	private static final long serialVersionUID = 6521418734139082883L;
 	
 	/**
-	 * Erstellt ein neues MinimalDfaBuilderException Objekt.
+	 * Erstellt ein neues MinimalDfaProviderException Objekt.
 	 */
 	public MinimalDfaProviderException() {
 		super();

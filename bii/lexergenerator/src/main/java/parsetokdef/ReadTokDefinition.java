@@ -10,7 +10,6 @@ import java.util.Stack;
 
 import utils.Rule;
 import lexergen.Settings;
-import lexergen.helper.Helper;
 
 /**
  * 

@@ -3,8 +3,6 @@ package lexergen;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import lexergen.helper.Helper;
 import tokenmatcher.errorhandler.ErrorCorrector.CorrectionMode;
 
 /**
@@ -159,7 +157,7 @@ public class Settings {
 					pattern, "");
 			System.out.println(path);
 		} catch (IOException ex) {
-			Logger.getLogger(Helper.class.getName())
+			Logger.getLogger(Settings.class.getName())
 					.log(Level.SEVERE, null, ex);
 		}
 		return path;

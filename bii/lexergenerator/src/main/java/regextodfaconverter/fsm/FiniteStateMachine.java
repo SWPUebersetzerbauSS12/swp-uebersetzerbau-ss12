@@ -32,6 +32,7 @@
 
 package regextodfaconverter.fsm;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
@@ -50,8 +51,14 @@ import regextodfaconverter.fsm.excpetions.TransitionAlreadyExistsException;
  * @param <StatePayloadType>
  *            Der Typ des Inhalts der Zustände.
  */
-public class FiniteStateMachine<TransitionConditionType extends Comparable<TransitionConditionType>, StatePayloadType> {
+public class FiniteStateMachine<TransitionConditionType extends Comparable<TransitionConditionType>,
+	StatePayloadType> implements Serializable{
 
+	/**
+	 * UID für die Serialisierung/Abspeicherung als *.dfa 
+	 */
+	private static final long serialVersionUID = 7451317869119939422L;
+	
 	/**
 	 * Der Startzustand dieses endlichen Automatens.
 	 */

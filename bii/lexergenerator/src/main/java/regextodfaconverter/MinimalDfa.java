@@ -32,6 +32,7 @@
 
 package regextodfaconverter;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 import regextodfaconverter.fsm.FiniteStateMachine;
@@ -53,8 +54,13 @@ import tokenmatcher.State;
  *            Automaten.
  */
 public class MinimalDfa<ConditionType extends Comparable<ConditionType>, PayloadType>
-		implements DeterministicFiniteAutomata<ConditionType, PayloadType> {
+		implements DeterministicFiniteAutomata<ConditionType, PayloadType>, Serializable {
 
+	/**
+	 * UID für die Serialisierung/Abspeicherung als *.dfa 
+	 */
+	private static final long serialVersionUID = -7404462323431169070L;
+	
 	/**
 	 * Der endliche Automat auf dem gearbeitet wird.
 	 */

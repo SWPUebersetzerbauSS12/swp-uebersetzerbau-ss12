@@ -58,6 +58,10 @@ public class Notification {
 		if ( printErrorMessages)
 			System.err.println( "NotificationService(Error): " + message);
 	}
+	
+	public static void printMismatchMessage( String message) {
+		System.err.println( "NotificationService(Mismatch): " + message);
+	}
 
 	// debugmessage handling
 

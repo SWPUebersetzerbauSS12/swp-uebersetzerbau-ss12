@@ -118,8 +118,9 @@ public class Tokenizer implements LexerToParserInterface {
 
 				// Token erstellen
 				String tokenType = payload.getTokenType();
+				String attribute = payload.getAttribute();
 				// TODO: convert lexem to corresponding value
-				Token recognisedToken = new Token( tokenType, currentLexem, currentLine, currentPositionInLine);
+				Token recognisedToken = new Token( tokenType, attribute, currentLine, currentPositionInLine);
 
 				// gelesenenes Lexem akzeptieren
 				lexemeReader.accept();
@@ -157,7 +158,7 @@ public class Tokenizer implements LexerToParserInterface {
 			} else if ( currentChar == SpecialChars.CHAR_EOF) {
 				throw new EndOfFileException();
 		  } else if ( readMode == ReadMode.read_normal){
-		  	errorCorrector.handleMismatch( currentChar, lexemeReader, dfa);	
+		  	errorCorrector.handleMismatch( currentChar, lexemeReader, dfa, currentLine, currentPositionInLine);	
 		  } else {
 		  	// ignore, cause we scan a comment
 		  }

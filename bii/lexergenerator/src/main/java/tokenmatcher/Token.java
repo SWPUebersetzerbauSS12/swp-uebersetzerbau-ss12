@@ -92,7 +92,7 @@ public class Token { // implements IToken {
 	
 	public static boolean isTokenEndingBlockComment( Token token) {
 		return "COMMENT".equalsIgnoreCase( token.getType()) &&
-			   "BLOCK_BEGIN".equalsIgnoreCase( token.getAttribute());
+			   "BLOCK_END".equalsIgnoreCase( token.getAttribute());
 	}
 	
 }

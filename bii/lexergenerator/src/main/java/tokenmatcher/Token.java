@@ -35,16 +35,17 @@ package tokenmatcher;
 import parser.IToken;
 
 
-public class Token implements IToken {
-	
-	private TokenType type;
+public class Token { // implements IToken {
+// TODO: resolve conflict with given interface IToken
+
+	private String type;
 	private String attribute;
 	private int line;
 	private int offset;
 	
 
 	
-	public Token( TokenType type, String attribute, int  line, int offset) {
+	public Token( String type, String attribute, int  line, int offset) {
 		super();
 		this.type = type;
 		this.attribute = attribute;
@@ -52,14 +53,14 @@ public class Token implements IToken {
 		this.offset = offset;
 	}
 
-	public Token( TokenType type, int  line, int offset) {
+	public Token( String type, int  line, int offset) {
 		super();
 		this.type = type;
 		this.line = line;
 		this.offset = offset;
 	}
 
-	public TokenType getType() {
+	public String getType() {
 		return type;
 	}
 
@@ -75,7 +76,23 @@ public class Token implements IToken {
 
 
 	public int getLineNumber() {
-    return line;
+      return line;
+	}
+	
+	
+	public static boolean isTokenLineComment( Token token) {
+		return "COMMENT".equalsIgnoreCase( token.getType()) &&
+			   "LINE".equalsIgnoreCase( token.getAttribute());
+	}
+	
+	public static boolean isTokenStartingBlockComment( Token token) {
+		return "COMMENT".equalsIgnoreCase( token.getType()) &&
+			   "BLOCK_BEGIN".equalsIgnoreCase( token.getAttribute());
+	}
+	
+	public static boolean isTokenEndingBlockComment( Token token) {
+		return "COMMENT".equalsIgnoreCase( token.getType()) &&
+			   "BLOCK_BEGIN".equalsIgnoreCase( token.getAttribute());
 	}
 	
 }

@@ -111,14 +111,13 @@ public class Tokenizer implements LexerToParserInterface {
 
 				StatePayload payload = dfa.getCurrentState().getPayload();
 
-				// Korregieren, was zuviel gelesen wurde.
-				currentLexem = currentLexem.substring( 0, currentLexem.length()
-						- payload.getBacksteps());
+				// Lesezeiger zurücksetzen um das, was zuviel gelesen wurde.
+				// In dieser implementierung immer 1 Zeichen
 				if ( currentChar != SpecialChars.CHAR_EOF)
-				  lexemeReader.stepBackward( payload.getBacksteps() +1);
+				  lexemeReader.stepBackward( 1);
 
 				// Token erstellen
-				TokenType tokenType = payload.getTokenType();
+				String tokenType = payload.getTokenType();
 				// TODO: convert lexem to corresponding value
 				Token recognisedToken = new Token( tokenType, currentLexem, currentLine, currentPositionInLine);
 
@@ -135,15 +134,15 @@ public class Tokenizer implements LexerToParserInterface {
 				
 				// filter comments
 				if ( ( readMode == ReadMode.read_normal) &&
-						 ( recognisedToken.getType() == TokenType.BLOCKCOMMENT_BEGIN)) {
+						 ( Token.isTokenStartingBlockComment( recognisedToken))) {
 					readMode = ReadMode.read_block_comment;
-					while ( getNextToken().getType() != TokenType.BLOCKCOMMENT_END){
+					while ( !Token.isTokenEndingBlockComment( getNextToken())){
 						// ignore comment block
 					}
 					readMode = ReadMode.read_normal;
 					return getNextToken();
 				} else if ( ( readMode == ReadMode.read_normal) &&
-						        ( recognisedToken.getType() == TokenType.LINECOMMENT_BEGIN)) {
+						        ( Token.isTokenLineComment( recognisedToken))) {
 					readMode = ReadMode.read_line_comment;
 					int thisLine = currentLine;
 					while ( thisLine == currentLine){

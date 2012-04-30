@@ -94,38 +94,31 @@ public class Parser {
 					throw new ParserException("Wrong token " + token
 							+ " in input");
 				}
-
 			} else /** stack symbol is non-terminal */
 			{
-				String prod;
-				if ((prod = table.getEntry(peek, token.getType())) != null) {
-					stack.pop();
+				String prod = table.getEntry(peek, token.getType());
+				stack.pop();
 
-					String[] tmp = prod.split("::=");
-					if (tmp.length == 2) {
-						String[] prods = tmp[1].split(" ");
-						for (int i = prods.length - 1; i >= 0; i--) {
-							if (!prods[i].trim().equals("")
-									&& !prods[i].equals(EPSILON)) {
-								stack.push(prods[i]);
-							}
+				String[] tmp = prod.split("::=");
+				if (tmp.length == 2) {
+					String[] prods = tmp[1].split(" ");
+					for (int i = prods.length - 1; i >= 0; i--) {
+						if (!prods[i].trim().equals("")
+								&& !prods[i].equals(EPSILON)) {
+							stack.push(prods[i]);
 						}
-						outputs.add(prod);
-					} else if (prod.trim().equals("")) {
-						throw new ParserException(
-								"1: Syntax error: No rule in parsing table (Stack: "
-										+ peek + ", token: " + token + ")");
-					} else {
-						throw new ParserException(
-								"Wrong structur in parsing table! Productions should "
-										+ "be of the form: X ::= Y1 Y2 ... Yk! Problem with: "
-										+ prod + "(Stack: " + peek
-										+ ", token: " + token + ")");
 					}
+					outputs.add(prod);
+				} else if (prod.trim().equals("")) {
+					throw new ParserException(
+							"Syntax error: No rule in parsing table (Stack: "
+									+ peek + ", token: " + token + ")");
 				} else {
 					throw new ParserException(
-							" Syntax error: No rule in parsing table (Stack: "
-									+ peek + ", token: " + token + ")");
+							"Wrong structur in parsing table! Productions should "
+									+ "be of the form: X ::= Y1 Y2 ... Yk! Problem with: "
+									+ prod + "(Stack: " + peek + ", token: "
+									+ token + ")");
 				}
 			}
 		} while (!stack.peek().equals("$"));
@@ -265,8 +258,7 @@ public class Parser {
 				"params ::= type ID params'");
 		table.setEntry("params", TokenType.BOOL_TYPE,
 				"params ::= type ID params'");
-		table.setEntry("params", TokenType.RECORD,
-				"params ::= type ID params'");
+		table.setEntry("params", TokenType.RECORD, "params ::= type ID params'");
 
 		// params'
 		table.setEntry("params'", TokenType.RPAREN, "params' ::= ε");
@@ -301,15 +293,15 @@ public class Parser {
 				"decl ::=  type ID OP_SEMIC");
 		table.setEntry("decl", TokenType.BOOL_TYPE,
 				"decl ::=  type ID OP_SEMIC");
-		table.setEntry("decl", TokenType.RECORD,
-				"decl ::=  type ID OP_SEMIC");
+		table.setEntry("decl", TokenType.RECORD, "decl ::=  type ID OP_SEMIC");
 
 		// type
 		table.setEntry("type", TokenType.INT_TYPE, "type ::=  basic type'");
 		table.setEntry("type", TokenType.REAL_TYPE, "type ::=  basic type'");
 		table.setEntry("type", TokenType.STRING_TYPE, "type ::=  basic type'");
 		table.setEntry("type", TokenType.BOOL_TYPE, "type ::=  basic type'");
-		table.setEntry("type", TokenType.RECORD, "type ::= RECORD LBRACE decls RBRACE type'");
+		table.setEntry("type", TokenType.RECORD,
+				"type ::= RECORD LBRACE decls RBRACE type'");
 
 		// type'
 		table.setEntry("type'", TokenType.ID, "type' ::= ε");
@@ -366,6 +358,17 @@ public class Parser {
 		// loc''
 		table.setEntry("loc''", TokenType.LBRACKET, "loc'' ::= loc' loc'' ");
 		table.setEntry("loc''", TokenType.OP_DOT, "loc'' ::= loc' loc'' ");
+		table.setEntry("loc''", TokenType.LPAREN, "loc'' ::= ε");
+		table.setEntry("loc''", TokenType.OP_SEMIC, "loc'' ::= ε");
+		table.setEntry("loc''", TokenType.OP_ASSIGN, "loc'' ::= ε");
+		table.setEntry("loc''", TokenType.OP_LT, "loc'' ::= ε");
+		table.setEntry("loc''", TokenType.OP_LE, "loc'' ::= ε");
+		table.setEntry("loc''", TokenType.OP_GE, "loc'' ::= ε");
+		table.setEntry("loc''", TokenType.OP_GT, "loc'' ::= ε");
+		table.setEntry("loc''", TokenType.OP_ADD, "loc'' ::= ε");
+		table.setEntry("loc''", TokenType.OP_MINUS, "loc'' ::= ε");
+		table.setEntry("loc''", TokenType.OP_MUL, "loc'' ::= ε");
+		table.setEntry("loc''", TokenType.OP_DIV, "loc'' ::= ε");
 
 		// assign
 		table.setEntry("assign", TokenType.ID, "assign ::= bool assign'");
@@ -569,8 +572,7 @@ public class Parser {
 		table.setEntry("args", TokenType.REAL_LITERAL, "args ::= assign args'");
 		table.setEntry("args", TokenType.STRING_LITERAL,
 				"args ::= assign args'");
-		table.setEntry("args", TokenType.BOOL_LITERAL,
-				"args ::= assign args'");
+		table.setEntry("args", TokenType.BOOL_LITERAL, "args ::= assign args'");
 
 		// args'
 		table.setEntry("args'", TokenType.RPAREN, "agrs' ::= ε");

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
 import lexergen.helper.Helper;
-import lexergen.helper.Line;
+import lexergen.helper.Rule;
 
 /**
  * 
@@ -16,7 +16,7 @@ import lexergen.helper.Line;
  */
 public class ReadTokDefinition {
 
-	private List<Line> rules;
+	private List<Rule> rules;
 	private HashMap<String, String> definitions;
 
 	/**
@@ -85,13 +85,25 @@ public class ReadTokDefinition {
 
 	private void readRules(Scanner s) {
 
-		rules = (rules == null) ? new ArrayList<Line>() : rules;
+		rules = (rules == null) ? new ArrayList<Rule>() : rules;
 
 		while (s.hasNextLine()) {
-			String pattern = s.next();
-			String action = s.next().replace("}", "");
+
+			String pattern = null;
+			String action = null;
+
+			if (s.hasNext())
+				pattern = s.next();
+			else
+				break;
+
+			if (s.hasNext())
+				action = s.next().replace("}", "");
+			else
+				break;
+
 			pattern = replaceDef(pattern);
-			Line tpl = new Line(pattern, action);
+			Rule tpl = new Rule(pattern, action);
 			rules.add(tpl);
 		}
 	}
@@ -104,7 +116,7 @@ public class ReadTokDefinition {
 	 */
 	private String replaceDef(String pattern) {
 
-		Stack<String> stack = new Stack();
+		Stack<String> stack = new Stack<String>();
 
 		int i = 0;
 		while (i < pattern.length()) {

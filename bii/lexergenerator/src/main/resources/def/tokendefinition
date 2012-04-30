@@ -1,4 +1,6 @@
 0|([1-9]+[0-9]*)        {num}
+test{num}dfse           {test}
+def{test}               {test2}
 
 %%
 
@@ -28,3 +30,4 @@ while                   {return("KEYWORD", "WHILE")}
 {num}                   {return("NUM", parseInt())}
 {num}?"."{num}          {return("RAT", parseDouble())}
 [a-z]+[a-zA-Z0-9]*      {return("ID", parseString())}
+

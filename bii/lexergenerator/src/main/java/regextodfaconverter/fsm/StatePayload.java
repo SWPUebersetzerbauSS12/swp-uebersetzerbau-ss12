@@ -32,6 +32,8 @@
 
 package regextodfaconverter.fsm;
 
+import java.io.Serializable;
+
 import tokenmatcher.TokenType;
 
 
@@ -40,7 +42,12 @@ import tokenmatcher.TokenType;
  * @author Johannes Dahlke
  * @author Daniel Rotar
  */
-public class StatePayload implements tokenmatcher.StatePayload {
+public class StatePayload implements tokenmatcher.StatePayload, Serializable {
+
+	/**
+	 * UID für die Serialisierung/Abspeicherung als *.dfa 
+	 */
+	private static final long serialVersionUID = 6562577552654605535L;
 
 	private TokenType tokenType;
 

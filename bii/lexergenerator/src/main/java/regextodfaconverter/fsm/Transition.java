@@ -32,6 +32,8 @@
 
 package regextodfaconverter.fsm;
 
+import java.io.Serializable;
+
 /**
  * Stellt einen Übergang eines endlicher Automaten (bzw. einer Zustandsmaschine)
  * dar.
@@ -44,8 +46,13 @@ package regextodfaconverter.fsm;
  *            Der Typ des Inhalts der Zustände.
  */
 public class Transition<ConditionType extends Comparable<ConditionType>, StatePayloadType>
-		implements Comparable<Transition<ConditionType, StatePayloadType>> {
+		implements Comparable<Transition<ConditionType, StatePayloadType>>, Serializable {
 
+	/**
+	 * UID für die Serialisierung/Abspeicherung als *.dfa 
+	 */
+	private static final long serialVersionUID = -1604382036508327591L;
+	
 	/**
 	 * Die Bedingung für den Zustandsübergang (null für einen Epsilon-Übergang).
 	 */

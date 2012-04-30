@@ -50,26 +50,24 @@ public class LexerTest {
 		assertEquals(tokenList.get(4).getType(), TokenType.REAL_LITERAL);
 		assertEquals(tokenList.get(5).getType(), TokenType.REAL_LITERAL);
 	}
-	
+
 	@Test
-	public void testCommentary(){
+	public void testCommentary() {
 		final String code = "def int function();\n/*this should be \nignored*/ def real func();";
-		
-		Token[] expected = new Token[]{
-				new Token(TokenType.DEF, null, 1,0),
+
+		Token[] expected = new Token[] { new Token(TokenType.DEF, null, 1, 0),
 				new Token(TokenType.INT_TYPE, null, 1, 4),
 				new Token(TokenType.ID, "function", 1, 8),
 				new Token(TokenType.LPAREN, null, 1, 16),
 				new Token(TokenType.RPAREN, null, 1, 17),
 				new Token(TokenType.OP_SEMIC, null, 1, 18),
-				new Token(TokenType.DEF, null, 3,11),
+				new Token(TokenType.DEF, null, 3, 11),
 				new Token(TokenType.REAL_TYPE, null, 3, 15),
 				new Token(TokenType.ID, "func", 3, 20),
 				new Token(TokenType.LPAREN, null, 3, 24),
 				new Token(TokenType.RPAREN, null, 3, 25),
 				new Token(TokenType.OP_SEMIC, null, 3, 26),
-				new Token(TokenType.EOF, null, 3, 27)
-		};
+				new Token(TokenType.EOF, null, 3, 27) };
 		assertArrayEquals(expected, tokenize(code).toArray());
 	}
 
@@ -104,16 +102,25 @@ public class LexerTest {
 				new Token(TokenType.RETURN, null, 2, 0),
 				new Token(TokenType.BOOL_LITERAL, "false", 2, 7),
 				new Token(TokenType.OP_SEMIC, null, 2, 12),
-				new Token(TokenType.EOF, null, 2, 13)
-		};
+				new Token(TokenType.EOF, null, 2, 13) };
 		assertArrayEquals(expected, tokenize(code).toArray());
 	}
-	
+
+	@Test
+	public void testBasicTypes() {
+		final String code = "bool b; int i; real r; string s;";
+
+		ArrayList<Token> tokenList = tokenize(code);
+		assertEquals(tokenList.get(0).getType(), TokenType.BOOL_TYPE);
+		assertEquals(tokenList.get(3).getType(), TokenType.INT_TYPE);
+		assertEquals(tokenList.get(6).getType(), TokenType.REAL_TYPE);
+		assertEquals(tokenList.get(9).getType(), TokenType.STRING_TYPE);
+	}
+
 	@Test
 	public void testBooleanType() {
 		final String code = "def int foobar (bool i);";
-		Token[] expected = new Token[] {
-				new Token(TokenType.DEF, null, 1,0),
+		Token[] expected = new Token[] { new Token(TokenType.DEF, null, 1, 0),
 				new Token(TokenType.INT_TYPE, null, 1, 4),
 				new Token(TokenType.ID, "foobar", 1, 8),
 				new Token(TokenType.LPAREN, null, 1, 14),
@@ -121,8 +128,7 @@ public class LexerTest {
 				new Token(TokenType.ID, "i", 1, 20),
 				new Token(TokenType.RPAREN, null, 1, 21),
 				new Token(TokenType.OP_SEMIC, null, 1, 22),
-				new Token(TokenType.EOF, null, 2, 0)
-		};
+				new Token(TokenType.EOF, null, 2, 0) };
 		assertArrayEquals(expected, tokenize(code).toArray());
 	}
 
@@ -141,8 +147,7 @@ public class LexerTest {
 				new Token(TokenType.RBRACE, null, 1, 24),
 				new Token(TokenType.ID, "r", 1, 26),
 				new Token(TokenType.OP_SEMIC, null, 1, 27),
-				new Token(TokenType.EOF, null, 1, 28)
-		};
+				new Token(TokenType.EOF, null, 1, 28) };
 		assertArrayEquals(expected, tokenize(code).toArray());
 	}
 

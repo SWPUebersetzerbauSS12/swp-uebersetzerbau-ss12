@@ -129,7 +129,7 @@ public class Lexer implements ILexer {
 				}
 			} else {
 				throw new SyntaxErrorException(
-						"Maleformed real value at line: " + this.line
+						"Malformed real value at line: " + this.line
 								+ " near: " + is.getOffset());
 			}
 			return new Token(TokenType.REAL_LITERAL, result, this.line, is.getOffset());
@@ -245,6 +245,12 @@ public class Lexer implements ILexer {
 			if (is.getNextChars(7).matches("record" + delimiterRegexp)) {
 				is.consumeChars(6);
 				return new Token(TokenType.RECORD, null, this.line, offset);
+			}
+		}
+		if (s.equals("s")) {
+			if (is.getNextChars(7).matches("string" + delimiterRegexp)) {
+				is.consumeChars(6);
+				return new Token(TokenType.STRING_TYPE, null,  this.line, offset);
 			}
 		}
 		if (s.equals("b")) {

@@ -17,7 +17,8 @@ class Token implements IToken {
 
 	@Override
 	public String toString() {
-		return "<" + type + ", " + attribute + ", " + lineNumber + ", " + offset + ">";
+		return "<" + type + ", " + attribute + ", " + lineNumber + ", "
+				+ offset + ">";
 	}
 
 }

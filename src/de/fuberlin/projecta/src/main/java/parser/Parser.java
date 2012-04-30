@@ -229,9 +229,7 @@ public class Parser {
 
 	/**
 	 * Cells should be filled by Productions of the form: X ::= Y1 Y2 ... Yk
-	 * Treats basic as { INT, REAL, STRING }!
-	 * 
-	 * TODO: true, false, record missing
+	 * Treats basic as { INT_TYPE, REAL_TYPE, STRING_TYPE, BOOL_TYPE }!
 	 * 
 	 * @throws ParserException
 	 */
@@ -330,6 +328,7 @@ public class Parser {
 		table.setEntry("stmts", TokenType.RBRACE, "stmts ::= ε");
 
 		// stmt
+		table.setEntry("stmt", TokenType.ID, "stmt ::= assign OP_SEMIC");
 		table.setEntry("stmt", TokenType.LBRACE, "stmt ::= block");
 		table.setEntry("stmt", TokenType.IF,
 				"stmt ::= IF LPAREN assign RPAREN stmt stmt'");

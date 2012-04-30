@@ -1,6 +1,6 @@
 package parsetokdef;
 
-import lexergen.helper.Helper;
+import lexergen.Settings;
 import org.junit.Test;
 
 /**
@@ -15,7 +15,7 @@ public class ReadTokDefinitionTest {
 	@Test
 	public void testReadFile() throws Exception {
 		System.out.println("readFile");
-		String path = Helper.getDefaultTokenDef();
+		String path = Settings.getDefaultTokenDef();
 		ReadTokDefinition instance = new ReadTokDefinition();
 		instance.readFile(path);
 	}

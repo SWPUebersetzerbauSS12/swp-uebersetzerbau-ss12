@@ -1,5 +1,10 @@
 package lexergen;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import lexergen.helper.Helper;
 import tokenmatcher.errorhandler.ErrorCorrector.CorrectionMode;
 
 /**
@@ -11,10 +16,10 @@ import tokenmatcher.errorhandler.ErrorCorrector.CorrectionMode;
  * 
  */
 public class Settings {
-	
-	
+
 	/**
-	 * Der Mode, in dem die Fehlerbehandlung erfolgt. Panic mode or phrase level mode.  
+	 * Der Mode, in dem die Fehlerbehandlung erfolgt. Panic mode or phrase level
+	 * mode.
 	 */
 	private static CorrectionMode errorCorrectionMode = CorrectionMode.PANIC_MODE;
 
@@ -122,23 +127,52 @@ public class Settings {
 	public static String getVersion() {
 		return _VERSION;
 	}
-	
-	
-	/** 
+
+	/**
 	 * @return Liefert den Modus für die Fehlerbehandlung
 	 */
 	public static CorrectionMode getErrorCorrectionMode() {
 		return errorCorrectionMode;
 	}
-	
-	
+
 	/**
 	 * Setzt den Modus für die Fehlerbehandlung.
-	 * @param errorCorrectionMode der Modus der Fehlerbehandlung
+	 * 
+	 * @param errorCorrectionMode
+	 *            der Modus der Fehlerbehandlung
 	 */
-	public static void setErrorCorrectionMode( CorrectionMode errorCorrectionMode) {
+	public static void setErrorCorrectionMode(CorrectionMode errorCorrectionMode) {
 		Settings.errorCorrectionMode = errorCorrectionMode;
 	}
-	
-	
+
+	/**
+	 * Should be work under Windows and Unix based systems
+	 * 
+	 * @return path to the directory, where the pom.xml is located
+	 */
+	public static String getApplicationPath() {
+		String path = null;
+		String pattern = "target(/|\\\\)classes(/|\\\\)lexergen";
+
+		try {
+			path = new java.io.File(".").getCanonicalPath().replaceFirst(
+					pattern, "");
+			System.out.println(path);
+		} catch (IOException ex) {
+			Logger.getLogger(Helper.class.getName())
+					.log(Level.SEVERE, null, ex);
+		}
+		return path;
+	}
+
+	/**
+	 * Gets the default token definition for testing purposes.
+	 * 
+	 * @return path to the token definition file
+	 */
+	public static String getDefaultTokenDef() {
+		String path = getApplicationPath();
+		return path + "/src/main/resources/def/tokendefinition";
+	}
+
 }

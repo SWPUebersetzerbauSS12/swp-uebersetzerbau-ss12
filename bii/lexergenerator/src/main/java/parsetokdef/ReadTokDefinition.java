@@ -7,8 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
+
+import utils.Rule;
+import lexergen.Settings;
 import lexergen.helper.Helper;
-import lexergen.helper.Rule;
 
 /**
  * 
@@ -38,7 +40,7 @@ public class ReadTokDefinition {
 	 */
 	public void readFile(String path) throws FileNotFoundException {
 
-		path = (path == null) ? Helper.getDefaultTokenDef() : path;
+		path = (path == null) ? Settings.getDefaultTokenDef() : path;
 		Scanner s = new Scanner(new File(path));
 
 		// new delimeter for getting the tokens
@@ -72,7 +74,7 @@ public class ReadTokDefinition {
 				continue;
 			}
 
-			// check, if the end of defenition is reached
+			// check, if the end of definition is reached
 			if (pattern.equals("%%")) {
 				return;
 			}

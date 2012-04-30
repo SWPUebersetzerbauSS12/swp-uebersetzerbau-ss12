@@ -119,7 +119,7 @@ public class LexerTest {
 
 	@Test
 	public void testBooleanType() {
-		final String code = "def int foobar (bool i);";
+		final String code = "def int foobar(bool i);";
 		Token[] expected = new Token[] { new Token(TokenType.DEF, null, 1, 0),
 				new Token(TokenType.INT_TYPE, null, 1, 4),
 				new Token(TokenType.ID, "foobar", 1, 8),
@@ -128,7 +128,7 @@ public class LexerTest {
 				new Token(TokenType.ID, "i", 1, 20),
 				new Token(TokenType.RPAREN, null, 1, 21),
 				new Token(TokenType.OP_SEMIC, null, 1, 22),
-				new Token(TokenType.EOF, null, 2, 0) };
+				new Token(TokenType.EOF, null, 1, 23) };
 		assertArrayEquals(expected, tokenize(code).toArray());
 	}
 

@@ -1,5 +1,11 @@
 package dfaprovider;
 
+/**
+ * Exceptionklasse für MinimalDfaProvider
+ * 
+ * @author Maximilian Schröder
+ *
+ */
 public class MinimalDfaProviderException extends Exception {
 
 	/**
@@ -15,7 +21,7 @@ public class MinimalDfaProviderException extends Exception {
 	}
 	
 	/**
-	 * Erstellt ein neues MinimalDfaBuilderException Objekt.
+	 * Erstellt ein neues MinimalDfaProviderException Objekt.
 	 * 
 	 * @param message
 	 *            Die genaue Fehlerbeschreibung.

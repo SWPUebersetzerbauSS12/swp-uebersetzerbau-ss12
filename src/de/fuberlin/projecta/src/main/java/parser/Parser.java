@@ -306,7 +306,7 @@ public class Parser {
 		// type'
 		table.setEntry("type'", TokenType.ID, "type' ::= ε");
 		table.setEntry("type'", TokenType.LBRACKET,
-				"type' ::= LBRACKET INT RBRACKET type' ");
+				"type' ::= LBRACKET INT_LITERAL RBRACKET type' ");
 
 		// stmts
 		table.setEntry("stmts", TokenType.ID, "stmts ::= stmt stmts");
@@ -335,6 +335,7 @@ public class Parser {
 		// stmt'
 		table.setEntry("stmt'", TokenType.ID, "stmt' ::= ε");
 		table.setEntry("stmt'", TokenType.LBRACE, "stmt' ::= ε");
+		table.setEntry("stmt'", TokenType.RBRACE, "stmt' ::= ε");
 		table.setEntry("stmt'", TokenType.IF, "stmt' ::= ε");
 		table.setEntry("stmt'", TokenType.WHILE, "stmt' ::= ε");
 		table.setEntry("stmt'", TokenType.DO, "stmt' ::= ε");
@@ -360,7 +361,6 @@ public class Parser {
 		table.setEntry("loc''", TokenType.OP_DOT, "loc'' ::= loc' loc'' ");
 		table.setEntry("loc''", TokenType.LPAREN, "loc'' ::= ε");
 		table.setEntry("loc''", TokenType.OP_SEMIC, "loc'' ::= ε");
-		table.setEntry("loc''", TokenType.OP_ASSIGN, "loc'' ::= ε");
 		table.setEntry("loc''", TokenType.OP_LT, "loc'' ::= ε");
 		table.setEntry("loc''", TokenType.OP_LE, "loc'' ::= ε");
 		table.setEntry("loc''", TokenType.OP_GE, "loc'' ::= ε");
@@ -373,10 +373,10 @@ public class Parser {
 		// assign
 		table.setEntry("assign", TokenType.ID, "assign ::= bool assign'");
 		table.setEntry("assign", TokenType.LPAREN, "assign ::= bool assign'");
-		table.setEntry("assign", TokenType.INT_LITERAL,
-				"assign ::= bool assign'");
 		table.setEntry("assign", TokenType.OP_MINUS, "assign ::= bool assign'");
 		table.setEntry("assign", TokenType.OP_NOT, "assign ::= bool assign'");
+		table.setEntry("assign", TokenType.INT_LITERAL,
+				"assign ::= bool assign'");
 		table.setEntry("assign", TokenType.REAL_LITERAL,
 				"assign ::= bool assign'");
 		table.setEntry("assign", TokenType.STRING_LITERAL,
@@ -390,6 +390,7 @@ public class Parser {
 		table.setEntry("assign'", TokenType.RPAREN, "assign' ::= ε ");
 		table.setEntry("assign'", TokenType.RBRACKET, "assign' ::= ε ");
 		table.setEntry("assign'", TokenType.OP_COMMA, "assign' ::= ε ");
+		table.setEntry("assign'", TokenType.OP_SEMIC, "assign' ::= ε ");
 		// table.setEntry("assign'", TokenType.OP_ASSIGN, "assign' ::= ε ");
 		// TODO: This is right but still leads to errors
 
@@ -408,6 +409,7 @@ public class Parser {
 		table.setEntry("bool'", TokenType.RBRACKET, "bool' ::= ε ");
 		table.setEntry("bool'", TokenType.OP_ASSIGN, "bool' ::= ε ");
 		table.setEntry("bool'", TokenType.OP_COMMA, "bool' ::= ε ");
+		table.setEntry("bool'", TokenType.OP_SEMIC, "bool' ::= ε ");
 		table.setEntry("bool'", TokenType.OP_OR, "bool' ::= OP_OR join bool'");
 
 		// join
@@ -429,6 +431,9 @@ public class Parser {
 		table.setEntry("join'", TokenType.OP_ASSIGN, "join' ::= ε ");
 		table.setEntry("join'", TokenType.OP_COMMA, "join' ::= ε ");
 		table.setEntry("join'", TokenType.OP_OR, "join' ::= ε ");
+		table.setEntry("join'", TokenType.OP_SEMIC, "join' ::= ε ");
+		table.setEntry("join'", TokenType.OP_AND,
+				"join' ::= OP_AND equality join'");
 
 		// equality
 		table.setEntry("equality", TokenType.ID, "equality ::= rel equality'");
@@ -454,6 +459,7 @@ public class Parser {
 		table.setEntry("equality'", TokenType.OP_COMMA, "equality' ::= ε ");
 		table.setEntry("equality'", TokenType.OP_OR, "equality' ::= ε ");
 		table.setEntry("equality'", TokenType.OP_AND, "equality' ::= ε ");
+		table.setEntry("equality'", TokenType.OP_SEMIC, "equality' ::= ε ");
 		table.setEntry("equality'", TokenType.OP_EQ,
 				"equality' ::= OP_EQ rel equality'");
 		table.setEntry("equality'", TokenType.OP_NE,
@@ -474,6 +480,7 @@ public class Parser {
 		table.setEntry("rel'", TokenType.RBRACKET, "rel' ::= ε ");
 		table.setEntry("rel'", TokenType.OP_ASSIGN, "rel' ::= ε ");
 		table.setEntry("rel'", TokenType.OP_COMMA, "rel' ::= ε ");
+		table.setEntry("rel'", TokenType.OP_SEMIC, "rel' ::= ε ");
 		table.setEntry("rel'", TokenType.OP_OR, "rel' ::= ε ");
 		table.setEntry("rel'", TokenType.OP_AND, "rel' ::= ε ");
 		table.setEntry("rel'", TokenType.OP_EQ, "rel' ::= ε ");
@@ -561,6 +568,13 @@ public class Parser {
 
 		// optargs
 		table.setEntry("optargs", TokenType.ID, "optargs ::= args");
+		table.setEntry("optargs", TokenType.OP_NOT, "optargs ::= args");
+		table.setEntry("optargs", TokenType.OP_MINUS, "optargs ::= args");
+		table.setEntry("optargs", TokenType.LPAREN, "optargs ::= args");
+		table.setEntry("optargs", TokenType.INT_LITERAL, "optargs ::= args");
+		table.setEntry("optargs", TokenType.REAL_LITERAL, "optargs ::= args");
+		table.setEntry("optargs", TokenType.BOOL_LITERAL, "optargs ::= args");
+		table.setEntry("optargs", TokenType.STRING_LITERAL, "optargs ::= args");
 		table.setEntry("optargs", TokenType.RPAREN, "optargs ::= ε");
 
 		// args
@@ -578,7 +592,6 @@ public class Parser {
 		table.setEntry("args'", TokenType.RPAREN, "agrs' ::= ε");
 		table.setEntry("args'", TokenType.OP_COMMA, "args' ::= OP_COMMA args");
 
-		// this is just for testing !!!
 		// basic
 		table.setEntry("basic", TokenType.INT_TYPE, "basic ::=  INT_TYPE");
 		table.setEntry("basic", TokenType.REAL_TYPE, "basic ::= REAL_TYPE");

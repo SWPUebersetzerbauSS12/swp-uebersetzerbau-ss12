@@ -25,8 +25,7 @@ public interface IToken {
 		OP_SEMIC,
 
 		/** Other reserverd key words */
-		IF, THEN, ELSE, WHILE, DO, BREAK,
-		RETURN, PRINT,
+		IF, THEN, ELSE, WHILE, DO, BREAK, RETURN, PRINT,
 		/** Function definition */
 		DEF,
 		/** Record keyword */
@@ -53,13 +52,12 @@ public interface IToken {
 		REAL_LITERAL,
 
 		/**
-		 * For Java-style comments 
+		 * For Java-style comments
+		 * 
 		 * @note Review if we really need them
 		 * @note The parser-generator group asked for those types
 		 */
-		MULTILINE_COMMENT_START,
-		MULTILINE_COMMENT_END,
-		SINGLELINE_COMMENT,
+		MULTILINE_COMMENT_START, MULTILINE_COMMENT_END, SINGLELINE_COMMENT,
 
 		/** "(" */
 		LPAREN,
@@ -88,11 +86,20 @@ public interface IToken {
 	/**
 	 * Get the Token attribute value
 	 * 
-	 * E.g. for a Token of type REAL this can be "0.0"
+	 * E.g. for a Token of type BOOL this should return an instance of the
+	 * Java-type Boolean
 	 * 
-	 * @return Attribute value
+	 * Same applies to the following TokenTypes:
+	 * INT -> Integer
+	 * REAL -> Float
+	 * STRING -> String
+	 * 
+	 * @example Usage: If getType() == REAL, then (Float)getAttribute()
+	 *          retrieves the value
+	 * 
+	 * @return Attribute value, may be null
 	 */
-	String getAttribute();
+	Object getAttribute();
 
 	/**
 	 * Get the start offset of this Token's attribute

@@ -1,18 +1,21 @@
 package parser;
 
+import lexer.IToken.TokenType;
 import lombok.Getter;
 
 public class ParseTable {
 
 	private static final char DELIM = '#';
+
 	@Getter
 	private boolean isAmbigous;
 
-	private String[] nonTerminals, terminals;
+	private String[] nonTerminals;
+	private TokenType[] terminals;
 
 	private String[][] table;
 
-	public ParseTable(String[] nonTerminals, String[] terminals) {
+	public ParseTable(String[] nonTerminals, TokenType[] terminals) {
 		this.nonTerminals = nonTerminals;
 		this.terminals = terminals;
 
@@ -35,7 +38,7 @@ public class ParseTable {
 	 * @param entry
 	 * @throws ParserException
 	 */
-	public void setEntry(String nonT, String t, String entry)
+	public void setEntry(String nonT, TokenType t, String entry)
 			throws ParserException {
 		boolean found = false;
 		for (int i = 0; i < nonTerminals.length; i++) {
@@ -72,8 +75,9 @@ public class ParseTable {
 	 * @return All entries of the parsing table cell with the given arguments
 	 *         nonT and t. Entries are separated by one delimiter. If no entry
 	 *         is found null is returned.
+	 * @throws ParserException 
 	 */
-	public String getEntry(String nonT, String t) {
+	public String getEntry(String nonT, TokenType t) throws ParserException {
 		for (int i = 0; i < nonTerminals.length; i++) {
 			if (nonTerminals[i].equals(nonT)) {
 				for (int j = 0; j < terminals.length; j++) {

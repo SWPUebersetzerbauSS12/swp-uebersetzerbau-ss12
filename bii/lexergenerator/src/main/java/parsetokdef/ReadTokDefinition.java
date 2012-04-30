@@ -48,6 +48,15 @@ public class ReadTokDefinition {
 		readRules(s);
 	}
 
+	/**
+	 * Returns all rules.
+	 * 
+	 * @return is empty, if you do not execute read() method
+	 */
+	public List<Rule> getRules() {
+		return rules;
+	}
+
 	private void readDefinition(Scanner s) {
 
 		HashMap<String, Boolean> seenPattern = new HashMap<String, Boolean>();

@@ -34,72 +34,81 @@ package regextodfaconverter.fsm;
 
 import tokenmatcher.TokenType;
 
-
 /**
- * Implementiert  Interface {@link tokenmatcher.StatePayload} 
+ * Implementiert Interface {@link tokenmatcher.StatePayload}
+ * 
  * @author Johannes Dahlke
  * @author Daniel Rotar
  */
 public class StatePayload implements tokenmatcher.StatePayload {
 
-	private TokenType tokenType;
+	private String tokenType;
 
-	private int backsteps = 0;
+	private String attribute;
+
+	// no longer used
+	// private int backsteps = 0;
 
 	/**
-	 * Die Priorität dieses Objekts (je größer die Zahl desto größer die Priorität).
+	 * Die Priorität dieses Objekts (je größer die Zahl desto größer die
+	 * Priorität).
 	 */
 	private int priority = 0;
-	
-	public StatePayload(TokenType tokenType, int backsteps, int priority) {
+
+	public StatePayload(String tokenType, String attribute, int priority) {
 		super();
 		this.tokenType = tokenType;
-		this.backsteps = backsteps;
+		this.attribute = attribute;
 		this.priority = priority;
 	}
-	
-	
+
 	/**
 	 * Erstellt ein Payload-Objekt mit Standardpriorität
+	 * 
 	 * @param tokenType
-	 * @param backsteps
 	 */
-	public StatePayload(TokenType tokenType, int backsteps) {
+	public StatePayload(String tokenType, String attribute) {
 		super();
 		this.tokenType = tokenType;
-		this.backsteps = backsteps;
+		this.attribute = attribute;
 		this.priority = 0;
 	}
 
-	public TokenType getTokenType() {
+	public String getTokenType() {
 		return tokenType;
 	}
 
-	public int getBacksteps() {
-		return backsteps;
-	}
-	
-	/**
-	 * Gibt die Priorität dieses Objekts zurück. 
-	 * @return Die Priorität dieses Objekts (je größer die Zahl desto größer die Priorität).
+	/*
+	 * no longer used public int getBacksteps() { return backsteps; }
 	 */
-	public int getPriority()
-	{
+
+	/**
+	 * Gibt die Priorität dieses Objekts zurück.
+	 * 
+	 * @return Die Priorität dieses Objekts (je größer die Zahl desto größer die
+	 *         Priorität).
+	 */
+	public int getPriority() {
 		return priority;
 	}
-	
+
 	/**
-	 * Setzt die Priorität dieses Objekts fest. 
-	 * @param priority Die Priorität dieses Objekts (je größer die Zahl desto größer die Priorität).
+	 * Setzt die Priorität dieses Objekts fest.
+	 * 
+	 * @param priority
+	 *            Die Priorität dieses Objekts (je größer die Zahl desto größer
+	 *            die Priorität).
 	 */
-	public void setPriority(int priority)
-	{
+	public void setPriority(int priority) {
 		this.priority = priority;
 	}
-	
+
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return tokenType.toString();
+	}
+
+	public String getAttribute() {
+		return attribute;
 	}
 }

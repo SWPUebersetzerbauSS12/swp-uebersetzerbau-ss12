@@ -32,11 +32,25 @@
 
 package tokenmatcher;
 
-
 public interface StatePayload {
-	
-	TokenType getTokenType();
-	
-  int getBacksteps();
-	
+
+	/**
+	 * Gibt den Tokentyp zurück.
+	 * 
+	 * @return der Tokentyp als Zeichenkette.
+	 */
+	String getTokenType();
+
+	/**
+	 * Liefert das Attribut zurück. Dies kann ein Wert, eine Konstante oder auch
+	 * eine Funktion sein.
+	 * 
+	 * @return das Attribut als Zeichenkette.
+	 */
+	String getAttribute();
+
+	/*
+	 * no longer used int getBacksteps();
+	 */
+
 }

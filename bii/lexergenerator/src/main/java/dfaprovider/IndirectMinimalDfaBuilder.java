@@ -40,7 +40,7 @@ public class IndirectMinimalDfaBuilder implements MinimalDfaBuilder {
 		
 		//Hier würde quasi eine Schleife anfangen
 		//1. if Token
-		payload = new StatePayload(TokenType.IF,0,-1); //Diese Information muss irgendwo im Textfile stehen
+		payload = new StatePayload( "KEYWORD", "IF",-1); //Diese Information muss irgendwo im Textfile stehen
 		regex = "((i)(f))"; //Diese Information muss irgendwo im Textfile stehen, dass ist der regex zum Token
 		
 		// Aus Regex NFA machen.	
@@ -52,7 +52,7 @@ public class IndirectMinimalDfaBuilder implements MinimalDfaBuilder {
 		fsms.add(fsm);
 		//Die nächsten Zeilen wären jetzt normalerweise ein nächster Schleifendurchlauf
 		//2. Int Token (nur rudimentär, ka ob der regex alles abdekt)
-		payload = new StatePayload(TokenType.INT,0,-2); //Diese Information muss irgendwo im Textfile stehen
+		payload = new StatePayload("NUM","parseInt()",-2); //Diese Information muss irgendwo im Textfile stehen
 		regex = "(((((((((((1))|(2))|(3))|(4))|(5))|(6))|(7))|(8))|(9))(((((((((((0)|(1))|(2))|(3))|(4))|(5))|(6))|(7))|(8))|(9))*))"; //Diese Information muss irgendwo im Textfile stehen
 		
 		// Aus Regex NFA machen.	

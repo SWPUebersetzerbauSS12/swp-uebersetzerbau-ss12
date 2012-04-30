@@ -89,7 +89,7 @@ public class Test {
 			fsm.addTransition( state2, state2, '7');
 			fsm.addTransition( state2, state2, '8');
 			fsm.addTransition( state2, state2, '9');
-
+ 
 		} catch ( Exception e) {
 			e.printStackTrace();
 		}
@@ -113,7 +113,7 @@ public class Test {
 
 			state1 = fsm.getCurrentState();
 			state2 = new State<Character, StatePayload>( 
-					new regextodfaconverter.fsm.StatePayload( TokenType.STRING, 0), true);
+					new regextodfaconverter.fsm.StatePayload( "ID", "parseString()"), true);
 			
 
 			ArrayList<Character> validChars = new ArrayList<Character>(); 
@@ -155,9 +155,9 @@ public class Test {
 			
 			state2 = new State<Character, StatePayload>();
 			state3 = new State<Character, StatePayload>( 
-					new regextodfaconverter.fsm.StatePayload( TokenType.LINECOMMENT_BEGIN, 0), true);
+					new regextodfaconverter.fsm.StatePayload( "COMMENT", "LINE", 0), true);
 			state4 = new State<Character, StatePayload>( 
-					new regextodfaconverter.fsm.StatePayload( TokenType.BLOCKCOMMENT_BEGIN, 0), true);
+					new regextodfaconverter.fsm.StatePayload( "COMMENT", "BLOCK_BEGIN", 0), true);
 		
 			fsm.addTransition( state1, state2, '/');
     	fsm.addTransition( state2, state3, '/');
@@ -250,6 +250,8 @@ public class Test {
 
 	public static void runTest() throws ConvertExecption, Exception {
 
+
+		
 		FiniteStateMachine<Character, StatePayload> fsm = generateRelopFSM();
 		//FiniteStateMachine<Character, StatePayload> fsm = generateCommentFSM();
 		fsm.union( generateCommentFSM());

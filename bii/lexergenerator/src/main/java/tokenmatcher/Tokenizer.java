@@ -39,7 +39,11 @@ import bufferedreader.LexemeReader;
 import bufferedreader.LexemeReaderException;
 import bufferedreader.SpecialChars;
 
-
+/**
+ * 
+ * @author Johannes Dahlke
+ *
+ */
 public class Tokenizer implements LexerToParserInterface {
 
 	private DeterministicFiniteAutomata<Character, StatePayload> dfa;
@@ -53,12 +57,12 @@ public class Tokenizer implements LexerToParserInterface {
 	private int lastPositionInLine = 0; 
 	
 	private enum ReadMode {
-		read_normal,
-		read_block_comment,
-    read_line_comment
+		READ_NORMAL,
+		READ_BLOCK_COMMENT,
+    READ_LINE_COMMENT
 	}
 	
-	private ReadMode readMode = ReadMode.read_normal;
+	private ReadMode readMode = ReadMode.READ_NORMAL;
 	
 
 
@@ -134,33 +138,33 @@ public class Tokenizer implements LexerToParserInterface {
 			//	System.out.println( recognisedToken.getType());
 				
 				// filter comments
-				if ( ( readMode == ReadMode.read_normal) &&
+				if ( ( readMode == ReadMode.READ_NORMAL) &&
 						 ( Token.isTokenStartingBlockComment( recognisedToken))) {
-					readMode = ReadMode.read_block_comment;
+					readMode = ReadMode.READ_BLOCK_COMMENT;
 					while ( !Token.isTokenEndingBlockComment( getNextToken())){
 						// ignore comment block
 					}
-					readMode = ReadMode.read_normal;
+					readMode = ReadMode.READ_NORMAL;
 					return getNextToken();
-				} else if ( ( readMode == ReadMode.read_normal) &&
+				} else if ( ( readMode == ReadMode.READ_NORMAL) &&
 						        ( Token.isTokenLineComment( recognisedToken))) {
-					readMode = ReadMode.read_line_comment;
+					readMode = ReadMode.READ_LINE_COMMENT;
 					int thisLine = currentLine;
 					while ( thisLine == currentLine){
 						// ignore remaining line
 						recognisedToken = getNextToken();
 					} 
-					readMode = ReadMode.read_normal;
+					readMode = ReadMode.READ_NORMAL;
 					return recognisedToken;
 				} else
 				  return recognisedToken;
 				
 			} else if ( currentChar == SpecialChars.CHAR_EOF) {
 				throw new EndOfFileException();
-		  } else if ( readMode == ReadMode.read_normal){
+		  } else if ( readMode == ReadMode.READ_NORMAL){
 		  	errorCorrector.handleMismatch( currentChar, lexemeReader, dfa, currentLine, currentPositionInLine);	
 		  } else {
-		  	// ignore, cause we scan a comment
+		  	// ignore, cause we scan a comment at the moment
 		  }
 		}
 

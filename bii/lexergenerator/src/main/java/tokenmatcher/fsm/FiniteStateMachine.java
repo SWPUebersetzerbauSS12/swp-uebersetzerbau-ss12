@@ -36,7 +36,12 @@ import tokenmatcher.State;
 import utils.Test;
 
 
-
+/**
+ * 
+ * @author Joihannes Dahlke
+ *
+ * @param <E>
+ */
 public class FiniteStateMachine<E> {
 	
 	private State currentState;

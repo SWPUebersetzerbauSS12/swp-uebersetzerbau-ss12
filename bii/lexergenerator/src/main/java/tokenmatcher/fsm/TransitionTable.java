@@ -39,7 +39,12 @@ import utils.Test;
 
 
 
-
+/**
+ * 
+ * @author Johannes Dahlke
+ *
+ * @param <E>
+ */
 public class TransitionTable<E> {
 	
 	private HashMap<State,HashMap<E,State>> transitions = new HashMap<State, HashMap<E,State>>();  

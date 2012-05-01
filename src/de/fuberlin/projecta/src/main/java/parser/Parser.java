@@ -4,9 +4,9 @@ import java.util.Stack;
 import java.util.Vector;
 
 import lexer.ILexer;
+import lexer.IToken;
 import lexer.IToken.TokenType;
 import lexer.SyntaxErrorException;
-import lexer.Token;
 import lombok.Getter;
 
 public class Parser {
@@ -71,7 +71,7 @@ public class Parser {
 
 		initStack();
 		String peek;
-		Token token = null;
+		IToken token = null;
 		try {
 			token = lexer.getNextToken();
 		} catch (SyntaxErrorException e) {

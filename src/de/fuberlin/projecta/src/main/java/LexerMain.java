@@ -1,14 +1,14 @@
+import java.io.File;
+import java.io.IOException;
+
 import lexer.ILexer;
+import lexer.IToken;
 import lexer.IToken.TokenType;
 import lexer.Lexer;
 import lexer.SyntaxErrorException;
-import lexer.Token;
 import lexer.io.FileCharStream;
 import lexer.io.StringCharStream;
 import utils.IOUtils;
-
-import java.io.File;
-import java.io.IOException;
 
 public class LexerMain {
 
@@ -33,7 +33,7 @@ public class LexerMain {
 	}
 
 	private static void printTokens(ILexer lexer) {
-		Token t;
+		IToken t;
 		try {
 			do {
 				t = lexer.getNextToken();

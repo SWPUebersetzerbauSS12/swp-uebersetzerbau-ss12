@@ -10,6 +10,9 @@
 *.LOCAL.*
 *.REMOTE.*
 
+# java
+*.class
+
 # project-specific
 target/
 .classpath

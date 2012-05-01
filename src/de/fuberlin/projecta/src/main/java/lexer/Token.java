@@ -10,7 +10,7 @@ class Token implements IToken {
 
 	private TokenType type;
 
-	private String attribute;
+	private Object attribute;
 
 	private int lineNumber;
 	private int offset;

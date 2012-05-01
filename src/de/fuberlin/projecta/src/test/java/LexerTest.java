@@ -1,15 +1,18 @@
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.util.ArrayList;
+
 import lexer.IToken.TokenType;
 import lexer.Lexer;
 import lexer.SyntaxErrorException;
 import lexer.Token;
 import lexer.io.FileCharStream;
 import lexer.io.StringCharStream;
+
 import org.junit.Test;
-
-import java.io.File;
-import java.util.ArrayList;
-
-import static org.junit.Assert.*;
 
 public class LexerTest {
 
@@ -32,23 +35,41 @@ public class LexerTest {
 	}
 
 	@Test
-	public void testNumericalValues() throws SyntaxErrorException {
-		// 23
-		// 3.14
-		// 2.
-		// 22e+4
-		// 31.4e-1
+	public void testNumericalLiterals() throws SyntaxErrorException {
 		String source = "23 \n3.14+ \n2. \n22e+4 \n31.4e-1";
 
-		Lexer lexer = new Lexer(new StringCharStream(source));
-		ArrayList<Token> tokenList = tokenize(lexer);
+		ArrayList<Token> tokenList = tokenize(source);
 
 		assertEquals(tokenList.get(0).getType(), TokenType.INT_LITERAL);
+		assertEquals((Integer) (tokenList.get(0).getAttribute()), (Integer) 23);
+
 		assertEquals(tokenList.get(1).getType(), TokenType.REAL_LITERAL);
+		assertEquals((Float) (tokenList.get(1).getAttribute()), (Float) 3.14f);
 		assertEquals(tokenList.get(2).getType(), TokenType.OP_ADD);
 		assertEquals(tokenList.get(3).getType(), TokenType.REAL_LITERAL);
+		assertEquals((Float) (tokenList.get(3).getAttribute()), (Float) 2.f);
+
 		assertEquals(tokenList.get(4).getType(), TokenType.REAL_LITERAL);
+		assertEquals((Float) (tokenList.get(4).getAttribute()), (Float) 22e4f);
+
 		assertEquals(tokenList.get(5).getType(), TokenType.REAL_LITERAL);
+		assertEquals((Float) (tokenList.get(5).getAttribute()),
+				(Float) 31.4e-1f);
+	}
+
+	@Test
+	public void testBooleanLiterals() {
+		final String source = "true; false;";
+
+		ArrayList<Token> tokenList = tokenize(source);
+
+		assertEquals(tokenList.get(0).getType(), TokenType.BOOL_LITERAL);
+		assertEquals((Boolean) (tokenList.get(0).getAttribute()),
+				(Boolean) true);
+
+		assertEquals(tokenList.get(2).getType(), TokenType.BOOL_LITERAL);
+		assertEquals((Boolean) (tokenList.get(2).getAttribute()),
+				(Boolean) false);
 	}
 
 	@Test
@@ -89,21 +110,6 @@ public class LexerTest {
 	public void testInvalidSentence() {
 		String code = "a:";
 		tokenize(code);
-	}
-
-	@Test
-	public void testBooleanLiterals() {
-		final String code = "return true;\nreturn false;";
-		Token[] expected = new Token[] {
-				new Token(TokenType.RETURN, null, 1, 0),
-				new Token(TokenType.BOOL_LITERAL, "true", 1, 7),
-				new Token(TokenType.OP_SEMIC, null, 1, 11),
-
-				new Token(TokenType.RETURN, null, 2, 0),
-				new Token(TokenType.BOOL_LITERAL, "false", 2, 7),
-				new Token(TokenType.OP_SEMIC, null, 2, 12),
-				new Token(TokenType.EOF, null, 2, 13) };
-		assertArrayEquals(expected, tokenize(code).toArray());
 	}
 
 	@Test
@@ -186,4 +192,5 @@ public class LexerTest {
 		} while (t.getType() != TokenType.EOF);
 		return tokenList;
 	}
+
 }

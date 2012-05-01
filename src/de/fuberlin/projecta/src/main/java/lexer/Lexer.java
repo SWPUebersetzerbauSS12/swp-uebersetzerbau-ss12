@@ -99,7 +99,8 @@ public class Lexer implements ILexer {
 		// if we read a dot or an e/E now we have a real value
 		// every other character will indicate that we have an int value
 		if (!peek.matches("[eE\\.]")) {
-			return new Token(TokenType.INT_LITERAL, "result", line, is.getOffset());
+			final int value = Integer.parseInt(result);
+			return new Token(TokenType.INT_LITERAL, value, line, is.getOffset());
 		}
 		if (peek.matches("\\.")) {
 			result += peek;
@@ -132,9 +133,11 @@ public class Lexer implements ILexer {
 						"Malformed real value at line: " + this.line
 								+ " near: " + is.getOffset());
 			}
-			return new Token(TokenType.REAL_LITERAL, result, this.line, is.getOffset());
+			final float value = Float.parseFloat(result);
+			return new Token(TokenType.REAL_LITERAL, value, this.line, is.getOffset());
 		}
-		return new Token(TokenType.REAL_LITERAL, result, this.line, is.getOffset());
+		final float value = Float.parseFloat(result);
+		return new Token(TokenType.REAL_LITERAL, value, this.line, is.getOffset());
 	}
 
 	private Token identifier() throws SyntaxErrorException {
@@ -211,7 +214,7 @@ public class Lexer implements ILexer {
 			}
 			if (is.getNextChars(5).matches("true" + delimiterRegexp)) {
 				is.consumeChars(4);
-				return new Token(TokenType.BOOL_LITERAL, "true", this.line, offset);
+				return new Token(TokenType.BOOL_LITERAL, true, this.line, offset);
 			}
 		}
 		if (s.equals("e")
@@ -271,7 +274,7 @@ public class Lexer implements ILexer {
 		if (s.equals("f")
 				&& is.getNextChars(6).matches("false" + delimiterRegexp)) {
 			is.consumeChars(5);
-			return new Token(TokenType.BOOL_LITERAL, "false", this.line, offset);
+			return new Token(TokenType.BOOL_LITERAL, false, this.line, offset);
 		}
 		if (s.equals("+")) {
 			is.consumeChars(1);

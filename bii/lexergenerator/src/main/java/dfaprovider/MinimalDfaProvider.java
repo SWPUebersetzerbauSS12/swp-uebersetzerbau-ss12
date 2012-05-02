@@ -29,24 +29,6 @@ import regextodfaconverter.fsm.StatePayload;
 public class MinimalDfaProvider {
 
 	/**
-	 * Header aus <dateiname>.dfa, Zeile 1 Sollte der Konstanten "lexergen"
-	 * entsprechen
-	 */
-	private static String head_1 = null;
-
-	/**
-	 * Header aus <dateiname>.dfa, Zeile 2 Sollte der variablen Versionsnummer
-	 * entsprechen
-	 */
-	private static String head_2 = null;
-
-	/**
-	 * Header aus <dateiname>.dfa, Zeile 3 Sollte dem sha1-Hash der übergebenen
-	 * regulären Definitionsdatei entsprechen
-	 */
-	private static String head_3 = null;
-
-	/**
 	 * Gibt den minimalen DFA für die angegebenen regulären Definitionen zurück.
 	 * Dabei wird im "Workingdirectory" nach einem serialisierten DFA gesucht,
 	 * um diesen (unter gewissen Umständen), zu deserialisieren. Wenn kein
@@ -58,6 +40,7 @@ public class MinimalDfaProvider {
 	 *            Definitionen (<dateiname>.rd) enthalten.
 	 * @return: Der minimale DFA für die angegebenen regulären Definitionen.
 	 */
+	@SuppressWarnings("unchecked")
 	public static MinimalDfa<Character, StatePayload> getMinimalDfa(
 			String rdFileName) throws MinimalDfaProviderException {
 		// Anfängliche Überprüfungen, welche die Weiterverarbeitung (inkl.
@@ -72,8 +55,8 @@ public class MinimalDfaProvider {
 					+ rdFileName + " existiert nicht");
 		}
 
-		MinimalDfa<Character, StatePayload> mDfa = null;
-		/* Workflow: dfa provider */
+		/**		Workflow: dfa provider	*/
+		MinimalDfa<Character, StatePayload> mDfa = null;	
 
 		// dfa-Datei holen für die Überprüfung (auf Basis der angegebenen
 		// rd-Datei)
@@ -84,37 +67,60 @@ public class MinimalDfaProvider {
 
 		// existiert <dateiname>.dfa
 		if (dfaToLoad.exists()) {
-			// temporäre Headerfiles zurücksetzen
-			resetHead();
-			// deserialisieren des dfa, ausgehend von der existierenden Datei
-			mDfa = deserialize(Settings.getWorkingDirectory() + dfaFileName);
-			// header1 korrekt
-			if (head_1.equals("lexergen")) {
-				// header2 korrekt
-				if (head_2.equals(Settings.getVersion())) {
-					// sha von reguläre Definitionsdatei bilden und mit header3
-					// vergleichen
-					String currentSHA = getHashedRDFileAsString(Settings
-							.getWorkingDirectory() + rdFileName);
-					// header3 korrekt
-					if (head_3.equals(currentSHA)) {
+			try{
+				FileInputStream file = new FileInputStream(Settings.getWorkingDirectory() + dfaFileName);
+				ObjectInputStream o = new ObjectInputStream(file);
+				
+				// Zeile_1 vom Header überprüfen (lexergen)
+				if (((String) o.readObject()).equals("lexergen")) {
+					
+					// Zeile_2 vom Header überprüfen (z.B. 0.1)
+					if (((String) o.readObject()).equals(Settings.getVersion())) {
+						
+						// sha von regulärer Definitionsdatei bilden und 
+						// mit Zeile_3 vom Header überprüfen vergleichen
+						String currentSHA = getHashedRDFileAsString(Settings
+								.getWorkingDirectory() + rdFileName);
+						
 						// header korrekt abgearbeitet, nutze ausgelesenen dfa
-						return mDfa;
+						if (((String) o.readObject()).equals(currentSHA)) {
+							mDfa = (MinimalDfa<Character, StatePayload>) o.readObject();
+							o.close();
+							checkDeserialization(mDfa);
+							return mDfa;
+						} else {
+							// <dateiname>.dfa löschen, da sha1-hash-Konflikt
+							dfaToLoad.delete();
+							o.close();
+							return buildMinimalDfa(rdFileName);
+						}
 					} else {
-						// <dateiname>.dfa löschen, da sha1-hash-Konflikt
+						// <dateiname>.dfa löschen, da Versionskonflikt
 						dfaToLoad.delete();
+						o.close();
 						return buildMinimalDfa(rdFileName);
 					}
 				} else {
-					// <dateiname>.dfa löschen, da Versionskonflikt
-					dfaToLoad.delete();
+					o.close();
 					return buildMinimalDfa(rdFileName);
 				}
-			} else {
-				return buildMinimalDfa(rdFileName);
+			} catch(IOException e){
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
 			}
 		} else {
 			return buildMinimalDfa(rdFileName);
+		}
+		checkDeserialization(mDfa);
+		return mDfa;
+	}
+
+	private static void checkDeserialization(MinimalDfa<Character, StatePayload> mDfa) {
+		if (mDfa != null) {
+			System.out.println("Deserialization finished");
+		} else {
+			System.out.println("Deserialization failed");
 		}
 	}
 
@@ -143,69 +149,12 @@ public class MinimalDfaProvider {
 
 			String shaString = getHashedRDFileAsString(rdFileName);
 			oOS.writeObject(shaString); // header3
-			// minimal dfa, der serialisiert werden soll
+
 			oOS.writeObject(dfaToSerialize);
 			oOS.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("Serialization finished");
-	}
-
-	/**
-	 * Deserialisiert einen DFA auf Basis einer angegebenen Datei (der Form
-	 * <dateiname>.dfa) und gibt diesen (als minimalen DFA) zurück.
-	 * 
-	 * @param filename
-	 *            : Datei (der Form <dateiname>.dfa), die einen serialisierten
-	 *            DFA enthält
-	 * @return: minimaler DFA, der aus der übergebenen Datei (@param: filename),
-	 *          deserialisiert wurde
-	 */
-	@SuppressWarnings("unchecked")
-	static private MinimalDfa<Character, StatePayload> deserialize(
-			String filename) {
-		MinimalDfa<Character, StatePayload> deserializedMDfa = null;
-		try {
-			FileInputStream file = new FileInputStream(filename);
-			ObjectInputStream o = new ObjectInputStream(file);
-
-			// Header-Daten abarbeiten
-			head_1 = (String) o.readObject(); // lexergen
-			head_2 = (String) o.readObject(); // 0.1 (z.B.)
-			head_3 = (String) o.readObject(); // sha1-hash von der Datei
-												// <dateiname>.rd
-
-			// Automaten erhalten
-			deserializedMDfa = (MinimalDfa<Character, StatePayload>) o
-					.readObject();
-
-			o.close();
-
-		} catch (IOException e) {
-			System.err.println(e);
-		} catch (ClassNotFoundException e) {
-			System.err.println(e);
-		}
-		if (deserializedMDfa != null) {
-			System.out.println("Deserialization finished");
-		} else {
-			System.out.println("Deserialization failed");
-		}
-		return deserializedMDfa;
-	}
-
-	/**
-	 * Setzt die temporären head-Variablen zurück. Diese enthalten bei jeder
-	 * Deserialisierung die Daten zur Überprüfung (Verwendung in
-	 * getMinimalDfa(String)).
-	 * 
-	 * etwas unschön, aber pragmatisch
-	 */
-	private static void resetHead() {
-		head_1 = null;
-		head_2 = null;
-		head_3 = null;
 	}
 
 	/**

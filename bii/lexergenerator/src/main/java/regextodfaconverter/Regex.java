@@ -142,8 +142,9 @@ public class Regex {
 		// Überprüfen, ob der angegebene reguläre Ausdruck mit einem gültigen
 		// Zeichen endet (um bei weiteren Berechnungen diesen Fall nicht
 		// abfangen zu müssen)
-		if ((!isCharInAlphabet(regex.charAt(regex.length()-1))) && (regex.charAt(regex.length()-1) != '*')
-				&& (regex.charAt(regex.length()-1) != ')')) {
+		if ((!isCharInAlphabet(regex.charAt(regex.length() - 1)))
+				&& (regex.charAt(regex.length() - 1) != '*')
+				&& (regex.charAt(regex.length() - 1) != ')')) {
 			throw new RegexInvalidException(
 					"Der angegebene reguläre Ausdruck endet mit einem ungütligen Zeichen!");
 		}
@@ -160,35 +161,28 @@ public class Regex {
 					// Geklammerten Regex rekursiv auflösen.
 					int toClose = 1;
 					StringBuilder subRegex = new StringBuilder();
-					while (toClose != 0)
-					{
+					while (toClose != 0) {
 						i++;
-						if (i == regex.length())
-						{
-							throw new RegexInvalidException("Der angegebene reguläre Ausdruck ist ungültig geklammert");
+						if (i == regex.length()) {
+							throw new RegexInvalidException(
+									"Der angegebene reguläre Ausdruck ist ungültig geklammert");
 						}
-						if (regex.charAt(i) == '(')
-						{
+						if (regex.charAt(i) == '(') {
 							subRegex.append(regex.charAt(i));
 							toClose++;
-						}
-						else if (regex.charAt(i) == ')')
-						{
+						} else if (regex.charAt(i) == ')') {
 							toClose--;
-							if (toClose>0)
-							{
+							if (toClose > 0) {
 								subRegex.append(regex.charAt(i));
-							}							
-						}
-						else
-						{
+							}
+						} else {
 							subRegex.append(regex.charAt(i));
 						}
 					}
 					regexTasks.add(addMissingParenthesis(subRegex.toString()));
 				} else if (c == ')') {
 					throw new RegexInvalidException(
-							"Unbekannter Ausnahmefehler. Fehlercode: f-i1-i2");
+							"Der angegebene reguläre Ausdruck ist ungültig geklammert");
 				} else if (c == '|' || c == '*') {
 					regexTasks.add("" + c);
 				} else {
@@ -227,7 +221,8 @@ public class Regex {
 				if (i + 1 < regexTasks.size()) {
 					// '*' kann nicht mehr kommen, da bereits vollständig
 					// abgearbeitet.
-					if ((!regexTasks.get(i).equals("|")) && (!regexTasks.get(i + 1).equals("|"))) {
+					if ((!regexTasks.get(i).equals("|"))
+							&& (!regexTasks.get(i + 1).equals("|"))) {
 						regexTasks.set(i,
 								"(" + regexTasks.get(i) + regexTasks.get(i + 1)
 										+ ")");
@@ -244,7 +239,7 @@ public class Regex {
 							+ regexTasks.get(i + 1) + ")");
 					regexTasks.remove(i + 1);
 					regexTasks.remove(i);
-					i = i-2;
+					i = i - 2;
 				}
 			}
 			return regexTasks.get(0);
@@ -305,29 +300,24 @@ public class Regex {
 		return regex.replace(".", replaceWith);
 	}
 
-	
-	 /**
-	 * Ersetzt jedes vorkommen von "[...]" mit einem entsprechenden
-	 reduzierten
-	 * regulären Ausdruck: Fall1: [first] wird ersetz durch (f|i|r|s|t).
-	 Fall2:
+	/**
+	 * Ersetzt jedes vorkommen von "[...]" mit einem entsprechenden reduzierten
+	 * regulären Ausdruck: Fall1: [first] wird ersetz durch (f|i|r|s|t). Fall2:
 	 * [a-d] wird ersetzt durch (a|b|c|d). Fall3: [a-dA-D] wird ersetzt durch
-	 * (a|b|c|d|A|B|C|D). Fall4: [^a] wird ersetzt durch eine
-	 (...|...|...|...)
-	 * (jedes Zeichen aus dem Alphabet außer dem angegebenen Zeichen oder
-	 einem
+	 * (a|b|c|d|A|B|C|D). Fall4: [^a] wird ersetzt durch eine (...|...|...|...)
+	 * (jedes Zeichen aus dem Alphabet außer dem angegebenen Zeichen oder einem
 	 * der reservierten Zeichen. Fall5: [-a-c], [a-c-] wird ersetzt durch
 	 * (-|a|b|c) bzw. (a|b|c|-).
-	 *
+	 * 
 	 * @param regex
 	 * @return
 	 * @throws RegexInvalidException
 	 */
-	 private static String replaceBrackets(String regex)
-	 throws RegexInvalidException {
-	 // TODO: replaceBrackets implementieren.
-	 return regex;
-	 }
+	private static String replaceBrackets(String regex)
+			throws RegexInvalidException {
+		// TODO: replaceBrackets implementieren.
+		return regex;
+	}
 
 	/**
 	 * Gibt an ob es sich bei dem angegebenen Zeichen um ein Metazeichen
@@ -337,7 +327,7 @@ public class Regex {
 	 *            Das zu überprüfende Zeichen
 	 * @return true, wenn es sich um ein Metazeichen handelt, sonst false.
 	 */
-	private static boolean isMetaCharacter(char c) {
+	protected static boolean isMetaCharacter(char c) {
 		return isBasicMetaCharacter(c) || isExtendedMetaCharacter(c)
 				|| isEscapeMetaCharacter(c);
 	}
@@ -350,7 +340,7 @@ public class Regex {
 	 *            Das zu überprüfende Zeichen
 	 * @return true, wenn es sich um ein Basis-Metazeichen handelt, sonst false.
 	 */
-	private static boolean isBasicMetaCharacter(char c) {
+	protected static boolean isBasicMetaCharacter(char c) {
 		for (char rc : BASIC_META_CHARS) {
 			if (rc == c) {
 				return true;
@@ -369,7 +359,7 @@ public class Regex {
 	 * @return true, wenn es sich um ein erweitertes Metazeichen handelt, sonst
 	 *         false.
 	 */
-	private static boolean isExtendedMetaCharacter(char c) {
+	protected static boolean isExtendedMetaCharacter(char c) {
 		for (char rc : EXTENDED_META_CHARS) {
 			if (rc == c) {
 				return true;
@@ -388,7 +378,7 @@ public class Regex {
 	 * @return true, wenn es sich um ein Escape-Metazeichen handelt, sonst
 	 *         false.
 	 */
-	private static boolean isEscapeMetaCharacter(char c) {
+	protected static boolean isEscapeMetaCharacter(char c) {
 		if (ESCAPE_META_CHAR == c) {
 			return true;
 		}
@@ -405,7 +395,7 @@ public class Regex {
 	 * @return true, wenn das engegebene Zeichen im Alphabet liegt und kein
 	 *         Metazeichen ist.
 	 */
-	private static boolean isCharInAlphabet(char c) {
+	protected static boolean isCharInAlphabet(char c) {
 		return c >= FIRST_ASCII_CHAR && c <= LAST_ASCII_CHAR
 				&& (!isMetaCharacter(c));
 	}

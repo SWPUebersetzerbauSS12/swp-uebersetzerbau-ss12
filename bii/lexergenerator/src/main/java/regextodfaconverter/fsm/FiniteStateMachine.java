@@ -51,14 +51,14 @@ import regextodfaconverter.fsm.excpetions.TransitionAlreadyExistsException;
  * @param <StatePayloadType>
  *            Der Typ des Inhalts der Zustände.
  */
-public class FiniteStateMachine<TransitionConditionType extends Comparable<TransitionConditionType>,
-	StatePayloadType> implements Serializable{
+public class FiniteStateMachine<TransitionConditionType extends Comparable<TransitionConditionType>, StatePayloadType>
+		implements Serializable {
 
 	/**
-	 * UID für die Serialisierung/Abspeicherung als *.dfa 
+	 * UID für die Serialisierung/Abspeicherung als *.dfa
 	 */
 	private static final long serialVersionUID = 7451317869119939422L;
-	
+
 	/**
 	 * Der Startzustand dieses endlichen Automatens.
 	 */
@@ -505,6 +505,29 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 		}
 
 		resetToInitialState();
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (State<TransitionConditionType, StatePayloadType> state : getStates()
+				.values()) {
+			if (state.isInitialState()) {
+				sb.append(">");
+			}
+			sb.append(state.getUUID());
+			if (state.isFiniteState()) {
+				sb.append(">");
+			}
+			sb.append("\n");
+			for (Transition<TransitionConditionType, StatePayloadType> tran : state
+					.getTransitions()) {
+				sb.append("\t" + tran.getCondition() + " -> "
+						+ tran.getState().getUUID());
+			}
+			sb.append("\n");
+		}
+		return sb.toString();
 	}
 
 	/**

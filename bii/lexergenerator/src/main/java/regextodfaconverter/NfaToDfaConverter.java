@@ -187,12 +187,14 @@ public class NfaToDfaConverter<TransitionConditionType extends Comparable<Transi
 						}
 					}
 				} else {
-					if (transition.getCondition().equals(condition)) {
-						if (!visited.containsKey(transition.getState()
-								.getUUID())) {
-							visited.put(transition.getState().getUUID(),
-									transition.getState());
-							tasks.add(transition.getState());
+					if (depth == 0) {
+						if (transition.getCondition().equals(condition)) {
+							if (!visited.containsKey(transition.getState()
+									.getUUID())) {
+								visited.put(transition.getState().getUUID(),
+										transition.getState());
+								tasks.add(transition.getState());
+							}
 						}
 					}
 				}

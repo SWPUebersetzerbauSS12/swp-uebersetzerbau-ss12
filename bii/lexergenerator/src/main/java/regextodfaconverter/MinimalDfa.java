@@ -54,13 +54,14 @@ import tokenmatcher.State;
  *            Automaten.
  */
 public class MinimalDfa<ConditionType extends Comparable<ConditionType>, PayloadType>
-		implements DeterministicFiniteAutomata<ConditionType, PayloadType>, Serializable {
+		implements DeterministicFiniteAutomata<ConditionType, PayloadType>,
+		Serializable {
 
 	/**
-	 * UID für die Serialisierung/Abspeicherung als *.dfa 
+	 * UID für die Serialisierung/Abspeicherung als *.dfa
 	 */
 	private static final long serialVersionUID = -7404462323431169070L;
-	
+
 	/**
 	 * Der endliche Automat auf dem gearbeitet wird.
 	 */
@@ -85,7 +86,8 @@ public class MinimalDfa<ConditionType extends Comparable<ConditionType>, Payload
 		try {
 			if (!this.finiteStateMachine.isDeterministic()) {
 				NfaToDfaConverter<ConditionType, PayloadType> converter = new NfaToDfaConverter<ConditionType, PayloadType>();
-				this.finiteStateMachine = converter.convertToDfa(this.finiteStateMachine);
+				this.finiteStateMachine = converter
+						.convertToDfa(this.finiteStateMachine);
 			}
 			DfaMinimizer<ConditionType, PayloadType> minimizer = new DfaMinimizer<ConditionType, PayloadType>();
 			this.finiteStateMachine = minimizer
@@ -151,6 +153,11 @@ public class MinimalDfa<ConditionType extends Comparable<ConditionType>, Payload
 	public Collection<ConditionType> getElementsOfOutgoingTransitionsFromState(
 			State<ConditionType, PayloadType> state) {
 		return state.getElementsOfOutgoingTransitions();
+	}
+
+	@Override
+	public String toString() {
+		return finiteStateMachine.toString();
 	}
 
 }

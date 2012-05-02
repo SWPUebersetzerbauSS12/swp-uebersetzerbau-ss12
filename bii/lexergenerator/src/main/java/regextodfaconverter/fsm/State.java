@@ -232,20 +232,20 @@ public class State<TransitionConditionType extends Comparable<TransitionConditio
 		setInitial(true);
 		setFinite(true);
 	}
-
+	
 	/**
-	 * Gibt an, ob es sich bei diesem Zustand um einen Anfangszustand handelt.
+	 * Gibt an, ob es sich bei diesem Zustand um einen Endzustand handelt.
 	 * 
-	 * @return true, wenn es sich um einen Anfangszustand handelt, sonst false.
+	 * @return true, wenn es sich um einen Endzustand handelt, sonst false.
 	 */
 	public boolean isFiniteState() {
 		return getFinite();
 	}
 
 	/**
-	 * Gibt an, ob es sich bei diesem Zustand um einen Endzustand handelt.
+	 * Gibt an, ob es sich bei diesem Zustand um einen Anfangszustand handelt.
 	 * 
-	 * @return true, wenn es sich um einen Endzustand handelt, sonst false.
+	 * @return true, wenn es sich um einen Anfangszustand handelt, sonst false.
 	 */
 	public boolean isInitialState() {
 		return getInitial();

@@ -118,28 +118,36 @@ public class RegexToNfaConverter<StatePayloadType> {
 		}
 
 		// Chars durch Hilfs-Character austauschen
-		regex = regex.replace('(', cOpen);
-		regex = regex.replace(')', cClose);
-		regex = regex.replace('|', cGuard);
-		regex = regex.replace('*', cStar);
-
-		// Durch Escape-Char fälschlich ausgetauschte Chars wiederherstellen
-		// (ohne Escape-Char)
-		regex = regex.replace("\\" + cOpen, "(");
-		regex = regex.replace("\\" + cClose, ")");
-		regex = regex.replace("\\" + cGuard, "|");
-		regex = regex.replace("\\" + cStar, "*");
-
-		// Nach weiteren Escape-Char Sequenzen suchen
-		char[] metaCharsWithoutEscapeChar = { '[', ']', '(', ')', '{', '}',
-				'|', '?', '+', '-', '*', '^', '$', '.' };
-		for (char c : metaCharsWithoutEscapeChar) {
-			regex = regex.replace("\\" + c, "" + c);
+		StringBuilder sb = new StringBuilder("");
+		for (int i = 0; i < regex.length(); i++) {
+			char c = regex.charAt(i);
+			if (c == '(') {
+				sb.append(cOpen);
+			} else if (c == ')') {
+				sb.append(cClose);
+			} else if (c == '|') {
+				sb.append(cGuard);
+			} else if (c == '*') {
+				sb.append(cStar);
+			} else if (c == '\\') {
+				if (i + 1 == regex.length()) {
+					throw new ConvertExecption(
+							"Der verwendete reguläre Ausdruck endet mit einem ungütligen Zeichen: '"
+									+ c + "'");
+				}
+				if (Regex.isMetaCharacter(regex.charAt(i + 1))) {
+					sb.append(regex.charAt(i + 1));
+				} else {
+					throw new ConvertExecption(
+							"Der verwendete reguläre Ausdruck enthält einen erweiterten Operator bzw. Ausdruck: '"
+									+ c + "" + regex.charAt(i + 1) + "'");
+				}
+				i++;
+			} else {
+				sb.append(c);
+			}
 		}
-		regex = regex.replace("\\\\", "\\"); // Dieser Replace muss auf jeden
-												// Fall der letzte sein!
-		// Weitere Escape-Char Sequenzen darf es nicht geben, wenn die
-		// Regex-Klasse richtig arbeitet
+		regex = sb.toString();
 
 		// Klammerausdrücke ohne Inhalt "()" entfernen.
 		while (regex.contains("" + cOpen + cClose)) {
@@ -235,7 +243,6 @@ public class RegexToNfaConverter<StatePayloadType> {
 						"Unbekannter Ausnahmefehler. Fehlercode: w-l6");
 			}
 		}
-
 		if (nfas.size() == 0) {
 			return null;
 		} else if (nfas.size() == 1) {

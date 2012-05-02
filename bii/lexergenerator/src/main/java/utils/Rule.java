@@ -1,26 +1,25 @@
 package utils;
 
 public class Rule implements IRule {
-	String pattern;
-	String action;
+	private String tokenValue;
+	private String tokenType;
+	private String regexp;
 
-	public Rule(String pattern, String action) {
-		this.pattern = pattern;
-		this.action = action;
+	public Rule(String tokenType, String tokenValue, String regexp) {
+		this.tokenValue = tokenValue;
+		this.tokenType = tokenType;
+		this.regexp = regexp;
 	}
 
 	public String getRegexp() {
-		// TODO Auto-generated method stub
-		return null;
+		return regexp;
 	}
 
 	public String getTokenType() {
-		// TODO Auto-generated method stub
-		return null;
+		return tokenType;
 	}
 
 	public String getTokenValue() {
-		// TODO Auto-generated method stub
-		return null;
+		return tokenValue;
 	}
 }

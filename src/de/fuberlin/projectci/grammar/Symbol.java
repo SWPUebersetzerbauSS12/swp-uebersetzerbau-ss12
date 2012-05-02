@@ -10,10 +10,7 @@ public abstract class Symbol {
 	
 	public String getName() {
 		return name;
-	}
-	
-
-	
+	}	
 
 	/*
 	 * Die Methoden equals und hashCode müssen unbedingt beide überschrieben werden damit nicht doppelte Symbole
@@ -21,9 +18,7 @@ public abstract class Symbol {
 	 */
 	
 	@Override
-	public boolean equals(Object obj) {
-	
-		
+	public boolean equals(Object obj) {		
 		Symbol symbol;
 		
 		// Typsicheres Casten

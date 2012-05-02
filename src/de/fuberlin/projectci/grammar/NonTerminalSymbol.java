@@ -6,5 +6,8 @@ public class NonTerminalSymbol extends Symbol {
 		super(value);
 	}
 	 
+	public String toString()  {
+		return getName();
+	}
 }
  

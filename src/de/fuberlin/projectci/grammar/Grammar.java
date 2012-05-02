@@ -3,6 +3,7 @@ package de.fuberlin.projectci.grammar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class Grammar {
  
@@ -15,12 +16,17 @@ public class Grammar {
 	// Speichern der Nicht Terminal Symbole
 	private HashMap<String, NonTerminalSymbol> NonTerminalSymbols = new HashMap<String, NonTerminalSymbol>();
 	
+	
+	// Speichert zu jedem Nichtterminal eine Liste von Produktionen, bei denen es auf der linken Regelseite vorkommt
 	private HashMap<NonTerminalSymbol, List<Production>> ProdList = new HashMap<NonTerminalSymbol, List<Production>>();
 	
 	//Startsymbol	
 	NonTerminalSymbol startSymbol = null;
 	
+	//TODO Leeres Wort definieren
+	public static final String EMPTY_STRING = "@" ;
 	
+	private static final TerminalSymbol EPSILON = new TerminalSymbol(EMPTY_STRING);
 	
 	
 	public List<Production> getProductions() {
@@ -42,7 +48,7 @@ public class Grammar {
 		// In die Liste Nonterminal Symbol --> Porduktionen einfügen
 		// Eintrag schon vorhanden?
 		
-		List temp = ProdList.get(production.getLhs());
+		List<Production> temp = ProdList.get(production.getLhs());
 		
 		if (temp != null) {
 			ProdList.get(production.getLhs()).add(production);
@@ -82,9 +88,20 @@ public class Grammar {
 		TerminalSymbol result = TerminalSymbols.get(name);
 		
 		if(result == null) {
-			result = new TerminalSymbol(name);
+			
+			result = name.equals(EMPTY_STRING) ? EPSILON : new TerminalSymbol(name);
+			
+			/*
+			if(name.equals(EMPTY_STRING))
+				result = EPSILON;
+			else
+				result = new TerminalSymbol(name);
+				
+				*/
+			
 			TerminalSymbols.put(name,result);
 		}
+		
 		
 		return result;
 	}
@@ -94,15 +111,45 @@ public class Grammar {
 	 * @param startSymbol
 	 */
 	public void setStartSymbol(NonTerminalSymbol startSymbol) {
+		//TODO prüfen ob das Symbol gültig ist!
 		this.startSymbol = startSymbol;
 	}
 	
 	/**
-	 * Gibt das Startsymbol der Grammatik wieder
+	 * Gibt das Startsymbol der Grammatik zurück
 	 * @return
 	 */
 	public NonTerminalSymbol getStartSymbol() {
 		return startSymbol;
+	}
+	
+	/**
+	 * Gibt eine Menge @see java.util.Set der Nichtterminale zurück.
+	 * @return
+	 */
+	public Set<NonTerminalSymbol> getAllNonTerminals() {
+		return ProdList.keySet();
+	}
+	
+		
+	/**
+	 * Gibt eine menschenlesbare Textdarstellung der Grammatik zurück.
+	 */
+	@Override
+	public String toString() {
+		StringBuilder grammarSB = new StringBuilder();
+		
+		for(Production p : productions) {
+			grammarSB.append(p.toString());
+			grammarSB.append("\n");
+		}
+		
+		// Das Startsymbol am Ende anzeigen
+		grammarSB.append("\n");
+		grammarSB.append("Startsymbol: ");
+		grammarSB.append(startSymbol);
+		
+		return grammarSB.toString();
 	}
 	 
 }

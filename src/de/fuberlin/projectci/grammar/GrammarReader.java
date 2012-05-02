@@ -48,6 +48,7 @@ public class GrammarReader {
 		}
 		if(foundedProductions == 0)
 			System.out.println("GrammarReader: WARNING Created Grammar contains no Productions!");
+		System.out.println(); // TODO DEBUG
 		return grammar;
 	}
 	
@@ -105,17 +106,17 @@ public class GrammarReader {
 						symbol = symbol.replaceAll("\"", "");
 						rightHandSite.add(grammar.createTerminalSymbol(symbol));
 					} else { // "|" gematched, lege neue Produktion an
-						System.out.print("LHS: "+leftHandSiteName+" RHS: "); // TODO DEBUG
-						for(Symbol s : rightHandSite) System.out.print(s.getName()); // TODO DEBUG
-						System.out.print("\n"); // TODO DEBUG
+						// System.out.print("LHS: "+leftHandSiteName+" RHS: "); // TODO DEBUG
+						//for(Symbol s : rightHandSite) System.out.print(s.getName()); // TODO DEBUG
+						//System.out.print("\n"); // TODO DEBUG
 						
 						productions.add(new Production(leftHandSite, rightHandSite));
 						rightHandSite = new LinkedList<Symbol>();
 					}
 				}
-				System.out.print("LHS: "+leftHandSiteName+" RHS: "); // TODO DEBUG
-				for(Symbol s : rightHandSite) System.out.print(s.getName()); // TODO DEBUG
-				System.out.print("\n"); // TODO DEBUG
+				//System.out.print("LHS: "+leftHandSiteName+" RHS: "); // TODO DEBUG
+				//for(Symbol s : rightHandSite) System.out.print(s.getName()); // TODO DEBUG
+				//System.out.print("\n"); // TODO DEBUG
 				
 				productions.add(new Production(leftHandSite, rightHandSite));
 			}

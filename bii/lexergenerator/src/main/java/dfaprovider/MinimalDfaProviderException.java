@@ -1,7 +1,8 @@
 package dfaprovider;
 
 /**
- * Exceptionklasse für MinimalDfaProvider
+ * Stellt einen Fehler dar, der auftritt, wenn die übergebene reguläre Definitionsdatei
+ * für den MinimalDfaProvider fehlerhafte ist bzw. nicht existiert.
  * 
  * @author Maximilian Schröder
  *

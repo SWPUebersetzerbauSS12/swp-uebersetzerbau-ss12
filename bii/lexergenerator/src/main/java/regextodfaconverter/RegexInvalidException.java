@@ -50,7 +50,16 @@ public class RegexInvalidException extends Exception {
 	 * Erstellt ein neues RegexInvalidException Objekt.
 	 */
 	public RegexInvalidException() {
-		super(
-				"Der Ausdruck ist kein gültiger regulärer Ausdruck oder wird nicht unterstützt!");
+		super();
+	}
+
+	/**
+	 * Erstellt ein neues RegexInvalidException Objekt.
+	 * 
+	 * @param message
+	 *            Die genaue Fehlerbeschreibung.
+	 */
+	public RegexInvalidException(String message) {
+		super(message);
 	}
 }

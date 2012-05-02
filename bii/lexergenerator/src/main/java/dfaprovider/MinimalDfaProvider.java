@@ -55,8 +55,8 @@ public class MinimalDfaProvider {
 					+ rdFileName + " existiert nicht");
 		}
 
-		/**		Workflow: dfa provider	*/
-		MinimalDfa<Character, StatePayload> mDfa = null;	
+		/** Workflow: dfa provider */
+		MinimalDfa<Character, StatePayload> mDfa = null;
 
 		// dfa-Datei holen für die Überprüfung (auf Basis der angegebenen
 		// rd-Datei)
@@ -67,24 +67,26 @@ public class MinimalDfaProvider {
 
 		// existiert <dateiname>.dfa
 		if (dfaToLoad.exists()) {
-			try{
-				FileInputStream file = new FileInputStream(Settings.getWorkingDirectory() + dfaFileName);
+			try {
+				FileInputStream file = new FileInputStream(
+						Settings.getWorkingDirectory() + dfaFileName);
 				ObjectInputStream o = new ObjectInputStream(file);
-				
+
 				// Zeile_1 vom Header überprüfen (lexergen)
 				if (((String) o.readObject()).equals("lexergen")) {
-					
+
 					// Zeile_2 vom Header überprüfen (z.B. 0.1)
 					if (((String) o.readObject()).equals(Settings.getVersion())) {
-						
-						// sha von regulärer Definitionsdatei bilden und 
+
+						// sha von regulärer Definitionsdatei bilden und
 						// mit Zeile_3 vom Header überprüfen vergleichen
 						String currentSHA = getHashedRDFileAsString(Settings
 								.getWorkingDirectory() + rdFileName);
-						
+
 						// header korrekt abgearbeitet, nutze ausgelesenen dfa
 						if (((String) o.readObject()).equals(currentSHA)) {
-							mDfa = (MinimalDfa<Character, StatePayload>) o.readObject();
+							mDfa = (MinimalDfa<Character, StatePayload>) o
+									.readObject();
 							o.close();
 							checkDeserialization(mDfa);
 							return mDfa;
@@ -104,7 +106,7 @@ public class MinimalDfaProvider {
 					o.close();
 					return buildMinimalDfa(rdFileName);
 				}
-			} catch(IOException e){
+			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
@@ -116,7 +118,8 @@ public class MinimalDfaProvider {
 		return mDfa;
 	}
 
-	private static void checkDeserialization(MinimalDfa<Character, StatePayload> mDfa) {
+	private static void checkDeserialization(
+			MinimalDfa<Character, StatePayload> mDfa) {
 		if (mDfa != null) {
 			System.out.println("Deserialization finished");
 		} else {

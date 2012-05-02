@@ -1,7 +1,7 @@
-package parser;
+package de.fuberlin.projectci.grammar;
+
 
 public abstract class Symbol {
-	
 	private String name;
 	
 	public Symbol(String name){
@@ -43,5 +43,4 @@ public abstract class Symbol {
 	public int hashCode() {
 		return name.hashCode();
 	}
-	
 }

@@ -1,34 +1,65 @@
-package parser;
+package de.fuberlin.projectci.grammar;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 
 public class Grammar {
-	
+ 
 	// Die Liste enthält alle Produktion in der Reihenfolge, wie sie zur Grammatik hinzugefügt worden
-	private LinkedList<Production> productions = new LinkedList<Production>();
+	private List<Production> productions = new LinkedList<Production>();
 	
-
 	// Speichern der Terminal Symbole
 	private HashMap<String, TerminalSymbol> TerminalSymbols = new HashMap<String, TerminalSymbol>();
-	
 	
 	// Speichern der Nicht Terminal Symbole
 	private HashMap<String, NonTerminalSymbol> NonTerminalSymbols = new HashMap<String, NonTerminalSymbol>();
 	
+	private HashMap<NonTerminalSymbol, List<Production>> ProdList = new HashMap<NonTerminalSymbol, List<Production>>();
+	
+	//Startsymbol	
+	NonTerminalSymbol startSymbol = null;
+	
+	
+	
+	
+	public List<Production> getProductions() {
+		return productions;
+	}
+
+	public Production getProductionAtIndex(int index){
+		return productions.get(index);
+	}
+	
+	void setProductions(List<Production> productions) {
+		this.productions = productions;
+	}
+	
 	public void addProduction(Production production){
 		if(!productions.contains(production))
 			productions.add(production);
+		
+		// In die Liste Nonterminal Symbol --> Porduktionen einfügen
+		// Eintrag schon vorhanden?
+		
+		List temp = ProdList.get(production.getLhs());
+		
+		if (temp != null) {
+			ProdList.get(production.getLhs()).add(production);
+		} else {
+			List<Production> p = new LinkedList<Production>();
+			p.add(production);
+			ProdList.put(production.getLhs(), p);
+		}
+		
 	}
-	
 	
 	/**
 	 * Gibt für ein Nichtterminalsymbol das entsprechende Objekt zurück oder legt ein neues an.
 	 * @param name Der Wert des Nichtterminalsymbols als String
 	 * @return Das dazu passende Objekt
 	 */
-	public NonTerminalSymbol getNonTerminalSymbol(String name) {		
+	public NonTerminalSymbol createNonTerminalSymbol(String name) {		
 		// Gibt es zu diesem Token schon ein Nicht Terminalsymbol?
 		NonTerminalSymbol result = NonTerminalSymbols.get(name);
 		
@@ -47,7 +78,7 @@ public class Grammar {
 	 * @param name Der Wert des Terminalsymbols als String
 	 * @return Das dazu passende Objekt
 	 */
-	public TerminalSymbol getTerminalSymbol(String name) {
+	public TerminalSymbol createTerminalSymbol(String name) {
 		TerminalSymbol result = TerminalSymbols.get(name);
 		
 		if(result == null) {
@@ -58,16 +89,21 @@ public class Grammar {
 		return result;
 	}
 	
-	public static void main(String[] args) {
-		TerminalSymbol a = new TerminalSymbol("A");
-		TerminalSymbol aa = new TerminalSymbol("A");
-		
-		HashSet<TerminalSymbol> hs = new HashSet<TerminalSymbol>();
-		hs.add(a);
-		
-		
-		System.out.println(hs.contains(aa));
-		
-		System.out.println(a instanceof Symbol);
+	/**
+	 * Legt das Startsymbol für die Grammatik fest
+	 * @param startSymbol
+	 */
+	public void setStartSymbol(NonTerminalSymbol startSymbol) {
+		this.startSymbol = startSymbol;
 	}
+	
+	/**
+	 * Gibt das Startsymbol der Grammatik wieder
+	 * @return
+	 */
+	public NonTerminalSymbol getStartSymbol() {
+		return startSymbol;
+	}
+	 
 }
+ 

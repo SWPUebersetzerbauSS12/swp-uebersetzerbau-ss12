@@ -1,4 +1,4 @@
-package parser.tools;
+package de.fuberlin.projectci.grammar;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -9,14 +9,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import parser.Grammar;
-import parser.Production;
-import parser.Symbol;
-import parser.NonTerminalSymbol;
-
 
 public class GrammarReader {
-	
+ 
 	/**
 	 * Liest eine Textdatei mit enthaltener BNF-Grammatik und erstellt daraus ein neues
 	 * Grammar Object.
@@ -92,7 +87,7 @@ public class GrammarReader {
 				// zu LHS Variable hinzufügen
 				String leftHandSiteName = matcher.group();
 				leftHandSiteName = leftHandSiteName.replaceAll("[<>]", "");
-				leftHandSite = grammar.getNonTerminalSymbol(leftHandSiteName);
+				leftHandSite = grammar.createNonTerminalSymbol(leftHandSiteName);
 				
 				// Rechte Regelseite abarbeiten
 				rightHandSite = new LinkedList<Symbol>(); // lege Symbolliste an
@@ -105,10 +100,10 @@ public class GrammarReader {
 					if(symbol.startsWith("<")){ // Nonterminal zu RHS hinzufügen
 						symbol = symbol.replaceAll("[<>]", "");
 						// lasse von Grammar entweder Neues erstellen oder Referenz auf Vorhandenes zurückgeben
-						rightHandSite.add(grammar.getNonTerminalSymbol(symbol));
+						rightHandSite.add(grammar.createNonTerminalSymbol(symbol));
 					} else if(symbol.startsWith("\"")) { // Terminal zu RHS hinzufügen
 						symbol = symbol.replaceAll("\"", "");
-						rightHandSite.add(grammar.getTerminalSymbol(symbol));
+						rightHandSite.add(grammar.createTerminalSymbol(symbol));
 					} else { // "|" gematched, lege neue Produktion an
 						System.out.print("LHS: "+leftHandSiteName+" RHS: "); // TODO DEBUG
 						for(Symbol s : rightHandSite) System.out.print(s.getName()); // TODO DEBUG
@@ -130,6 +125,6 @@ public class GrammarReader {
 		
 		return productions;
 	}
-
-	
+	 
 }
+ 

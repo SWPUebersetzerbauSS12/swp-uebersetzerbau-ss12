@@ -1,4 +1,4 @@
-package parser.tools;
+package de.fuberlin.projectci.grammar;
 
 public class BNFParsingErrorException extends Exception {
 	/**

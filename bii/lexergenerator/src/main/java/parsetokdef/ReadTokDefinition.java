@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
 
+import utils.IRule;
 import utils.Rule;
 import lexergen.Settings;
 
@@ -17,7 +18,7 @@ import lexergen.Settings;
  */
 public class ReadTokDefinition {
 
-	private List<Rule> rules;
+	private List<IRule> rules;
 	private HashMap<String, String> definitions;
 
 	/**
@@ -54,7 +55,7 @@ public class ReadTokDefinition {
 	 * 
 	 * @return is empty, if you do not execute read() method
 	 */
-	public List<Rule> getRules() {
+	public List<IRule> getRules() {
 		return rules;
 	}
 
@@ -95,7 +96,7 @@ public class ReadTokDefinition {
 
 	private void readRules(Scanner s) {
 
-		rules = (rules == null) ? new ArrayList<Rule>() : rules;
+		rules = (rules == null) ? new ArrayList<IRule>() : rules;
 
 		while (s.hasNextLine()) {
 
@@ -113,7 +114,7 @@ public class ReadTokDefinition {
 				break;
 
 			pattern = replaceDef(pattern);
-			Rule tpl = new Rule(pattern, action);
+			IRule tpl = new Rule(pattern, action);
 			rules.add(tpl);
 		}
 	}

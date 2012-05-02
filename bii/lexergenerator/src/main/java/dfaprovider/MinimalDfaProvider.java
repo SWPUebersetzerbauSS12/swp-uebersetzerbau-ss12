@@ -48,207 +48,186 @@ import regextodfaconverter.MinimalDfa;
 import regextodfaconverter.fsm.StatePayload;
 
 /**
- * Stellt einen DFA-Provider der, der minimale DFA's, auf Basis einer regulären Definitionsdatei, erstellt.
+ * Stellt einen DFA-Provider dar, der minimale DFA's, auf Basis einer regulären
+ * Definitionsdatei, erstellt.
  * 
- * Dabei wird der minimale DFA entweder aus der serialisierten Form (<dateiname>.dfa) geladen, 
- * oder ein neuer minimaler DFA erstellt und dieser deserialisiert.
+ * Dabei wird der minimale DFA entweder aus der serialisierten Form
+ * (<dateiname>.dfa) geladen, oder ein neuer minimaler DFA erstellt (sowie
+ * serialisiert).
  * 
  * @author Maximilian Schröder
- *
+ * 
  */
 public class MinimalDfaProvider {
-	
-	/**
-	 * Header aus <dateiname>.dfa, Zeile 1
-	 * Sollte der Konstanten "lexergen" entsprechen
-	 */
-	private static String head_1 = null;
-	
-	/**
-	 * Header aus <dateiname>.dfa, Zeile 2
-	 * Sollte der variablen Versionsnummer entsprechen
-	 */
-	private static String head_2 = null;
-	
-	/**
-	 * Header aus <dateiname>.dfa, Zeile 3
-	 * Sollte dem sha1-Hash, der erzeugten Datei, entsprechen
-	 */
-	private static String head_3 = null;
-	
+
 	/**
 	 * Gibt den minimalen DFA für die angegebenen regulären Definitionen zurück.
-	 * Dabei wird im "Workingdirectory" nach einem serialisierten DFA gesucht, um diesen (unter gewissen Umständen),
-	 * zu deserialisieren. Wenn kein serialisierter DFA vorliegt, wird ein neu-erzeugter minimaler DFA 
-	 * (zur übergebenen regulären Definitionsdatei) zurückgegeben.
+	 * Dabei wird im "Workingdirectory" nach einem serialisierten DFA gesucht,
+	 * um diesen (unter gewissen Umständen), zu deserialisieren. Wenn kein
+	 * serialisierter DFA vorliegt, wird ein neu-erzeugter minimaler DFA (zur
+	 * übergebenen regulären Definitionsdatei) zurückgegeben.
 	 * 
-	 * @param file: Der absolute Pfad zu der Datei, die die regulären Definitionen (<dateiname>.rd) enthalten.
+	 * @param file
+	 *            : Der absolute Pfad zu der Datei, die die regulären
+	 *            Definitionen (<dateiname>.rd) enthalten.
 	 * @return: Der minimale DFA für die angegebenen regulären Definitionen.
 	 */
-	public static MinimalDfa<Character,StatePayload> getMinimalDfa(String rdFileName) throws MinimalDfaProviderException
-	{
-		//Anfängliche Überprüfungen, welche die Weiterverarbeitung (inkl. (De-)Serialisierung) ermöglicht
-		if(!rdFileName.endsWith(".rd")){
-			throw new MinimalDfaProviderException("Die angegebene Datei " + rdFileName + " hat nicht das Format <dateiname>.rd");
+	@SuppressWarnings("unchecked")
+	public static MinimalDfa<Character, StatePayload> getMinimalDfa(
+			String rdFileName) throws MinimalDfaProviderException {
+		// Anfängliche Überprüfungen, welche die Weiterverarbeitung (inkl.
+		// (De-)Serialisierung) ermöglicht
+		if (!rdFileName.endsWith(".rd")) {
+			throw new MinimalDfaProviderException("Die angegebene Datei "
+					+ rdFileName + " hat nicht das Format <dateiname>.rd");
 		}
 		File rdFile = new File(Settings.getWorkingDirectory() + rdFileName);
-		if(!rdFile.exists()){
-			throw new MinimalDfaProviderException("Die angegebene Datei " + rdFileName + " existiert nicht");
+		if (!rdFile.exists()) {
+			throw new MinimalDfaProviderException("Die angegebene Datei "
+					+ rdFileName + " existiert nicht");
 		}
-		
-		MinimalDfa<Character,StatePayload> mDfa = null;
-		/* Workflow: dfa provider */
-		
-		// dfa-Datei holen für die Überprüfung (auf Basis der angegebenen rd-Datei)
+
+		/** Workflow: dfa provider */
+		MinimalDfa<Character, StatePayload> mDfa = null;
+
+		// dfa-Datei holen für die Überprüfung (auf Basis der angegebenen
+		// rd-Datei)
 		int fileEndingIndex = rdFileName.lastIndexOf(".rd");
-		String dfaFileName = rdFileName.substring(0, fileEndingIndex+1) + "dfa";
-		File dfaToLoad = new File(Settings.getWorkingDirectory() + dfaFileName );
-		
-		//existiert <dateiname>.dfa
-		if(dfaToLoad.exists()){
-			//temporäre Headerfiles zurücksetzen
-			resetHead();
-			//deserialisieren des dfa, ausgehend von der existierenden Datei
-			mDfa = deserialize( Settings.getWorkingDirectory() + dfaFileName );
-			//header1 korrekt
-			if(head_1.equals("lexergen")){
-				//header2 korrekt
-				if(head_2.equals(Settings.getVersion())){
-					//sha von reguläre Definitionsdatei bilden und mit header3 vergleichen
-					String currentSHA = getHashedRDFileAsString(Settings.getWorkingDirectory() + rdFileName);
-					//header3 korrekt
-					if(head_3.equals(currentSHA)){
-						//header korrekt abgearbeitet, nutze ausgelesenen dfa
-						return mDfa;
-					}
-					else{
-						//<dateiname>.dfa löschen, da sha1-hash-Konflikt
+		String dfaFileName = rdFileName.substring(0, fileEndingIndex + 1)
+				+ "dfa";
+		File dfaToLoad = new File(Settings.getWorkingDirectory() + dfaFileName);
+
+		// existiert <dateiname>.dfa
+		if (dfaToLoad.exists()) {
+			try {
+				FileInputStream file = new FileInputStream(
+						Settings.getWorkingDirectory() + dfaFileName);
+				ObjectInputStream o = new ObjectInputStream(file);
+
+				// Zeile_1 vom Header überprüfen (lexergen)
+				if (((String) o.readObject()).equals("lexergen")) {
+
+					// Zeile_2 vom Header überprüfen (z.B. 0.1)
+					if (((String) o.readObject()).equals(Settings.getVersion())) {
+
+						// sha von regulärer Definitionsdatei bilden und
+						// mit Zeile_3 vom Header überprüfen vergleichen
+						String currentSHA = getHashedRDFileAsString(Settings
+								.getWorkingDirectory() + rdFileName);
+
+						// header korrekt abgearbeitet, nutze ausgelesenen dfa
+						if (((String) o.readObject()).equals(currentSHA)) {
+							mDfa = (MinimalDfa<Character, StatePayload>) o
+									.readObject();
+							o.close();
+							checkDeserialization(mDfa);
+							return mDfa;
+						} else {
+							// <dateiname>.dfa löschen, da sha1-hash-Konflikt
+							dfaToLoad.delete();
+							o.close();
+							return buildMinimalDfa(rdFileName);
+						}
+					} else {
+						// <dateiname>.dfa löschen, da Versionskonflikt
 						dfaToLoad.delete();
+						o.close();
 						return buildMinimalDfa(rdFileName);
 					}
-				}
-				else{
-					//<dateiname>.dfa löschen, da Versionskonflikt
-					dfaToLoad.delete();
+				} else {
+					o.close();
 					return buildMinimalDfa(rdFileName);
 				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
 			}
-			else{
-				return buildMinimalDfa(rdFileName);
-			}
-		}
-		else{
+		} else {
 			return buildMinimalDfa(rdFileName);
 		}
+		checkDeserialization(mDfa);
+		return mDfa;
 	}
-	
-	/**
-	 * Serialisiert den übergebenen DFA, unter Berücksichtigung der übergebenen regulären Definitionsdatei,
-	 * und speichert diesen als Ausgabedatei <dateiname>.dfa ab.
-	 * 
-	 * @param outputFileName: Dateiname (inkl. Pfad) für die Datei <dateiname>.dfa
-	 * @param rdFileName: Der absolute Pfad zu der Datei, die die regulären Definitionen (<dateiname>.rd) enthält.
-	 * @param dfaToSerialize: minimaler DFA, der serialisiert und abgespeichert werden soll
-	 */
-	private static void serialize(String outputFileName, String rdFileName, MinimalDfa<Character, StatePayload> dfaToSerialize){
-	    try{
-	      FileOutputStream file = new FileOutputStream( outputFileName );
-	      ObjectOutputStream oOS = new ObjectOutputStream( file );
-	      
-	      oOS.writeObject("lexergen");				//header1
-	      oOS.writeObject(Settings.getVersion());	//header2
-	      
-	      String shaString = getHashedRDFileAsString(rdFileName);
-	      oOS.writeObject(shaString);				//header3	
-	      //minimal dfa, der serialisiert werden soll
-	      oOS.writeObject( dfaToSerialize );
-	      oOS.close();
-	    }
-	    catch ( IOException e ){
-	    	e.printStackTrace();
-    	}
-	    System.out.println("Serialization finished");
-	}
-	
-	/**
-	 * Deserialisiert einen DFA auf Basis einer angegebenen Datei (der Form <dateiname>.dfa)
-	 * und gibt diesen (als minimalen DFA) zurück.
-	 * 
-	 * @param filename: Datei (der Form <dateiname>.dfa), die einen serialisierten DFA enthält
-	 * @return: minimaler DFA, der aus der übergebenen Datei (@param: filename), deserialisiert wurde
-	 */
-	@SuppressWarnings("unchecked")
-	static private MinimalDfa<Character, StatePayload> deserialize( String filename ){
-		MinimalDfa<Character, StatePayload> deserializedMDfa = null;
-		try{
-			FileInputStream file = new FileInputStream( filename );
-		    ObjectInputStream o = new ObjectInputStream( file );
 
-		    //Header-Daten abarbeiten
-		    head_1 = (String) o.readObject();	//lexergen
-		    head_2 = (String) o.readObject();	//0.1 (z.B.)
-		    head_3 = (String) o.readObject();	//sha1-hash von der Datei <dateiname>.rd
-		    
-		    //Automaten erhalten
-		    deserializedMDfa = (MinimalDfa<Character, StatePayload>) o.readObject();
-		     
-		    o.close();
-
-		}
-		catch ( IOException e ) { System.err.println( e ); }
-		catch ( ClassNotFoundException e ) { System.err.println( e ); }
-		if(deserializedMDfa != null){
+	private static void checkDeserialization(
+			MinimalDfa<Character, StatePayload> mDfa) {
+		if (mDfa != null) {
 			System.out.println("Deserialization finished");
-		}
-		else{
+		} else {
 			System.out.println("Deserialization failed");
 		}
-		return deserializedMDfa;
 	}
-	
+
 	/**
-	 * Setzt die temporären head-Variablen zurück. Diese enthalten bei jeder Deserialisierung
-	 * die Daten zur Überprüfung (Verwendung in getMinimalDfa(String)).
+	 * Serialisiert den übergebenen DFA, unter Berücksichtigung der übergebenen
+	 * regulären Definitionsdatei, und speichert diesen als Ausgabedatei
+	 * <dateiname>.dfa ab.
 	 * 
-	 * etwas unschön, aber pragmatisch
+	 * @param outputFileName
+	 *            : Dateiname (inkl. Pfad) für die Datei <dateiname>.dfa
+	 * @param rdFileName
+	 *            : Der absolute Pfad zu der Datei, die die regulären
+	 *            Definitionen (<dateiname>.rd) enthält.
+	 * @param dfaToSerialize
+	 *            : minimaler DFA, der serialisiert und abgespeichert werden
+	 *            soll
 	 */
-	private static void resetHead(){
-		head_1 = null;
-		head_2 = null;
-		head_3 = null;
+	private static void serialize(String outputFileName, String rdFileName,
+			MinimalDfa<Character, StatePayload> dfaToSerialize) {
+		try {
+			FileOutputStream file = new FileOutputStream(outputFileName);
+			ObjectOutputStream oOS = new ObjectOutputStream(file);
+
+			oOS.writeObject("lexergen"); // header1
+			oOS.writeObject(Settings.getVersion()); // header2
+
+			String shaString = getHashedRDFileAsString(rdFileName);
+			oOS.writeObject(shaString); // header3
+
+			oOS.writeObject(dfaToSerialize);
+			oOS.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
-	
+
 	/**
-	 * Berechnet für eine angegebene reguläre Definitionsdatei die Checksumme (mit SHA1-Algorithmus),
-	 * wandelt diese in Hexadezimalformat um und gibt diese als Zeichenkette zurück.
+	 * Berechnet für eine angegebene reguläre Definitionsdatei die Checksumme
+	 * (mit SHA1-Algorithmus), wandelt diese in Hexadezimalformat um und gibt
+	 * diese als Zeichenkette zurück.
 	 * 
-	 * @param fileName: Der absolute Pfad zu der Datei, die die regulären Definitionen (<dateiname>.rd) enthält.
-	 * @return: Checksumme der regulären Definitionsdatei, die im Hexadezimalformat
-	 *  als Zeichenkette zurückgegeben wird
+	 * @param fileName
+	 *            : Der absolute Pfad zu der Datei, die die regulären
+	 *            Definitionen (<dateiname>.rd) enthält.
+	 * @return: Checksumme der regulären Definitionsdatei, die im
+	 *          Hexadezimalformat als Zeichenkette zurückgegeben wird
 	 */
-	public static String getHashedRDFileAsString(String fileName){
+	public static String getHashedRDFileAsString(String fileName) {
 		String shaToString = "";
 		try {
-			//Algo festlegen und Datei lesen
+			// Algo festlegen und Datei lesen
 			MessageDigest md = MessageDigest.getInstance("SHA");
 			FileInputStream fis = new FileInputStream(fileName);
 			byte[] fileBytes = new byte[5120];
-			int readbytes = 0; 
-			  
+			int readbytes = 0;
+
 			while ((readbytes = fis.read(fileBytes)) != -1) {
 				md.update(fileBytes, 0, readbytes);
-			};
-			 
+			}
+			;
+
 			byte[] digest = md.digest();
-			  
-			//Umwandlung von Byte in Hexadezimalformat
+
+			// Umwandlung von Byte in Hexadezimalformat
 			StringBuffer sb = new StringBuffer("");
 			for (int i = 0; i < digest.length; i++) {
-				sb.append(Integer.toString((digest[i] & 0xff) + 0x100, 16).substring(1));
+				sb.append(Integer.toString((digest[i] & 0xff) + 0x100, 16)
+						.substring(1));
 			}
-			 
+
 			shaToString = sb.toString();
-			
+
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
@@ -258,36 +237,42 @@ public class MinimalDfaProvider {
 		}
 		return shaToString;
 	}
-	
+
 	/**
-	 * Erzeugt auf Basis einer regulären Definitionsdatei einen neuen minimalen DFA und gibt diesen zurück.
+	 * Erzeugt auf Basis einer regulären Definitionsdatei einen neuen minimalen
+	 * DFA und gibt diesen zurück.
 	 * 
-	 * @param reDeFi: Der absolute Pfad zu der Datei, die die regulären Definitionen (<dateiname>.rd) enthält.
-	 * @return: minimaler DFA, der aus der übergebenen Datei (@param: reDeFi), erzeugt wurde.
+	 * @param reDeFi
+	 *            : Der absolute Pfad zu der Datei, die die regulären
+	 *            Definitionen (<dateiname>.rd) enthält.
+	 * @return: minimaler DFA, der aus der übergebenen Datei (@param: reDeFi),
+	 *          erzeugt wurde.
 	 */
-	private static MinimalDfa<Character, StatePayload> buildMinimalDfa(String reDeFi){
-		MinimalDfa<Character,StatePayload> mDummyDfa = null;
+	private static MinimalDfa<Character, StatePayload> buildMinimalDfa(
+			String reDeFi) {
+		MinimalDfa<Character, StatePayload> mDummyDfa = null;
 		File rdFile = new File(Settings.getWorkingDirectory() + reDeFi);
-		
+
 		int fileEndingIndex = reDeFi.lastIndexOf(".rd");
-		String dfaFileName = reDeFi.substring(0, fileEndingIndex+1) + "dfa";
-		
+		String dfaFileName = reDeFi.substring(0, fileEndingIndex + 1) + "dfa";
+
 		try {
 			MinimalDfaBuilder builder = new IndirectMinimalDfaBuilder();
 			mDummyDfa = builder.buildMinimalDfa(rdFile);
 		} catch (MinimalDfaBuilderException e) {
 			e.printStackTrace();
 		}
-		File dfaToSave = new File(Settings.getWorkingDirectory() + dfaFileName );
-		if(dfaToSave.exists()){
+		File dfaToSave = new File(Settings.getWorkingDirectory() + dfaFileName);
+		if (dfaToSave.exists()) {
 			return mDummyDfa;
-		}
-		else{
-			serialize(Settings.getWorkingDirectory() + dfaFileName, 
-					Settings.getWorkingDirectory() + Settings.getRegularDefinitionFileName(), mDummyDfa);
+		} else {
+			serialize(
+					Settings.getWorkingDirectory() + dfaFileName,
+					Settings.getWorkingDirectory()
+							+ Settings.getRegularDefinitionFileName(),
+					mDummyDfa);
 			return mDummyDfa;
 		}
 	}
-	
-	
+
 }

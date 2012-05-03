@@ -187,6 +187,12 @@ public class ReadTokDefinition {
 	}
 
 	private String getTokenValue(String action) {
+
+		String tokenAttributes[] = action.split("\"");
+
+		if (tokenAttributes.length > 3) {
+			return tokenAttributes[3];
+		}
 		return null;
 	}
 }

@@ -8,6 +8,10 @@ class LLVMBlock implements ILLVMBlock{
 	
 	public void addCmdLine(String cmd){
 		
+		// Erstelle Befehl
+		LLVMCommand cmdLine = new LLVMCommand(cmd);
+		
+		// Teste, ob Block beginnt oder endet
 		if(!this.firstCommand) {
 			// Fuege ersten Befehl ein
 			return;
@@ -17,7 +21,6 @@ class LLVMBlock implements ILLVMBlock{
 		// }
 		
 		// Weder erster noch letzter Befehl des Blocks
-		LLVMCommand cmdLine = new LLVMCommand(cmd);
-		commands.add(cmdLine);
+		
 	}
 }

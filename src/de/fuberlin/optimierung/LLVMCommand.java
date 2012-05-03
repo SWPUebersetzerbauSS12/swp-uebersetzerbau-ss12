@@ -2,10 +2,23 @@ package de.fuberlin.optimierung;
 
 class LLVMCommand implements ILLVMCommand {
 	
+	private LLVMCommand lastCommand = null;
+	private LLVMCommand nextCommand = null;
+	
 	private String[] cmd;
 	private int paramsCount;
 	
-	public LLVMCommand(String cmdLine){
+	private boolean isFirstCommand() {
+		return (!this.lastCommand);
+	}
+	
+	private boolean isLastCommand() {
+		return (!this.nextCommand)
+	}
+	
+	public LLVMCommand(String cmdLine, LLVMCommand last, LLVMCommand next){
+		this.last = last;
+		this.next = next;
 		cmd = cmdLine.split(" ");
 		paramsCount = cmd.length - 1;
 	}

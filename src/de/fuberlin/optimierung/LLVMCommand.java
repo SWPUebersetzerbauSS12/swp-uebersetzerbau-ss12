@@ -9,16 +9,16 @@ class LLVMCommand implements ILLVMCommand {
 	private int paramsCount;
 	
 	private boolean isFirstCommand() {
-		return (!this.lastCommand);
+		return (this.lastCommand == null);
 	}
 	
 	private boolean isLastCommand() {
-		return (!this.nextCommand)
+		return (this.nextCommand == null);
 	}
 	
 	public LLVMCommand(String cmdLine, LLVMCommand last, LLVMCommand next){
-		this.last = last;
-		this.next = next;
+		this.lastCommand = last;
+		this.nextCommand = next;
 		cmd = cmdLine.split(" ");
 		paramsCount = cmd.length - 1;
 	}
@@ -32,6 +32,7 @@ class LLVMCommand implements ILLVMCommand {
 				str += cmd[i];
 			}
 		}
+		return str;
 	}
 	
 	public int getParamsCount(){

@@ -1,5 +1,7 @@
 package de.fuberlin.optimierung;
 
+import java.io.*;
+
 class LLVMOptimization implements ILLVMOptimization {
 	
 	private String code = "";
@@ -12,16 +14,21 @@ class LLVMOptimization implements ILLVMOptimization {
 		// parse
 	}
 
-	private String readCodeFromFile(String fileName){
+	private void readCodeFromFile(String fileName){
 		
-		// IO Read File
+		try {// IO Read File
 		BufferedReader fileReader = new BufferedReader(new FileReader(fileName));
 		String line = "";
 		while((line = fileReader.readLine()) != null) {
 			this.code = this.code + line;
 			this.code = this.code + "\n";
 		}
-		fileReader.close();
+		
+			fileReader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public String optimizeCodeFromString(String code) {
@@ -43,7 +50,7 @@ class LLVMOptimization implements ILLVMOptimization {
 	public static void main(String args[]) {
 
 		LLVMOptimization optimization = new LLVMOptimization();
-		this.optimization.readCodeFromFile("optllvm_test");
+		optimization.readCodeFromFile("optllvm_test");
 
 	}
 

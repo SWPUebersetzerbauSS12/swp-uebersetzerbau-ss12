@@ -5,10 +5,15 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.fuberlin.projectci.extern.ILexer;
+import de.fuberlin.projectci.extern.ISyntaxTree;
+import de.fuberlin.projectci.extern.IToken;
+import de.fuberlin.projectci.grammar.Grammar;
 import de.fuberlin.projectci.grammar.NonTerminalSymbol;
 import de.fuberlin.projectci.grammar.Production;
 import de.fuberlin.projectci.grammar.Symbol;
 import de.fuberlin.projectci.grammar.TerminalSymbol;
+import de.fuberlin.projectci.lrparser.Driver;
 import de.fuberlin.projectci.parseTable.AcceptAction;
 import de.fuberlin.projectci.parseTable.Goto;
 import de.fuberlin.projectci.parseTable.ParseTable;
@@ -17,17 +22,19 @@ import de.fuberlin.projectci.parseTable.ShiftAction;
 import de.fuberlin.projectci.parseTable.State;
 
 /**
- * Testcase für den Driver
+ * Testcase für den Driver (anhand des Beispiels aus dem Drachenbuch)
  * @author stefan
  *
  */
 public class TestDriver {
-
+	ParseTable parseTable=null;
+	Grammar grammar=null;
+	ILexer lexer=null;
 	
 	@Before
 	public void setUp() throws Exception {
-ParseTable parseTable=new ParseTable();
-		
+		parseTable=new ParseTable();
+
 		State s0=new State("0");
 		State s1=new State("1");
 		State s2=new State("2");
@@ -47,18 +54,28 @@ ParseTable parseTable=new ParseTable();
 		TerminalSymbol ts3=new TerminalSymbol("(");
 		TerminalSymbol ts4=new TerminalSymbol(")");
 		TerminalSymbol ts5=new TerminalSymbol("$");
-		
+
 		NonTerminalSymbol nts0=new NonTerminalSymbol("E");
 		NonTerminalSymbol nts1=new NonTerminalSymbol("T");
-		NonTerminalSymbol nts2=new NonTerminalSymbol("S");
-				
+		NonTerminalSymbol nts2=new NonTerminalSymbol("F");
+
+		
 		Production p1= new Production(nts0, new Symbol[]{nts0, ts1, nts1});
 		Production p2= new Production(nts0, new Symbol[]{nts1});
 		Production p3= new Production(nts1, new Symbol[]{nts1, ts2, nts2});
 		Production p4= new Production(nts1, new Symbol[]{nts2});
 		Production p5= new Production(nts2, new Symbol[]{ts3, nts0, ts4});
 		Production p6= new Production(nts2, new Symbol[]{ts0});
+
+		grammar=new Grammar();
+		grammar.addProduction(p1);
+		grammar.addProduction(p2);
+		grammar.addProduction(p3);
+		grammar.addProduction(p4);
+		grammar.addProduction(p5);
+		grammar.addProduction(p6);
 		
+		parseTable.setInitialState(s0);
 		parseTable.getActionTableForState(s0).setActionForTerminalSymbol(new ShiftAction(s5), ts0);
 		parseTable.getActionTableForState(s0).setActionForTerminalSymbol(new ShiftAction(s4), ts3);
 		parseTable.getActionTableForState(s1).setActionForTerminalSymbol(new ShiftAction(s6), ts1);
@@ -95,21 +112,34 @@ ParseTable parseTable=new ParseTable();
 		parseTable.getActionTableForState(s11).setActionForTerminalSymbol(new ReduceAction(p5), ts2);
 		parseTable.getActionTableForState(s11).setActionForTerminalSymbol(new ReduceAction(p5), ts4);
 		parseTable.getActionTableForState(s11).setActionForTerminalSymbol(new ReduceAction(p5), ts5);
-		
+
 		parseTable.getGotoTableForState(s0).setGotoForNonTerminalSymbol(new Goto(s1), nts0);
 		parseTable.getGotoTableForState(s0).setGotoForNonTerminalSymbol(new Goto(s2), nts1);
 		parseTable.getGotoTableForState(s0).setGotoForNonTerminalSymbol(new Goto(s3), nts2);		
 		parseTable.getGotoTableForState(s4).setGotoForNonTerminalSymbol(new Goto(s8), nts0);
 		parseTable.getGotoTableForState(s4).setGotoForNonTerminalSymbol(new Goto(s2), nts1);
 		parseTable.getGotoTableForState(s4).setGotoForNonTerminalSymbol(new Goto(s3), nts2);		
-		parseTable.getGotoTableForState(s6).setGotoForNonTerminalSymbol(new Goto(s2), nts1);
-		parseTable.getGotoTableForState(s6).setGotoForNonTerminalSymbol(new Goto(s9), nts2);
+		parseTable.getGotoTableForState(s6).setGotoForNonTerminalSymbol(new Goto(s9), nts1);
+		parseTable.getGotoTableForState(s6).setGotoForNonTerminalSymbol(new Goto(s3), nts2);
 		parseTable.getGotoTableForState(s7).setGotoForNonTerminalSymbol(new Goto(s10), nts2);
+		
+		lexer=new DummyLexer();
+		((DummyLexer)lexer).addToken(IToken.TokenType.ID, null);
+		((DummyLexer)lexer).addToken(IToken.TokenType.OP_MUL, null);
+		((DummyLexer)lexer).addToken(IToken.TokenType.ID, null);
+		((DummyLexer)lexer).addToken(IToken.TokenType.OP_ADD, null);
+		((DummyLexer)lexer).addToken(IToken.TokenType.ID, null);
+		((DummyLexer)lexer).addToken(IToken.TokenType.EOF, null);
+		
 	}
 
 	@Test
 	public void testParse() {
-		fail("Not yet implemented");
+		Driver driver=new Driver();
+		ISyntaxTree expectedResult=null; // TODO Construct expected AST
+		ISyntaxTree result=driver.parse(lexer, grammar, parseTable);
+		
+		assertEquals(result, expectedResult);
 	}
 
 }

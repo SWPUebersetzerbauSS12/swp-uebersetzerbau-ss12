@@ -21,8 +21,7 @@
  * 
  * Projectgroup: bi, bii
  * 
- * Authors: Alexander Niemeier, Benjamin Weißenfels, Daniel Rotar, Johannes Dahlke, 
- *          Maximilian Schröder, Lukasiewicz Wojciech, Philipp Schröter, yanlei li
+ * Authors: Johannes Dahlke
  * 
  * Module:  Softwareprojekt Übersetzerbau 2012 
  * 
@@ -31,35 +30,41 @@
  *
  */
 
+package utils;
 
-package lexergen;
+public class Test {
 
-import regextodfaconverter.ConvertExecption;
-import utils.Notification;
-
-
-
-/**
- * Hello world!
- * 
- */
-public class Lexer {
+	public static boolean isAssigned( Object o) {
+		return o != null;
+	}
 
 
+	public static boolean isUnassigned( Object o) {
+		return o == null;
+	}
 
 
-	public static void main( String[] args) {
-
-		Notification.enableDebugPrinting();
-
+	public static boolean isInteger( String s) {
 		try {
-			Test.runTest();
-		} catch ( ConvertExecption e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch ( Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Integer.valueOf( s);
+			return true;
+		} catch (Exception e) {
+			return false;
 		}
 	}
+	
+	public static boolean isNumber( String s) {
+		try {
+			Double.valueOf( s);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	public static boolean isNan( String s) {
+		return !isNumber(s);
+	}
+	
+
 }

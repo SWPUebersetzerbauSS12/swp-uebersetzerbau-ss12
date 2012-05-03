@@ -21,8 +21,7 @@
  * 
  * Projectgroup: bi, bii
  * 
- * Authors: Alexander Niemeier, Benjamin Weißenfels, Daniel Rotar, Johannes Dahlke, 
- *          Maximilian Schröder, Lukasiewicz Wojciech, Philipp Schröter, yanlei li
+ * Authors: Johannes Dahlke
  * 
  * Module:  Softwareprojekt Übersetzerbau 2012 
  * 
@@ -31,35 +30,27 @@
  *
  */
 
+package tokenmatcher;
 
-package lexergen;
+public interface StatePayload {
 
-import regextodfaconverter.ConvertExecption;
-import utils.Notification;
+	/**
+	 * Gibt den Tokentyp zurück.
+	 * 
+	 * @return der Tokentyp als Zeichenkette.
+	 */
+	String getTokenType();
 
+	/**
+	 * Liefert das Attribut zurück. Dies kann ein Wert, eine Konstante oder auch
+	 * eine Funktion sein.
+	 * 
+	 * @return das Attribut als Zeichenkette.
+	 */
+	String getAttribute();
 
+	/*
+	 * no longer used int getBacksteps();
+	 */
 
-/**
- * Hello world!
- * 
- */
-public class Lexer {
-
-
-
-
-	public static void main( String[] args) {
-
-		Notification.enableDebugPrinting();
-
-		try {
-			Test.runTest();
-		} catch ( ConvertExecption e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch ( Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 }

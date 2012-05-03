@@ -21,8 +21,7 @@
  * 
  * Projectgroup: bi, bii
  * 
- * Authors: Alexander Niemeier, Benjamin Weißenfels, Daniel Rotar, Johannes Dahlke, 
- *          Maximilian Schröder, Lukasiewicz Wojciech, Philipp Schröter, yanlei li
+ * Authors: Johannes Dahlke
  * 
  * Module:  Softwareprojekt Übersetzerbau 2012 
  * 
@@ -31,35 +30,28 @@
  *
  */
 
+package tokenmatcher;
 
-package lexergen;
-
-import regextodfaconverter.ConvertExecption;
-import utils.Notification;
-
-
+import bufferedreader.EndOfFileException;
+import bufferedreader.LexemeReaderException;
 
 /**
- * Hello world!
+ * Schnittstelle zwischen Lexergenerator und Parsergenerator
  * 
+ * @author Johannes Dahlke
+ *
  */
-public class Lexer {
+public interface LexerToParserInterface {
+	
+	/**
+	 * Liefert den nächsten Token. 
+	 * 
+	 * @return der nächste Token.
+	 * 
+	 * @throws EndOfFileException wird geworfen,wenn das Ende der Datei mit dem Quellcode erreicht ist.
+	 * @throws LexemeReaderException wird geworfen, wenn der Lexer beim zugriff auf die Quelldatei probleme hat. 
+	 * @throws LexemIdentificationException wird geworfen, wenn der Lexer das gelesene Lexem keinem bekannten Tokentyp zuweisen kann.
+	 */
+	Token getNextToken() throws EndOfFileException, LexemeReaderException, LexemIdentificationException;
 
-
-
-
-	public static void main( String[] args) {
-
-		Notification.enableDebugPrinting();
-
-		try {
-			Test.runTest();
-		} catch ( ConvertExecption e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch ( Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 }

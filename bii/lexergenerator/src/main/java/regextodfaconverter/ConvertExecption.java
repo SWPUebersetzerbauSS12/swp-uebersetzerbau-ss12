@@ -21,8 +21,7 @@
  * 
  * Projectgroup: bi, bii
  * 
- * Authors: Alexander Niemeier, Benjamin Weißenfels, Daniel Rotar, Johannes Dahlke, 
- *          Maximilian Schröder, Lukasiewicz Wojciech, Philipp Schröter, yanlei li
+ * Authors: Johannes Dahlke
  * 
  * Module:  Softwareprojekt Übersetzerbau 2012 
  * 
@@ -31,35 +30,37 @@
  *
  */
 
-
-package lexergen;
-
-import regextodfaconverter.ConvertExecption;
-import utils.Notification;
-
-
+package regextodfaconverter;
 
 /**
- * Hello world!
+ * Stellt einen Fehler dar, der beim Konvertieren eines regulären Ausdrucks in
+ * einen DFA vorkommt.
+ * 
+ * @author Johannes Dahlke
  * 
  */
-public class Lexer {
+public class ConvertExecption extends Exception {
 
+	/**
+	 * serialVersionUID
+	 */
+	private static final long serialVersionUID = -2213213933640594695L;
 
-
-
-	public static void main( String[] args) {
-
-		Notification.enableDebugPrinting();
-
-		try {
-			Test.runTest();
-		} catch ( ConvertExecption e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch ( Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	/**
+	 * Erstellt ein neues ConvertExecption Objekt.
+	 */
+	public ConvertExecption() {
+		super();
 	}
+
+	/**
+	 * Erstellt ein neues ConvertExecption Objekt.
+	 * 
+	 * @param message
+	 *            Die genaue Fehlerbeschreibung.
+	 */
+	public ConvertExecption(String message) {
+		super(message);
+	}
+
 }

@@ -21,8 +21,7 @@
  * 
  * Projectgroup: bi, bii
  * 
- * Authors: Alexander Niemeier, Benjamin Weißenfels, Daniel Rotar, Johannes Dahlke, 
- *          Maximilian Schröder, Lukasiewicz Wojciech, Philipp Schröter, yanlei li
+ * Authors: Benjamin Weißenfels
  * 
  * Module:  Softwareprojekt Übersetzerbau 2012 
  * 
@@ -31,35 +30,20 @@
  *
  */
 
-
-package lexergen;
-
-import regextodfaconverter.ConvertExecption;
-import utils.Notification;
-
+package utils;
 
 
 /**
- * Hello world!
  * 
+ * @author Benjamin Weißenfels
+ *
  */
-public class Lexer {
+public class Rule {
+	String pattern;
+	String action;
 
-
-
-
-	public static void main( String[] args) {
-
-		Notification.enableDebugPrinting();
-
-		try {
-			Test.runTest();
-		} catch ( ConvertExecption e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch ( Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public Rule(String pattern, String action) {
+		this.pattern = pattern;
+		this.action = action;
 	}
 }

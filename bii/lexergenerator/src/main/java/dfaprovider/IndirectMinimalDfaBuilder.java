@@ -33,6 +33,7 @@
 package dfaprovider;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import parsetokdef.ReadTokDefinition;
@@ -42,6 +43,7 @@ import regextodfaconverter.MinimalDfa;
 import regextodfaconverter.RegexToNfaConverter;
 import regextodfaconverter.fsm.FiniteStateMachine;
 import regextodfaconverter.fsm.StatePayload;
+import utils.IRule;
 
 /**
  * Stellt einen MinimalDFA-Builder dar, der den DFA über den indirekten Weg von
@@ -80,27 +82,32 @@ public class IndirectMinimalDfaBuilder implements MinimalDfaBuilder {
 		String regex = "";
 		FiniteStateMachine<Character, StatePayload> fsm = null;
 
-		// -----------------------------------------------------------------------------
-//		ReadTokDefinition rtd = new ReadTokDefinition();
-//		int counter = 0;
-//		for (IRule irule : rtd.getList()) {
-//			counter++;
-//			payload = new StatePayload(irule.getTokenType(),
-//					irule.getTokenValue(), counter * (-1));
-//			regex = irule.getRegexp();
-//
-//			// Aus Regex NFA machen.
-//			try {
-//				fsm = converter.convertToNFA(regex, payload);
-//			} catch (ConvertExecption e) {
-//				throw new MinimalDfaBuilderException(
-//						"Der reguläre Ausdruck '"
-//								+ regex
-//								+ "' kann nicht in einen Automaten umgewandelt werden: "
-//								+ e.getMessage());
-//			}
-//			fsms.add(fsm);
-//		}
+		ReadTokDefinition rtd = null;
+		try {
+			rtd = new ReadTokDefinition(regularDefinitionFile);
+		} catch (IOException e1) {
+			// Problem with the File Descriptor
+			e1.printStackTrace();
+		}
+		int counter = 0;
+		for (IRule irule : rtd.getRules()) {
+			counter++;
+			payload = new StatePayload(irule.getTokenType(),
+					irule.getTokenValue(), counter * (-1));
+			regex = irule.getRegexp();
+
+			// Aus Regex NFA machen.
+			try {
+				fsm = converter.convertToNFA(regex, payload);
+			} catch (ConvertExecption e) {
+				throw new MinimalDfaBuilderException(
+						"Der reguläre Ausdruck '"
+								+ regex
+								+ "' kann nicht in einen Automaten umgewandelt werden: "
+								+ e.getMessage());
+			}
+			fsms.add(fsm);
+		}
 
 		// TEMP:
 		payload = new StatePayload("VAR_NAME", "name", -3);

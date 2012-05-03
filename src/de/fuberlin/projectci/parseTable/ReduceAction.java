@@ -16,6 +16,10 @@ public class ReduceAction extends Action {
 	}
 
 
+	@Override
+	public String toString() {
+		return "reduce "+getProduction();
+	}
 	
 	 
 }

@@ -11,4 +11,8 @@ public class State {
 		return name;
 	}
 
+	@Override
+	public String toString() {
+		return name;
+	}
 }

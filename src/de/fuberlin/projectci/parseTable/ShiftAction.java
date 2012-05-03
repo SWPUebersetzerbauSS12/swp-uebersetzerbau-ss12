@@ -12,4 +12,8 @@ public class ShiftAction extends Action {
 		return targetState;
 	}
 
+	@Override
+	public String toString() {
+		return "shift "+getTargetState();
+	}
 }

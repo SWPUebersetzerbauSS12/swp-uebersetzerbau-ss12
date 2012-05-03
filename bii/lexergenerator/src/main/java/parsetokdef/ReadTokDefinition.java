@@ -34,6 +34,7 @@ package parsetokdef;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +53,17 @@ public class ReadTokDefinition {
 
 	private List<IRule> rules;
 	private HashMap<String, String> definitions;
+
+	/**
+	 * reads a token defintion file. If the path is null, the default token
+	 * definition is taken.
+	 * 
+	 * @param path
+	 * @throws IOException
+	 */
+	public ReadTokDefinition(File file) throws IOException {
+		readFile(file.getCanonicalPath());
+	}
 
 	/**
 	 * reads a token defintion file. If the path is null, the default token

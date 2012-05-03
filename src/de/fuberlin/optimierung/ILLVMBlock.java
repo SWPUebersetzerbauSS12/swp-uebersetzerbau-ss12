@@ -1,4 +1,4 @@
-package de.fuberlin.optimization.ILLVMBlock;
+package de.fuberlin.optimierung;
 
 interface ILLVMBlock {
 	

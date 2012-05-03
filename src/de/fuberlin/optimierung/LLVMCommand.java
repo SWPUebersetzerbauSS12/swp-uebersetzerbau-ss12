@@ -1,4 +1,4 @@
-package de.fuberlin.optimization.LLVMCommand;
+package de.fuberlin.optimierung;
 
 class LLVMCommand implements ILLVMCommand {
 	

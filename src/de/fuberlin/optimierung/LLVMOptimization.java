@@ -1,32 +1,50 @@
-package de.fuberlin.optimization.ILLVMOptimization;
-
-import de.fuberlin.optimization.ILLVMBlock;
+package de.fuberlin.optimierung;
 
 class LLVMOptimization implements ILLVMOptimization {
 	
+	private String code = "";
+
 	private ILLVMBlock startBlock;
-	
-	public LLVMOptimization(String code){
-		parseLLVMCode(code);
+	private ILLVMBlock endBlock;
+	private ILLVMBlock blocks[];
+
+	private void parseCode() {
+		// parse
 	}
-	public LLVMOptimization(File file){
+
+	private String readCodeFromFile(String fileName){
 		
 		// IO Read File
-		
-		parseLLVMCode(code);
+		BufferedReader fileReader = new BufferedReader(new FileReader(fileName));
+		String line = "";
+		while((line = fileReader.readLine()) != null) {
+			this.code = this.code + line;
+			this.code = this.code + "\n";
+		}
+		fileReader.close();
+	}
+
+	public String optimizeCodeFromString(String code) {
+
+		this.code = code;
+		// TODO
+		return "";
+
+	}
+
+	public String optimizeCodeFromFile(String fileName) {
+
+		this.readCodeFromFile(fileName);
+		// TODO
+		return "";
+
 	}
 	
-	public String optimizeCodeFromString(String code){
-		parseLLVMCode(code);
+	public static void main(String args[]) {
+
+		LLVMOptimization optimization = new LLVMOptimization();
+		this.optimization.readCodeFromFile("optllvm_test");
+
 	}
-	public String optimizeCodeFromFile(File file){
-		
-		// IO Read File
-		
-		parseLLVMCode(code);
-	}
-	
-	private void parseLLVMCode(String code){
-		// parse LLVM
-	}
+
 }

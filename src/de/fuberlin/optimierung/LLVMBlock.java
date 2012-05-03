@@ -1,10 +1,9 @@
-package de.fuberlin.optimization.LLVMBlock;
-
-import de.fuberlin.optimization.LLVMCommand;
+package de.fuberlin.optimierung;
 
 class LLVMBlock implements ILLVMBlock{
 	
-	LLVMCommand<List> commands;
+	LLVMCommand firstCommand;
+	LLVMCommand lastCommand;
 	String label;
 	
 	public LLVMBlock(){

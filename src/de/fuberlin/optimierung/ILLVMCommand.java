@@ -1,4 +1,4 @@
-package de.fuberlin.optimization.ILLVMCommand;
+package de.fuberlin.optimierung;
 
 interface ILLVMCommand {
 	

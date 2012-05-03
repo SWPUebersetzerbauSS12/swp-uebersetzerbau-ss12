@@ -22,4 +22,10 @@ public class Rule implements IRule {
 	public String getTokenValue() {
 		return tokenValue;
 	}
+
+	@Override
+	public String toString() {
+		return "type: " + tokenType + " value:" + tokenValue + " regexp: "
+				+ regexp;
+	}
 }

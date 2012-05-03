@@ -22,6 +22,17 @@ public class ReadTokDefinition {
 	private HashMap<String, String> definitions;
 
 	/**
+	 * reads a token defintion file. If the path is null, the default token
+	 * definition is taken.
+	 * 
+	 * @param path
+	 * @throws FileNotFoundException
+	 */
+	public ReadTokDefinition(String path) throws FileNotFoundException {
+		readFile();
+	}
+
+	/**
 	 * reads the default token definition, which is located in
 	 * ./src/main/resources/def/tokendefinition
 	 * 
@@ -114,7 +125,8 @@ public class ReadTokDefinition {
 				break;
 
 			pattern = replaceDef(pattern);
-			IRule tpl = new Rule(pattern, action);
+			IRule tpl = new Rule(getTokenType(action), getTokenValue(action),
+					pattern);
 			rules.add(tpl);
 		}
 	}
@@ -162,5 +174,19 @@ public class ReadTokDefinition {
 		}
 
 		return pattern;
+	}
+
+	private String getTokenType(String action) {
+
+		String tokenAttributes[] = action.split("\"");
+
+		if (tokenAttributes.length > 1)
+			return tokenAttributes[1];
+		else
+			return null;
+	}
+
+	private String getTokenValue(String action) {
+		return null;
 	}
 }

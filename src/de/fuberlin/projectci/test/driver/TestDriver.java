@@ -16,6 +16,11 @@ import de.fuberlin.projectci.parseTable.ReduceAction;
 import de.fuberlin.projectci.parseTable.ShiftAction;
 import de.fuberlin.projectci.parseTable.State;
 
+/**
+ * Testcase für den Driver
+ * @author stefan
+ *
+ */
 public class TestDriver {
 
 	

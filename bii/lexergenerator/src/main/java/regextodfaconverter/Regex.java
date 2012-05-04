@@ -175,6 +175,14 @@ public class Regex {
 							if (toClose > 0) {
 								subRegex.append(regex.charAt(i));
 							}
+						} else if (regex.charAt(i) == '\\') {
+							if (i+1 == regex.length()) {
+								throw new RegexInvalidException(
+										"Der angegebene reguläre Ausdruck ist ungültig geklammert");
+							}
+							subRegex.append(regex.charAt(i));
+							i++;
+							subRegex.append(regex.charAt(i));
 						} else {
 							subRegex.append(regex.charAt(i));
 						}

@@ -14,7 +14,7 @@ public class Parser {
 	private ParseTable table;
 	private Stack<String> stack;
 	private Vector<String> outputs;
-	private TokenFactory tokFac;
+	private NodeFactory nodeFactory;
 
 	@Getter
 	private ISyntaxTree syntaxTree;
@@ -43,11 +43,11 @@ public class Parser {
 			e.printStackTrace();
 		}
 		
-		tokFac = new TokenFactory();
+		nodeFactory = new NodeFactory();
 
 		stack = new Stack<String>();
 		outputs = new Vector<String>();
-		syntaxTree = tokFac.createToken("program");
+		syntaxTree = nodeFactory.createNode("program");
 		
 		
 	}
@@ -147,7 +147,7 @@ public class Parser {
 			for (int i = 0; i < tmp2.length; i++) {
 				if (!tmp2[i].equals("")) {
 					ISyntaxTree newNode;
-					newNode = tokFac.createToken(tmp2[i]);
+					newNode = nodeFactory.createNode(tmp2[i]);
 //					if (isAllUpper(tmp2[i]) || tmp2[i].equals(EPSILON)) {
 //						newNode = new Terminal(tmp2[i]);
 //					} else {

@@ -16,8 +16,8 @@ public class ParserTest {
 
 	@Test
 	public void testReadSourceFile() throws SyntaxErrorException {
-		final String path = Config.TEST_DATA_FOLDER + "LexerTestFile1.txt";
-
+		final String path = Config.TEST_DATA_FOLDER + "LexerTestFile2.txt";
+		
 		File sourceFile = new File(path);
 		assertTrue(sourceFile.exists());
 		assertTrue(sourceFile.canRead());

@@ -33,12 +33,11 @@
 
 package lexergen;
 
-
 public class Lexer {
 
 	public static void main(String[] args) {
 
-		// Notification.enableDebugPrinting();
-		
+		// first we will have to read settings
+		Settings.readSettings();
 	}
 }

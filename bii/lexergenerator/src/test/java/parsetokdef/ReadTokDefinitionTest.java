@@ -20,18 +20,19 @@ public class ReadTokDefinitionTest {
 	 */
 	@Test
 	public void testReadFile() throws Exception {
-		System.out.println("readFile");
-		@SuppressWarnings("unused")
-		ReadTokDefinition instance = new ReadTokDefinition(
-				Settings.getDefaultTokenDef());
+		Settings.readSettings();
+		System.out.println(Settings.getRegularDefinitionFileName());
+		String path = Settings.getDefaultTokenDef();
+		ReadTokDefinition instance = new ReadTokDefinition();
+		instance.readFile(path);
 	}
-
+	
 	/**
 	 * 
 	 */
 	@Test
 	public void testRegex() throws Exception {
-		List<IRule> rules = new ReadTokDefinition(null).getRules();
+		List<IRule> rules = new ReadTokDefinition().getRules();
 		String tokenType = rules.get(0).getTokenType();
 		String tokenValue = rules.get(0).getTokenValue();
 		System.out.println(rules.get(0));

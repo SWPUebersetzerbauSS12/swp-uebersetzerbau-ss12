@@ -47,7 +47,7 @@ import tokenmatcher.errorhandler.ErrorCorrector.CorrectionMode;
  * 
  * @author Daniel Rotar
  * @author Johannes Dahlke
- * 
+ * @author Benjamin Weißenfels
  * 
  */
 public class Settings {
@@ -104,32 +104,30 @@ public class Settings {
 	 *         Definitionen enthält.
 	 */
 	public static String getRegularDefinitionFileName() {
-		return properties.getProperty("regularDefinitionFileName");
+		return properties.getProperty("_regularDefinitionFile");
 	}
 
 	/**
 	 * Setzt den Dateiname der Datei, die die regulären Definitionen enthält
 	 * fest.
 	 * 
-	 * @param regularDefinitionFileName
+	 * @param fileName
 	 *            Der Dateiname (inkl. Dateiendung) der Datei, die die regulären
 	 *            Definitionen enthält.
 	 */
-	public static void setRegularDefinitionFileName(
-			String regularDefinitionFileName) {
-		properties.setProperty("regularDefinitionFileName",
-				regularDefinitionFileName);
+	public static void setRegularDefinitionFileName(String fileName) {
+		properties.setProperty("_regularDefinitionFileName", fileName);
 	}
 
 	/**
-	 * Gibt Dateiname (inkl. Dateiendung) der Datei, die das Quellprogramm
+	 * Gibt Dateipfad (inkl. Dateiendung) der Datei, die das Quellprogramm
 	 * enthält zurück.
 	 * 
-	 * @return Der Dateiname (inkl. Dateiendung) der Datei, die das
+	 * @return Der vollständige Dateipfad (inkl. Dateiendung) der Datei, die das
 	 *         Quellprogramm enthält.
 	 */
-	public static String getSourceProgramFileName() {
-		return properties.getProperty("_sourceProgramFileName");
+	public static String getSourceProgramFile() {
+		return properties.getProperty("_sourceProgramFile");
 	}
 
 	/**
@@ -198,8 +196,7 @@ public class Settings {
 	 * @return path to the token definition file
 	 */
 	public static String getDefaultTokenDef() {
-		String path = getApplicationPath();
-		return path + "/src/main/resources/def/tokendefinition";
+		return getApplicationPath() + getRegularDefinitionFileName();
 	}
 
 	public static String getConfigFilePath() {

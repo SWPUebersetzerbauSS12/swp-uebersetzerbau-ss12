@@ -1,11 +1,18 @@
 package de.fuberlin.optimierung;
 
+import java.util.LinkedList;
+
 class LLVMCommand implements ILLVMCommand {
 	
 	private ILLVMBlock block;
 
 	private ILLVMCommand predecessor = null;
 	private ILLVMCommand successor = null;
+	
+	private LLVMOperation operation;
+	private LLVMParameter target;
+	private LinkedList<LLVMParameter> operands;
+	private int numberOperands;
 	
 	private String[] cmd;
 	private int paramsCount;
@@ -35,22 +42,6 @@ class LLVMCommand implements ILLVMCommand {
 		// Setze den zugehoerigen Basisblock
 		this.block = block;
 
-	}
-
-	public ILLVMCommand getPredecessor() {
-		return this.predecessor;
-	}
-
-	public ILLVMCommand getSuccessor() {
-		return this.successor;
-	}
-
-	public void setPredecessor(ILLVMCommand c) {
-		this.predecessor = c;
-	}
-
-	public void setSuccessor(ILLVMCommand c) {
-		this.successor = c;
 	}
 
 	public void deleteCommand() {
@@ -91,5 +82,21 @@ class LLVMCommand implements ILLVMCommand {
 		}else{
 			System.err.println(cmd[0] +" has only "+ paramsCount +" params");
 		}
+	}
+	
+	public ILLVMCommand getPredecessor() {
+		return this.predecessor;
+	}
+
+	public ILLVMCommand getSuccessor() {
+		return this.successor;
+	}
+
+	public void setPredecessor(ILLVMCommand c) {
+		this.predecessor = c;
+	}
+
+	public void setSuccessor(ILLVMCommand c) {
+		this.successor = c;
 	}
 }

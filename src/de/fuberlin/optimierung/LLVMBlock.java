@@ -34,14 +34,6 @@ class LLVMBlock implements ILLVMBlock {
 
 	}
 
-	public void setFirstCommand(ILLVMCommand first) {
-		this.firstCommand = first;
-	}
-
-	public void setLastCommand(ILLVMCommand last) {
-		this.lastCommand = last;
-	}
-
 	private void createDAG() {
 
 	}
@@ -59,4 +51,12 @@ class LLVMBlock implements ILLVMBlock {
 
 	}
 
+	public void setFirstCommand(ILLVMCommand first) {
+		this.firstCommand = first;
+	}
+
+	public void setLastCommand(ILLVMCommand last) {
+		this.lastCommand = last;
+	}
+	
 }

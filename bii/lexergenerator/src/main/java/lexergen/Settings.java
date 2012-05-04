@@ -155,8 +155,9 @@ public class Settings {
 	 * @return Liefert den Modus für die Fehlerbehandlung
 	 */
 	public static CorrectionMode getErrorCorrectionMode() {
-		return CorrectionMode.valueOf(properties
-				.getProperty("errorCorrectionMode"));
+		String getErrCorrectionMode = properties
+				.getProperty("errorCorrectionMode");
+		return CorrectionMode.valueOf(getErrCorrectionMode);
 	}
 
 	/**

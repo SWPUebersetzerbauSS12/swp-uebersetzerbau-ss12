@@ -63,4 +63,8 @@ public class Terminal implements ISyntaxTree {
 		return false;
 	}
 
+	public void run() {
+		// TODO 
+	}
+
 }

@@ -1,0 +1,74 @@
+\documentclass[a4paper]{article}
+\usepackage{setspace}
+\doublespacing
+\usepackage[]{geometry}
+\usepackage[german]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{textcomp}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[pdftex]{color,graphicx}
+%\author{Ansgar Schneider \& Tim Rakowski}
+\title{Softwareprojekt Übersetzerbau: \\Quellsprache}
+\date{Sommersemester 2012}
+\begin{document}
+\maketitle
+\section{Programmstruktur}
+\begin{align*}
+program &\rightarrow funcs \nonumber \\
+  funcs &\rightarrow func\: funcs \:|\: \varepsilon\\
+  func &\rightarrow \textbf{def} \ type \ \textbf{id}\ (\: optparams\:)\ func' \\
+  func'  &\rightarrow block \:|\: ; \\
+  optparams &\rightarrow params \: | \: \varepsilon\\
+  params &\rightarrow type\: \textbf{id} \: params' \\
+  params' &\rightarrow \: , \ params \:|\: \varepsilon \\
+block &\rightarrow \{ decls \: stmts \} \nonumber \\
+decls &\rightarrow decl \: decls \:|\: \varepsilon \nonumber \\
+decl &\rightarrow type \: \textbf{id} \: ; \nonumber \\
+type &\rightarrow \textbf{basic} \: type' \:|\: \textbf{record} \left\{ \:
+decls \right\} \: type' \\
+type' &\rightarrow \left[ \: \textbf{num} \: \right] \: type' \:|\: \varepsilon \\
+stmts &\rightarrow stmt \: stmts \:|\: \varepsilon \nonumber
+\end{align*}
+
+\section{Anweisungen}
+\begin{align*}
+stmt &\rightarrow assign \:; \nonumber \\
+&\:|\: \textbf{if} \: ( \: assign \: ) \: stmt \: stmt' \\
+&\:|\: \textbf{while} \: ( \: assign \: ) \: stmt \nonumber \\
+&\:|\: \textbf{do} \: stmt \: \textbf{while} \: ( \: assign \: ) \: ; \nonumber \\
+&\:|\: \textbf{break} \: ; \nonumber \\
+&\:|\: \textbf{return} \: stmt'' \\
+&\:|\: \textbf{print} \: loc\:; \nonumber \\
+&\:|\: block  \nonumber \\
+stmt' &\rightarrow \textbf{else} \: stmt \:|\: \varepsilon \\
+stmt'' &\rightarrow loc \: ; \:|\: ; \\
+loc &\rightarrow \textbf{id} \: loc'' \\
+loc' &\rightarrow .\textbf{id} \:|\: \left[ \: assign \: \right] \\
+loc'' &\rightarrow loc' \: loc'' \:|\: \varepsilon \\
+\end{align*}
+\section{Ausdrücke}
+\begin{align*}
+  assign &\rightarrow bool \: assign' \\
+  assign' &\rightarrow \: = \: assign \: assign' \:|\: \varepsilon \\
+bool &\rightarrow join \: bool' \\
+bool' &\rightarrow \: || \: join \: bool' \:|\: \varepsilon \\
+join &\rightarrow \: equality \: join' \\
+join' &\rightarrow \& \& \: equality \: join' \:|\: \varepsilon \\
+equality &\rightarrow  \: rel \: equality' \nonumber \\
+equality' &\rightarrow \: == rel equality' \:|\: != rel equality' \:|\: \varepsilon \\
+rel &\rightarrow expr \: rel' \\
+rel' &\rightarrow \: < expr \:|\: <= expr \:|\: >= expr \:|\: > expr \:|\: expr \nonumber  \:|\: \varepsilon \\
+expr &\rightarrow term \: expr' \nonumber \\
+expr' &\rightarrow + \: term \: expr' \:|\: - \: term \: expr' \:|\: \varepsilon \\
+term &\rightarrow unary \: term' \nonumber \\
+term' &\rightarrow * \:  unary \:  term'\:|\: / \: unary \: term'  \:|\: \varepsilon \\
+unary &\rightarrow \:! \: unary\:|\: - \: unary \:|\: factor \nonumber \\
+factor &\rightarrow ( \: assign \: ) \:|\: loc \: factor' \:|\: \textbf{num} \:|\: \textbf{real} \:|\: \textbf{true} \:|\: \textbf{false} \:|\: \textbf{string}\\
+factor' &\rightarrow \left( \: optargs \right) \:|\: \varepsilon \\
+optargs &\rightarrow args \: |\: \varepsilon \\
+args &\rightarrow assign \: args' \\
+args' &\rightarrow \: , \: args \:|\: \varepsilon \\
+\end{align*}
+\end{document}

@@ -3,6 +3,18 @@ def int someFunction(int arg1, real arg2) {
 	bool j;
 	record { int i; }[4] myName;
 	
+	// test1
+	
+	/*
+	 * test2
+	 *
+	 */
+	
+	/**
+	 * test3
+	 *
+	 */
+	
 	if(!j) print arg1;
 	while (true) j = j + 1;
 	do print i; while ( true );

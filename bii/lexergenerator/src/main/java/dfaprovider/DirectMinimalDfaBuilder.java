@@ -59,11 +59,15 @@ public class DirectMinimalDfaBuilder {
 	 */
 	public MinimalDfa<Character, StatePayload> buildMinimalDfa(
 			File regularDefinitionFile) throws MinimalDfaBuilderException {
+		if (regularDefinitionFile == null) {
+			throw new MinimalDfaBuilderException(
+					"Der Parameter 'regularDefinitionFile' darf nicht null sein!");
+		}
 		if (!regularDefinitionFile.exists()) {
 			throw new MinimalDfaBuilderException("Die angegebene Datei '"
 					+ regularDefinitionFile.getAbsolutePath()
 					+ "'zu den regulären Definitionen exisitiert nicht!");
-		}		
+		}
 		// TODO: buildMinimalDfa implementieren.
 		return null;
 	}

@@ -67,6 +67,10 @@ public class IndirectMinimalDfaBuilder implements MinimalDfaBuilder {
 	 */
 	public MinimalDfa<Character, StatePayload> buildMinimalDfa(
 			File regularDefinitionFile) throws MinimalDfaBuilderException {
+		if (regularDefinitionFile == null) {
+			throw new MinimalDfaBuilderException(
+					"Der Parameter 'regularDefinitionFile' darf nicht null sein!");
+		}
 		if (!regularDefinitionFile.exists()) {
 			throw new MinimalDfaBuilderException("Die angegebene Datei '"
 					+ regularDefinitionFile.getAbsolutePath()
@@ -104,7 +108,7 @@ public class IndirectMinimalDfaBuilder implements MinimalDfaBuilder {
 
 		// TEMP:
 		payload = new StatePayload("VAR_NAME", "name", -3);
-		regex = "...";
+		regex = ".(.*)";
 
 		// Aus Regex NFA machen.
 		try {

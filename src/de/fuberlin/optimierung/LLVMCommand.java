@@ -26,6 +26,10 @@ class LLVMCommand implements ILLVMCommand {
 		this.cmd = cmdLine.split(" ");
 		this.paramsCount = this.cmd.length - 1;
 	}
+
+	public void deleteCommand() {
+
+	}
 	
 	public String getCmd(){
 		String str = "";

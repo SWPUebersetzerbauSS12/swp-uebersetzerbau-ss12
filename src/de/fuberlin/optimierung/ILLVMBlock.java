@@ -7,4 +7,8 @@ interface ILLVMBlock {
 	public void optimizeBlock();
 
 	public void deleteBlock();
+
+	public void setFirstCommand(ILLVMCommand first);
+
+	public void setLastCommand(ILLVMCommand last);
 }

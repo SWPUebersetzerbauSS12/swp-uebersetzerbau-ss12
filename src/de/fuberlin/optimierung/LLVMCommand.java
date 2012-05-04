@@ -2,8 +2,10 @@ package de.fuberlin.optimierung;
 
 class LLVMCommand implements ILLVMCommand {
 	
-	private LLVMCommand predecessor = null;
-	private LLVMCommand successor = null;
+	private ILLVMBlock block;
+
+	private ILLVMCommand predecessor = null;
+	private ILLVMCommand successor = null;
 	
 	private String[] cmd;
 	private int paramsCount;
@@ -15,19 +17,55 @@ class LLVMCommand implements ILLVMCommand {
 	private boolean isLastCommand() {
 		return (this.successor == null);
 	}
+
+	private boolean isEmpty() {
+		return (this.isFirstCommand() && this.isLastCommand());
+	}
 	
-	public LLVMCommand(String cmdLine, LLVMCommand predecessor){
+	public LLVMCommand(String cmdLine, ILLVMCommand predecessor, ILLVMBlock block){
 		// Setze die Zeiger
 		this.predecessor = predecessor;
 		if(!this.isFirstCommand())
-			this.predecessor.successor = this;		
+			this.predecessor.setSuccessor(this);		
 
 		// Verarbeite den Befehl
 		this.cmd = cmdLine.split(" ");
 		this.paramsCount = this.cmd.length - 1;
+
+		// Setze den zugehoerigen Basisblock
+		this.block = block;
+
+	}
+
+	public ILLVMCommand getPredecessor() {
+		return this.predecessor;
+	}
+
+	public ILLVMCommand getSuccessor() {
+		return this.successor;
+	}
+
+	public void setPredecessor(ILLVMCommand c) {
+		this.predecessor = c;
+	}
+
+	public void setSuccessor(ILLVMCommand c) {
+		this.successor = c;
 	}
 
 	public void deleteCommand() {
+		
+		if(this.isFirstCommand()) {	// Loesche erstes Element
+			this.successor.setPredecessor(null);
+			this.block.setFirstCommand(this.successor);
+		}
+		if(this.isLastCommand()) {	// Loesche letztes Element
+			this.predecessor.setSuccessor(null);
+			this.block.setLastCommand(this.predecessor);
+		}
+ 
+		this.predecessor.setSuccessor(this.successor);
+		this.successor.setPredecessor(this.predecessor);
 
 	}
 	

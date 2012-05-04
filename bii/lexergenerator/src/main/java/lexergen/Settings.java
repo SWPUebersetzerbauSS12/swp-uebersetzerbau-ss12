@@ -33,62 +33,55 @@
 
 package lexergen;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import tokenmatcher.errorhandler.ErrorCorrector.CorrectionMode;
 
 /**
- * Ermöglicht den Zugriff auf Programmübergreifende Einstellungen.
+ * Ermöglicht den Zugriff auf programmübergreifende Einstellungen.
  * 
  * @author Daniel Rotar
  * @author Johannes Dahlke
- * 
+ * @author Benjamin Weißenfels
  * 
  */
 public class Settings {
 
-	/**
-	 * Der Mode, in dem die Fehlerbehandlung erfolgt. Panic mode or phrase level
-	 * mode.
-	 */
-	private static CorrectionMode errorCorrectionMode = CorrectionMode.PANIC_MODE;
+	private static Properties properties;
 
-	/**
-	 * Der Pfad, in dem sich alle programmrelevanten Dateien befinden.
-	 */
-	private static String _workingDirectory = "D:\\TEMP\\";
+	public static void readSettings() {
 
-	/**
-	 * Der Dateiname (inkl. Dateiendung) der Datei, die die regulären
-	 * Definitionen enthält.
-	 */
-	private static String _regularDefinitionFileName = "test.rd";
+		String path = getApplicationPath()
+				+ "/src/main/resources/conf/program.properties";
+		properties = new Properties();
 
-	/**
-	 * Der Dateiname (inkl. Dateiendung) der Datei, die das Quellprogramm
-	 * enthält.
-	 */
-	private static String _sourceProgramFileName = "test.fun";
-
-	/**
-	 * Die aktuelle Version von lexergen.
-	 */
-	private static final String _VERSION = "0.1";
+		try {
+			properties.load(new FileInputStream(path));
+		} catch (FileNotFoundException e) {
+			System.err.println("Program settings are not found");
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.err.println("problems with reading settings file in: "
+					+ path);
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * Gibt den Pfad, in dem sich alle programmrelevanten Dateien befinden
-	 * zurück.
+	 * zurück. Methode macht nur auf windows Rechner was sie soll.
 	 * 
 	 * @return Der Pfad, in dem sich alle programmrelevanten Dateien befinden.
 	 *         Die Ausgabe endet immer mit einem "\".
 	 */
+	@Deprecated
 	public static String getWorkingDirectory() {
-		if (_workingDirectory.endsWith("\\")) {
-			return _workingDirectory;
-		} else {
-			return _workingDirectory + "\\";
-		}
+		return properties.getProperty("_workingDirectory");
 	}
 
 	/**
@@ -100,7 +93,7 @@ public class Settings {
 	 *            befinden.
 	 */
 	public static void setWorkingDirectory(String workingDirectory) {
-		_workingDirectory = workingDirectory;
+		properties.setProperty("_workingDirectory", workingDirectory);
 	}
 
 	/**
@@ -111,31 +104,30 @@ public class Settings {
 	 *         Definitionen enthält.
 	 */
 	public static String getRegularDefinitionFileName() {
-		return _regularDefinitionFileName;
+		return properties.getProperty("_regularDefinitionFile");
 	}
 
 	/**
 	 * Setzt den Dateiname der Datei, die die regulären Definitionen enthält
 	 * fest.
 	 * 
-	 * @param regularDefinitionFileName
+	 * @param fileName
 	 *            Der Dateiname (inkl. Dateiendung) der Datei, die die regulären
 	 *            Definitionen enthält.
 	 */
-	public static void setRegularDefinitionFileName(
-			String regularDefinitionFileName) {
-		_regularDefinitionFileName = regularDefinitionFileName;
+	public static void setRegularDefinitionFileName(String fileName) {
+		properties.setProperty("_regularDefinitionFileName", fileName);
 	}
 
 	/**
-	 * Gibt Dateiname (inkl. Dateiendung) der Datei, die das Quellprogramm
+	 * Gibt Dateipfad (inkl. Dateiendung) der Datei, die das Quellprogramm
 	 * enthält zurück.
 	 * 
-	 * @return Der Dateiname (inkl. Dateiendung) der Datei, die das
+	 * @return Der vollständige Dateipfad (inkl. Dateiendung) der Datei, die das
 	 *         Quellprogramm enthält.
 	 */
-	public static String getSourceProgramFileName() {
-		return _sourceProgramFileName;
+	public static String getSourceProgramFile() {
+		return properties.getProperty("_sourceProgramFile");
 	}
 
 	/**
@@ -147,7 +139,7 @@ public class Settings {
 	 *            Quellprogramm enthält.
 	 */
 	public static void setSourceProgramFileName(String sourceProgramFileName) {
-		_sourceProgramFileName = sourceProgramFileName;
+		properties.setProperty("sourceProgramFileName", sourceProgramFileName);
 	}
 
 	/**
@@ -156,14 +148,16 @@ public class Settings {
 	 * @return Die aktuelle Version von lexergen.
 	 */
 	public static String getVersion() {
-		return _VERSION;
+		return properties.getProperty("_VERSION");
 	}
 
 	/**
 	 * @return Liefert den Modus für die Fehlerbehandlung
 	 */
 	public static CorrectionMode getErrorCorrectionMode() {
-		return errorCorrectionMode;
+		String getErrCorrectionMode = properties
+				.getProperty("errorCorrectionMode");
+		return CorrectionMode.valueOf(getErrCorrectionMode);
 	}
 
 	/**
@@ -173,7 +167,8 @@ public class Settings {
 	 *            der Modus der Fehlerbehandlung
 	 */
 	public static void setErrorCorrectionMode(CorrectionMode errorCorrectionMode) {
-		Settings.errorCorrectionMode = errorCorrectionMode;
+		properties.setProperty("errorCorrectionMode",
+				errorCorrectionMode.toString());
 	}
 
 	/**
@@ -190,8 +185,8 @@ public class Settings {
 					pattern, "");
 			System.out.println(path);
 		} catch (IOException ex) {
-			Logger.getLogger(Settings.class.getName())
-					.log(Level.SEVERE, null, ex);
+			Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null,
+					ex);
 		}
 		return path;
 	}
@@ -202,8 +197,11 @@ public class Settings {
 	 * @return path to the token definition file
 	 */
 	public static String getDefaultTokenDef() {
-		String path = getApplicationPath();
-		return path + "/src/main/resources/def/tokendefinition";
+		return getApplicationPath() + getRegularDefinitionFileName();
 	}
 
+	public static String getConfigFilePath() {
+		return getApplicationPath()
+				+ "/src/main/resources/conf/program.properties";
+	}
 }

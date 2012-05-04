@@ -66,6 +66,16 @@ public class ReadTokDefinition {
 	}
 
 	/**
+	 * reads a token defintion file which should be defined in token settings
+	 * definition is taken.
+	 * 
+	 * @throws FileNotFoundException
+	 */
+	public ReadTokDefinition() throws FileNotFoundException {
+		readFile(null);
+	}
+
+	/**
 	 * reads a token defintion file. If the path is null, the default token
 	 * definition is taken.
 	 * 
@@ -73,7 +83,7 @@ public class ReadTokDefinition {
 	 * @throws FileNotFoundException
 	 */
 	public ReadTokDefinition(String path) throws FileNotFoundException {
-		readFile();
+		readFile(path);
 	}
 
 	/**

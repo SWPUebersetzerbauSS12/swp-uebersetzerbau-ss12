@@ -4,20 +4,20 @@ def{test}               {test2}
 
 %%
 
-"("                     {return("BRACKET", "(")}
-")"                     {return("BRACKET", ")")}
-"{"                     {return("BRACKET", "{")}
-"}"                     {return("BRACKET", "}")}
-"="                     {return("ASSIGNEMENT", "=")}
-"<"                     {return("OP", "L")}
-">"                     {return("OP", "G")}
-"<="                    {return("OP", "LE")}
-">="                    {return("OP", "GE")}
-"=="                    {return("OP", "EQ")}
-"!="                    {return("OP", "NEQ")}
-"+"                     {return("OP", "PLUS")}
-"*"                     {return("OP", "MUL")}
-"/"                     {return("OP", "DIVIDE")}
+\(                      {return("BRACKET", "(")}
+\)                      {return("BRACKET", ")")}
+\{                      {return("BRACKET", "{")}
+\}                      {return("BRACKET", "}")}
+\=                      {return("ASSIGNEMENT", "=")}
+<                       {return("OP", "L")}
+>                       {return("OP", "G")}
+<=                      {return("OP", "LE")}
+>=                      {return("OP", "GE")}
+==                      {return("OP", "EQ")}
+!=                      {return("OP", "NEQ")}
+\+                      {return("OP", "PLUS")}
+\*                      {return("OP", "MUL")}
+/                       {return("OP", "DIVIDE")}
 ;                       {return("KEYWORD", "SEMIKOLON")}
 def                     {return("KEYWORD", "DEF")}
 if                      {return("KEYWORD", "IF")}
@@ -28,6 +28,6 @@ return                  {return("KEYWORD", "RETURN")}
 break                   {return("KEYWORD", "BREAK")}
 while                   {return("KEYWORD", "WHILE")}
 {num}                   {return("NUM", parseInt())}
-{num}?"."{num}          {return("RAT", parseDouble())}
+{num}?\.{num}           {return("RAT", parseDouble())}
 [a-z]+[a-zA-Z0-9]*      {return("ID", parseString())}
 

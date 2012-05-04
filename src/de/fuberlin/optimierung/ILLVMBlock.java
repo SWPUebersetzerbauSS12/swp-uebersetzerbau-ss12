@@ -7,5 +7,4 @@ interface ILLVMBlock {
 	public void optimizeBlock();
 
 	public void deleteBlock();
-
 }

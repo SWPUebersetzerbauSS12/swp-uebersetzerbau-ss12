@@ -65,5 +65,9 @@ public class NonTerminal implements ISyntaxTree {
 		}
 		return false;
 	}
+	
+	public void run() {
+		// TODO 
+	}
 
 }

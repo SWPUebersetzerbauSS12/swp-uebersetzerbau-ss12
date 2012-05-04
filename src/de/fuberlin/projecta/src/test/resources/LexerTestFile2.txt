@@ -1,0 +1,12 @@
+def int someFunction(int arg1, real arg2) {
+	int i;
+	bool j;
+	record { int i; }[4] myName;
+	
+	if(!j) print arg1;
+	
+	i = i + 1;
+	
+}
+
+def int foobar();

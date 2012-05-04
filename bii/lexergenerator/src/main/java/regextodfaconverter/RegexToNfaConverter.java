@@ -109,7 +109,7 @@ public class RegexToNfaConverter<StatePayloadType> {
 
 		// Eingegebenen Regex minimieren
 		try {
-			regex = Regex.reduceRegexAndAddMissingParenthesis(regex);
+			regex = Regex.reduceAndBracketRegex(regex);
 		} catch (RegexInvalidException e) {
 			throw new ConvertExecption(
 					"Der verwendete reguläre Ausdruck '"

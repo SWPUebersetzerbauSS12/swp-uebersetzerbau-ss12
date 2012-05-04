@@ -57,7 +57,7 @@ bool' &\rightarrow \: || \: join \: bool' \:|\: \varepsilon \\
 join &\rightarrow \: equality \: join' \\
 join' &\rightarrow \& \& \: equality \: join' \:|\: \varepsilon \\
 equality &\rightarrow  \: rel \: equality' \nonumber \\
-equality' &\rightarrow \: == rel equality' \:|\: != rel equality' \:|\: \varepsilon \\
+equality' &\rightarrow \: == \: rel \: equality' \:|\: != \: rel \: equality' \:|\: \varepsilon \\
 rel &\rightarrow expr \: rel' \\
 rel' &\rightarrow \: < expr \:|\: <= expr \:|\: >= expr \:|\: > expr \:|\: expr \nonumber  \:|\: \varepsilon \\
 expr &\rightarrow term \: expr' \nonumber \\

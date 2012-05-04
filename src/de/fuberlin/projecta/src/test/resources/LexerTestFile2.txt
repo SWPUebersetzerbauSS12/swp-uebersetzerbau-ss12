@@ -4,9 +4,14 @@ def int someFunction(int arg1, real arg2) {
 	record { int i; }[4] myName;
 	
 	if(!j) print arg1;
-	
+	while (true) j = j + 1;
+	do print i; while ( true );
+	break;
+	return i;
 	i = i + 1;
-	
+	{
+		i = i + 2;
+	}	
 }
 
 def int foobar();

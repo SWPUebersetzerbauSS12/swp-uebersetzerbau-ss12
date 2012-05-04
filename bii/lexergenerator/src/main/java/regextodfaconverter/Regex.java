@@ -104,13 +104,7 @@ public class Regex {
 	protected static String reduceRegex(String regex)
 			throws RegexInvalidException {
 		// Regex auf gültige Zeichen überprüfen.
-		for (int i = 0; i < regex.length(); i++) {
-			if (!isValidChar(regex.charAt(i))) {
-				throw new RegexInvalidException(
-						"Der angegebene reguläre Ausdruck darf enthält ungültige Zeichen: '"
-								+ regex.charAt(i) + "'!");
-			}
-		}
+		checkForInvaildOperations(regex);
 
 		String output = regex;
 		output = replaceEscapeGroups(output);
@@ -299,6 +293,38 @@ public class Regex {
 	}
 
 	/**
+	 * Überprüft den angegebenen regulären Ausdruck auf ungütlige Operationen
+	 * @param regex Der zu überprüfende Ausdruck.
+	 * @throws RegexInvalidException Wenn ein - außerhalb von eckigen Klammern vorkommt; Wenn ein Zeichen verwendet wird, das nicht Teil des Alphabets ist oder ein Meta.Zeichen.
+	 */
+	private static void checkForInvaildOperations(String regex) throws RegexInvalidException
+	{
+		boolean isInSquareBrackets = false;
+		for (int i = 0; i < regex.length(); i++) {
+			char c = regex.charAt(i);
+			if (!isValidChar(c)) {
+				throw new RegexInvalidException(
+						"Der angegebene reguläre Ausdruck darf enthält ungültige Zeichen: '"
+								+ regex.charAt(i) + "'!");
+			}
+			
+			if (c == '\\') {
+				i++;
+			}
+			else if (c == '[') {
+				isInSquareBrackets = true;
+			} else if (c == ']') {
+				isInSquareBrackets = false;
+			} else if (c == '-') {
+				if (!isInSquareBrackets) {
+					throw new RegexInvalidException(
+							"Der angegebene reguläre Ausdruck ist ungültig, da ein '-' als Operator nur in einer eckigen Klammer zulässig ist!");
+				}
+			}
+		}
+	}
+	
+	/**
 	 * Ersetzt jede Escape-Gruppe durch einen äquivalenten minimalen
 	 * Regex-Ausdruck.
 	 * 
@@ -313,68 +339,21 @@ public class Regex {
 			throws RegexInvalidException {
 		String outputRegex = regex;
 		boolean isInSquareBrackets = false;
-		
-		// Spezifalfall abfangen, wenn Escape-Gruppe in einer eckigen Klammer
-		// ist und zusätzlich von einem "-" umgeben ist.
-		for (int i = 0; i < regex.length(); i++) {
-			char c = outputRegex.charAt(i);
-			if (c == '\\') {
-				i++;
-			}
-			if (c == '-')
-			{
-				if (isInSquareBrackets)
-				{
-					if (i-2 >= 0)
-					{
-						if (outputRegex.charAt(i-2) == '\\')
-						{
-							if (outputRegex.charAt(i-1) != ']' && outputRegex.charAt(i-1) != '[' && outputRegex.charAt(i-1) != '-' && outputRegex.charAt(i-1) != '\\')
-							{
-								throw new RegexInvalidException("Der angegebene reguläre Ausdruck ist ab folgender Stelle ungültig: '..." + outputRegex.substring(i-2) + "'");
-							}
-						}
-					}
-					if (i+2 < outputRegex.length())
-					{
-						if (outputRegex.charAt(i+1) == '\\')
-						{
-							if (outputRegex.charAt(+2) != ']' && outputRegex.charAt(i+2) != '[' && outputRegex.charAt(i+2) != '-' && outputRegex.charAt(i+2) != '\\')
-							{
-								throw new RegexInvalidException("Der angegebene reguläre Ausdruck ist ab folgender Stelle ungültig: '..." + outputRegex.substring(i-2) + "'");
-							}
-						}
-					}
-				}
-				else
-				{
-					throw new RegexInvalidException("Der angegebene reguläre Ausdruck ist ungültig, da ein '-' als Operator nur in einer eckigen Klammer zulässig ist");
-				}
-			} else if (c == '[') {
-				isInSquareBrackets = true;
-			} else if (c == ']') {
-				isInSquareBrackets = false;
-			}
-		}
-		
+
 		// Hier beginnt die richtige Verarbeitung
-		isInSquareBrackets = false;
-		for (int i = 0; i < regex.length(); i++) {
+		for (int i = 0; i < outputRegex.length(); i++) {
 			char c = outputRegex.charAt(i);
 			if (c == '\\') {
 				i++;
 				if (i == outputRegex.length()) {
 					throw new RegexInvalidException(
 							"Der reguläre Ausdruck Endet mit einem ungültigen Zeichen: '"
-									+ c + "'");
+									+ c + "'!");
 				}
 				c = outputRegex.charAt(i);
 
 				if (isInSquareBrackets) {
-					// In den eckigen Klammern muss nur [, ], -, \ und ^ escapt
-					// werden.
-					if (c != ']' && c != '[' && c != '-' && c != '\\'
-							&& c != '^') {
+					if (!isMetaCharacter(c)) {
 						String bracketContent = getEscapeGroupRepresentation(c);
 						if (bracketContent.equals("")) {
 							throw new RegexInvalidException(
@@ -382,9 +361,59 @@ public class Regex {
 											+ c
 											+ "' ist unbekannt oder wird nicht unterstützt!");
 						}
+						if (bracketContent.length() > 1) {
+							if (i - 2 >= 0) {
+								boolean escapeFlag;
+								if (i - 3 >= 0) {
+									if (outputRegex.charAt(i - 3) == '\\') {
+										escapeFlag = true;
+									} else {
+										escapeFlag = false;
+									}
+								} else {
+									escapeFlag = false;
+								}
+								boolean bracketFlag;
+								if (i-4 >=0)
+								{
+									if (outputRegex.charAt(i - 4) != '\\' && outputRegex.charAt(i - 3) == '[') {
+										bracketFlag = true;
+									} else {
+										bracketFlag = false;
+									}
+								}
+								else
+								{
+									if (outputRegex.charAt(i - 3) == '[') {
+										bracketFlag = true;
+									} else {
+										bracketFlag = false;
+									}
+								}
+								
+								if (outputRegex.charAt(i - 2) == '-'
+										&& !(escapeFlag || bracketFlag)) {
+									throw new RegexInvalidException(
+											"Der angegebene reguläre Ausdruck ist ab folgender Stelle ungültig: '..."
+													+ outputRegex
+															.substring(i - 2)
+													+ "'");
+								}
+							}
+
+							if (i + 2 < outputRegex.length()) {
+								if (outputRegex.charAt(i + 1) == '-' && outputRegex.charAt(i + 2) != ']') {
+									throw new RegexInvalidException(
+											"Der angegebene reguläre Ausdruck ist ab folgender Stelle ungültig: '..."
+													+ outputRegex
+															.substring(i + 1)
+													+ "'");
+								}
+							}
+						}
 						outputRegex = replaceRangeInString(outputRegex, i - 1,
 								i + 1, bracketContent);
-						i = 0;
+						i = -1;
 						isInSquareBrackets = false;
 					}
 				} else {
@@ -398,16 +427,16 @@ public class Regex {
 						}
 						outputRegex = replaceRangeInString(outputRegex, i - 1,
 								i + 1, "[" + bracketContent + "]");
-						i = 0;
+						i = -1;
 						isInSquareBrackets = false;
 					}
 				}
-
 			} else if (c == '[') {
 				isInSquareBrackets = true;
 			} else if (c == ']') {
 				isInSquareBrackets = false;
 			}
+
 		}
 		return outputRegex;
 	}
@@ -436,6 +465,7 @@ public class Regex {
 		{
 			representation = "^0-9";
 		}
+		// TODO: Weitere Fälle berücksichtigen
 		return representation;
 	}
 

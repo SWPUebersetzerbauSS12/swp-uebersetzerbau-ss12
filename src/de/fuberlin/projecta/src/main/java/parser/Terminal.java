@@ -3,7 +3,7 @@ package parser;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Terminal implements ISyntaxTree {
+public abstract class Terminal implements ISyntaxTree {
 
 	private String name;
 	private ArrayList<Attribute> attributes;
@@ -63,8 +63,6 @@ public class Terminal implements ISyntaxTree {
 		return false;
 	}
 
-	public void run() {
-		// TODO 
-	}
+	public abstract void run();
 
 }

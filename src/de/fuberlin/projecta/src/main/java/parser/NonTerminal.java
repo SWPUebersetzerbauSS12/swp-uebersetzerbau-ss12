@@ -3,7 +3,7 @@ package parser;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NonTerminal implements ISyntaxTree {
+public abstract class NonTerminal implements ISyntaxTree {
 
 	private ArrayList<ISyntaxTree> children = new ArrayList<ISyntaxTree>();
 	private String name;
@@ -66,8 +66,6 @@ public class NonTerminal implements ISyntaxTree {
 		return false;
 	}
 	
-	public void run() {
-		// TODO 
-	}
+	public abstract void run();
 
 }

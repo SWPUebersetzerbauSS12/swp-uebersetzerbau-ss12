@@ -96,7 +96,16 @@ public class Regex {
 	 *             Wenn der angegebene regulärer Ausdruck ungültig ist oder
 	 *             nicht unterstützt wird.
 	 */
-	public static String reduceRegex(String regex) throws RegexInvalidException {
+	protected static String reduceRegex(String regex) throws RegexInvalidException {
+		// Regex auf gültige Zeichen überprüfen.
+		for (int i = 0; i < regex.length(); i++)
+		{
+			if (!isValidChar(regex.charAt(i)))
+			{
+				throw new RegexInvalidException("Der angegebene reguläre Ausdruck darf enthält ungültige Zeichen: '" + regex.charAt(i) + "'!");
+			}
+		}
+		
 		String output = regex;
 		output = replaceDots(output);
 		// TODO: Weitere erweiterte Operationen unterstützen...
@@ -117,7 +126,7 @@ public class Regex {
 	 *             Wenn der angegebene regulärer Ausdruck ungültig ist oder
 	 *             nicht unterstützt wird.
 	 */
-	public static String addMissingParenthesis(String regex)
+	protected static String addMissingParenthesis(String regex)
 			throws RegexInvalidException {
 		if (regex.length() == 0) {
 			return "";
@@ -144,6 +153,7 @@ public class Regex {
 		// abfangen zu müssen)
 		if ((!isCharInAlphabet(regex.charAt(regex.length() - 1)))
 				&& (regex.charAt(regex.length() - 1) != '*')
+				&& (regex.charAt(regex.length() - 2) != '\\')
 				&& (regex.charAt(regex.length() - 1) != ')')) {
 			throw new RegexInvalidException(
 					"Der angegebene reguläre Ausdruck endet mit einem ungütligen Zeichen!");
@@ -176,7 +186,7 @@ public class Regex {
 								subRegex.append(regex.charAt(i));
 							}
 						} else if (regex.charAt(i) == '\\') {
-							if (i+1 == regex.length()) {
+							if (i + 1 == regex.length()) {
 								throw new RegexInvalidException(
 										"Der angegebene reguläre Ausdruck ist ungültig geklammert");
 							}
@@ -289,6 +299,7 @@ public class Regex {
 	 * @return Der reduzierte reguläre Ausdruck.
 	 */
 	private static String replaceDots(String regex) {
+		String outputRegex = regex;
 		StringBuilder sb = new StringBuilder("(");
 
 		for (int i = FIRST_ASCII_CHAR; i <= LAST_ASCII_CHAR; i++) {
@@ -305,7 +316,33 @@ public class Regex {
 
 		String replaceWith = sb.toString();
 
-		return regex.replace(".", replaceWith);
+		boolean replace = true;
+		for (int i = 0; i < regex.length(); i++)
+		{
+			char c = regex.charAt(i);
+			if (c == '\\')
+			{
+				//Dadurch wird z.B. "\." ignoriert.
+				i++;
+			}
+			else if (c == '[')
+			{
+				//In eckigen Klammern hat der Punkt keine bedeutung.
+				replace = false;
+			}
+			else if (c == ']')
+			{
+				replace = true;
+			}
+			else if (c == '.')
+			{
+				if (replace)
+				{
+					outputRegex = replaceRangeInString(outputRegex,i,i+1,replaceWith);
+				}
+			}
+		}
+		return outputRegex;
 	}
 
 	/**
@@ -395,16 +432,51 @@ public class Regex {
 	}
 
 	/**
-	 * Gibt an ob das angegebene Zeichen Teil des Alpabeths ist und kein
+	 * Gibt an ob das angegebene Zeichen Teil des Alphabets ist und kein
 	 * Metazeichen ist.
 	 * 
 	 * @param c
 	 *            Das zu überprüfende Zeichen
-	 * @return true, wenn das engegebene Zeichen im Alphabet liegt und kein
+	 * @return true, wenn das engegebene Zeichen im Alphabets liegt und kein
 	 *         Metazeichen ist.
 	 */
 	protected static boolean isCharInAlphabet(char c) {
 		return c >= FIRST_ASCII_CHAR && c <= LAST_ASCII_CHAR
 				&& (!isMetaCharacter(c));
+	}
+
+	/**
+	 * Gibt an ob das angebene Zeichen Teil des Alphabets ist oder ein
+	 * Metazeichen.
+	 * 
+	 * @param c
+	 *            Das zu überprüfende Zeichen
+	 * @return true, wenn das engegebene Zeichen im Alphabets liegt oder ein
+	 *         Metazeichen ist.
+	 */
+	protected static boolean isValidChar(char c) {
+		return isCharInAlphabet(c) || isMetaCharacter(c);
+	}
+	
+	/**
+	 * Ersetzt in den angegebenen String den angegebenen Bereich mit dem
+	 * angegebenen Inhalt.
+	 * 
+	 * @param inputString
+	 *            Der Eingabe String, in dem der Bereich ersetzt werden soll.
+	 * @param beginIndex
+	 *            Der Start-Index des Bereichs im Eingabe-String, der ersetzt
+	 *            werden soll.
+	 * @param endIndex
+	 *            Der End-Index des Bereichs im Eingabe-String, der ersetzt
+	 *            werden soll.
+	 * @param replaceString
+	 *            Der Inhalt, mit dem der angegebene Berech ersetzt werden soll.
+	 * @return
+	 */
+	private static String replaceRangeInString(String inputString, int beginIndex,
+			int endIndex, String replaceString) {
+		return inputString.substring(0, beginIndex) + replaceString
+				+ inputString.substring(endIndex);
 	}
 }

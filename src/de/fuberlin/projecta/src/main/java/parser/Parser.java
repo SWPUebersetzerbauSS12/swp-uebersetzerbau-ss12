@@ -128,14 +128,17 @@ public class Parser {
 
 	/**
 	 * Call to create the corresponding parse tree from the previous parse call.
+	 * 
+	 * @throws ParserException
 	 */
-	private void createSyntaxTree() {
+	private void createSyntaxTree() throws ParserException {
 		for (String t : outputs) {
 
 			String[] tmp = t.split("::=");
 			String[] tmp2 = tmp[1].split(" ");
 
 			ISyntaxTree node = getNextOccurrence(tmp[0].trim());
+
 			for (int i = 0; i < tmp2.length; i++) {
 				if (!tmp2[i].equals("")) {
 					ISyntaxTree newNode;
@@ -144,7 +147,24 @@ public class Parser {
 					} else {
 						newNode = new NonTerminal(tmp2[i]);
 					}
-					node.addTree(newNode);
+
+					if (node instanceof Terminal) {
+						throw new ParserException(
+								"node is a terminal! Can't append new node "
+										+ newNode.getName() + " to terminal "
+										+ node.getName());
+					}
+
+					if (node == null) {
+						throw new ParserException(
+								"node is null! Can't append new nodes to null! Tried to append: "
+										+ newNode.getName() + " into "
+										+ tmp[0].trim());
+					}
+
+					if (newNode != null && node != null) {
+						node.addTree(newNode);
+					}
 				}
 			}
 		}
@@ -270,15 +290,22 @@ public class Parser {
 				"block ::= LBRACE decls stmts RBRACE");
 
 		// decls
+		table.setEntry("decls", TokenType.OP_NOT, "decls ::= ε");
+		table.setEntry("decls", TokenType.OP_MINUS, "decls ::= ε");
+		table.setEntry("decls", TokenType.LPAREN, "decls ::= ε");
 		table.setEntry("decls", TokenType.ID, "decls ::= ε");
-		table.setEntry("decls", TokenType.LBRACE, "decls ::= ε");
-		table.setEntry("decls", TokenType.RBRACE, "decls ::= ε");
 		table.setEntry("decls", TokenType.IF, "decls ::= ε");
 		table.setEntry("decls", TokenType.WHILE, "decls ::= ε");
 		table.setEntry("decls", TokenType.DO, "decls ::= ε");
 		table.setEntry("decls", TokenType.BREAK, "decls ::= ε");
 		table.setEntry("decls", TokenType.RETURN, "decls ::= ε");
 		table.setEntry("decls", TokenType.PRINT, "decls ::= ε");
+		table.setEntry("decls", TokenType.LBRACE, "decls ::= ε");
+		table.setEntry("decls", TokenType.RBRACE, "decls ::= ε");
+		table.setEntry("decls", TokenType.INT_LITERAL, "decls ::=  ε");
+		table.setEntry("decls", TokenType.REAL_LITERAL, "decls ::=  ε");
+		table.setEntry("decls", TokenType.STRING_LITERAL, "decls ::=  ε");
+		table.setEntry("decls", TokenType.BOOL_LITERAL, "decls ::=  ε");
 		table.setEntry("decls", TokenType.INT_TYPE, "decls ::=  decl decls");
 		table.setEntry("decls", TokenType.REAL_TYPE, "decls ::=  decl decls");
 		table.setEntry("decls", TokenType.STRING_TYPE, "decls ::=  decl decls");
@@ -310,17 +337,38 @@ public class Parser {
 
 		// stmts
 		table.setEntry("stmts", TokenType.ID, "stmts ::= stmt stmts");
-		table.setEntry("stmts", TokenType.LBRACE, "stmts ::= stmt stmts");
+
 		table.setEntry("stmts", TokenType.IF, "stmts ::= stmt stmts");
 		table.setEntry("stmts", TokenType.WHILE, "stmts ::= stmt stmts");
 		table.setEntry("stmts", TokenType.DO, "stmts ::= stmt stmts");
 		table.setEntry("stmts", TokenType.BREAK, "stmts ::= stmt stmts");
 		table.setEntry("stmts", TokenType.RETURN, "stmts ::= stmt stmts");
 		table.setEntry("stmts", TokenType.PRINT, "stmts ::= stmt stmts");
+		table.setEntry("stmts", TokenType.LBRACE, "stmts ::= stmt stmts");
+		table.setEntry("stmts", TokenType.OP_NOT, "stmts ::= stmt stmts");
+		table.setEntry("stmts", TokenType.OP_MINUS, "stmts ::= stmt stmts");
+		table.setEntry("stmts", TokenType.LPAREN, "stmts ::= stmt stmts");
+		table.setEntry("stmts", TokenType.INT_LITERAL, "stmts ::= stmt stmts");
+		table.setEntry("stmts", TokenType.REAL_LITERAL, "stmts ::= stmt stmts");
+		table.setEntry("stmts", TokenType.BOOL_LITERAL, "stmts ::= stmt stmts");
+		table.setEntry("stmts", TokenType.STRING_LITERAL,
+				"stmts ::= stmt stmts");
 		table.setEntry("stmts", TokenType.RBRACE, "stmts ::= ε");
 
 		// stmt
 		table.setEntry("stmt", TokenType.ID, "stmt ::= assign OP_SEMIC");
+		table.setEntry("stmt", TokenType.OP_NOT, "stmt ::= assign OP_SEMIC");
+		table.setEntry("stmt", TokenType.OP_MINUS, "stmt ::= assign OP_SEMIC");
+		table.setEntry("stmt", TokenType.LPAREN, "stmt ::= assign OP_SEMIC");
+		table.setEntry("stmt", TokenType.INT_LITERAL,
+				"stmt ::= assign OP_SEMIC");
+		table.setEntry("stmt", TokenType.REAL_LITERAL,
+				"stmt ::= assign OP_SEMIC");
+		table.setEntry("stmt", TokenType.BOOL_LITERAL,
+				"stmt ::= assign OP_SEMIC");
+		table.setEntry("stmt", TokenType.STRING_LITERAL,
+				"stmt ::= assign OP_SEMIC");
+
 		table.setEntry("stmt", TokenType.LBRACE, "stmt ::= block");
 		table.setEntry("stmt", TokenType.IF,
 				"stmt ::= IF LPAREN assign RPAREN stmt stmt'");
@@ -333,16 +381,25 @@ public class Parser {
 		table.setEntry("stmt", TokenType.PRINT, "stmt ::= PRINT loc OP_SEMIC ");
 
 		// stmt'
+		table.setEntry("stmt'", TokenType.ELSE, "stmt' ::= ELSE stmt");
+
 		table.setEntry("stmt'", TokenType.ID, "stmt' ::= ε");
-		table.setEntry("stmt'", TokenType.LBRACE, "stmt' ::= ε");
-		table.setEntry("stmt'", TokenType.RBRACE, "stmt' ::= ε");
 		table.setEntry("stmt'", TokenType.IF, "stmt' ::= ε");
 		table.setEntry("stmt'", TokenType.WHILE, "stmt' ::= ε");
 		table.setEntry("stmt'", TokenType.DO, "stmt' ::= ε");
 		table.setEntry("stmt'", TokenType.BREAK, "stmt' ::= ε");
 		table.setEntry("stmt'", TokenType.RETURN, "stmt' ::= ε");
 		table.setEntry("stmt'", TokenType.PRINT, "stmt' ::= ε");
-		table.setEntry("stmt'", TokenType.ELSE, "stmt' ::= ELSE stmt");
+		table.setEntry("stmt'", TokenType.LBRACE, "stmt' ::= ε");
+		table.setEntry("stmt'", TokenType.RBRACE, "stmt' ::= ε");
+		table.setEntry("stmt'", TokenType.OP_NOT, "stmt' ::= ε");
+		table.setEntry("stmt'", TokenType.OP_MINUS, "stmt' ::= ε");
+		table.setEntry("stmt'", TokenType.LPAREN, "stmt' ::= ε");
+		table.setEntry("stmt'", TokenType.INT_LITERAL, "stmt' ::= ε");
+		table.setEntry("stmt'", TokenType.REAL_LITERAL, "stmt' ::= ε");
+		table.setEntry("stmt'", TokenType.STRING_LITERAL, "stmt' ::= ε");
+		table.setEntry("stmt'", TokenType.BOOL_LITERAL, "stmt' ::= ε");
+		// TODO: missing table.setEntry("stmt'", TokenType.ELSE, "stmt' ::= ε");
 
 		// stmt''
 		table.setEntry("stmt''", TokenType.ID, "stmt'' ::= loc OP_SEMIC");
@@ -359,6 +416,7 @@ public class Parser {
 		// loc''
 		table.setEntry("loc''", TokenType.LBRACKET, "loc'' ::= loc' loc'' ");
 		table.setEntry("loc''", TokenType.OP_DOT, "loc'' ::= loc' loc'' ");
+
 		table.setEntry("loc''", TokenType.LPAREN, "loc'' ::= ε");
 		table.setEntry("loc''", TokenType.OP_SEMIC, "loc'' ::= ε");
 		table.setEntry("loc''", TokenType.OP_LT, "loc'' ::= ε");
@@ -369,6 +427,14 @@ public class Parser {
 		table.setEntry("loc''", TokenType.OP_MINUS, "loc'' ::= ε");
 		table.setEntry("loc''", TokenType.OP_MUL, "loc'' ::= ε");
 		table.setEntry("loc''", TokenType.OP_DIV, "loc'' ::= ε");
+		table.setEntry("loc''", TokenType.OP_EQ, "loc'' ::= ε");
+		table.setEntry("loc''", TokenType.OP_NE, "loc'' ::= ε");
+		table.setEntry("loc''", TokenType.OP_AND, "loc'' ::= ε");
+		table.setEntry("loc''", TokenType.OP_OR, "loc'' ::= ε");
+		table.setEntry("loc''", TokenType.RBRACKET, "loc'' ::= ε");
+		table.setEntry("loc''", TokenType.RPAREN, "loc'' ::= ε");
+		table.setEntry("loc''", TokenType.OP_ASSIGN, "loc'' ::= ε");
+		table.setEntry("loc''", TokenType.OP_COMMA, "loc'' ::= ε");
 
 		// assign
 		table.setEntry("assign", TokenType.ID, "assign ::= bool assign'");
@@ -391,8 +457,8 @@ public class Parser {
 		table.setEntry("assign'", TokenType.RBRACKET, "assign' ::= ε ");
 		table.setEntry("assign'", TokenType.OP_COMMA, "assign' ::= ε ");
 		table.setEntry("assign'", TokenType.OP_SEMIC, "assign' ::= ε ");
-		// table.setEntry("assign'", TokenType.OP_ASSIGN, "assign' ::= ε ");
-		// TODO: This is right but still leads to errors
+		// TODO: missing table.setEntry("assign'", TokenType.OP_ASSIGN,
+		// "assign' ::= ε ");
 
 		// bool
 		table.setEntry("bool", TokenType.ID, "bool ::=  join bool'");
@@ -501,35 +567,53 @@ public class Parser {
 		table.setEntry("expr", TokenType.BOOL_LITERAL, "expr ::= term expr'");
 
 		// expr'
+		table.setEntry("expr'", TokenType.OP_ADD, "expr' ::= OP_ADD term expr'");
+		table.setEntry("expr'", TokenType.OP_MINUS,
+				"expr' ::= OP_MINUS term expr'");
 		table.setEntry("expr'", TokenType.OP_LT, "expr' ::= ε ");
 		table.setEntry("expr'", TokenType.OP_LE, "expr' ::= ε ");
 		table.setEntry("expr'", TokenType.OP_GE, "expr' ::= ε ");
 		table.setEntry("expr'", TokenType.OP_GT, "expr' ::= ε ");
-		table.setEntry("expr'", TokenType.OP_ADD, "expr' ::= OP_ADD term expr'");
-		table.setEntry("expr'", TokenType.OP_MINUS,
-				"expr' ::= OP_MINUS term expr'");
+		table.setEntry("expr'", TokenType.OP_EQ, "expr' ::= ε ");
+		table.setEntry("expr'", TokenType.OP_NE, "expr' ::= ε ");
+		table.setEntry("expr'", TokenType.OP_AND, "expr' ::= ε ");
+		table.setEntry("expr'", TokenType.OP_OR, "expr' ::= ε ");
+		table.setEntry("expr'", TokenType.RBRACKET, "expr' ::= ε ");
+		table.setEntry("expr'", TokenType.RPAREN, "expr' ::= ε ");
+		table.setEntry("expr'", TokenType.OP_SEMIC, "expr' ::= ε ");
+		table.setEntry("expr'", TokenType.OP_ASSIGN, "expr' ::= ε ");
+		table.setEntry("expr'", TokenType.OP_COMMA, "expr' ::= ε ");
 
 		// term
-		table.setEntry("term", TokenType.ID, "expr ::= unary term'");
-		table.setEntry("term", TokenType.LPAREN, "expr ::= unary term'");
-		table.setEntry("term", TokenType.INT_LITERAL, "expr ::= unary term'");
-		table.setEntry("term", TokenType.OP_MINUS, "expr ::= unary term'");
-		table.setEntry("term", TokenType.OP_NOT, "expr ::= unary term'");
-		table.setEntry("term", TokenType.REAL_LITERAL, "expr ::= unary term'");
-		table.setEntry("term", TokenType.STRING_LITERAL, "expr ::= unary term'");
-		table.setEntry("term", TokenType.BOOL_LITERAL, "expr ::= unary term'");
+		table.setEntry("term", TokenType.ID, "term ::= unary term'");
+		table.setEntry("term", TokenType.LPAREN, "term ::= unary term'");
+		table.setEntry("term", TokenType.INT_LITERAL, "term ::= unary term'");
+		table.setEntry("term", TokenType.OP_MINUS, "term ::= unary term'");
+		table.setEntry("term", TokenType.OP_NOT, "term ::= unary term'");
+		table.setEntry("term", TokenType.REAL_LITERAL, "term ::= unary term'");
+		table.setEntry("term", TokenType.STRING_LITERAL, "term ::= unary term'");
+		table.setEntry("term", TokenType.BOOL_LITERAL, "term ::= unary term'");
 
 		// term'
+		table.setEntry("term'", TokenType.OP_MUL,
+				"term' ::= OP_MUL unary term'");
+		table.setEntry("term'", TokenType.OP_DIV,
+				"term' ::= OP_DIV unary term'");
 		table.setEntry("term'", TokenType.OP_LT, "term' ::= ε ");
 		table.setEntry("term'", TokenType.OP_LE, "term' ::= ε ");
 		table.setEntry("term'", TokenType.OP_GE, "term' ::= ε ");
 		table.setEntry("term'", TokenType.OP_GT, "term' ::= ε ");
 		table.setEntry("term'", TokenType.OP_ADD, "term' ::= ε ");
 		table.setEntry("term'", TokenType.OP_MINUS, "term' ::= ε ");
-		table.setEntry("term'", TokenType.OP_MUL,
-				"term' ::= OP_MUL unary term'");
-		table.setEntry("term'", TokenType.OP_DIV,
-				"term' ::= OP_DIV unary term'");
+		table.setEntry("term'", TokenType.OP_EQ, "term' ::= ε ");
+		table.setEntry("term'", TokenType.OP_NE, "term' ::= ε ");
+		table.setEntry("term'", TokenType.OP_AND, "term' ::= ε ");
+		table.setEntry("term'", TokenType.OP_OR, "term' ::= ε ");
+		table.setEntry("term'", TokenType.RBRACKET, "term' ::= ε ");
+		table.setEntry("term'", TokenType.RPAREN, "term' ::= ε ");
+		table.setEntry("term'", TokenType.OP_SEMIC, "term' ::= ε ");
+		table.setEntry("term'", TokenType.OP_ASSIGN, "term' ::= ε ");
+		table.setEntry("term'", TokenType.OP_COMMA, "term' ::= ε ");
 
 		// unary
 		table.setEntry("unary", TokenType.ID, "unary ::= factor");
@@ -565,6 +649,15 @@ public class Parser {
 		table.setEntry("factor'", TokenType.OP_MINUS, "factor' ::= ε ");
 		table.setEntry("factor'", TokenType.OP_MUL, "factor' ::= ε ");
 		table.setEntry("factor'", TokenType.OP_DIV, "factor' ::= ε ");
+		table.setEntry("factor'", TokenType.OP_EQ, "factor' ::= ε ");
+		table.setEntry("factor'", TokenType.OP_NE, "factor' ::= ε ");
+		table.setEntry("factor'", TokenType.OP_AND, "factor' ::= ε ");
+		table.setEntry("factor'", TokenType.OP_OR, "factor' ::= ε ");
+		table.setEntry("factor'", TokenType.RBRACKET, "factor' ::= ε ");
+		table.setEntry("factor'", TokenType.RPAREN, "factor' ::= ε ");
+		table.setEntry("factor'", TokenType.OP_SEMIC, "factor' ::= ε ");
+		table.setEntry("factor'", TokenType.OP_ASSIGN, "factor' ::= ε ");
+		table.setEntry("factor'", TokenType.OP_COMMA, "factor' ::= ε ");
 
 		// optargs
 		table.setEntry("optargs", TokenType.ID, "optargs ::= args");

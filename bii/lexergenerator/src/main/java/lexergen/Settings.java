@@ -33,13 +33,13 @@
 
 package lexergen;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import tokenmatcher.errorhandler.ErrorCorrector.CorrectionMode;
 
 /**
@@ -81,7 +81,7 @@ public class Settings {
 	 */
 	@Deprecated
 	public static String getWorkingDirectory() {
-		return properties.getProperty("_workingDirectory");
+		return properties.getProperty("workingDirectory");
 	}
 
 	/**
@@ -93,7 +93,7 @@ public class Settings {
 	 *            befinden.
 	 */
 	public static void setWorkingDirectory(String workingDirectory) {
-		properties.setProperty("_workingDirectory", workingDirectory);
+		properties.setProperty("workingDirectory", workingDirectory);
 	}
 
 	/**
@@ -104,7 +104,7 @@ public class Settings {
 	 *         Definitionen enthält.
 	 */
 	public static String getRegularDefinitionFileName() {
-		return properties.getProperty("_regularDefinitionFile");
+		return properties.getProperty("regularDefinitionFile");
 	}
 
 	/**
@@ -116,7 +116,7 @@ public class Settings {
 	 *            Definitionen enthält.
 	 */
 	public static void setRegularDefinitionFileName(String fileName) {
-		properties.setProperty("_regularDefinitionFileName", fileName);
+		properties.setProperty("regularDefinitionFileName", fileName);
 	}
 
 	/**
@@ -127,7 +127,7 @@ public class Settings {
 	 *         Quellprogramm enthält.
 	 */
 	public static String getSourceProgramFile() {
-		return properties.getProperty("_sourceProgramFile");
+		return properties.getProperty("sourceProgramFile");
 	}
 
 	/**

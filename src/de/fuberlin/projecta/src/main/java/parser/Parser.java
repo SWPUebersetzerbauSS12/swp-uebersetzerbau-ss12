@@ -167,6 +167,10 @@ public class Parser {
 										+ newNode.getName() + " into "
 										+ tmp[0].trim());
 					}
+					
+					if(newNode == null){
+						throw new ParserException("Can't add null! " + tmp2[i]);
+					}
 
 					if (newNode != null && node != null) {
 						node.addTree(newNode);

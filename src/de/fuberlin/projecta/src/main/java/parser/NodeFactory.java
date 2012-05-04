@@ -170,6 +170,8 @@ public class NodeFactory {
 			return new RBRACKET("RBRACKET");
 		if(name.equals("LBRACE"))
 			return new LBRACE("LBRACE");
+		if(name.equals("RBRACE"))
+			return new RBRACE("RBRACE");
 		if(name.equals("EOF"))
 			return new EOF("EOF");	
 		if(name.equals("ε"))

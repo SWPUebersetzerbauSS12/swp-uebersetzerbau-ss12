@@ -33,6 +33,9 @@
 package regextodfaconverter;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Stellt grundlegende Funktionen zum Arbeiten mit regulären Ausdrücken bereit.
@@ -41,20 +44,11 @@ import java.util.ArrayList;
  * 
  */
 public class Regex {
-
 	/**
-	 * Die Zeichen für Grundoperationen.
+	 * Die Metazeichen.
 	 */
-	private static char[] BASIC_META_CHARS = { '(', ')', '|', '*' };
-	/**
-	 * Die Zeichen für erweiterten Operationen.
-	 */
-	private static char[] EXTENDED_META_CHARS = { '[', ']', '{', '}', '?', '+',
-			'-', '^', '$', '.' };
-	/**
-	 * Das Escape-Zeichen.
-	 */
-	private static char ESCAPE_META_CHAR = '\\';
+	private static char[] META_CHARS = { '[', ']', '(', ')', '{', '}', '|',
+			'?', '+', '-', '*', '^', '$', '\\', '.' };
 
 	// ASCII control characters: character code 0-31
 	// ASCII printable characters: character code 32-127
@@ -72,7 +66,7 @@ public class Regex {
 
 	/**
 	 * Reduziert den angebenen regulären Ausdruck auf die Grundoperationen und
-	 * klammert den Ausdruck korrekt und vollständig.
+	 * klammert diesen anschließend korrekt und vollständig.
 	 * 
 	 * @param regex
 	 *            Der zu reduzierende und zu klammernde reguläre Ausdruck.
@@ -81,86 +75,78 @@ public class Regex {
 	 *             Wenn der angegebene regulärer Ausdruck ungültig ist oder
 	 *             nicht unterstützt wird.
 	 */
-	public static String reduceRegexAndAddMissingParenthesis(String regex)
+	public static String reduceAndBracketRegex(String regex)
 			throws RegexInvalidException {
-		String output = reduceRegex(regex);
-		System.out.println(output);
-		return addMissingParenthesis(output);
-		// TODO: wieder rückgängig machen
-
-		// return addMissingParenthesis(reduceRegex(regex));
+		return bracketRegex(reduceRegex(regex));
 	}
 
 	/**
 	 * Reduziert den angebenen regulären Ausdruck auf die Grundoperationen.
 	 * 
 	 * @param regex
-	 *            Der zu reduzierende und reguläre Ausdruck.
-	 * @return Ein äquivalenter reduzierterregulärer Ausdruck.
+	 *            Der zu reduzierende reguläre Ausdruck.
+	 * @return Ein äquivalenter reduzierter regulärer Ausdruck.
 	 * @throws RegexInvalidException
 	 *             Wenn der angegebene regulärer Ausdruck ungültig ist oder
 	 *             nicht unterstützt wird.
 	 */
-	protected static String reduceRegex(String regex)
-			throws RegexInvalidException {
-		// Regex auf gültige Zeichen überprüfen.
-		checkForInvaildOperations(regex);
+	public static String reduceRegex(String regex) throws RegexInvalidException {
+		// Alle Chars überprüfen, ob sie Teil des Alphabets oder ein Metazeichen
+		// sind.
+		for (int i = 0; i < regex.length(); i++) {
+			if (!isMetaOrAlphaChar(regex.charAt(i))) {
+				throw new RegexInvalidException(
+						"Der angegebene reguläre Ausdruck enthält ein ungültiges Zeichen: '"
+								+ regex.charAt(i) + "'!");
+			}
+		}
 
+		// Überprüfen ob der angegebene Regex gültig ist
+		try {
+			Pattern.compile(regex);
+		} catch (PatternSyntaxException e) {
+			throw new RegexInvalidException(
+					"Der angegebene reguläre Ausdruck '" + regex
+							+ "' ist ungültig! ");
+		}
+
+		// Verarbeitung starten
+		// TODO: Verhalten bei () überprüfen.
 		String output = regex;
-		output = replaceEscapeGroups(output);
+		// 1. Eckige Klammern reduzieren.
+		output = replaceSquareBrackets(output);
+		// 2. Punkte reduzieren (muss nach jeden Fall nach (1) gemacht werden).
 		output = replaceDots(output);
-		// TODO: Weitere erweiterte Operationen unterstützen...
+		// 3. Backshlashes reduzieren (muss nach jeden Fall nach (1) gemacht
+		// werden).
+		output = replaceBackslashes(output);
 
 		return output;
 	}
 
 	/**
-	 * Klammert den angebenen regulären Ausdruck korrekt und vollständig. Der
-	 * eingegebene reguläre Ausdruck darf dabei nur die Grundoperationen
-	 * enthalten.
+	 * Klammert den angebenen regulären Ausdruck korrekt und vollständig.
 	 * 
 	 * @param regex
-	 *            Der zu klammernde reguläre Ausdruck (darf nur aus
-	 *            Grundoperationen enthalten).
+	 *            Der zu klammernde reguläre Ausdruck (darf nur die
+	 *            Grundoperationen A|B, AB und A* enthalten).
 	 * @return Ein äquivalenter geklammerte regulärer Ausdruck.
 	 * @throws RegexInvalidException
 	 *             Wenn der angegebene regulärer Ausdruck ungültig ist oder
 	 *             nicht unterstützt wird.
 	 */
-	protected static String addMissingParenthesis(String regex)
+	protected static String bracketRegex(String regex)
 			throws RegexInvalidException {
 		if (regex.length() == 0) {
 			return "";
 		}
-		// Vorbereitungen treffen:
 
-		// Sicherstellen, das der angegebene reguläre Ausdruck nur noch
-		// Grundoperationen enthält.
 		if (!containsOnlyBasicOperations(regex)) {
 			throw new RegexInvalidException(
 					"Der angegebene reguläre Ausdruck darf nur die Grundoperationen enthalten!");
 		}
-		// Überprüfen, ob der angegebene reguläre Ausdruck mit einem gültigen
-		// Zeichen beginnt (um bei weiteren Berechnungen diesen Fall nicht
-		// abfangen zu müssen)
-		if ((!isCharInAlphabet(regex.charAt(0)))
-				&& (!isEscapeMetaCharacter(regex.charAt(0)))
-				&& (regex.charAt(0) != '(')) {
-			throw new RegexInvalidException(
-					"Der angegebene reguläre Ausdruck fängt mit einem ungütligen Zeichen an!");
-		}
-		// Überprüfen, ob der angegebene reguläre Ausdruck mit einem gültigen
-		// Zeichen endet (um bei weiteren Berechnungen diesen Fall nicht
-		// abfangen zu müssen)
-		if ((!isCharInAlphabet(regex.charAt(regex.length() - 1)))
-				&& (regex.charAt(regex.length() - 1) != '*')
-				&& (regex.charAt(regex.length() - 2) != '\\')
-				&& (regex.charAt(regex.length() - 1) != ')')) {
-			throw new RegexInvalidException(
-					"Der angegebene reguläre Ausdruck endet mit einem ungütligen Zeichen!");
-		}
 
-		// Hier beginnt die "richtige" Verarbeitung
+		// ArrayList erstellen
 		ArrayList<String> regexTasks = new ArrayList<String>();
 
 		// ArrayList befüllen
@@ -198,7 +184,7 @@ public class Regex {
 							subRegex.append(regex.charAt(i));
 						}
 					}
-					regexTasks.add(addMissingParenthesis(subRegex.toString()));
+					regexTasks.add(bracketRegex(subRegex.toString()));
 				} else if (c == ')') {
 					throw new RegexInvalidException(
 							"Der angegebene reguläre Ausdruck ist ungültig geklammert");
@@ -208,10 +194,10 @@ public class Regex {
 					throw new RegexInvalidException(
 							"Unbekannter Ausnahmefehler. Fehlercode: f-i1-e");
 				}
-			} else if (isEscapeMetaCharacter(c)) {
+			} else if (c == '\\') {
 				regexTasks.add("(" + c + "" + regex.charAt(i + 1) + ")");
 				i++;
-			} else if (isCharInAlphabet(c)) {
+			} else if (isAlphaChar(c)) {
 				regexTasks.add("(" + c + ")");
 			} else {
 				throw new RegexInvalidException(
@@ -221,7 +207,7 @@ public class Regex {
 
 		}
 
-		// ArrayList abarbeiten, bis nur noch ein eintrag übrig ist.
+		// ArrayList abarbeiten, bis nur noch ein Eintrag übrig ist.
 		if (regexTasks.size() == 0) {
 			throw new RegexInvalidException(
 					"Unbekannter Ausnahmefehler. Fehlercode: r-0");
@@ -270,14 +256,16 @@ public class Regex {
 	 * enthält.
 	 * 
 	 * @param regex
-	 * @return
+	 *            Der zu überprüfende reguläre Ausdruck.
+	 * @return true, wenn der reguläre Ausdruck nur die Grundoperationen
+	 *         enthält, sonst false.
 	 */
 	public static boolean containsOnlyBasicOperations(String regex) {
 		for (int i = 0; i < regex.length(); i++) {
 			if (isExtendedMetaCharacter(regex.charAt(i))) {
 				return false;
 			}
-			if (isEscapeMetaCharacter(regex.charAt(i))) {
+			if (regex.charAt(i) == '\\') {
 				// Nach einem Escape-Char darf nur ein Meta-Zeichen kommen
 				i++;
 				if (regex.length() == i) {
@@ -293,255 +281,122 @@ public class Regex {
 	}
 
 	/**
-	 * Überprüft den angegebenen regulären Ausdruck auf ungütlige Operationen
-	 * @param regex Der zu überprüfende Ausdruck.
-	 * @throws RegexInvalidException Wenn ein - außerhalb von eckigen Klammern vorkommt; Wenn ein Zeichen verwendet wird, das nicht Teil des Alphabets ist oder ein Meta.Zeichen.
-	 */
-	private static void checkForInvaildOperations(String regex) throws RegexInvalidException
-	{
-		boolean isInSquareBrackets = false;
-		for (int i = 0; i < regex.length(); i++) {
-			char c = regex.charAt(i);
-			if (!isValidChar(c)) {
-				throw new RegexInvalidException(
-						"Der angegebene reguläre Ausdruck darf enthält ungültige Zeichen: '"
-								+ regex.charAt(i) + "'!");
-			}
-			
-			if (c == '\\') {
-				i++;
-			}
-			else if (c == '[') {
-				isInSquareBrackets = true;
-			} else if (c == ']') {
-				isInSquareBrackets = false;
-			} else if (c == '-') {
-				if (!isInSquareBrackets) {
-					throw new RegexInvalidException(
-							"Der angegebene reguläre Ausdruck ist ungültig, da ein '-' als Operator nur in einer eckigen Klammer zulässig ist!");
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Ersetzt jede Escape-Gruppe durch einen äquivalenten minimalen
-	 * Regex-Ausdruck.
+	 * Reduziert im angebenen regulären Ausdruck alle eckigen Klammern auf die
+	 * Grundoperationen.
 	 * 
 	 * @param regex
 	 *            Der zu reduzierende reguläre Ausdruck.
-	 * @return Der reduzierte reguläre Ausdruck.
-	 * @throws RegexInvalidException
-	 *             Wenn die Escape-Gruppe unbekannt ist oder die Escape Gruppe
-	 *             in einer eckigen Klammer falsch verwendet wurde.
+	 * @return Ein äquivalenter reduzierter Ausdruck.
 	 */
-	private static String replaceEscapeGroups(String regex)
-			throws RegexInvalidException {
-		String outputRegex = regex;
-		boolean isInSquareBrackets = false;
+	private static String replaceSquareBrackets(String regex) {
+		String output = regex;
 
-		// Hier beginnt die richtige Verarbeitung
-		for (int i = 0; i < outputRegex.length(); i++) {
-			char c = outputRegex.charAt(i);
-			if (c == '\\') {
-				i++;
-				if (i == outputRegex.length()) {
-					throw new RegexInvalidException(
-							"Der reguläre Ausdruck Endet mit einem ungültigen Zeichen: '"
-									+ c + "'!");
-				}
-				c = outputRegex.charAt(i);
-
-				if (isInSquareBrackets) {
-					if (!isMetaCharacter(c)) {
-						String bracketContent = getEscapeGroupRepresentation(c);
-						if (bracketContent.equals("")) {
-							throw new RegexInvalidException(
-									"Der erweiterte reguläre Operator '\\"
-											+ c
-											+ "' ist unbekannt oder wird nicht unterstützt!");
-						}
-						if (bracketContent.length() > 1) {
-							if (i - 2 >= 0) {
-								boolean escapeFlag;
-								if (i - 3 >= 0) {
-									if (outputRegex.charAt(i - 3) == '\\') {
-										escapeFlag = true;
-									} else {
-										escapeFlag = false;
-									}
-								} else {
-									escapeFlag = false;
-								}
-								boolean bracketFlag;
-								if (i-4 >=0)
-								{
-									if (outputRegex.charAt(i - 4) != '\\' && outputRegex.charAt(i - 3) == '[') {
-										bracketFlag = true;
-									} else {
-										bracketFlag = false;
-									}
-								}
-								else
-								{
-									if (outputRegex.charAt(i - 3) == '[') {
-										bracketFlag = true;
-									} else {
-										bracketFlag = false;
-									}
-								}
-								
-								if (outputRegex.charAt(i - 2) == '-'
-										&& !(escapeFlag || bracketFlag)) {
-									throw new RegexInvalidException(
-											"Der angegebene reguläre Ausdruck ist ab folgender Stelle ungültig: '..."
-													+ outputRegex
-															.substring(i - 2)
-													+ "'");
-								}
-							}
-
-							if (i + 2 < outputRegex.length()) {
-								if (outputRegex.charAt(i + 1) == '-' && outputRegex.charAt(i + 2) != ']') {
-									throw new RegexInvalidException(
-											"Der angegebene reguläre Ausdruck ist ab folgender Stelle ungültig: '..."
-													+ outputRegex
-															.substring(i + 1)
-													+ "'");
-								}
-							}
-						}
-						outputRegex = replaceRangeInString(outputRegex, i - 1,
-								i + 1, bracketContent);
-						i = -1;
-						isInSquareBrackets = false;
-					}
-				} else {
-					if (!isMetaCharacter(c)) {
-						String bracketContent = getEscapeGroupRepresentation(c);
-						if (bracketContent.equals("")) {
-							throw new RegexInvalidException(
-									"Der erweiterte reguläre Operator '\\"
-											+ c
-											+ "' ist unbekannt oder wird nicht unterstützt!");
-						}
-						outputRegex = replaceRangeInString(outputRegex, i - 1,
-								i + 1, "[" + bracketContent + "]");
-						i = -1;
-						isInSquareBrackets = false;
+		Pattern pattern = Pattern.compile("[^\\\\]\\[.*[^\\\\]\\]"); // [^\\]\[.*[^\\]\]
+		Matcher matcher = pattern.matcher(output);
+		while (matcher.find()) {
+			String match = matcher.group();
+			String subRegex = match.substring(1);
+			StringBuilder sb = new StringBuilder("(");
+			for (int i = FIRST_ASCII_CHAR; i <= LAST_ASCII_CHAR; i++) {
+				String toCeck = "" + ((char) i);
+				if (toCeck.matches(subRegex)) {
+					if (isMetaCharacter((char) i)) {
+						sb.append("|\\" + toCeck);
+					} else {
+						sb.append("|" + toCeck);
 					}
 				}
-			} else if (c == '[') {
-				isInSquareBrackets = true;
-			} else if (c == ']') {
-				isInSquareBrackets = false;
+			}
+			sb.append(")");
+			if (sb.length() > 2) {
+				// Wenn nicht "()"
+				sb.delete(1, 2); // erstes "|" entfernen.
 			}
 
+			output = output.replace(match,
+					match.substring(0, 1) + sb.toString());
 		}
-		return outputRegex;
+
+		return output;
 	}
 
 	/**
-	 * Gibt die Repräsentation einer Escape-Gruppe zurück.
-	 * 
-	 * @param c
-	 *            Der Buchstabe der Gruppe.
-	 * @return Die Repräsentation der Escape-Gruppe. Wenn die Gruppe unbekannt
-	 *         ist wird der ein leerer String zurückgegeben. Die Rückgabe
-	 *         erfolgt ohne die eckigen Klammern.
-	 */
-	public static String getEscapeGroupRepresentation(char c) {
-		String representation = "";
-		if (c == 'w') // Alphanumeric characters plus "_"
-		{
-			representation = "A-Za-z0-9_";
-		} else if (c == 'W') // Non-word characters
-		{
-			representation = "^A-Za-z0-9_";
-		} else if (c == 'd') // Digits
-		{
-			representation = "0-9";
-		} else if (c == 'D') // Non-digits
-		{
-			representation = "^0-9";
-		}
-		// TODO: Weitere Fälle berücksichtigen
-		return representation;
-	}
-
-	/**
-	 * Ersetzt jeden Punkt-Operator (".") durch einen äquivalenten minimalen
-	 * Regex-Ausdruck.
+	 * Reduziert im angebenen regulären Ausdruck alle Punkte auf die
+	 * Grundoperationen.
 	 * 
 	 * @param regex
 	 *            Der zu reduzierende reguläre Ausdruck.
-	 * @return Der reduzierte reguläre Ausdruck.
+	 * @return Ein äquivalenter reduzierter Ausdruck.
 	 */
 	private static String replaceDots(String regex) {
-		String outputRegex = regex;
-		StringBuilder sb = new StringBuilder("(");
+		String output = regex;
 
-		for (int i = FIRST_ASCII_CHAR; i <= LAST_ASCII_CHAR; i++) {
-			char c = (char) i;
-
-			if (isMetaCharacter(c)) {
-				sb.append("|\\" + c);
-			} else {
-				sb.append("|" + c);
-			}
-		}
-		sb.append(")");
-		sb.delete(1, 2); // erstes "|" entfernen.
-
-		String replaceWith = sb.toString();
-
-		boolean replace = true;
-		for (int i = 0; i < outputRegex.length(); i++) {
-			char c = outputRegex.charAt(i);
-			if (c == '\\') {
-				// Dadurch wird z.B. "\." ignoriert.
-				i++;
-			} else if (c == '[') {
-				// In eckigen Klammern hat der Punkt keine bedeutung.
-				replace = false;
-			} else if (c == ']') {
-				replace = true;
-			} else if (c == '.') {
-				if (replace) {
-					outputRegex = replaceRangeInString(outputRegex, i, i + 1,
-							replaceWith);
-					i = -1;
+		Pattern pattern = Pattern.compile("[^\\\\]\\."); // [^\\]\.
+		Matcher matcher = pattern.matcher(output);
+		while (matcher.find()) {
+			String match = matcher.group();
+			String subRegex = match.substring(1);
+			StringBuilder sb = new StringBuilder("(");
+			for (int i = FIRST_ASCII_CHAR; i <= LAST_ASCII_CHAR; i++) {
+				String toCeck = "" + ((char) i);
+				if (toCeck.matches(subRegex)) {
+					if (isMetaCharacter((char) i)) {
+						sb.append("|\\" + toCeck);
+					} else {
+						sb.append("|" + toCeck);
+					}
 				}
 			}
+			sb.append(")");
+			if (sb.length() > 2) {
+				// Wenn nicht "()"
+				sb.delete(1, 2); // erstes "|" entfernen.
+			}
+
+			output = output.replace(match,
+					match.substring(0, 1) + sb.toString());
 		}
-		return outputRegex;
+
+		return output;
 	}
 
-	// /**
-	// * Ersetzt jedes vorkommen von "[...]" mit einem entsprechenden
-	// reduzierten
-	// * regulären Ausdruck: Fall1: [first] wird ersetz durch (f|i|r|s|t).
-	// Fall2:
-	// * [a-d] wird ersetzt durch (a|b|c|d). Fall3: [a-dA-D] wird ersetzt durch
-	// * (a|b|c|d|A|B|C|D). Fall4: [^a] wird ersetzt durch eine
-	// (...|...|...|...)
-	// * (jedes Zeichen aus dem Alphabet außer dem angegebenen Zeichen oder
-	// einem
-	// * der reservierten Zeichen. Fall5: [-a-c], [a-c-] wird ersetzt durch
-	// * (-|a|b|c) bzw. (a|b|c|-).
-	// *
-	// * @param regex
-	// * @return
-	// * @throws RegexInvalidException
-	// */
-	// private static String replaceBrackets(String regex)
-	// throws RegexInvalidException {
-	// // TODO: replaceBrackets implementieren.
-	// return regex;
-	// }
+	private static String replaceBackslashes(String regex) {
+		String output = regex;
+
+		for (int i = 0; i < output.length(); i++) {
+			if (output.charAt(i) == '\\') {
+				if (i + 1 < output.length()) {
+					String subRegex = "" + output.charAt(i)
+							+ output.charAt(i + 1);
+					StringBuilder sb = new StringBuilder("(");
+					for (int j = FIRST_ASCII_CHAR; j <= LAST_ASCII_CHAR; j++) {
+						String toCeck = "" + ((char) j);
+						if (toCeck.matches(subRegex)) {
+							if (isMetaCharacter((char) j)) {
+								sb.append("|\\" + toCeck);
+							} else {
+								sb.append("|" + toCeck);
+							}
+						}
+					}
+					sb.append(")");
+					if (sb.length() > 2) {
+						// Wenn nicht "()"
+						sb.delete(1, 2); // erstes "|" entfernen.
+					}
+
+					output = replaceRangeInString(output, i, i + 2,
+							sb.toString());
+				}
+				i++;
+			}
+		}
+
+		return output;
+	}
 
 	/**
-	 * Gibt an ob es sich bei dem angegebenen Zeichen um ein Metazeichen
+	 * Gibt an, ob es sich bei dem angegebenen Zeichen um ein Metazeichen
 	 * handelt.
 	 * 
 	 * @param c
@@ -549,26 +404,40 @@ public class Regex {
 	 * @return true, wenn es sich um ein Metazeichen handelt, sonst false.
 	 */
 	protected static boolean isMetaCharacter(char c) {
-		return isBasicMetaCharacter(c) || isExtendedMetaCharacter(c)
-				|| isEscapeMetaCharacter(c);
-	}
-
-	/**
-	 * Gibt an ob es sich bei dem angegebenen Zeichen um ein Basis-Metazeichen
-	 * handelt.
-	 * 
-	 * @param c
-	 *            Das zu überprüfende Zeichen
-	 * @return true, wenn es sich um ein Basis-Metazeichen handelt, sonst false.
-	 */
-	protected static boolean isBasicMetaCharacter(char c) {
-		for (char rc : BASIC_META_CHARS) {
-			if (rc == c) {
+		for (char mc : META_CHARS) {
+			if (mc == c) {
 				return true;
 			}
 		}
 
 		return false;
+	}
+
+	/**
+	 * Gibt an ob das angebene Zeichen zum Alphabet (und nicht zu den
+	 * Metazeichen) gehört.
+	 * 
+	 * @param c
+	 *            Das zu überprüfende Zeichen
+	 * @return true, wenn das angegebene Zeichen zum Alphabet (und nicht zu den
+	 *         Metazeichen) gehört, sonst false.
+	 */
+	protected static boolean isAlphaChar(char c) {
+		return c >= FIRST_ASCII_CHAR && c <= LAST_ASCII_CHAR
+				&& (!isMetaCharacter(c));
+	}
+
+	/**
+	 * Gibt an ob das angebene Zeichen zum Alphabet oder zu den Metazeichen
+	 * gehört
+	 * 
+	 * @param c
+	 *            Das zu überprüfende Zeichen
+	 * @return true, wenn das angegebene Zeichen zum Alphabet oder zu den
+	 *         Metazeichen gehört, sonst false.
+	 */
+	protected static boolean isMetaOrAlphaChar(char c) {
+		return isAlphaChar(c) || isMetaCharacter(c);
 	}
 
 	/**
@@ -577,11 +446,13 @@ public class Regex {
 	 * 
 	 * @param c
 	 *            Das zu überprüfende Zeichen
-	 * @return true, wenn es sich um ein erweitertes Metazeichen handelt, sonst
-	 *         false.
+	 * @return true, wenn es sich um eins der nachfolgenden Metazeichen handelt
+	 *         '[', ']', '{', '}', '?', '+', '-', '^', '$', '.', sonst false.
 	 */
-	protected static boolean isExtendedMetaCharacter(char c) {
-		for (char rc : EXTENDED_META_CHARS) {
+	private static boolean isExtendedMetaCharacter(char c) {
+		char[] extendedMetaChars = { '[', ']', '{', '}', '?', '+', '-', '^',
+				'$', '.' };
+		for (char rc : extendedMetaChars) {
 			if (rc == c) {
 				return true;
 			}
@@ -591,61 +462,35 @@ public class Regex {
 	}
 
 	/**
-	 * Gibt an ob es sich bei dem angegebenen Zeichen um ein Escape-Metazeichen
+	 * Gibt an ob es sich bei dem angegebenen Zeichen um ein Basis-Metazeichen
 	 * handelt.
 	 * 
 	 * @param c
 	 *            Das zu überprüfende Zeichen
-	 * @return true, wenn es sich um ein Escape-Metazeichen handelt, sonst
-	 *         false.
+	 * @return true, wenn es sich um eins der nachfolgenden Metazeichen handelt
+	 *         '(', ')', '|', '*', sonst false.
 	 */
-	protected static boolean isEscapeMetaCharacter(char c) {
-		if (ESCAPE_META_CHAR == c) {
-			return true;
+	private static boolean isBasicMetaCharacter(char c) {
+		char[] basicMetaChars = { '(', ')', '|', '*' };
+		for (char rc : basicMetaChars) {
+			if (rc == c) {
+				return true;
+			}
 		}
 
 		return false;
 	}
 
 	/**
-	 * Gibt an ob das angegebene Zeichen Teil des Alphabets ist und kein
-	 * Metazeichen ist.
-	 * 
-	 * @param c
-	 *            Das zu überprüfende Zeichen
-	 * @return true, wenn das engegebene Zeichen im Alphabets liegt und kein
-	 *         Metazeichen ist.
-	 */
-	protected static boolean isCharInAlphabet(char c) {
-		return c >= FIRST_ASCII_CHAR && c <= LAST_ASCII_CHAR
-				&& (!isMetaCharacter(c));
-	}
-
-	/**
-	 * Gibt an ob das angebene Zeichen Teil des Alphabets ist oder ein
-	 * Metazeichen.
-	 * 
-	 * @param c
-	 *            Das zu überprüfende Zeichen
-	 * @return true, wenn das engegebene Zeichen im Alphabets liegt oder ein
-	 *         Metazeichen ist.
-	 */
-	protected static boolean isValidChar(char c) {
-		return isCharInAlphabet(c) || isMetaCharacter(c);
-	}
-
-	/**
-	 * Ersetzt in den angegebenen String den angegebenen Bereich mit dem
+	 * Ersetzt in dem angegebenen String den angegebenen Bereich mit dem
 	 * angegebenen Inhalt.
 	 * 
 	 * @param inputString
-	 *            Der Eingabe String, in dem der Bereich ersetzt werden soll.
+	 *            Der String, in dem der Bereich ersetzt werden soll.
 	 * @param beginIndex
-	 *            Der Start-Index des Bereichs im Eingabe-String, der ersetzt
-	 *            werden soll.
+	 *            Der Start-Index des Bereichs, der ersetzt werden soll.
 	 * @param endIndex
-	 *            Der End-Index des Bereichs im Eingabe-String, der ersetzt
-	 *            werden soll.
+	 *            Der End-Index des Bereichs, der ersetzt werden soll.
 	 * @param replaceString
 	 *            Der Inhalt, mit dem der angegebene Berech ersetzt werden soll.
 	 * @return

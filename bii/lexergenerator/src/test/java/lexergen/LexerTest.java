@@ -22,6 +22,7 @@ public class LexerTest {
 
 	@Test
 	public void test() throws ConvertExecption, Exception {
+		Settings.readSettings();
 		runTest();
 	}
 

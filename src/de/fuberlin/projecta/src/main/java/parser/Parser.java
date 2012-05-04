@@ -14,6 +14,7 @@ public class Parser {
 	private ParseTable table;
 	private Stack<String> stack;
 	private Vector<String> outputs;
+	private TokenFactory tokFac;
 
 	@Getter
 	private ISyntaxTree syntaxTree;
@@ -41,10 +42,14 @@ public class Parser {
 		} catch (ParserException e) {
 			e.printStackTrace();
 		}
+		
+		tokFac = new TokenFactory();
 
 		stack = new Stack<String>();
 		outputs = new Vector<String>();
-		syntaxTree = new NonTerminal("program");
+		syntaxTree = tokFac.createToken("program");
+		
+		
 	}
 
 	private void initStack() {
@@ -142,11 +147,12 @@ public class Parser {
 			for (int i = 0; i < tmp2.length; i++) {
 				if (!tmp2[i].equals("")) {
 					ISyntaxTree newNode;
-					if (isAllUpper(tmp2[i]) || tmp2[i].equals(EPSILON)) {
-						newNode = new Terminal(tmp2[i]);
-					} else {
-						newNode = new NonTerminal(tmp2[i]);
-					}
+					newNode = tokFac.createToken(tmp2[i]);
+//					if (isAllUpper(tmp2[i]) || tmp2[i].equals(EPSILON)) {
+//						newNode = new Terminal(tmp2[i]);
+//					} else {
+//						newNode = new NonTerminal(tmp2[i]);
+//					}
 
 					if (node instanceof Terminal) {
 						throw new ParserException(

@@ -83,7 +83,12 @@ public class Regex {
 	 */
 	public static String reduceRegexAndAddMissingParenthesis(String regex)
 			throws RegexInvalidException {
-		return addMissingParenthesis(reduceRegex(regex));
+		String output = reduceRegex(regex);
+		System.out.println(output);
+		return addMissingParenthesis(output);
+		// TODO: wieder rückgängig machen
+
+		// return addMissingParenthesis(reduceRegex(regex));
 	}
 
 	/**
@@ -96,17 +101,19 @@ public class Regex {
 	 *             Wenn der angegebene regulärer Ausdruck ungültig ist oder
 	 *             nicht unterstützt wird.
 	 */
-	protected static String reduceRegex(String regex) throws RegexInvalidException {
+	protected static String reduceRegex(String regex)
+			throws RegexInvalidException {
 		// Regex auf gültige Zeichen überprüfen.
-		for (int i = 0; i < regex.length(); i++)
-		{
-			if (!isValidChar(regex.charAt(i)))
-			{
-				throw new RegexInvalidException("Der angegebene reguläre Ausdruck darf enthält ungültige Zeichen: '" + regex.charAt(i) + "'!");
+		for (int i = 0; i < regex.length(); i++) {
+			if (!isValidChar(regex.charAt(i))) {
+				throw new RegexInvalidException(
+						"Der angegebene reguläre Ausdruck darf enthält ungültige Zeichen: '"
+								+ regex.charAt(i) + "'!");
 			}
 		}
-		
+
 		String output = regex;
+		output = replaceEscapeGroups(output);
 		output = replaceDots(output);
 		// TODO: Weitere erweiterte Operationen unterstützen...
 
@@ -292,7 +299,149 @@ public class Regex {
 	}
 
 	/**
+	 * Ersetzt jede Escape-Gruppe durch einen äquivalenten minimalen
+	 * Regex-Ausdruck.
+	 * 
+	 * @param regex
+	 *            Der zu reduzierende reguläre Ausdruck.
+	 * @return Der reduzierte reguläre Ausdruck.
+	 * @throws RegexInvalidException
+	 *             Wenn die Escape-Gruppe unbekannt ist oder die Escape Gruppe
+	 *             in einer eckigen Klammer falsch verwendet wurde.
+	 */
+	private static String replaceEscapeGroups(String regex)
+			throws RegexInvalidException {
+		String outputRegex = regex;
+		boolean isInSquareBrackets = false;
+		
+		// Spezifalfall abfangen, wenn Escape-Gruppe in einer eckigen Klammer
+		// ist und zusätzlich von einem "-" umgeben ist.
+		for (int i = 0; i < regex.length(); i++) {
+			char c = outputRegex.charAt(i);
+			if (c == '\\') {
+				i++;
+			}
+			if (c == '-')
+			{
+				if (isInSquareBrackets)
+				{
+					if (i-2 >= 0)
+					{
+						if (outputRegex.charAt(i-2) == '\\')
+						{
+							if (outputRegex.charAt(i-1) != ']' && outputRegex.charAt(i-1) != '[' && outputRegex.charAt(i-1) != '-' && outputRegex.charAt(i-1) != '\\')
+							{
+								throw new RegexInvalidException("Der angegebene reguläre Ausdruck ist ab folgender Stelle ungültig: '..." + outputRegex.substring(i-2) + "'");
+							}
+						}
+					}
+					if (i+2 < outputRegex.length())
+					{
+						if (outputRegex.charAt(i+1) == '\\')
+						{
+							if (outputRegex.charAt(+2) != ']' && outputRegex.charAt(i+2) != '[' && outputRegex.charAt(i+2) != '-' && outputRegex.charAt(i+2) != '\\')
+							{
+								throw new RegexInvalidException("Der angegebene reguläre Ausdruck ist ab folgender Stelle ungültig: '..." + outputRegex.substring(i-2) + "'");
+							}
+						}
+					}
+				}
+				else
+				{
+					throw new RegexInvalidException("Der angegebene reguläre Ausdruck ist ungültig, da ein '-' als Operator nur in einer eckigen Klammer zulässig ist");
+				}
+			} else if (c == '[') {
+				isInSquareBrackets = true;
+			} else if (c == ']') {
+				isInSquareBrackets = false;
+			}
+		}
+		
+		// Hier beginnt die richtige Verarbeitung
+		isInSquareBrackets = false;
+		for (int i = 0; i < regex.length(); i++) {
+			char c = outputRegex.charAt(i);
+			if (c == '\\') {
+				i++;
+				if (i == outputRegex.length()) {
+					throw new RegexInvalidException(
+							"Der reguläre Ausdruck Endet mit einem ungültigen Zeichen: '"
+									+ c + "'");
+				}
+				c = outputRegex.charAt(i);
+
+				if (isInSquareBrackets) {
+					// In den eckigen Klammern muss nur [, ], -, \ und ^ escapt
+					// werden.
+					if (c != ']' && c != '[' && c != '-' && c != '\\'
+							&& c != '^') {
+						String bracketContent = getEscapeGroupRepresentation(c);
+						if (bracketContent.equals("")) {
+							throw new RegexInvalidException(
+									"Der erweiterte reguläre Operator '\\"
+											+ c
+											+ "' ist unbekannt oder wird nicht unterstützt!");
+						}
+						outputRegex = replaceRangeInString(outputRegex, i - 1,
+								i + 1, bracketContent);
+						i = 0;
+						isInSquareBrackets = false;
+					}
+				} else {
+					if (!isMetaCharacter(c)) {
+						String bracketContent = getEscapeGroupRepresentation(c);
+						if (bracketContent.equals("")) {
+							throw new RegexInvalidException(
+									"Der erweiterte reguläre Operator '\\"
+											+ c
+											+ "' ist unbekannt oder wird nicht unterstützt!");
+						}
+						outputRegex = replaceRangeInString(outputRegex, i - 1,
+								i + 1, "[" + bracketContent + "]");
+						i = 0;
+						isInSquareBrackets = false;
+					}
+				}
+
+			} else if (c == '[') {
+				isInSquareBrackets = true;
+			} else if (c == ']') {
+				isInSquareBrackets = false;
+			}
+		}
+		return outputRegex;
+	}
+
+	/**
+	 * Gibt die Repräsentation einer Escape-Gruppe zurück.
+	 * 
+	 * @param c
+	 *            Der Buchstabe der Gruppe.
+	 * @return Die Repräsentation der Escape-Gruppe. Wenn die Gruppe unbekannt
+	 *         ist wird der ein leerer String zurückgegeben. Die Rückgabe
+	 *         erfolgt ohne die eckigen Klammern.
+	 */
+	public static String getEscapeGroupRepresentation(char c) {
+		String representation = "";
+		if (c == 'w') // Alphanumeric characters plus "_"
+		{
+			representation = "A-Za-z0-9_";
+		} else if (c == 'W') // Non-word characters
+		{
+			representation = "^A-Za-z0-9_";
+		} else if (c == 'd') // Digits
+		{
+			representation = "0-9";
+		} else if (c == 'D') // Non-digits
+		{
+			representation = "^0-9";
+		}
+		return representation;
+	}
+
+	/**
 	 * Ersetzt jeden Punkt-Operator (".") durch einen äquivalenten minimalen
+	 * Regex-Ausdruck.
 	 * 
 	 * @param regex
 	 *            Der zu reduzierende reguläre Ausdruck.
@@ -317,52 +466,49 @@ public class Regex {
 		String replaceWith = sb.toString();
 
 		boolean replace = true;
-		for (int i = 0; i < regex.length(); i++)
-		{
-			char c = regex.charAt(i);
-			if (c == '\\')
-			{
-				//Dadurch wird z.B. "\." ignoriert.
+		for (int i = 0; i < outputRegex.length(); i++) {
+			char c = outputRegex.charAt(i);
+			if (c == '\\') {
+				// Dadurch wird z.B. "\." ignoriert.
 				i++;
-			}
-			else if (c == '[')
-			{
-				//In eckigen Klammern hat der Punkt keine bedeutung.
+			} else if (c == '[') {
+				// In eckigen Klammern hat der Punkt keine bedeutung.
 				replace = false;
-			}
-			else if (c == ']')
-			{
+			} else if (c == ']') {
 				replace = true;
-			}
-			else if (c == '.')
-			{
-				if (replace)
-				{
-					outputRegex = replaceRangeInString(outputRegex,i,i+1,replaceWith);
+			} else if (c == '.') {
+				if (replace) {
+					outputRegex = replaceRangeInString(outputRegex, i, i + 1,
+							replaceWith);
+					i = -1;
 				}
 			}
 		}
 		return outputRegex;
 	}
 
-	/**
-	 * Ersetzt jedes vorkommen von "[...]" mit einem entsprechenden reduzierten
-	 * regulären Ausdruck: Fall1: [first] wird ersetz durch (f|i|r|s|t). Fall2:
-	 * [a-d] wird ersetzt durch (a|b|c|d). Fall3: [a-dA-D] wird ersetzt durch
-	 * (a|b|c|d|A|B|C|D). Fall4: [^a] wird ersetzt durch eine (...|...|...|...)
-	 * (jedes Zeichen aus dem Alphabet außer dem angegebenen Zeichen oder einem
-	 * der reservierten Zeichen. Fall5: [-a-c], [a-c-] wird ersetzt durch
-	 * (-|a|b|c) bzw. (a|b|c|-).
-	 * 
-	 * @param regex
-	 * @return
-	 * @throws RegexInvalidException
-	 */
-	private static String replaceBrackets(String regex)
-			throws RegexInvalidException {
-		// TODO: replaceBrackets implementieren.
-		return regex;
-	}
+	// /**
+	// * Ersetzt jedes vorkommen von "[...]" mit einem entsprechenden
+	// reduzierten
+	// * regulären Ausdruck: Fall1: [first] wird ersetz durch (f|i|r|s|t).
+	// Fall2:
+	// * [a-d] wird ersetzt durch (a|b|c|d). Fall3: [a-dA-D] wird ersetzt durch
+	// * (a|b|c|d|A|B|C|D). Fall4: [^a] wird ersetzt durch eine
+	// (...|...|...|...)
+	// * (jedes Zeichen aus dem Alphabet außer dem angegebenen Zeichen oder
+	// einem
+	// * der reservierten Zeichen. Fall5: [-a-c], [a-c-] wird ersetzt durch
+	// * (-|a|b|c) bzw. (a|b|c|-).
+	// *
+	// * @param regex
+	// * @return
+	// * @throws RegexInvalidException
+	// */
+	// private static String replaceBrackets(String regex)
+	// throws RegexInvalidException {
+	// // TODO: replaceBrackets implementieren.
+	// return regex;
+	// }
 
 	/**
 	 * Gibt an ob es sich bei dem angegebenen Zeichen um ein Metazeichen
@@ -457,7 +603,7 @@ public class Regex {
 	protected static boolean isValidChar(char c) {
 		return isCharInAlphabet(c) || isMetaCharacter(c);
 	}
-	
+
 	/**
 	 * Ersetzt in den angegebenen String den angegebenen Bereich mit dem
 	 * angegebenen Inhalt.
@@ -474,8 +620,8 @@ public class Regex {
 	 *            Der Inhalt, mit dem der angegebene Berech ersetzt werden soll.
 	 * @return
 	 */
-	private static String replaceRangeInString(String inputString, int beginIndex,
-			int endIndex, String replaceString) {
+	private static String replaceRangeInString(String inputString,
+			int beginIndex, int endIndex, String replaceString) {
 		return inputString.substring(0, beginIndex) + replaceString
 				+ inputString.substring(endIndex);
 	}

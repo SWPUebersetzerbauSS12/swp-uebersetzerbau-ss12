@@ -1,4 +1,4 @@
-package parser;
+package semantic.analysis;
 
 /**
  * @author Christian Cikryt

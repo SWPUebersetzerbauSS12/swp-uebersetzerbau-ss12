@@ -5,7 +5,7 @@ import java.util.HashMap;
 /**
  * @author Christian Cikryt
  */
-public class SymbolTable implements SymbolTableEntry {
+public class SymbolTable {
 
 	private HashMap<String, SymbolTableEntry> hashMap;
 

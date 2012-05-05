@@ -32,7 +32,240 @@
 
 package regextodfaconverter.directconverter;
 
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.concurrent.ArrayBlockingQueue;
 
-public class SyntaxTree {
+import utils.Notification;
+import utils.Test;
 
+
+public class SyntaxTree implements Iterable<NodeValue> {
+
+	private static enum ParseMode {
+		REGULAR_EXPRESSION,
+		CHARACTER_CLASS,
+		RANGE_SPECIFICATION
+	}
+	
+	
+	private static char[] REGEX_OPERATORS = { '[', '(', ')', '{',
+		'|', '?', '+', '-', '*', '^', '$', '\\', '.' };
+	
+	private static char[] CHARACTER_CLASS_OPERATORS = { '^', ']', '-'};
+	
+	private static char[] RANGE_SPECIFICATION_OPERATORS = { ',', '}'};
+	
+	
+	private static final char REGEX_ALTERNATIVE_CHAR = '|';
+	private static final char REGEX_MASK_CHAR = '\\';
+	private static final char REGEX_CLASS_BEGIN = '[';
+	private static final char REGEX_CLASS_END = ']';
+	private static final char REGEX_REPETITION_BEGIN = '{';
+	private static final char REGEX_REPETITION_END = '}';
+	private static final char REGEX_GROUP_BEGIN = '(';
+	private static final char REGEX_GROUP_END = ')';
+	private static final char REGEX_KLEENE_CLOSURE = '*';
+	private static final char REGEX_POSITIVE_KLEENE_CLOSURE = '+';
+	private static final char REGEX_OPTION = '?';
+	private static final char REGEX_JOKER = '.';
+	
+	
+	
+	
+
+	
+	private BinaryTreeNode root = null;
+	
+	private ArrayBlockingQueue<Character> regexCharacters = null;
+	
+	private int blockCounter = 0;
+	
+	public SyntaxTree( String regex) throws SyntaxTreeException {
+		super();
+		init( regex);
+		buildTree();
+		if ( blockCounter != 0)
+			throw new SyntaxTreeException( "Invalid regular expression. There are brackets missing.");
+	}
+	
+	private void init( String regex) {
+		blockCounter = 0;
+		regexCharacters = new ArrayBlockingQueue<Character>( regex.length());
+		for ( Character regexChar : regex.toCharArray()) {
+		  try {
+				regexCharacters.put( regexChar);
+			} catch ( InterruptedException e) {
+				Notification.printDebugException( e);
+			}
+		}
+	}
+	
+	private Character readNextChar( String errorMessage) throws SyntaxTreeException {
+		Character result;
+		if ( ( result = regexCharacters.poll()) == null) 
+			throw new SyntaxTreeException( "Expect a terminal. But there a no more characters to read.");
+    return result;
+	}
+	
+	private Terminal readTerminal() throws SyntaxTreeException {
+		char readedChar = readNextChar( "Expect a terminal. But there a no more characters to read.");
+    
+		switch ( readedChar) {
+			case REGEX_MASK_CHAR:
+				readedChar = readNextChar( "Expect a terminal. But there a no more characters to read.");
+        break;
+			case REGEX_GROUP_BEGIN:
+			case REGEX_GROUP_END:
+				break;
+			case REGEX_ALTERNATIVE_CHAR:
+			case REGEX_CLASS_BEGIN:
+			case REGEX_CLASS_END:
+			case REGEX_REPETITION_BEGIN:
+			case REGEX_REPETITION_END:
+			case REGEX_KLEENE_CLOSURE:
+			case REGEX_POSITIVE_KLEENE_CLOSURE:
+			case REGEX_OPTION:
+			case REGEX_JOKER:
+				throw new SyntaxTreeException( "Expect a terminal. But read a special char instead.");
+		}
+		return new Terminal( readedChar);			
+	}
+
+
+	private boolean isSpecialChar( char theChar) {
+		switch ( theChar) {
+			case REGEX_MASK_CHAR:
+			case REGEX_GROUP_BEGIN:
+			case REGEX_GROUP_END:
+			case REGEX_ALTERNATIVE_CHAR:
+			case REGEX_CLASS_BEGIN:
+			case REGEX_CLASS_END:
+			case REGEX_REPETITION_BEGIN:
+			case REGEX_REPETITION_END:
+			case REGEX_KLEENE_CLOSURE:
+			case REGEX_POSITIVE_KLEENE_CLOSURE:
+			case REGEX_OPTION:
+			case REGEX_JOKER:
+				return true;
+			default:
+				return false;
+		}
+	}
+	
+	private boolean isBasicOperator( char theChar) {
+		switch ( theChar) {
+			case REGEX_ALTERNATIVE_CHAR:
+			case REGEX_KLEENE_CLOSURE:
+				return true;
+			default:
+				return false;
+		}
+	}
+			
+	
+	private Operator readOperation() throws SyntaxTreeException {
+		Character nextChar;
+		if ( ( nextChar = regexCharacters.peek()) != null) {
+		  switch ( nextChar) {
+				case REGEX_ALTERNATIVE_CHAR:
+					regexCharacters.poll();
+					return new Operator( OperatorType.ALTERNATIVE);
+				case REGEX_KLEENE_CLOSURE:
+					regexCharacters.poll();
+					return new Operator( OperatorType.REPETITION);
+				default: 	
+				  return new Operator( OperatorType.CONCATENATION);
+			}	
+		}
+		throw new SyntaxTreeException( "Expect a operator. But there a no more characters to read.");
+	}
+	
+
+	private BinaryTreeNode createChildNode() throws SyntaxTreeException {
+ 
+		Terminal readedTerminal = readTerminal();
+		
+		if ( readedTerminal.getValue() == REGEX_GROUP_END) {
+			blockCounter++;	
+			return null;
+	  }
+		
+		if ( readedTerminal.getValue() == REGEX_GROUP_BEGIN) 
+			blockCounter--;
+		
+		BinaryTreeNode leafNode = ( readedTerminal.getValue() == REGEX_GROUP_BEGIN) 
+				? buildSubTree()
+				: new BinaryTreeNode( readedTerminal, null, null);
+		
+		return leafNode;		
+	}
+		
+	
+	private BinaryTreeNode createParentNode( BinaryTreeNode leftNode) throws SyntaxTreeException {
+		
+		if ( Test.isUnassigned( leftNode)) {
+			leftNode = createChildNode( );
+		}
+		if ( Test.isUnassigned( leftNode))
+    	return null;
+		
+		Operator operator;
+    try {
+      operator = readOperation();
+    } catch (Exception e) {
+    	//Notification.printDebugException( e);
+    	return null;
+    }
+    
+		BinaryTreeNode rightNode = null;
+		if ( operator.getOperatorType().isBinary()) {
+			rightNode = createChildNode();
+		  if ( Test.isUnassigned( rightNode)) {
+		  	return null;
+		  }
+		}
+		
+		
+		return new BinaryTreeNode( operator, leftNode, rightNode);
+	}
+	
+	private BinaryTreeNode buildSubTree() throws SyntaxTreeException {		
+		BinaryTreeNode currentNode = null;
+		BinaryTreeNode previousNode = currentNode;
+		while ( ( currentNode = createParentNode( currentNode)) != null) {
+			previousNode = currentNode;
+			if ( Test.isAssigned( currentNode))
+				root = currentNode;
+		}
+		return previousNode;
+	}
+	
+	private void buildTree() throws SyntaxTreeException {		
+		BinaryTreeNode currentNode = null;
+		while ( ( currentNode = createParentNode( currentNode)) != null) {
+			if ( Test.isAssigned( currentNode))
+				root = currentNode;
+		}
+	}
+	
+	@Override
+	public String toString() {
+		String result = "";
+		for ( NodeValue nodeValue  : this) {
+			result += nodeValue + "  ";
+		}
+		return result;
+	}
+
+	public Iterator<NodeValue> iterator() {
+		return new SyntaxTreeIterator( this);
+	}
+	
+	
+	public BinaryTreeNode getRoot() {
+		return root;
+	}
+	
+	
 }

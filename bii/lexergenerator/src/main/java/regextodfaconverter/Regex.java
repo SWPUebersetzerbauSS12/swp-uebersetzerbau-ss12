@@ -101,13 +101,27 @@ public class Regex {
 			}
 		}
 
-		// Überprüfen ob der angegebene Regex gültig ist
+		// Überprüfen ob der angegebene Regex gültig ist.
 		try {
 			Pattern.compile(regex);
 		} catch (PatternSyntaxException e) {
 			throw new RegexInvalidException(
 					"Der angegebene reguläre Ausdruck '" + regex
 							+ "' ist ungültig! ");
+		}
+
+		// Überprüfen ob im angegebenen Regex ein $- oder ^-Operator vorkommt.
+		// Diese beiden Operatoren machen im Anwendungskontext keinen Sinn.
+		for (int i = 0; i < regex.length(); i++) {
+			char c = regex.charAt(i);
+			if (c == '\\') {
+				i++;
+			} else if (c == '$' || c == '^') {
+				throw new RegexInvalidException(
+						"Der "
+								+ c
+								+ "-Operator wird im Anwendungskontext nicht unterstützt und kann einfach weggelassen werden!");
+			}
 		}
 
 		// Verarbeitung starten
@@ -289,7 +303,8 @@ public class Regex {
 	 * @return Ein äquivalenter reduzierter Ausdruck.
 	 */
 	private static String replaceSquareBrackets(String regex) {
-		String output = regex;
+		String output = "_" + regex; // Workaround, damit auch "[a-z]" gematched
+										// wird.
 
 		Pattern pattern = Pattern.compile("[^\\\\]\\[.*[^\\\\]\\]"); // [^\\]\[.*[^\\]\]
 		Matcher matcher = pattern.matcher(output);
@@ -311,13 +326,17 @@ public class Regex {
 			if (sb.length() > 2) {
 				// Wenn nicht "()"
 				sb.delete(1, 2); // erstes "|" entfernen.
+			} else {
+				// Wenn "()"
+				sb = new StringBuilder(""); // "()" vollständig
+											// weglassen.
 			}
 
 			output = output.replace(match,
 					match.substring(0, 1) + sb.toString());
 		}
 
-		return output;
+		return output.substring(1);
 	}
 
 	/**
@@ -331,30 +350,35 @@ public class Regex {
 	private static String replaceDots(String regex) {
 		String output = regex;
 
-		Pattern pattern = Pattern.compile("[^\\\\]\\."); // [^\\]\.
-		Matcher matcher = pattern.matcher(output);
-		while (matcher.find()) {
-			String match = matcher.group();
-			String subRegex = match.substring(1);
-			StringBuilder sb = new StringBuilder("(");
-			for (int i = FIRST_ASCII_CHAR; i <= LAST_ASCII_CHAR; i++) {
-				String toCeck = "" + ((char) i);
-				if (toCeck.matches(subRegex)) {
-					if (isMetaCharacter((char) i)) {
-						sb.append("|\\" + toCeck);
-					} else {
-						sb.append("|" + toCeck);
+		for (int i = 0; i < output.length(); i++) {
+			char c = output.charAt(i);
+			if (c == '\\') {
+				i++;
+			} else if (c == '.') {
+				String subRegex = ".";
+				StringBuilder sb = new StringBuilder("(");
+				for (int j = FIRST_ASCII_CHAR; j <= LAST_ASCII_CHAR; j++) {
+					String toCeck = "" + ((char) j);
+					if (toCeck.matches(subRegex)) {
+						if (isMetaCharacter((char) j)) {
+							sb.append("|\\" + toCeck);
+						} else {
+							sb.append("|" + toCeck);
+						}
 					}
 				}
-			}
-			sb.append(")");
-			if (sb.length() > 2) {
-				// Wenn nicht "()"
-				sb.delete(1, 2); // erstes "|" entfernen.
-			}
+				sb.append(")");
+				if (sb.length() > 2) {
+					// Wenn nicht "()"
+					sb.delete(1, 2); // erstes "|" entfernen.
+				} else {
+					// Wenn "()"
+					sb = new StringBuilder(""); // "()" vollständig
+												// weglassen.
+				}
 
-			output = output.replace(match,
-					match.substring(0, 1) + sb.toString());
+				output = replaceRangeInString(output, i, i + 1, sb.toString());
+			}
 		}
 
 		return output;
@@ -383,6 +407,10 @@ public class Regex {
 					if (sb.length() > 2) {
 						// Wenn nicht "()"
 						sb.delete(1, 2); // erstes "|" entfernen.
+					} else {
+						// Wenn "()"
+						sb = new StringBuilder(""); // "()" vollständig
+													// weglassen.
 					}
 
 					output = replaceRangeInString(output, i, i + 2,

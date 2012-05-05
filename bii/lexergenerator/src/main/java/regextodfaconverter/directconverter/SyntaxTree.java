@@ -69,6 +69,8 @@ public class SyntaxTree implements Iterable<NodeValue> {
 	private static final char REGEX_POSITIVE_KLEENE_CLOSURE = '+';
 	private static final char REGEX_OPTION = '?';
 	private static final char REGEX_JOKER = '.';
+	private static final char REGEX_EMPTY_STRING = 0x00;
+	
 	
 	
 	
@@ -127,7 +129,10 @@ public class SyntaxTree implements Iterable<NodeValue> {
 			case REGEX_POSITIVE_KLEENE_CLOSURE:
 			case REGEX_OPTION:
 			case REGEX_JOKER:
-				throw new SyntaxTreeException( "Expect a terminal. But read a special char instead.");
+				// we read the empty word
+				readedChar = REGEX_EMPTY_STRING;
+				break;
+				//throw new SyntaxTreeException( "Expect a terminal. But read a special char instead.");
 		}
 		return new Terminal( readedChar);			
 	}
@@ -253,7 +258,11 @@ public class SyntaxTree implements Iterable<NodeValue> {
 	public String toString() {
 		String result = "";
 		for ( NodeValue nodeValue  : this) {
-			result += nodeValue + "  ";
+			if (    !( ( nodeValue instanceof Terminal) 
+			     && ( ((Terminal) nodeValue).getValue() == REGEX_EMPTY_STRING)))
+			  result += nodeValue + "  ";
+			else
+				result += "ε  ";
 		}
 		return result;
 	}

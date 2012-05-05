@@ -1,6 +1,5 @@
 package parser.nodes;
 
-import parser.Terminal;
 
 public class OP_ASSIGN extends Terminal {
 

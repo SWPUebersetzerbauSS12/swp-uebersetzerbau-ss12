@@ -1,6 +1,5 @@
 package parser.nodes;
 
-import parser.Terminal;
 
 public class EOF extends Terminal {
 

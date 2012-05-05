@@ -1,6 +1,5 @@
 package parser.nodes;
 
-import parser.Terminal;
 
 public class BOOL_TYPE extends Terminal {
 

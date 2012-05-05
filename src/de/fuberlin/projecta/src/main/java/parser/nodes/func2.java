@@ -1,6 +1,5 @@
 package parser.nodes;
 
-import parser.NonTerminal;
 
 public class func2 extends NonTerminal {
 

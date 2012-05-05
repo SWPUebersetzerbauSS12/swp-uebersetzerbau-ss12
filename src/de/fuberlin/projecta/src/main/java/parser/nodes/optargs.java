@@ -1,6 +1,5 @@
 package parser.nodes;
 
-import parser.NonTerminal;
 
 public class optargs extends NonTerminal {
 

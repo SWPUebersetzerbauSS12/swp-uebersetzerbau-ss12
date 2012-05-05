@@ -1,7 +1,10 @@
-package parser;
+package parser.nodes;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import parser.Attribute;
+import parser.ISyntaxTree;
 
 public abstract class NonTerminal implements ISyntaxTree {
 

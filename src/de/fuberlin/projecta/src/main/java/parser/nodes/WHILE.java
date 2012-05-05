@@ -1,6 +1,5 @@
 package parser.nodes;
 
-import parser.Terminal;
 
 public class WHILE extends Terminal {
 

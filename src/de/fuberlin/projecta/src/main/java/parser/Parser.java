@@ -3,6 +3,8 @@ package parser;
 import java.util.Stack;
 import java.util.Vector;
 
+import parser.nodes.Terminal;
+
 import lexer.ILexer;
 import lexer.IToken;
 import lexer.IToken.TokenType;

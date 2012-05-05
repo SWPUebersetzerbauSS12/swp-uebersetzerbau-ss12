@@ -21,7 +21,7 @@ public class SymbolTableStack {
 	 * @param name
 	 * @return the object associated with name, null if none is found.
 	 */
-	public SymbolTableEntry findEntry(String name) {
+	public Object findEntry(String name) {
 		List<SymbolTable> tables = new ArrayList<SymbolTable>();
 		SymbolTable table;
 
@@ -53,7 +53,7 @@ public class SymbolTableStack {
 	 * @param content
 	 *            the content to override previous content
 	 */
-	public void updateEntry(String name, SymbolTableEntry content) {
+	public void updateEntry(String name, Object content) {
 		List<SymbolTable> tables = new ArrayList<SymbolTable>();
 		SymbolTable table;
 

@@ -7,10 +7,10 @@ import java.util.HashMap;
  */
 public class SymbolTable {
 
-	private HashMap<String, SymbolTableEntry> hashMap;
+	private HashMap<String, Object> hashMap;
 
 	public SymbolTable() {
-		hashMap = new HashMap<String, SymbolTableEntry>();
+		hashMap = new HashMap<String, Object>();
 	}
 
 	/**
@@ -20,11 +20,11 @@ public class SymbolTable {
 	 * @param name
 	 * @param entry
 	 */
-	public void updateEntry(String name, SymbolTableEntry entry) {
+	public void updateEntry(String name, Object entry) {
 		hashMap.put(name, entry);
 	}
 
-	public SymbolTableEntry getEntryByName(String name) {
+	public Object getEntryByName(String name) {
 		return hashMap.get(name);
 	}
 }

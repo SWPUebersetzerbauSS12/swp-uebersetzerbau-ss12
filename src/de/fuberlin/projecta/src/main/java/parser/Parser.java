@@ -66,7 +66,6 @@ public class Parser {
 	}
 
 	public void parse() throws ParserException {
-
 		if (table.isAmbigous()) {
 			throw new ParserException(
 					"Parsing table is ambigous! Won't start syntax analysis");
@@ -171,8 +170,6 @@ public class Parser {
 				}
 			}
 		}
-
-		printParseTree(syntaxTree, 0);
 	}
 	
 	/**
@@ -209,11 +206,12 @@ public class Parser {
 	/**
 	 * Prints the generated parse tree turned by 90 degree clockwise. Read
 	 * direction is still from the top to the bottom.
-	 * 
-	 * @param tree
-	 * @param depth
 	 */
-	private void printParseTree(ISyntaxTree tree, int depth) {
+	public void printParseTree() {
+		printParseTree(syntaxTree, 0);
+	}
+
+	private static void printParseTree(ISyntaxTree tree, int depth) {
 
 		for (int i = 0; i <= depth; i++) {
 			System.out.print("\t");

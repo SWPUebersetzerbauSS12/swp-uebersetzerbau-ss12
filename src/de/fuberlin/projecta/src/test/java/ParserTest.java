@@ -29,5 +29,6 @@ public class ParserTest {
 		} catch (ParserException e) {
 			e.printStackTrace();
 		}
+		parser.printParseTree();
 	}
 }

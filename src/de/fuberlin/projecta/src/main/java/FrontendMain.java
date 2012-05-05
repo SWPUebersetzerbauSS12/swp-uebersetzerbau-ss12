@@ -1,19 +1,21 @@
+import java.io.File;
+
 import lexer.ILexer;
 import lexer.Lexer;
 import lexer.io.FileCharStream;
 import lexer.io.ICharStream;
 import lexer.io.StringCharStream;
+import parser.ISyntaxTree;
 import parser.Parser;
 import parser.ParserException;
+import semantic.analysis.SemanticAnalyser;
 import utils.IOUtils;
 
-import java.io.File;
-
-public class ParserMain {
+public class FrontendMain {
 
 	static void readStdin() {
 		String data = IOUtils.readMultilineStringFromStdin();
-		parse(new StringCharStream(data));
+		run(new StringCharStream(data));
 	}
 
 	static void readFile(String path) {
@@ -30,18 +32,25 @@ public class ParserMain {
 		assert (sourceFile.exists());
 		assert (sourceFile.canRead());
 
-		parse(new FileCharStream(path));
+		run(new FileCharStream(path));
 	}
 
-	static void parse(ICharStream stream) {
+	static void run(ICharStream stream) {
 		ILexer lexer = new Lexer(stream);
 		Parser parser = new Parser(lexer);
 		try {
 			parser.parse();
 		} catch (ParserException e) {
 			e.printStackTrace();
+			System.err.println("Parser failed.");
+			return;
 		}
+		
+		ISyntaxTree tree = parser.getSyntaxTree();
 		parser.printParseTree();
+		
+		SemanticAnalyser analyzer = new SemanticAnalyser(tree);
+		analyzer.run();
 	}
 
 	public static void main(String[] args) {

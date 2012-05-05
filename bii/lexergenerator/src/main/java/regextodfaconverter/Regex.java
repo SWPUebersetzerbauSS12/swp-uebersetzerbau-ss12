@@ -123,7 +123,27 @@ public class Regex {
 								+ "-Operator wird im Anwendungskontext nicht unterstützt und kann einfach weggelassen werden!");
 			}
 		}
-		// TODO: *?, +? und }? verbietn
+
+		// Überprüfen ob im angegebenen Regex ein *?-, +?, ?? oder
+		// {n,m}?-Operator vorkommt.
+		// Diese Operatoren machen im Anwendungskontext keinen Sinn.
+		for (int i = 0; i < regex.length(); i++) {
+			char c = regex.charAt(i);
+			if (c == '\\') {
+				i++;
+			} else if (c == '*' || c == '+' || c == '?' || c == '}') {
+				if (i + 1 < regex.length()) {
+					i++;
+					if (regex.charAt(i) == '?') {
+						throw new RegexInvalidException(
+								"Der "
+										+ c
+										+ regex.charAt(i)
+										+ "-Operator wird im Anwendungskontext nicht unterstützt und kann einfach weggelassen werden!");
+					}
+				}
+			}
+		}
 
 		// Verarbeitung starten
 		String output = regex;
@@ -140,7 +160,6 @@ public class Regex {
 		// 6. Geschweifte klammern reduzieren.
 		output = replaceBraces(output);
 
-		System.out.println(output); // TODO: Zeile löschen
 		return output;
 	}
 
@@ -311,7 +330,7 @@ public class Regex {
 	private static String replaceSquareBrackets(String regex) {
 		String output = "_" + regex; // Workaround
 
-		Pattern pattern = Pattern.compile("[^\\\\]\\[.*[^\\\\]\\]"); // [^\\]\[.*[^\\]\]
+		Pattern pattern = Pattern.compile("[^\\\\]\\[.*?[^\\\\]\\]"); // [^\\]\[.*?[^\\]\]
 		Matcher matcher = pattern.matcher(output);
 		while (matcher.find()) {
 			String match = matcher.group();
@@ -531,7 +550,7 @@ public class Regex {
 			if (sb.length() > 2) {
 				// Wenn nicht "()"
 				sb.delete(1, 2); // erstes "|" entfernen.
-				
+
 				if (sb.toString().equals("(())")) {
 					sb = new StringBuilder(""); // "(())" vollständig weglassen.
 				}
@@ -558,7 +577,7 @@ public class Regex {
 
 			// 4.2 min ermitteln.
 			int min = Integer.valueOf(match.substring(1, match.indexOf(",")));
-			
+
 			// 4.3 Neuen Regex aufbauen.
 			StringBuilder sb = new StringBuilder("(");
 			for (int i = 1; i <= min; i++) {

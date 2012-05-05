@@ -10,6 +10,16 @@ import lexer.SyntaxErrorException;
 import lombok.Getter;
 
 public class Parser {
+	private static final String[] nonTerminals = { "program", "funcs", "func",
+		"func'", "optparams", "params", "params'", "block", "decls",
+		"decl", "type", "type'", "stmts", "stmt", "stmt'", "stmt''", "loc",
+		"loc'", "loc''", "assign", "assign'", "bool", "bool'", "join",
+		"join'", "equality", "equality'", "rel", "rel'", "expr", "expr'",
+		"term", "term'", "unary", "factor", "factor'", "optargs", "args",
+		"args'", "basic" };
+	private static TokenType[] terminals;
+	private static final String EPSILON = "ε";
+	
 	private ILexer lexer;
 	private ParseTable table;
 	private Stack<String> stack;
@@ -17,19 +27,7 @@ public class Parser {
 	private NodeFactory nodeFactory;
 
 	@Getter
-	private ISyntaxTree syntaxTree;
-
-	private static final String[] nonTerminals = { "program", "funcs", "func",
-			"func'", "optparams", "params", "params'", "block", "decls",
-			"decl", "type", "type'", "stmts", "stmt", "stmt'", "stmt''", "loc",
-			"loc'", "loc''", "assign", "assign'", "bool", "bool'", "join",
-			"join'", "equality", "equality'", "rel", "rel'", "expr", "expr'",
-			"term", "term'", "unary", "factor", "factor'", "optargs", "args",
-			"args'", "basic" };
-
-	private static TokenType[] terminals;
-
-	private static final String EPSILON = "ε";
+	private ISyntaxTree syntaxTree;		
 
 	public Parser(ILexer lexer) {
 		this.lexer = lexer;
@@ -48,8 +46,6 @@ public class Parser {
 		stack = new Stack<String>();
 		outputs = new Vector<String>();
 		syntaxTree = nodeFactory.createNode("program");
-		
-		
 	}
 
 	private void initStack() {
@@ -148,11 +144,6 @@ public class Parser {
 				if (!tmp2[i].equals("")) {
 					ISyntaxTree newNode;
 					newNode = nodeFactory.createNode(tmp2[i]);
-//					if (isAllUpper(tmp2[i]) || tmp2[i].equals(EPSILON)) {
-//						newNode = new Terminal(tmp2[i]);
-//					} else {
-//						newNode = new NonTerminal(tmp2[i]);
-//					}
 
 					if (node instanceof Terminal) {
 						throw new ParserException(
@@ -181,22 +172,7 @@ public class Parser {
 
 		printParseTree(syntaxTree, 0);
 	}
-
-	/**
-	 * Helper function to distinguish between terminals and non-terminals.
-	 * 
-	 * @param s
-	 * @return
-	 */
-	private boolean isAllUpper(String s) {
-		for (char c : s.toCharArray()) {
-			if (Character.isLetter(c) && Character.isLowerCase(c)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
+	
 	/**
 	 * Using Depth-First search to find the node.
 	 * 

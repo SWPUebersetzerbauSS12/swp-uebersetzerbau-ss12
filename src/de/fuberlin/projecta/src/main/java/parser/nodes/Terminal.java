@@ -5,6 +5,7 @@ import java.util.List;
 
 import parser.Attribute;
 import parser.ISyntaxTree;
+import semantic.analysis.SymbolTableStack;
 
 public abstract class Terminal implements ISyntaxTree {
 
@@ -45,9 +46,15 @@ public abstract class Terminal implements ISyntaxTree {
 	}
 
 	public List<ISyntaxTree> getChildrenByName(String name) {
-		return null;  //To change body of implemented methods use File | Settings | File Templates.
+		return null; // To change body of implemented methods use File |
+						// Settings | File Templates.
 	}
 
+	/**
+	 * Updates the attribute indicated by name with the entry value.
+	 * 
+	 * @return true if update was successful, false otherwise
+	 */
 	public boolean setAttribute(String name, String value) {
 		for (Attribute attr : attributes) {
 			if (attr.getName().equals(name)) {
@@ -58,6 +65,9 @@ public abstract class Terminal implements ISyntaxTree {
 		return false;
 	}
 
+	/**
+	 * Adds a new attribute to the list of this nodes attributes.
+	 */
 	public boolean addAttribute(String name) {
 		if (getAttribute(name) == null) {
 			attributes.add(new Attribute(name));
@@ -66,6 +76,6 @@ public abstract class Terminal implements ISyntaxTree {
 		return false;
 	}
 
-	public abstract void run();
+	public abstract void run(SymbolTableStack tables);
 
 }

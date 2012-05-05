@@ -1,5 +1,7 @@
 package parser.nodes;
 
+import semantic.analysis.SymbolTableStack;
+
 
 public class stmt3 extends NonTerminal {
 
@@ -8,7 +10,8 @@ public class stmt3 extends NonTerminal {
 	}
 	
 	@Override
-	public void run(){
-		// skip
+	public void run(SymbolTableStack tables) {
+		// TODO Auto-generated method stub
+		
 	}
 }

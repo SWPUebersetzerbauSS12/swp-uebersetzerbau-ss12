@@ -5,6 +5,7 @@ import java.util.List;
 
 import parser.Attribute;
 import parser.ISyntaxTree;
+import semantic.analysis.SymbolTableStack;
 
 public abstract class NonTerminal implements ISyntaxTree {
 
@@ -69,6 +70,6 @@ public abstract class NonTerminal implements ISyntaxTree {
 		return false;
 	}
 	
-	public abstract void run();
+	public abstract void run(SymbolTableStack tables);
 
 }

@@ -2,6 +2,8 @@ package parser;
 
 import java.util.List;
 
+import semantic.analysis.SymbolTableStack;
+
 /**
  * Using composite pattern as tree data-structure. Leafs are indicated by a
  * childCount of 0.
@@ -55,5 +57,5 @@ public interface ISyntaxTree {
 	/**
 	 * Semantic rules !
 	 */
-	public void run();
+	public void run(SymbolTableStack tables);
 }

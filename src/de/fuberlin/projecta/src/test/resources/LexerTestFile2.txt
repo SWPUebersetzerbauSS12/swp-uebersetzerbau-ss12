@@ -16,6 +16,7 @@ def int someFunction(int arg1, real arg2) {
 	 */
 	
 	if(!j) print arg1;
+	if(!j) print arg1; else print arg2;
 	while (true) j = j + 1;
 	do print i; while ( true );
 	break;
@@ -24,6 +25,10 @@ def int someFunction(int arg1, real arg2) {
 	{
 		i = i + 2;
 	}	
+}
+
+def int someFunction(int arg1, real arg2) {
+	return ;
 }
 
 def int foobar();

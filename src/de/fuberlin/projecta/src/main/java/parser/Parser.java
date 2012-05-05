@@ -3,11 +3,10 @@ package parser;
 import java.util.Stack;
 import java.util.Vector;
 
-import parser.nodes.Terminal;
-
 import lexer.ILexer;
 import lexer.IToken;
 import lexer.IToken.TokenType;
+import lexer.Lexer;
 import lexer.SyntaxErrorException;
 import lombok.Getter;
 
@@ -19,7 +18,7 @@ public class Parser {
 		"join'", "equality", "equality'", "rel", "rel'", "expr", "expr'",
 		"term", "term'", "unary", "factor", "factor'", "optargs", "args",
 		"args'", "basic" };
-	private static TokenType[] terminals;
+	private static TokenType[] terminals = TokenType.values();
 	private static final String EPSILON = "ε";
 	
 	private ILexer lexer;
@@ -33,8 +32,6 @@ public class Parser {
 
 	public Parser(ILexer lexer) {
 		this.lexer = lexer;
-
-		terminals = TokenType.OP_ADD.getDeclaringClass().getEnumConstants();
 
 		table = new ParseTable(nonTerminals, terminals);
 		try {
@@ -145,13 +142,6 @@ public class Parser {
 				if (!tmp2[i].equals("")) {
 					ISyntaxTree newNode;
 					newNode = nodeFactory.createNode(tmp2[i]);
-
-					if (node instanceof Terminal) {
-						throw new ParserException(
-								"node is a terminal! Can't append new node "
-										+ newNode.getName() + " to terminal "
-										+ node.getName());
-					}
 
 					if (node == null) {
 						throw new ParserException(

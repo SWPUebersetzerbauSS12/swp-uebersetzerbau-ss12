@@ -29,11 +29,11 @@ public class SymbolTableStack {
 			table = symbolTables.pop();
 			if (table != null)
 				tables.add(table);
-			if (table.getEntryByName(name) != null) {
+			if (table.lookup(name) != null) {
 				for (int i = tables.size() - 1; i >= 0; i--) {
 					pushSymbolTable(tables.get(i));
 				}
-				return table.getEntryByName(name);
+				return table.lookup(name);
 			}
 		} while (table != null);
 
@@ -53,7 +53,7 @@ public class SymbolTableStack {
 	 * @param content
 	 *            the content to override previous content
 	 */
-	public void updateEntry(String name, Object content) {
+	public void insertEntry(String name, Object content) {
 		List<SymbolTable> tables = new ArrayList<SymbolTable>();
 		SymbolTable table;
 
@@ -61,8 +61,8 @@ public class SymbolTableStack {
 			table = symbolTables.pop();
 			if (table != null)
 				tables.add(table);
-			if (table.getEntryByName(name) != null) {
-				table.updateEntry(name, content);
+			if (table.lookup(name) != null) {
+				table.insertEntry(name, content);
 				break;
 			}
 		} while (table != null);
@@ -71,13 +71,13 @@ public class SymbolTableStack {
 			pushSymbolTable(tables.get(i));
 		}
 	}
-
+	
 	/**
 	 * Attention: popped tables must be pushed again when done writing!
 	 * 
 	 * @return the last pushed SymbolTable
 	 */
-	public SymbolTable getLastSymbolTable() {
+	public SymbolTable popSymbolTable() {
 		return symbolTables.pop();
 	}
 

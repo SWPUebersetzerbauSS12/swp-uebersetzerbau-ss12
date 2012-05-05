@@ -20,11 +20,21 @@ public class SymbolTable {
 	 * @param name
 	 * @param entry
 	 */
-	public void updateEntry(String name, Object entry) {
-		hashMap.put(name, entry);
+	public void updateEntry(String name, Object value) {
+		if (!hashMap.containsKey(name))
+			throw new IllegalStateException("No such symbol: " + name);
+		
+		hashMap.put(name, value);
+	}
+	
+	public void insertEntry(String name, Object value) {
+		if (hashMap.containsKey(name))
+			throw new IllegalStateException("Symbol already defined:" + name);
+		
+		hashMap.put(name, value);
 	}
 
-	public Object getEntryByName(String name) {
+	public Object lookup(String name) {
 		return hashMap.get(name);
 	}
 }

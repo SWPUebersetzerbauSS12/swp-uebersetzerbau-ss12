@@ -10,12 +10,12 @@ public class ParseTable {
 	@Getter
 	private boolean isAmbigous;
 
-	private String[] nonTerminals;
+	private NonTerminal[] nonTerminals;
 	private TokenType[] terminals;
 
 	private String[][] table;
 
-	public ParseTable(String[] nonTerminals, TokenType[] terminals) {
+	public ParseTable(NonTerminal[] nonTerminals, TokenType[] terminals) {
 		this.nonTerminals = nonTerminals;
 		this.terminals = terminals;
 
@@ -38,7 +38,7 @@ public class ParseTable {
 	 * @param entry
 	 * @throws ParserException
 	 */
-	public void setEntry(String nonT, TokenType t, String entry)
+	public void setEntry(NonTerminal nonT, TokenType t, String entry)
 			throws ParserException {
 		boolean found = false;
 		for (int i = 0; i < nonTerminals.length; i++) {
@@ -54,7 +54,6 @@ public class ParseTable {
 							throw new ParserException(
 									"parsing table is ambigous in cell ["
 											+ nonT + "," + t + "]");
-
 						}
 					}
 				}
@@ -77,7 +76,7 @@ public class ParseTable {
 	 *         is found null is returned.
 	 * @throws ParserException 
 	 */
-	public String getEntry(String nonT, TokenType t) throws ParserException {
+	public String getEntry(NonTerminal nonT, TokenType t) throws ParserException {
 		for (int i = 0; i < nonTerminals.length; i++) {
 			if (nonTerminals[i].equals(nonT)) {
 				for (int j = 0; j < terminals.length; j++) {

@@ -3,7 +3,7 @@ package parser.nodes;
 import semantic.analysis.SymbolTableStack;
 
 
-public class factor extends NonTerminal {
+public class factor extends Tree {
 
 	public factor(String name) {
 		super(name);

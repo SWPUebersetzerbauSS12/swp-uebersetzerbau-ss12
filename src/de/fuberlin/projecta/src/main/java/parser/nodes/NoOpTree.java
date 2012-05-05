@@ -2,16 +2,13 @@ package parser.nodes;
 
 import semantic.analysis.SymbolTableStack;
 
-
-public class args extends Tree {
-
-	public args(String name) {
-		super(name);
+public class NoOpTree extends Tree {
+	
+	public NoOpTree() {
+		super("NOOP");
 	}
 
 	@Override
 	public void run(SymbolTableStack tables) {
-		// TODO Auto-generated method stub
-		
 	}
 }

@@ -7,7 +7,7 @@ import parser.Attribute;
 import parser.ISyntaxTree;
 import semantic.analysis.SymbolTableStack;
 
-public abstract class NonTerminal implements ISyntaxTree {
+public abstract class Tree implements ISyntaxTree {
 
 	private ArrayList<ISyntaxTree> children = new ArrayList<ISyntaxTree>();
 	private String name;
@@ -18,7 +18,7 @@ public abstract class NonTerminal implements ISyntaxTree {
 	 *
 	 * @param name
 	 */
-	public NonTerminal(String name) {
+	public Tree(String name) {
 		this.name = name;
 		attributes = new ArrayList<Attribute>();
 	}

@@ -3,7 +3,7 @@ package parser.nodes;
 import semantic.analysis.SymbolTableStack;
 
 
-public class decls extends NonTerminal {
+public class decls extends Tree {
 
 	public decls(String name) {
 		super(name);

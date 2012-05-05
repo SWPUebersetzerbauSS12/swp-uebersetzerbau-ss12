@@ -123,18 +123,24 @@ public class Regex {
 								+ "-Operator wird im Anwendungskontext nicht unterstützt und kann einfach weggelassen werden!");
 			}
 		}
+		// TODO: *?, +? und }? verbietn
 
 		// Verarbeitung starten
-		// TODO: Verhalten bei () überprüfen.
 		String output = regex;
 		// 1. Eckige Klammern reduzieren.
 		output = replaceSquareBrackets(output);
-		// 2. Punkte reduzieren (muss nach jeden Fall nach (1) gemacht werden).
+		// 2. Punkte reduzieren (muss nach (1) gemacht werden).
 		output = replaceDots(output);
-		// 3. Backshlashes reduzieren (muss nach jeden Fall nach (1) gemacht
-		// werden).
+		// 3. Backshlashes reduzieren (muss nach (1) gemacht werden).
 		output = replaceBackslashes(output);
+		// 4. ? durch {0,1} ersetzten (muss nach (1) gemacht werden).
+		output = replaceQuestionMarks(output);
+		// 5. + durch {1,} ersetzten (muss nach (1) gemacht werden).
+		output = replacePlusSigns(output);
+		// 6. Geschweifte klammern reduzieren.
+		output = replaceBraces(output);
 
+		System.out.println(output); // TODO: Zeile löschen
 		return output;
 	}
 
@@ -295,16 +301,15 @@ public class Regex {
 	}
 
 	/**
-	 * Reduziert im angebenen regulären Ausdruck alle eckigen Klammern auf die
-	 * Grundoperationen.
+	 * Reduziert im angebenen regulären Ausdruck alle eckigen Klammern (die
+	 * nicht escapted wurden) auf die Grundoperationen.
 	 * 
 	 * @param regex
 	 *            Der zu reduzierende reguläre Ausdruck.
 	 * @return Ein äquivalenter reduzierter Ausdruck.
 	 */
 	private static String replaceSquareBrackets(String regex) {
-		String output = "_" + regex; // Workaround, damit auch "[a-z]" gematched
-										// wird.
+		String output = "_" + regex; // Workaround
 
 		Pattern pattern = Pattern.compile("[^\\\\]\\[.*[^\\\\]\\]"); // [^\\]\[.*[^\\]\]
 		Matcher matcher = pattern.matcher(output);
@@ -328,8 +333,7 @@ public class Regex {
 				sb.delete(1, 2); // erstes "|" entfernen.
 			} else {
 				// Wenn "()"
-				sb = new StringBuilder(""); // "()" vollständig
-											// weglassen.
+				sb = new StringBuilder(""); // "()" vollständig weglassen.
 			}
 
 			output = output.replace(match,
@@ -340,8 +344,8 @@ public class Regex {
 	}
 
 	/**
-	 * Reduziert im angebenen regulären Ausdruck alle Punkte auf die
-	 * Grundoperationen.
+	 * Reduziert im angebenen regulären Ausdruck alle Punkte (die nicht escapted
+	 * wurden) auf die Grundoperationen.
 	 * 
 	 * @param regex
 	 *            Der zu reduzierende reguläre Ausdruck.
@@ -373,8 +377,7 @@ public class Regex {
 					sb.delete(1, 2); // erstes "|" entfernen.
 				} else {
 					// Wenn "()"
-					sb = new StringBuilder(""); // "()" vollständig
-												// weglassen.
+					sb = new StringBuilder(""); // "()" vollständig weglassen.
 				}
 
 				output = replaceRangeInString(output, i, i + 1, sb.toString());
@@ -384,6 +387,14 @@ public class Regex {
 		return output;
 	}
 
+	/**
+	 * Reduziert im angebenen regulären Ausdruck alle Zeichen die durch ein
+	 * Backslash escapted wurden auf die Grundoperationen wenn möglich.
+	 * 
+	 * @param regex
+	 *            Der zu reduzierende reguläre Ausdruck.
+	 * @return Ein äquivalenter reduzierter Ausdruck.
+	 */
 	private static String replaceBackslashes(String regex) {
 		String output = regex;
 
@@ -421,6 +432,205 @@ public class Regex {
 		}
 
 		return output;
+	}
+
+	/**
+	 * Reduziert im angebenen regulären Ausdruck alle Fragezeichen (die nicht
+	 * escapted wurden) auf {0,1}.
+	 * 
+	 * @param regex
+	 *            Der zu reduzierende reguläre Ausdruck.
+	 * @return Ein äquivalenter reduzierter Ausdruck.
+	 */
+	private static String replaceQuestionMarks(String regex) {
+		String output = regex;
+
+		for (int i = 0; i < output.length(); i++) {
+			char c = output.charAt(i);
+			if (c == '\\') {
+				i++;
+			} else if (c == '?') {
+				output = replaceRangeInString(output, i, i + 1, "{0,1}");
+			}
+		}
+
+		return output;
+	}
+
+	/**
+	 * Reduziert im angebenen regulären Ausdruck alle Pluszeichen (die nicht
+	 * escapted wurden) auf {1,}.
+	 * 
+	 * @param regex
+	 *            Der zu reduzierende reguläre Ausdruck.
+	 * @return Ein äquivalenter reduzierter Ausdruck.
+	 */
+	private static String replacePlusSigns(String regex) {
+		String output = regex;
+
+		for (int i = 0; i < output.length(); i++) {
+			char c = output.charAt(i);
+			if (c == '\\') {
+				i++;
+			} else if (c == '+') {
+				output = replaceRangeInString(output, i, i + 1, "{1,}");
+			}
+		}
+
+		return output;
+	}
+
+	private static String replaceBraces(String regex) {
+		String output = regex;
+
+		Pattern pattern;
+		Matcher matcher;
+
+		// 1. {0,} mit * ersetzen.
+		// Ersetzung möglich ohne auf escape Char zu überprüfen, da \{0,} nicht
+		// möglich!
+		output = output.replace("{0,}", "*");
+
+		// 2. {n} mit {n,n} ersetzen.
+		pattern = Pattern.compile("\\{\\d+\\}"); // \{\d+\}
+		matcher = pattern.matcher(output);
+		while (matcher.find()) {
+			String match = matcher.group();
+			int n = Integer.valueOf(match.substring(1, match.length() - 1));
+			output = output.replace(match, "{" + n + "," + n + "}");
+		}
+
+		// 3. Nach Pattern {n,m} suchen
+		pattern = Pattern.compile("\\{\\d+,\\d+\\}"); // \{\d+,\d+\}
+		matcher = pattern.matcher(output);
+		while (matcher.find()) {
+			String match = matcher.group();
+
+			// 3.1 Element vor der geschweiften Klammer berechnen.
+			String lastElement = getLastElement(output.substring(0,
+					matcher.start()));
+
+			// 3.2 min und max ermitteln.
+			int min = Integer.valueOf(match.substring(1, match.indexOf(",")));
+			int max = Integer.valueOf(match.substring(match.indexOf(",") + 1,
+					match.indexOf("}")));
+
+			// 3.3 Neuen Regex aufbauen.
+			StringBuilder sb = new StringBuilder("(");
+			for (int i = min; i <= max; i++) {
+				StringBuilder subSb = new StringBuilder("(");
+				for (int j = 1; j <= i; j++) {
+					subSb.append(lastElement);
+				}
+				subSb.append(")");
+
+				sb.append('|');
+				sb.append(subSb);
+			}
+			sb.append(")");
+			if (sb.length() > 2) {
+				// Wenn nicht "()"
+				sb.delete(1, 2); // erstes "|" entfernen.
+				
+				if (sb.toString().equals("(())")) {
+					sb = new StringBuilder(""); // "(())" vollständig weglassen.
+				}
+			} else {
+				// Wenn "()"
+				sb = new StringBuilder(""); // "()" vollständig weglassen.
+			}
+
+			// 3.4 Alten Regex ersetzen.
+			output = output.replace(lastElement + match, sb.toString());
+		}
+
+		// 4. Nach Pattern {n,} suchen
+		pattern = Pattern.compile("\\{\\d+,\\}"); // \{\d+,\}
+		matcher = pattern.matcher(output);
+		while (matcher.find()) {
+			// n>0, wegen Schritt 1.
+
+			String match = matcher.group();
+
+			// 4.1 Element vor der geschweiften Klammer berechnen.
+			String lastElement = getLastElement(output.substring(0,
+					matcher.start()));
+
+			// 4.2 min ermitteln.
+			int min = Integer.valueOf(match.substring(1, match.indexOf(",")));
+			
+			// 4.3 Neuen Regex aufbauen.
+			StringBuilder sb = new StringBuilder("(");
+			for (int i = 1; i <= min; i++) {
+				sb.append(lastElement);
+			}
+			sb.append("(" + lastElement + ")*");
+			sb.append(")");
+
+			// 4.4 Alten Regex ersetzen.
+			output = output.replace(lastElement + match, sb.toString());
+		}
+
+		return output;
+	}
+
+	/**
+	 * Gibt das letzte zusammenhängende Element in dem angegebenen regulären
+	 * Ausdruck zurück.
+	 * 
+	 * @param regex
+	 *            Der reguläre Ausdruck, von dem das letzte Element
+	 *            zurückgegeben werden soll.
+	 * @return Das letzte zusammenhängende Element in dem angegebenen regulären
+	 *         Ausdruck.
+	 */
+	private static String getLastElement(String regex) {
+		String lastElement = "";
+
+		if (regex.length() == 1) {
+			return "" + regex.charAt(0);
+		}
+
+		if (regex.charAt(regex.length() - 2) == '\\') {
+			lastElement = "" + regex.charAt(regex.length() - 2)
+					+ regex.charAt(regex.length() - 1);
+		} else {
+			if (regex.charAt(regex.length() - 1) == ')') {
+				int closed = 1;
+				lastElement = ")";
+				for (int i = regex.length() - 2; i >= 0; i--) {
+					char c = regex.charAt(i);
+					if (c == '(') {
+						if (i - 1 >= 0) {
+							if (regex.charAt(i - 1) == '\\') {
+								lastElement = "\\(" + lastElement;
+							} else {
+								lastElement = "(" + lastElement;
+								closed--;
+								if (closed == 0) {
+									break;
+								}
+							}
+						} else {
+							lastElement = "(" + lastElement;
+							closed--;
+							if (closed == 0) {
+								break;
+							}
+						}
+					} else if (c == ')') {
+						closed++;
+						lastElement = ")" + lastElement;
+					} else {
+						lastElement = c + lastElement;
+					}
+				}
+			} else {
+				lastElement = "" + regex.charAt(regex.length() - 1);
+			}
+		}
+
+		return lastElement;
 	}
 
 	/**

@@ -57,12 +57,12 @@ public class Regex {
 	 * Das erste Zeichen aus dem ASCII Zeichensatz, das im Alphabet enthalten
 	 * sein soll.
 	 */
-	private static int FIRST_ASCII_CHAR = 33;
+	private static int FIRST_ASCII_CHAR = 0;
 	/**
 	 * Das letzte Zeichen aus dem ASCII Zeichensatz, das im Alphabet enthalten
 	 * sein soll.
 	 */
-	private static int LAST_ASCII_CHAR = 126;
+	private static int LAST_ASCII_CHAR = 255;
 
 	/**
 	 * Reduziert den angebenen regulären Ausdruck auf die Grundoperationen und

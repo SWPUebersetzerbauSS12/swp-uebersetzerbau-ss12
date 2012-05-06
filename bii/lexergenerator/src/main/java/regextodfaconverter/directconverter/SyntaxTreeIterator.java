@@ -1,3 +1,36 @@
+/*
+ * 
+ * Copyright 2012 lexergen.
+ * This file is part of lexergen.
+ * 
+ * lexergen is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * lexergen is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with lexergen.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ * lexergen:
+ * A tool to chunk source code into tokens for further processing in a compiler chain.
+ * 
+ * Projectgroup: bi, bii
+ * 
+ * Authors: Johannes Dahlke
+ * 
+ * Module:  Softwareprojekt Übersetzerbau 2012 
+ * 
+ * Created: Apr. 2012 
+ * Version: 1.0
+ *
+ */
+
+
 package regextodfaconverter.directconverter;
 
 import java.util.ArrayList;
@@ -5,8 +38,13 @@ import java.util.Iterator;
 
 import utils.Test;
 
-
-class SyntaxTreeIterator implements Iterator<NodeValue> {
+/**
+ * Iteriert von links nach rechts und von unten nach oben über einen Syntaxbaum. 
+ * 
+ * @author Johannes Dahlke
+ *
+ */
+class SyntaxTreeIterator implements Iterator<BinaryTreeNode> {
 	
 	private BinaryTreeNode root;
 	private BinaryTreeNode currentNode;
@@ -29,14 +67,14 @@ class SyntaxTreeIterator implements Iterator<NodeValue> {
 	}
 
 
-	public NodeValue next() {
-		NodeValue result = null;
+	public BinaryTreeNode next() {
+		BinaryTreeNode result = null;
 			while ( Test.isAssigned( currentNode.leftChildNode)
 					&& !visitedNodes.contains( currentNode.leftChildNode))
 				currentNode = currentNode.leftChildNode;
 			if ( Test.isUnassigned( currentNode.leftChildNode)) {
 				visitedNodes.add( currentNode);
-				result = currentNode.nodeValue;
+				result = currentNode;
 				currentNode = currentNode.parentNode;
 			} else if ( Test.isAssigned( currentNode.rightChildNode) 
 					        && !visitedNodes.contains( currentNode.rightChildNode)) {
@@ -44,7 +82,7 @@ class SyntaxTreeIterator implements Iterator<NodeValue> {
 				result = next();
 			} else {
 				visitedNodes.add( currentNode);
-				result = currentNode.nodeValue;
+				result = currentNode;
 				currentNode = currentNode.parentNode;
 			}
 

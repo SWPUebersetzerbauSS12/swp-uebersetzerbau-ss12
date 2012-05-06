@@ -33,6 +33,7 @@
 package regextodfaconverter.directconverter;
 
 import regextodfaconverter.fsm.FiniteStateMachine;
+import utils.Notification;
 
 /**
  * Stellt Funktionalitäten bereit, um einen vereinfachten regulären Ausdruck in eine DFA umzuwandeln. 
@@ -53,22 +54,42 @@ public class RegexToDfaConverter {
 	 * @param Regex der reguläre Ausdruck in vereinfachter Form.
 	 * @param <StatePayloadType> der Inhalt, welcher Zuständen zugeordnet sein kann.
 	 * @return ein DFA
+	 * @throws Exception 
 	 * 
 	 */	
-	public static <StatePayloadType> FiniteStateMachine<Character, StatePayloadType> convert(String regex) {
-		
+	public static <StatePayloadType> FiniteStateMachine<Character, StatePayloadType> convert(String regex) throws Exception {
+		try {
 		SyntaxTree syntaxTree = convertRegexToSyntaxTree( regex);
 		FiniteStateMachine<Character, StatePayloadType> dfa = convertSyntaxTreeToDfa( syntaxTree);
 		return dfa;
+		} catch( Exception e) {
+			Notification.printDebugException( e);
+			throw new Exception( "Cannot convert regex to DFA.");
+		}
 	}
 	
   /**
    * 
    * @param Regex
    * @return
+   * @throws SyntaxTreeException 
    */
-	private static SyntaxTree convertRegexToSyntaxTree( String Regex) {
-		return null;
+	private static SyntaxTree convertRegexToSyntaxTree( String regex) throws SyntaxTreeException {
+		final SyntaxTreeAttributor syntaxTreeAttributor = new SyntaxTreeAttributor();
+		SyntaxTree syntaxTree = new SyntaxTree( regex, new NewNodeEventHandler() {
+			
+			public void doOnEvent( Object sender, BinaryTreeNode node) {
+				syntaxTreeAttributor.nullable( node);
+				syntaxTreeAttributor.firstpos( node);
+				syntaxTreeAttributor.lastpos( node);
+			}
+		} );
+		
+		for ( BinaryTreeNode node : syntaxTree) {
+			syntaxTreeAttributor.followpos( node);
+		}
+		
+		return syntaxTree;
 	}
 	
 	private static <StatePayloadType> FiniteStateMachine<Character, StatePayloadType> convertSyntaxTreeToDfa( SyntaxTree syntaxTree) {

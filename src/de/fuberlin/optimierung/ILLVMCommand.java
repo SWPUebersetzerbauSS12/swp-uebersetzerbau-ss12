@@ -12,4 +12,6 @@ interface ILLVMCommand {
 	public void setPredecessor(ILLVMCommand c);
 	public void setSuccessor(ILLVMCommand c);
 
+	public LLVMOperation getOperation();
+	public LLVMParameter getTarget();
 }

@@ -53,6 +53,14 @@ class LLVMArithmeticOperation implements ILLVMCommand {
 		operands.add(new LLVMParameter(cmd[1], cmd_parts[4]));
 	}
 	
+	public LLVMOperation getOperation() {
+		return operation;
+	}
+	
+	public LLVMParameter getTarget() {
+		return target;
+	}
+	
 	public void deleteCommand() {
 		
 		if(this.isFirstCommand()) {	// Loesche erstes Element

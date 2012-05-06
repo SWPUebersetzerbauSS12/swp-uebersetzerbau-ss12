@@ -43,7 +43,15 @@ class LLVMCommand implements ILLVMCommand {
 		this.block = block;
 
 	}
-
+	
+	public LLVMOperation getOperation() {
+		return operation;
+	}
+	
+	public LLVMParameter getTarget() {
+		return target;
+	}
+	
 	public void deleteCommand() {
 		
 		if(this.isFirstCommand()) {	// Loesche erstes Element

@@ -75,8 +75,6 @@ public class Parser {
 							+ " in input");
 				}
 			} else /** stack symbol is non-terminal */ {
-				System.out.println(peek.asNonTerminal());
-				System.out.println(token.getType());
 				String prod = table.getEntry(peek.asNonTerminal(), token.getType());
 				stack.pop();
 

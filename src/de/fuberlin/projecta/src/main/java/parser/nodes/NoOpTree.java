@@ -4,8 +4,8 @@ import semantic.analysis.SymbolTableStack;
 
 public class NoOpTree extends Tree {
 	
-	public NoOpTree() {
-		super("NOOP");
+	public NoOpTree(String name) {
+		super(name);
 	}
 
 	@Override

@@ -7,6 +7,5 @@ public enum NonTerminal {
 	loc_, loc__, assign, assign_, bool, bool_, join,
 	join_, equality, equality_, rel, rel_, expr, expr_,
 	term, term_, unary, factor, factor_, optargs, args,
-	args_, basic,
-	EPSILON
+	args_, basic
 };

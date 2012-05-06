@@ -3,7 +3,7 @@ package parser.nodes;
 import semantic.analysis.SymbolTableStack;
 
 
-public class ID extends Terminal {
+public class ID extends expr {
 
 	public ID(String name) {
 		super(name);

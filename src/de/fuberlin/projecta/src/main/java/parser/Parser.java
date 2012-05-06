@@ -8,6 +8,7 @@ import lexer.IToken;
 import lexer.IToken.TokenType;
 import lexer.SyntaxErrorException;
 import lombok.Getter;
+import parser.nodes.NoOpTree;
 
 public class Parser {
 
@@ -18,7 +19,7 @@ public class Parser {
 	private NodeFactory nodeFactory;
 
 	@Getter
-	private ISyntaxTree syntaxTree;		
+	private ISyntaxTree syntaxTree;
 
 	public Parser(ILexer lexer) {
 		this.lexer = lexer;
@@ -29,13 +30,11 @@ public class Parser {
 		} catch (ParserException e) {
 			e.printStackTrace();
 		}
-		
+
 		nodeFactory = new NodeFactory();
 
 		stack = new Stack<Symbol>();
 		outputs = new Vector<String>();
-		syntaxTree = nodeFactory.createNode(new Symbol(NonTerminal.program));
-		assert(syntaxTree != null);
 	}
 
 	private void initStack() {
@@ -51,7 +50,7 @@ public class Parser {
 		}
 
 		initStack();
-		
+
 		IToken token = null;
 		try {
 			token = lexer.getNextToken();
@@ -59,12 +58,27 @@ public class Parser {
 			e.printStackTrace();
 		}
 
+		ISyntaxTree currentNode = new NoOpTree("root");
+
 		do {
-			Symbol peek = stack.peek();
-			if (peek.isTerminal()) {
+			printStack();
+			Symbol peek = stack.pop();
+
+			if (peek.isReservedTerminal()) {
+				Symbol.Reserved reservedTerminal = peek.asReservedTerminal();
+
+				switch (reservedTerminal) {
+				case SP:
+					currentNode = currentNode.getParent();
+				case EPSILON: // fall-though, do nothing
+				default:
+					break;
+				}
+			} else if (peek.isTerminal()) {
 				TokenType terminal = peek.asTerminal();
 				if (terminal == token.getType()) {
-					stack.pop();
+					ISyntaxTree node = nodeFactory.createNode(terminal);
+					currentNode.addTree(node);
 					try {
 						token = lexer.getNextToken();
 					} catch (SyntaxErrorException e) {
@@ -74,9 +88,16 @@ public class Parser {
 					throw new ParserException("Wrong token " + token
 							+ " in input");
 				}
-			} else /** stack symbol is non-terminal */ {
-				String prod = table.getEntry(peek.asNonTerminal(), token.getType());
-				stack.pop();
+			} else /** stack symbol is non-terminal */
+			{
+				NonTerminal nonT = peek.asNonTerminal();
+				String prod = table.getEntry(nonT, token.getType());
+
+				ISyntaxTree node = nodeFactory.createNode(nonT);
+				currentNode.addTree(node);
+				currentNode = node;
+
+				stack.push(new Symbol(Symbol.Reserved.SP));
 
 				String[] tmp = prod.split("::=");
 				if (tmp.length == 2) {
@@ -84,9 +105,10 @@ public class Parser {
 					for (int i = prods.length - 1; i >= 0; i--) {
 						if (!prods[i].trim().isEmpty()) {
 							Symbol symbol = new Symbol(prods[i]);
-							if (symbol.isNonTerminal() && symbol.asNonTerminal() == NonTerminal.EPSILON)
+							if (symbol.isReservedTerminal()
+									&& symbol.asReservedTerminal() == Symbol.Reserved.EPSILON)
 								continue;
-							
+
 							stack.push(symbol);
 						}
 					}
@@ -103,10 +125,15 @@ public class Parser {
 									+ token + ")");
 				}
 			}
-		} while (!(stack.peek().isTerminal() && stack.peek().asTerminal() == TokenType.EOF));
-		//assert(stack.size() == 0);
 
-		createSyntaxTree();
+		} while (!(stack.peek().isTerminal() && stack.peek().asTerminal() == TokenType.EOF));
+		assert (stack.size() == 1); // containing the EOF symbol
+
+		assert (currentNode != null);
+		syntaxTree = currentNode;
+
+		// TODO: Do we need this any more?
+		// createSyntaxTree();
 	}
 
 	/**
@@ -133,8 +160,8 @@ public class Parser {
 										+ newNode.getName() + " into "
 										+ tmp[0].trim());
 					}
-					
-					if(newNode == null){
+
+					if (newNode == null) {
 						throw new ParserException("Can't add null! " + tmp2[i]);
 					}
 
@@ -145,7 +172,7 @@ public class Parser {
 			}
 		}
 	}
-	
+
 	/**
 	 * Using Depth-First search to find the node.
 	 * 
@@ -153,7 +180,7 @@ public class Parser {
 	 * @return the next occurrence of the given node, if it has no children yet.
 	 */
 	private ISyntaxTree getNextOccurrence(String name) {
-		assert(syntaxTree != null);
+		assert (syntaxTree != null);
 
 		if (syntaxTree.getName().equals(name)
 				&& syntaxTree.getChildrenCount() == 0) {
@@ -186,7 +213,13 @@ public class Parser {
 		printParseTree(syntaxTree, 0);
 	}
 
+	private void printStack() {
+		System.out.println(stack);
+	}
+
 	private static void printParseTree(ISyntaxTree tree, int depth) {
+		if (tree == null)
+			return;
 
 		for (int i = 0; i <= depth; i++) {
 			System.out.print("\t");
@@ -212,23 +245,30 @@ public class Parser {
 		table.setEntry(NonTerminal.program, TokenType.DEF, "program ::= funcs");
 
 		// funcs
-		table.setEntry(NonTerminal.funcs, TokenType.DEF, "funcs ::=  func funcs");
+		table.setEntry(NonTerminal.funcs, TokenType.DEF,
+				"funcs ::=  func funcs");
 		table.setEntry(NonTerminal.funcs, TokenType.EOF, "funcs ::= EPSILON");
 
 		// func_
 		table.setEntry(NonTerminal.func, TokenType.DEF,
 				"func ::=  DEF type ID LPAREN optparams RPAREN func_");
-		table.setEntry(NonTerminal.func_, TokenType.OP_SEMIC, "func_ ::= OP_SEMIC");
+		table.setEntry(NonTerminal.func_, TokenType.OP_SEMIC,
+				"func_ ::= OP_SEMIC");
 		table.setEntry(NonTerminal.func_, TokenType.LBRACE, "func_ ::= block");
 
 		// optparams
-		table.setEntry(NonTerminal.optparams, TokenType.RPAREN, "optparams ::= EPSILON");
-		table.setEntry(NonTerminal.optparams, TokenType.INT_TYPE, "optparams ::= params");
-		table.setEntry(NonTerminal.optparams, TokenType.REAL_TYPE, "optparams ::= params");
+		table.setEntry(NonTerminal.optparams, TokenType.RPAREN,
+				"optparams ::= EPSILON");
+		table.setEntry(NonTerminal.optparams, TokenType.INT_TYPE,
+				"optparams ::= params");
+		table.setEntry(NonTerminal.optparams, TokenType.REAL_TYPE,
+				"optparams ::= params");
 		table.setEntry(NonTerminal.optparams, TokenType.STRING_TYPE,
 				"optparams ::= params");
-		table.setEntry(NonTerminal.optparams, TokenType.BOOL_TYPE, "optparams ::= params");
-		table.setEntry(NonTerminal.optparams, TokenType.RECORD, "optparams ::= params");
+		table.setEntry(NonTerminal.optparams, TokenType.BOOL_TYPE,
+				"optparams ::= params");
+		table.setEntry(NonTerminal.optparams, TokenType.RECORD,
+				"optparams ::= params");
 
 		// params
 		table.setEntry(NonTerminal.params, TokenType.INT_TYPE,
@@ -239,10 +279,12 @@ public class Parser {
 				"params ::= type ID params_");
 		table.setEntry(NonTerminal.params, TokenType.BOOL_TYPE,
 				"params ::= type ID params_");
-		table.setEntry(NonTerminal.params, TokenType.RECORD, "params ::= type ID params_");
+		table.setEntry(NonTerminal.params, TokenType.RECORD,
+				"params ::= type ID params_");
 
 		// params_
-		table.setEntry(NonTerminal.params_, TokenType.RPAREN, "params_ ::= EPSILON");
+		table.setEntry(NonTerminal.params_, TokenType.RPAREN,
+				"params_ ::= EPSILON");
 		table.setEntry(NonTerminal.params_, TokenType.OP_COMMA,
 				"params_ ::= OP_COMMA params");
 
@@ -252,7 +294,8 @@ public class Parser {
 
 		// decls
 		table.setEntry(NonTerminal.decls, TokenType.OP_NOT, "decls ::= EPSILON");
-		table.setEntry(NonTerminal.decls, TokenType.OP_MINUS, "decls ::= EPSILON");
+		table.setEntry(NonTerminal.decls, TokenType.OP_MINUS,
+				"decls ::= EPSILON");
 		table.setEntry(NonTerminal.decls, TokenType.LPAREN, "decls ::= EPSILON");
 		table.setEntry(NonTerminal.decls, TokenType.ID, "decls ::= EPSILON");
 		table.setEntry(NonTerminal.decls, TokenType.IF, "decls ::= EPSILON");
@@ -263,31 +306,46 @@ public class Parser {
 		table.setEntry(NonTerminal.decls, TokenType.PRINT, "decls ::= EPSILON");
 		table.setEntry(NonTerminal.decls, TokenType.LBRACE, "decls ::= EPSILON");
 		table.setEntry(NonTerminal.decls, TokenType.RBRACE, "decls ::= EPSILON");
-		table.setEntry(NonTerminal.decls, TokenType.INT_LITERAL, "decls ::=  EPSILON");
-		table.setEntry(NonTerminal.decls, TokenType.REAL_LITERAL, "decls ::=  EPSILON");
-		table.setEntry(NonTerminal.decls, TokenType.STRING_LITERAL, "decls ::=  EPSILON");
-		table.setEntry(NonTerminal.decls, TokenType.BOOL_LITERAL, "decls ::=  EPSILON");
-		table.setEntry(NonTerminal.decls, TokenType.INT_TYPE, "decls ::=  decl decls");
-		table.setEntry(NonTerminal.decls, TokenType.REAL_TYPE, "decls ::=  decl decls");
-		table.setEntry(NonTerminal.decls, TokenType.STRING_TYPE, "decls ::=  decl decls");
-		table.setEntry(NonTerminal.decls, TokenType.BOOL_TYPE, "decls ::=  decl decls");
-		table.setEntry(NonTerminal.decls, TokenType.RECORD, "decls ::=  decl decls");
+		table.setEntry(NonTerminal.decls, TokenType.INT_LITERAL,
+				"decls ::=  EPSILON");
+		table.setEntry(NonTerminal.decls, TokenType.REAL_LITERAL,
+				"decls ::=  EPSILON");
+		table.setEntry(NonTerminal.decls, TokenType.STRING_LITERAL,
+				"decls ::=  EPSILON");
+		table.setEntry(NonTerminal.decls, TokenType.BOOL_LITERAL,
+				"decls ::=  EPSILON");
+		table.setEntry(NonTerminal.decls, TokenType.INT_TYPE,
+				"decls ::=  decl decls");
+		table.setEntry(NonTerminal.decls, TokenType.REAL_TYPE,
+				"decls ::=  decl decls");
+		table.setEntry(NonTerminal.decls, TokenType.STRING_TYPE,
+				"decls ::=  decl decls");
+		table.setEntry(NonTerminal.decls, TokenType.BOOL_TYPE,
+				"decls ::=  decl decls");
+		table.setEntry(NonTerminal.decls, TokenType.RECORD,
+				"decls ::=  decl decls");
 
 		// decl
-		table.setEntry(NonTerminal.decl, TokenType.INT_TYPE, "decl ::=  type ID OP_SEMIC");
+		table.setEntry(NonTerminal.decl, TokenType.INT_TYPE,
+				"decl ::=  type ID OP_SEMIC");
 		table.setEntry(NonTerminal.decl, TokenType.REAL_TYPE,
 				"decl ::=  type ID OP_SEMIC");
 		table.setEntry(NonTerminal.decl, TokenType.STRING_TYPE,
 				"decl ::=  type ID OP_SEMIC");
 		table.setEntry(NonTerminal.decl, TokenType.BOOL_TYPE,
 				"decl ::=  type ID OP_SEMIC");
-		table.setEntry(NonTerminal.decl, TokenType.RECORD, "decl ::=  type ID OP_SEMIC");
+		table.setEntry(NonTerminal.decl, TokenType.RECORD,
+				"decl ::=  type ID OP_SEMIC");
 
 		// type
-		table.setEntry(NonTerminal.type, TokenType.INT_TYPE, "type ::=  basic type_");
-		table.setEntry(NonTerminal.type, TokenType.REAL_TYPE, "type ::=  basic type_");
-		table.setEntry(NonTerminal.type, TokenType.STRING_TYPE, "type ::=  basic type_");
-		table.setEntry(NonTerminal.type, TokenType.BOOL_TYPE, "type ::=  basic type_");
+		table.setEntry(NonTerminal.type, TokenType.INT_TYPE,
+				"type ::=  basic type_");
+		table.setEntry(NonTerminal.type, TokenType.REAL_TYPE,
+				"type ::=  basic type_");
+		table.setEntry(NonTerminal.type, TokenType.STRING_TYPE,
+				"type ::=  basic type_");
+		table.setEntry(NonTerminal.type, TokenType.BOOL_TYPE,
+				"type ::=  basic type_");
 		table.setEntry(NonTerminal.type, TokenType.RECORD,
 				"type ::= RECORD LBRACE decls RBRACE type_");
 
@@ -300,27 +358,42 @@ public class Parser {
 		table.setEntry(NonTerminal.stmts, TokenType.ID, "stmts ::= stmt stmts");
 
 		table.setEntry(NonTerminal.stmts, TokenType.IF, "stmts ::= stmt stmts");
-		table.setEntry(NonTerminal.stmts, TokenType.WHILE, "stmts ::= stmt stmts");
+		table.setEntry(NonTerminal.stmts, TokenType.WHILE,
+				"stmts ::= stmt stmts");
 		table.setEntry(NonTerminal.stmts, TokenType.DO, "stmts ::= stmt stmts");
-		table.setEntry(NonTerminal.stmts, TokenType.BREAK, "stmts ::= stmt stmts");
-		table.setEntry(NonTerminal.stmts, TokenType.RETURN, "stmts ::= stmt stmts");
-		table.setEntry(NonTerminal.stmts, TokenType.PRINT, "stmts ::= stmt stmts");
-		table.setEntry(NonTerminal.stmts, TokenType.LBRACE, "stmts ::= stmt stmts");
-		table.setEntry(NonTerminal.stmts, TokenType.OP_NOT, "stmts ::= stmt stmts");
-		table.setEntry(NonTerminal.stmts, TokenType.OP_MINUS, "stmts ::= stmt stmts");
-		table.setEntry(NonTerminal.stmts, TokenType.LPAREN, "stmts ::= stmt stmts");
-		table.setEntry(NonTerminal.stmts, TokenType.INT_LITERAL, "stmts ::= stmt stmts");
-		table.setEntry(NonTerminal.stmts, TokenType.REAL_LITERAL, "stmts ::= stmt stmts");
-		table.setEntry(NonTerminal.stmts, TokenType.BOOL_LITERAL, "stmts ::= stmt stmts");
+		table.setEntry(NonTerminal.stmts, TokenType.BREAK,
+				"stmts ::= stmt stmts");
+		table.setEntry(NonTerminal.stmts, TokenType.RETURN,
+				"stmts ::= stmt stmts");
+		table.setEntry(NonTerminal.stmts, TokenType.PRINT,
+				"stmts ::= stmt stmts");
+		table.setEntry(NonTerminal.stmts, TokenType.LBRACE,
+				"stmts ::= stmt stmts");
+		table.setEntry(NonTerminal.stmts, TokenType.OP_NOT,
+				"stmts ::= stmt stmts");
+		table.setEntry(NonTerminal.stmts, TokenType.OP_MINUS,
+				"stmts ::= stmt stmts");
+		table.setEntry(NonTerminal.stmts, TokenType.LPAREN,
+				"stmts ::= stmt stmts");
+		table.setEntry(NonTerminal.stmts, TokenType.INT_LITERAL,
+				"stmts ::= stmt stmts");
+		table.setEntry(NonTerminal.stmts, TokenType.REAL_LITERAL,
+				"stmts ::= stmt stmts");
+		table.setEntry(NonTerminal.stmts, TokenType.BOOL_LITERAL,
+				"stmts ::= stmt stmts");
 		table.setEntry(NonTerminal.stmts, TokenType.STRING_LITERAL,
 				"stmts ::= stmt stmts");
 		table.setEntry(NonTerminal.stmts, TokenType.RBRACE, "stmts ::= EPSILON");
 
 		// stmt
-		table.setEntry(NonTerminal.stmt, TokenType.ID, "stmt ::= assign OP_SEMIC");
-		table.setEntry(NonTerminal.stmt, TokenType.OP_NOT, "stmt ::= assign OP_SEMIC");
-		table.setEntry(NonTerminal.stmt, TokenType.OP_MINUS, "stmt ::= assign OP_SEMIC");
-		table.setEntry(NonTerminal.stmt, TokenType.LPAREN, "stmt ::= assign OP_SEMIC");
+		table.setEntry(NonTerminal.stmt, TokenType.ID,
+				"stmt ::= assign OP_SEMIC");
+		table.setEntry(NonTerminal.stmt, TokenType.OP_NOT,
+				"stmt ::= assign OP_SEMIC");
+		table.setEntry(NonTerminal.stmt, TokenType.OP_MINUS,
+				"stmt ::= assign OP_SEMIC");
+		table.setEntry(NonTerminal.stmt, TokenType.LPAREN,
+				"stmt ::= assign OP_SEMIC");
 		table.setEntry(NonTerminal.stmt, TokenType.INT_LITERAL,
 				"stmt ::= assign OP_SEMIC");
 		table.setEntry(NonTerminal.stmt, TokenType.REAL_LITERAL,
@@ -337,9 +410,12 @@ public class Parser {
 				"stmt ::= WHILE LPAREN assign RPAREN stmt ");
 		table.setEntry(NonTerminal.stmt, TokenType.DO,
 				"stmt ::= DO stmt WHILE LPAREN assign RPAREN OP_SEMIC ");
-		table.setEntry(NonTerminal.stmt, TokenType.BREAK, "stmt ::= BREAK OP_SEMIC ");
-		table.setEntry(NonTerminal.stmt, TokenType.RETURN, "stmt ::= RETURN stmt__");
-		table.setEntry(NonTerminal.stmt, TokenType.PRINT, "stmt ::= PRINT loc OP_SEMIC ");
+		table.setEntry(NonTerminal.stmt, TokenType.BREAK,
+				"stmt ::= BREAK OP_SEMIC ");
+		table.setEntry(NonTerminal.stmt, TokenType.RETURN,
+				"stmt ::= RETURN stmt__");
+		table.setEntry(NonTerminal.stmt, TokenType.PRINT,
+				"stmt ::= PRINT loc OP_SEMIC ");
 
 		// stmt_
 		table.setEntry(NonTerminal.stmt_, TokenType.ELSE, "stmt_ ::= ELSE stmt");
@@ -354,17 +430,25 @@ public class Parser {
 		table.setEntry(NonTerminal.stmt_, TokenType.LBRACE, "stmt_ ::= EPSILON");
 		table.setEntry(NonTerminal.stmt_, TokenType.RBRACE, "stmt_ ::= EPSILON");
 		table.setEntry(NonTerminal.stmt_, TokenType.OP_NOT, "stmt_ ::= EPSILON");
-		table.setEntry(NonTerminal.stmt_, TokenType.OP_MINUS, "stmt_ ::= EPSILON");
+		table.setEntry(NonTerminal.stmt_, TokenType.OP_MINUS,
+				"stmt_ ::= EPSILON");
 		table.setEntry(NonTerminal.stmt_, TokenType.LPAREN, "stmt_ ::= EPSILON");
-		table.setEntry(NonTerminal.stmt_, TokenType.INT_LITERAL, "stmt_ ::= EPSILON");
-		table.setEntry(NonTerminal.stmt_, TokenType.REAL_LITERAL, "stmt_ ::= EPSILON");
-		table.setEntry(NonTerminal.stmt_, TokenType.STRING_LITERAL, "stmt_ ::= EPSILON");
-		table.setEntry(NonTerminal.stmt_, TokenType.BOOL_LITERAL, "stmt_ ::= EPSILON");
-		// TODO: missing table.setEntry(NonTerminal.stmt_, TokenType.ELSE, "stmt_ ::= EPSILON");
+		table.setEntry(NonTerminal.stmt_, TokenType.INT_LITERAL,
+				"stmt_ ::= EPSILON");
+		table.setEntry(NonTerminal.stmt_, TokenType.REAL_LITERAL,
+				"stmt_ ::= EPSILON");
+		table.setEntry(NonTerminal.stmt_, TokenType.STRING_LITERAL,
+				"stmt_ ::= EPSILON");
+		table.setEntry(NonTerminal.stmt_, TokenType.BOOL_LITERAL,
+				"stmt_ ::= EPSILON");
+		// TODO: missing table.setEntry(NonTerminal.stmt_, TokenType.ELSE,
+		// "stmt_ ::= EPSILON");
 
 		// stmt__
-		table.setEntry(NonTerminal.stmt__, TokenType.ID, "stmt__ ::= loc OP_SEMIC");
-		table.setEntry(NonTerminal.stmt__, TokenType.OP_SEMIC, "stmt__ ::= OP_SEMIC");
+		table.setEntry(NonTerminal.stmt__, TokenType.ID,
+				"stmt__ ::= loc OP_SEMIC");
+		table.setEntry(NonTerminal.stmt__, TokenType.OP_SEMIC,
+				"stmt__ ::= OP_SEMIC");
 
 		// loc
 		table.setEntry(NonTerminal.loc, TokenType.ID, "loc ::=   ID loc__ ");
@@ -375,33 +459,44 @@ public class Parser {
 		table.setEntry(NonTerminal.loc_, TokenType.OP_DOT, "loc_ ::= OP_DOT ID");
 
 		// loc__
-		table.setEntry(NonTerminal.loc__, TokenType.LBRACKET, "loc__ ::= loc' loc__ ");
-		table.setEntry(NonTerminal.loc__, TokenType.OP_DOT, "loc__ ::= loc' loc__ ");
+		table.setEntry(NonTerminal.loc__, TokenType.LBRACKET,
+				"loc__ ::= loc' loc__ ");
+		table.setEntry(NonTerminal.loc__, TokenType.OP_DOT,
+				"loc__ ::= loc' loc__ ");
 
 		table.setEntry(NonTerminal.loc__, TokenType.LPAREN, "loc__ ::= EPSILON");
-		table.setEntry(NonTerminal.loc__, TokenType.OP_SEMIC, "loc__ ::= EPSILON");
+		table.setEntry(NonTerminal.loc__, TokenType.OP_SEMIC,
+				"loc__ ::= EPSILON");
 		table.setEntry(NonTerminal.loc__, TokenType.OP_LT, "loc__ ::= EPSILON");
 		table.setEntry(NonTerminal.loc__, TokenType.OP_LE, "loc__ ::= EPSILON");
 		table.setEntry(NonTerminal.loc__, TokenType.OP_GE, "loc__ ::= EPSILON");
 		table.setEntry(NonTerminal.loc__, TokenType.OP_GT, "loc__ ::= EPSILON");
 		table.setEntry(NonTerminal.loc__, TokenType.OP_ADD, "loc__ ::= EPSILON");
-		table.setEntry(NonTerminal.loc__, TokenType.OP_MINUS, "loc__ ::= EPSILON");
+		table.setEntry(NonTerminal.loc__, TokenType.OP_MINUS,
+				"loc__ ::= EPSILON");
 		table.setEntry(NonTerminal.loc__, TokenType.OP_MUL, "loc__ ::= EPSILON");
 		table.setEntry(NonTerminal.loc__, TokenType.OP_DIV, "loc__ ::= EPSILON");
 		table.setEntry(NonTerminal.loc__, TokenType.OP_EQ, "loc__ ::= EPSILON");
 		table.setEntry(NonTerminal.loc__, TokenType.OP_NE, "loc__ ::= EPSILON");
 		table.setEntry(NonTerminal.loc__, TokenType.OP_AND, "loc__ ::= EPSILON");
 		table.setEntry(NonTerminal.loc__, TokenType.OP_OR, "loc__ ::= EPSILON");
-		table.setEntry(NonTerminal.loc__, TokenType.RBRACKET, "loc__ ::= EPSILON");
+		table.setEntry(NonTerminal.loc__, TokenType.RBRACKET,
+				"loc__ ::= EPSILON");
 		table.setEntry(NonTerminal.loc__, TokenType.RPAREN, "loc__ ::= EPSILON");
-		table.setEntry(NonTerminal.loc__, TokenType.OP_ASSIGN, "loc__ ::= EPSILON");
-		table.setEntry(NonTerminal.loc__, TokenType.OP_COMMA, "loc__ ::= EPSILON");
+		table.setEntry(NonTerminal.loc__, TokenType.OP_ASSIGN,
+				"loc__ ::= EPSILON");
+		table.setEntry(NonTerminal.loc__, TokenType.OP_COMMA,
+				"loc__ ::= EPSILON");
 
 		// assign
-		table.setEntry(NonTerminal.assign, TokenType.ID, "assign ::= bool assign_");
-		table.setEntry(NonTerminal.assign, TokenType.LPAREN, "assign ::= bool assign_");
-		table.setEntry(NonTerminal.assign, TokenType.OP_MINUS, "assign ::= bool assign_");
-		table.setEntry(NonTerminal.assign, TokenType.OP_NOT, "assign ::= bool assign_");
+		table.setEntry(NonTerminal.assign, TokenType.ID,
+				"assign ::= bool assign_");
+		table.setEntry(NonTerminal.assign, TokenType.LPAREN,
+				"assign ::= bool assign_");
+		table.setEntry(NonTerminal.assign, TokenType.OP_MINUS,
+				"assign ::= bool assign_");
+		table.setEntry(NonTerminal.assign, TokenType.OP_NOT,
+				"assign ::= bool assign_");
 		table.setEntry(NonTerminal.assign, TokenType.INT_LITERAL,
 				"assign ::= bool assign_");
 		table.setEntry(NonTerminal.assign, TokenType.REAL_LITERAL,
@@ -414,37 +509,60 @@ public class Parser {
 		// assign'
 		table.setEntry(NonTerminal.assign_, TokenType.OP_ASSIGN,
 				"assign_ ::= OP_ASSIGN assign assign_");
-		table.setEntry(NonTerminal.assign_, TokenType.RPAREN, "assign_ ::= EPSILON ");
-		table.setEntry(NonTerminal.assign_, TokenType.RBRACKET, "assign_ ::= EPSILON ");
-		table.setEntry(NonTerminal.assign_, TokenType.OP_COMMA, "assign_ ::= EPSILON ");
-		table.setEntry(NonTerminal.assign_, TokenType.OP_SEMIC, "assign_ ::= EPSILON ");
-		// TODO: missing table.setEntry(NonTerminal.assign_, TokenType.OP_ASSIGN,
+		table.setEntry(NonTerminal.assign_, TokenType.RPAREN,
+				"assign_ ::= EPSILON ");
+		table.setEntry(NonTerminal.assign_, TokenType.RBRACKET,
+				"assign_ ::= EPSILON ");
+		table.setEntry(NonTerminal.assign_, TokenType.OP_COMMA,
+				"assign_ ::= EPSILON ");
+		table.setEntry(NonTerminal.assign_, TokenType.OP_SEMIC,
+				"assign_ ::= EPSILON ");
+		// TODO: missing table.setEntry(NonTerminal.assign_,
+		// TokenType.OP_ASSIGN,
 		// "assign_ ::= EPSILON ");
 
 		// bool
 		table.setEntry(NonTerminal.bool, TokenType.ID, "bool ::=  join bool_");
-		table.setEntry(NonTerminal.bool, TokenType.LPAREN, "bool ::=  join bool_");
-		table.setEntry(NonTerminal.bool, TokenType.INT_LITERAL, "bool ::=  join bool_");
-		table.setEntry(NonTerminal.bool, TokenType.OP_MINUS, "bool ::=  join bool_");
-		table.setEntry(NonTerminal.bool, TokenType.OP_NOT, "bool ::=  join bool_");
-		table.setEntry(NonTerminal.bool, TokenType.REAL_LITERAL, "bool ::=  join bool_");
-		table.setEntry(NonTerminal.bool, TokenType.STRING_LITERAL, "bool ::=  join bool_");
-		table.setEntry(NonTerminal.bool, TokenType.BOOL_LITERAL, "bool ::=  join bool_");
+		table.setEntry(NonTerminal.bool, TokenType.LPAREN,
+				"bool ::=  join bool_");
+		table.setEntry(NonTerminal.bool, TokenType.INT_LITERAL,
+				"bool ::=  join bool_");
+		table.setEntry(NonTerminal.bool, TokenType.OP_MINUS,
+				"bool ::=  join bool_");
+		table.setEntry(NonTerminal.bool, TokenType.OP_NOT,
+				"bool ::=  join bool_");
+		table.setEntry(NonTerminal.bool, TokenType.REAL_LITERAL,
+				"bool ::=  join bool_");
+		table.setEntry(NonTerminal.bool, TokenType.STRING_LITERAL,
+				"bool ::=  join bool_");
+		table.setEntry(NonTerminal.bool, TokenType.BOOL_LITERAL,
+				"bool ::=  join bool_");
 
 		// bool_
-		table.setEntry(NonTerminal.bool_, TokenType.RPAREN, "bool_ ::= EPSILON ");
-		table.setEntry(NonTerminal.bool_, TokenType.RBRACKET, "bool_ ::= EPSILON ");
-		table.setEntry(NonTerminal.bool_, TokenType.OP_ASSIGN, "bool_ ::= EPSILON ");
-		table.setEntry(NonTerminal.bool_, TokenType.OP_COMMA, "bool_ ::= EPSILON ");
-		table.setEntry(NonTerminal.bool_, TokenType.OP_SEMIC, "bool_ ::= EPSILON ");
-		table.setEntry(NonTerminal.bool_, TokenType.OP_OR, "bool_ ::= OP_OR join bool_");
+		table.setEntry(NonTerminal.bool_, TokenType.RPAREN,
+				"bool_ ::= EPSILON ");
+		table.setEntry(NonTerminal.bool_, TokenType.RBRACKET,
+				"bool_ ::= EPSILON ");
+		table.setEntry(NonTerminal.bool_, TokenType.OP_ASSIGN,
+				"bool_ ::= EPSILON ");
+		table.setEntry(NonTerminal.bool_, TokenType.OP_COMMA,
+				"bool_ ::= EPSILON ");
+		table.setEntry(NonTerminal.bool_, TokenType.OP_SEMIC,
+				"bool_ ::= EPSILON ");
+		table.setEntry(NonTerminal.bool_, TokenType.OP_OR,
+				"bool_ ::= OP_OR join bool_");
 
 		// join
-		table.setEntry(NonTerminal.join, TokenType.ID, "join ::= equality join_");
-		table.setEntry(NonTerminal.join, TokenType.LPAREN, "join ::= equality join_");
-		table.setEntry(NonTerminal.join, TokenType.INT_LITERAL, "join ::= equality join_");
-		table.setEntry(NonTerminal.join, TokenType.OP_MINUS, "join ::= equality join_");
-		table.setEntry(NonTerminal.join, TokenType.OP_NOT, "join ::= equality join_");
+		table.setEntry(NonTerminal.join, TokenType.ID,
+				"join ::= equality join_");
+		table.setEntry(NonTerminal.join, TokenType.LPAREN,
+				"join ::= equality join_");
+		table.setEntry(NonTerminal.join, TokenType.INT_LITERAL,
+				"join ::= equality join_");
+		table.setEntry(NonTerminal.join, TokenType.OP_MINUS,
+				"join ::= equality join_");
+		table.setEntry(NonTerminal.join, TokenType.OP_NOT,
+				"join ::= equality join_");
 		table.setEntry(NonTerminal.join, TokenType.REAL_LITERAL,
 				"join ::= equality join_");
 		table.setEntry(NonTerminal.join, TokenType.STRING_LITERAL,
@@ -453,17 +571,23 @@ public class Parser {
 				"join ::= equality join_");
 
 		// join_
-		table.setEntry(NonTerminal.join_, TokenType.RPAREN, "join_ ::= EPSILON ");
-		table.setEntry(NonTerminal.join_, TokenType.RBRACKET, "join_ ::= EPSILON ");
-		table.setEntry(NonTerminal.join_, TokenType.OP_ASSIGN, "join_ ::= EPSILON ");
-		table.setEntry(NonTerminal.join_, TokenType.OP_COMMA, "join_ ::= EPSILON ");
+		table.setEntry(NonTerminal.join_, TokenType.RPAREN,
+				"join_ ::= EPSILON ");
+		table.setEntry(NonTerminal.join_, TokenType.RBRACKET,
+				"join_ ::= EPSILON ");
+		table.setEntry(NonTerminal.join_, TokenType.OP_ASSIGN,
+				"join_ ::= EPSILON ");
+		table.setEntry(NonTerminal.join_, TokenType.OP_COMMA,
+				"join_ ::= EPSILON ");
 		table.setEntry(NonTerminal.join_, TokenType.OP_OR, "join_ ::= EPSILON ");
-		table.setEntry(NonTerminal.join_, TokenType.OP_SEMIC, "join_ ::= EPSILON ");
+		table.setEntry(NonTerminal.join_, TokenType.OP_SEMIC,
+				"join_ ::= EPSILON ");
 		table.setEntry(NonTerminal.join_, TokenType.OP_AND,
 				"join_ ::= OP_AND equality join_");
 
 		// equality
-		table.setEntry(NonTerminal.equality, TokenType.ID, "equality ::= rel equality_");
+		table.setEntry(NonTerminal.equality, TokenType.ID,
+				"equality ::= rel equality_");
 		table.setEntry(NonTerminal.equality, TokenType.LPAREN,
 				"equality ::= rel equality_");
 		table.setEntry(NonTerminal.equality, TokenType.INT_LITERAL,
@@ -480,13 +604,20 @@ public class Parser {
 				"equality ::= rel equality_");
 
 		// equality_
-		table.setEntry(NonTerminal.equality_, TokenType.RPAREN, "equality_ ::= EPSILON ");
-		table.setEntry(NonTerminal.equality_, TokenType.RBRACKET, "equality_ ::= EPSILON ");
-		table.setEntry(NonTerminal.equality_, TokenType.OP_ASSIGN, "equality_ ::= EPSILON ");
-		table.setEntry(NonTerminal.equality_, TokenType.OP_COMMA, "equality_ ::= EPSILON ");
-		table.setEntry(NonTerminal.equality_, TokenType.OP_OR, "equality_ ::= EPSILON ");
-		table.setEntry(NonTerminal.equality_, TokenType.OP_AND, "equality_ ::= EPSILON ");
-		table.setEntry(NonTerminal.equality_, TokenType.OP_SEMIC, "equality_ ::= EPSILON ");
+		table.setEntry(NonTerminal.equality_, TokenType.RPAREN,
+				"equality_ ::= EPSILON ");
+		table.setEntry(NonTerminal.equality_, TokenType.RBRACKET,
+				"equality_ ::= EPSILON ");
+		table.setEntry(NonTerminal.equality_, TokenType.OP_ASSIGN,
+				"equality_ ::= EPSILON ");
+		table.setEntry(NonTerminal.equality_, TokenType.OP_COMMA,
+				"equality_ ::= EPSILON ");
+		table.setEntry(NonTerminal.equality_, TokenType.OP_OR,
+				"equality_ ::= EPSILON ");
+		table.setEntry(NonTerminal.equality_, TokenType.OP_AND,
+				"equality_ ::= EPSILON ");
+		table.setEntry(NonTerminal.equality_, TokenType.OP_SEMIC,
+				"equality_ ::= EPSILON ");
 		table.setEntry(NonTerminal.equality_, TokenType.OP_EQ,
 				"equality_ ::= OP_EQ rel equality_");
 		table.setEntry(NonTerminal.equality_, TokenType.OP_NE,
@@ -495,19 +626,28 @@ public class Parser {
 		// rel
 		table.setEntry(NonTerminal.rel, TokenType.ID, "rel ::= expr  rel_");
 		table.setEntry(NonTerminal.rel, TokenType.LPAREN, "rel ::= expr  rel_");
-		table.setEntry(NonTerminal.rel, TokenType.INT_LITERAL, "rel ::= expr  rel_");
-		table.setEntry(NonTerminal.rel, TokenType.OP_MINUS, "rel ::= expr  rel_");
+		table.setEntry(NonTerminal.rel, TokenType.INT_LITERAL,
+				"rel ::= expr  rel_");
+		table.setEntry(NonTerminal.rel, TokenType.OP_MINUS,
+				"rel ::= expr  rel_");
 		table.setEntry(NonTerminal.rel, TokenType.OP_NOT, "rel ::= expr  rel_");
-		table.setEntry(NonTerminal.rel, TokenType.REAL_LITERAL, "rel ::= expr  rel_");
-		table.setEntry(NonTerminal.rel, TokenType.STRING_LITERAL, "rel ::= expr  rel_");
-		table.setEntry(NonTerminal.rel, TokenType.BOOL_LITERAL, "rel ::= expr  rel_");
+		table.setEntry(NonTerminal.rel, TokenType.REAL_LITERAL,
+				"rel ::= expr  rel_");
+		table.setEntry(NonTerminal.rel, TokenType.STRING_LITERAL,
+				"rel ::= expr  rel_");
+		table.setEntry(NonTerminal.rel, TokenType.BOOL_LITERAL,
+				"rel ::= expr  rel_");
 
 		// rel_
 		table.setEntry(NonTerminal.rel_, TokenType.RPAREN, "rel_ ::= EPSILON ");
-		table.setEntry(NonTerminal.rel_, TokenType.RBRACKET, "rel_ ::= EPSILON ");
-		table.setEntry(NonTerminal.rel_, TokenType.OP_ASSIGN, "rel_ ::= EPSILON ");
-		table.setEntry(NonTerminal.rel_, TokenType.OP_COMMA, "rel_ ::= EPSILON ");
-		table.setEntry(NonTerminal.rel_, TokenType.OP_SEMIC, "rel_ ::= EPSILON ");
+		table.setEntry(NonTerminal.rel_, TokenType.RBRACKET,
+				"rel_ ::= EPSILON ");
+		table.setEntry(NonTerminal.rel_, TokenType.OP_ASSIGN,
+				"rel_ ::= EPSILON ");
+		table.setEntry(NonTerminal.rel_, TokenType.OP_COMMA,
+				"rel_ ::= EPSILON ");
+		table.setEntry(NonTerminal.rel_, TokenType.OP_SEMIC,
+				"rel_ ::= EPSILON ");
 		table.setEntry(NonTerminal.rel_, TokenType.OP_OR, "rel_ ::= EPSILON ");
 		table.setEntry(NonTerminal.rel_, TokenType.OP_AND, "rel_ ::= EPSILON ");
 		table.setEntry(NonTerminal.rel_, TokenType.OP_EQ, "rel_ ::= EPSILON ");
@@ -519,16 +659,24 @@ public class Parser {
 
 		// expr
 		table.setEntry(NonTerminal.expr, TokenType.ID, "expr ::= term expr_");
-		table.setEntry(NonTerminal.expr, TokenType.LPAREN, "expr ::= term expr_");
-		table.setEntry(NonTerminal.expr, TokenType.INT_LITERAL, "expr ::= term expr_");
-		table.setEntry(NonTerminal.expr, TokenType.OP_MINUS, "expr ::= term expr_");
-		table.setEntry(NonTerminal.expr, TokenType.OP_NOT, "expr ::= term expr_");
-		table.setEntry(NonTerminal.expr, TokenType.REAL_LITERAL, "expr ::= term expr_");
-		table.setEntry(NonTerminal.expr, TokenType.STRING_LITERAL, "expr ::= term expr_");
-		table.setEntry(NonTerminal.expr, TokenType.BOOL_LITERAL, "expr ::= term expr_");
+		table.setEntry(NonTerminal.expr, TokenType.LPAREN,
+				"expr ::= term expr_");
+		table.setEntry(NonTerminal.expr, TokenType.INT_LITERAL,
+				"expr ::= term expr_");
+		table.setEntry(NonTerminal.expr, TokenType.OP_MINUS,
+				"expr ::= term expr_");
+		table.setEntry(NonTerminal.expr, TokenType.OP_NOT,
+				"expr ::= term expr_");
+		table.setEntry(NonTerminal.expr, TokenType.REAL_LITERAL,
+				"expr ::= term expr_");
+		table.setEntry(NonTerminal.expr, TokenType.STRING_LITERAL,
+				"expr ::= term expr_");
+		table.setEntry(NonTerminal.expr, TokenType.BOOL_LITERAL,
+				"expr ::= term expr_");
 
 		// expr_
-		table.setEntry(NonTerminal.expr_, TokenType.OP_ADD, "expr_ ::= OP_ADD term expr_");
+		table.setEntry(NonTerminal.expr_, TokenType.OP_ADD,
+				"expr_ ::= OP_ADD term expr_");
 		table.setEntry(NonTerminal.expr_, TokenType.OP_MINUS,
 				"expr_ ::= OP_MINUS term expr_");
 		table.setEntry(NonTerminal.expr_, TokenType.OP_LT, "expr_ ::= EPSILON ");
@@ -537,23 +685,36 @@ public class Parser {
 		table.setEntry(NonTerminal.expr_, TokenType.OP_GT, "expr_ ::= EPSILON ");
 		table.setEntry(NonTerminal.expr_, TokenType.OP_EQ, "expr_ ::= EPSILON ");
 		table.setEntry(NonTerminal.expr_, TokenType.OP_NE, "expr_ ::= EPSILON ");
-		table.setEntry(NonTerminal.expr_, TokenType.OP_AND, "expr_ ::= EPSILON ");
+		table.setEntry(NonTerminal.expr_, TokenType.OP_AND,
+				"expr_ ::= EPSILON ");
 		table.setEntry(NonTerminal.expr_, TokenType.OP_OR, "expr_ ::= EPSILON ");
-		table.setEntry(NonTerminal.expr_, TokenType.RBRACKET, "expr_ ::= EPSILON ");
-		table.setEntry(NonTerminal.expr_, TokenType.RPAREN, "expr_ ::= EPSILON ");
-		table.setEntry(NonTerminal.expr_, TokenType.OP_SEMIC, "expr_ ::= EPSILON ");
-		table.setEntry(NonTerminal.expr_, TokenType.OP_ASSIGN, "expr_ ::= EPSILON ");
-		table.setEntry(NonTerminal.expr_, TokenType.OP_COMMA, "expr_ ::= EPSILON ");
+		table.setEntry(NonTerminal.expr_, TokenType.RBRACKET,
+				"expr_ ::= EPSILON ");
+		table.setEntry(NonTerminal.expr_, TokenType.RPAREN,
+				"expr_ ::= EPSILON ");
+		table.setEntry(NonTerminal.expr_, TokenType.OP_SEMIC,
+				"expr_ ::= EPSILON ");
+		table.setEntry(NonTerminal.expr_, TokenType.OP_ASSIGN,
+				"expr_ ::= EPSILON ");
+		table.setEntry(NonTerminal.expr_, TokenType.OP_COMMA,
+				"expr_ ::= EPSILON ");
 
 		// term
 		table.setEntry(NonTerminal.term, TokenType.ID, "term ::= unary term_");
-		table.setEntry(NonTerminal.term, TokenType.LPAREN, "term ::= unary term_");
-		table.setEntry(NonTerminal.term, TokenType.INT_LITERAL, "term ::= unary term_");
-		table.setEntry(NonTerminal.term, TokenType.OP_MINUS, "term ::= unary term_");
-		table.setEntry(NonTerminal.term, TokenType.OP_NOT, "term ::= unary term_");
-		table.setEntry(NonTerminal.term, TokenType.REAL_LITERAL, "term ::= unary term_");
-		table.setEntry(NonTerminal.term, TokenType.STRING_LITERAL, "term ::= unary term_");
-		table.setEntry(NonTerminal.term, TokenType.BOOL_LITERAL, "term ::= unary term_");
+		table.setEntry(NonTerminal.term, TokenType.LPAREN,
+				"term ::= unary term_");
+		table.setEntry(NonTerminal.term, TokenType.INT_LITERAL,
+				"term ::= unary term_");
+		table.setEntry(NonTerminal.term, TokenType.OP_MINUS,
+				"term ::= unary term_");
+		table.setEntry(NonTerminal.term, TokenType.OP_NOT,
+				"term ::= unary term_");
+		table.setEntry(NonTerminal.term, TokenType.REAL_LITERAL,
+				"term ::= unary term_");
+		table.setEntry(NonTerminal.term, TokenType.STRING_LITERAL,
+				"term ::= unary term_");
+		table.setEntry(NonTerminal.term, TokenType.BOOL_LITERAL,
+				"term ::= unary term_");
 
 		// term_
 		table.setEntry(NonTerminal.term_, TokenType.OP_MUL,
@@ -564,30 +725,45 @@ public class Parser {
 		table.setEntry(NonTerminal.term_, TokenType.OP_LE, "term_ ::= EPSILON ");
 		table.setEntry(NonTerminal.term_, TokenType.OP_GE, "term_ ::= EPSILON ");
 		table.setEntry(NonTerminal.term_, TokenType.OP_GT, "term_ ::= EPSILON ");
-		table.setEntry(NonTerminal.term_, TokenType.OP_ADD, "term_ ::= EPSILON ");
-		table.setEntry(NonTerminal.term_, TokenType.OP_MINUS, "term_ ::= EPSILON ");
+		table.setEntry(NonTerminal.term_, TokenType.OP_ADD,
+				"term_ ::= EPSILON ");
+		table.setEntry(NonTerminal.term_, TokenType.OP_MINUS,
+				"term_ ::= EPSILON ");
 		table.setEntry(NonTerminal.term_, TokenType.OP_EQ, "term_ ::= EPSILON ");
 		table.setEntry(NonTerminal.term_, TokenType.OP_NE, "term_ ::= EPSILON ");
-		table.setEntry(NonTerminal.term_, TokenType.OP_AND, "term_ ::= EPSILON ");
+		table.setEntry(NonTerminal.term_, TokenType.OP_AND,
+				"term_ ::= EPSILON ");
 		table.setEntry(NonTerminal.term_, TokenType.OP_OR, "term_ ::= EPSILON ");
-		table.setEntry(NonTerminal.term_, TokenType.RBRACKET, "term_ ::= EPSILON ");
-		table.setEntry(NonTerminal.term_, TokenType.RPAREN, "term_ ::= EPSILON ");
-		table.setEntry(NonTerminal.term_, TokenType.OP_SEMIC, "term_ ::= EPSILON ");
-		table.setEntry(NonTerminal.term_, TokenType.OP_ASSIGN, "term_ ::= EPSILON ");
-		table.setEntry(NonTerminal.term_, TokenType.OP_COMMA, "term_ ::= EPSILON ");
+		table.setEntry(NonTerminal.term_, TokenType.RBRACKET,
+				"term_ ::= EPSILON ");
+		table.setEntry(NonTerminal.term_, TokenType.RPAREN,
+				"term_ ::= EPSILON ");
+		table.setEntry(NonTerminal.term_, TokenType.OP_SEMIC,
+				"term_ ::= EPSILON ");
+		table.setEntry(NonTerminal.term_, TokenType.OP_ASSIGN,
+				"term_ ::= EPSILON ");
+		table.setEntry(NonTerminal.term_, TokenType.OP_COMMA,
+				"term_ ::= EPSILON ");
 
 		// unary
 		table.setEntry(NonTerminal.unary, TokenType.ID, "unary ::= factor");
 		table.setEntry(NonTerminal.unary, TokenType.LPAREN, "unary ::= factor");
-		table.setEntry(NonTerminal.unary, TokenType.INT_LITERAL, "unary ::= factor");
-		table.setEntry(NonTerminal.unary, TokenType.REAL_LITERAL, "unary ::= factor");
-		table.setEntry(NonTerminal.unary, TokenType.STRING_LITERAL, "unary ::= factor");
-		table.setEntry(NonTerminal.unary, TokenType.BOOL_LITERAL, "unary ::= factor");
-		table.setEntry(NonTerminal.unary, TokenType.OP_MINUS, "unary ::= OP_MINUS unary");
-		table.setEntry(NonTerminal.unary, TokenType.OP_NOT, "unary ::= OP_NOT unary");
+		table.setEntry(NonTerminal.unary, TokenType.INT_LITERAL,
+				"unary ::= factor");
+		table.setEntry(NonTerminal.unary, TokenType.REAL_LITERAL,
+				"unary ::= factor");
+		table.setEntry(NonTerminal.unary, TokenType.STRING_LITERAL,
+				"unary ::= factor");
+		table.setEntry(NonTerminal.unary, TokenType.BOOL_LITERAL,
+				"unary ::= factor");
+		table.setEntry(NonTerminal.unary, TokenType.OP_MINUS,
+				"unary ::= OP_MINUS unary");
+		table.setEntry(NonTerminal.unary, TokenType.OP_NOT,
+				"unary ::= OP_NOT unary");
 
 		// factor
-		table.setEntry(NonTerminal.factor, TokenType.ID, "factor ::= loc factor_");
+		table.setEntry(NonTerminal.factor, TokenType.ID,
+				"factor ::= loc factor_");
 		table.setEntry(NonTerminal.factor, TokenType.LPAREN,
 				"factor ::= LPAREN assign RPAREN");
 		table.setEntry(NonTerminal.factor, TokenType.INT_LITERAL,
@@ -602,55 +778,91 @@ public class Parser {
 		// factor_
 		table.setEntry(NonTerminal.factor_, TokenType.LPAREN,
 				"factor_ ::= LPAREN optargs RPAREN ");
-		table.setEntry(NonTerminal.factor_, TokenType.OP_LT, "factor_ ::= EPSILON ");
-		table.setEntry(NonTerminal.factor_, TokenType.OP_LE, "factor_ ::= EPSILON ");
-		table.setEntry(NonTerminal.factor_, TokenType.OP_GE, "factor_ ::= EPSILON ");
-		table.setEntry(NonTerminal.factor_, TokenType.OP_GT, "factor_ ::= EPSILON ");
-		table.setEntry(NonTerminal.factor_, TokenType.OP_ADD, "factor_ ::= EPSILON ");
-		table.setEntry(NonTerminal.factor_, TokenType.OP_MINUS, "factor_ ::= EPSILON ");
-		table.setEntry(NonTerminal.factor_, TokenType.OP_MUL, "factor_ ::= EPSILON ");
-		table.setEntry(NonTerminal.factor_, TokenType.OP_DIV, "factor_ ::= EPSILON ");
-		table.setEntry(NonTerminal.factor_, TokenType.OP_EQ, "factor_ ::= EPSILON ");
-		table.setEntry(NonTerminal.factor_, TokenType.OP_NE, "factor_ ::= EPSILON ");
-		table.setEntry(NonTerminal.factor_, TokenType.OP_AND, "factor_ ::= EPSILON ");
-		table.setEntry(NonTerminal.factor_, TokenType.OP_OR, "factor_ ::= EPSILON ");
-		table.setEntry(NonTerminal.factor_, TokenType.RBRACKET, "factor_ ::= EPSILON ");
-		table.setEntry(NonTerminal.factor_, TokenType.RPAREN, "factor_ ::= EPSILON ");
-		table.setEntry(NonTerminal.factor_, TokenType.OP_SEMIC, "factor_ ::= EPSILON ");
-		table.setEntry(NonTerminal.factor_, TokenType.OP_ASSIGN, "factor_ ::= EPSILON ");
-		table.setEntry(NonTerminal.factor_, TokenType.OP_COMMA, "factor_ ::= EPSILON ");
+		table.setEntry(NonTerminal.factor_, TokenType.OP_LT,
+				"factor_ ::= EPSILON ");
+		table.setEntry(NonTerminal.factor_, TokenType.OP_LE,
+				"factor_ ::= EPSILON ");
+		table.setEntry(NonTerminal.factor_, TokenType.OP_GE,
+				"factor_ ::= EPSILON ");
+		table.setEntry(NonTerminal.factor_, TokenType.OP_GT,
+				"factor_ ::= EPSILON ");
+		table.setEntry(NonTerminal.factor_, TokenType.OP_ADD,
+				"factor_ ::= EPSILON ");
+		table.setEntry(NonTerminal.factor_, TokenType.OP_MINUS,
+				"factor_ ::= EPSILON ");
+		table.setEntry(NonTerminal.factor_, TokenType.OP_MUL,
+				"factor_ ::= EPSILON ");
+		table.setEntry(NonTerminal.factor_, TokenType.OP_DIV,
+				"factor_ ::= EPSILON ");
+		table.setEntry(NonTerminal.factor_, TokenType.OP_EQ,
+				"factor_ ::= EPSILON ");
+		table.setEntry(NonTerminal.factor_, TokenType.OP_NE,
+				"factor_ ::= EPSILON ");
+		table.setEntry(NonTerminal.factor_, TokenType.OP_AND,
+				"factor_ ::= EPSILON ");
+		table.setEntry(NonTerminal.factor_, TokenType.OP_OR,
+				"factor_ ::= EPSILON ");
+		table.setEntry(NonTerminal.factor_, TokenType.RBRACKET,
+				"factor_ ::= EPSILON ");
+		table.setEntry(NonTerminal.factor_, TokenType.RPAREN,
+				"factor_ ::= EPSILON ");
+		table.setEntry(NonTerminal.factor_, TokenType.OP_SEMIC,
+				"factor_ ::= EPSILON ");
+		table.setEntry(NonTerminal.factor_, TokenType.OP_ASSIGN,
+				"factor_ ::= EPSILON ");
+		table.setEntry(NonTerminal.factor_, TokenType.OP_COMMA,
+				"factor_ ::= EPSILON ");
 
 		// optargs
 		table.setEntry(NonTerminal.optargs, TokenType.ID, "optargs ::= args");
-		table.setEntry(NonTerminal.optargs, TokenType.OP_NOT, "optargs ::= args");
-		table.setEntry(NonTerminal.optargs, TokenType.OP_MINUS, "optargs ::= args");
-		table.setEntry(NonTerminal.optargs, TokenType.LPAREN, "optargs ::= args");
-		table.setEntry(NonTerminal.optargs, TokenType.INT_LITERAL, "optargs ::= args");
-		table.setEntry(NonTerminal.optargs, TokenType.REAL_LITERAL, "optargs ::= args");
-		table.setEntry(NonTerminal.optargs, TokenType.BOOL_LITERAL, "optargs ::= args");
-		table.setEntry(NonTerminal.optargs, TokenType.STRING_LITERAL, "optargs ::= args");
-		table.setEntry(NonTerminal.optargs, TokenType.RPAREN, "optargs ::= EPSILON");
+		table.setEntry(NonTerminal.optargs, TokenType.OP_NOT,
+				"optargs ::= args");
+		table.setEntry(NonTerminal.optargs, TokenType.OP_MINUS,
+				"optargs ::= args");
+		table.setEntry(NonTerminal.optargs, TokenType.LPAREN,
+				"optargs ::= args");
+		table.setEntry(NonTerminal.optargs, TokenType.INT_LITERAL,
+				"optargs ::= args");
+		table.setEntry(NonTerminal.optargs, TokenType.REAL_LITERAL,
+				"optargs ::= args");
+		table.setEntry(NonTerminal.optargs, TokenType.BOOL_LITERAL,
+				"optargs ::= args");
+		table.setEntry(NonTerminal.optargs, TokenType.STRING_LITERAL,
+				"optargs ::= args");
+		table.setEntry(NonTerminal.optargs, TokenType.RPAREN,
+				"optargs ::= EPSILON");
 
 		// args
 		table.setEntry(NonTerminal.args, TokenType.ID, "args ::= assign args_");
-		table.setEntry(NonTerminal.args, TokenType.LPAREN, "args ::= assign args_");
-		table.setEntry(NonTerminal.args, TokenType.INT_LITERAL, "args ::= assign args_");
-		table.setEntry(NonTerminal.args, TokenType.OP_MINUS, "args ::= assign args_");
-		table.setEntry(NonTerminal.args, TokenType.OP_NOT, "args ::= assign args_");
-		table.setEntry(NonTerminal.args, TokenType.REAL_LITERAL, "args ::= assign args_");
+		table.setEntry(NonTerminal.args, TokenType.LPAREN,
+				"args ::= assign args_");
+		table.setEntry(NonTerminal.args, TokenType.INT_LITERAL,
+				"args ::= assign args_");
+		table.setEntry(NonTerminal.args, TokenType.OP_MINUS,
+				"args ::= assign args_");
+		table.setEntry(NonTerminal.args, TokenType.OP_NOT,
+				"args ::= assign args_");
+		table.setEntry(NonTerminal.args, TokenType.REAL_LITERAL,
+				"args ::= assign args_");
 		table.setEntry(NonTerminal.args, TokenType.STRING_LITERAL,
 				"args ::= assign args_");
-		table.setEntry(NonTerminal.args, TokenType.BOOL_LITERAL, "args ::= assign args_");
+		table.setEntry(NonTerminal.args, TokenType.BOOL_LITERAL,
+				"args ::= assign args_");
 
 		// args_
 		table.setEntry(NonTerminal.args_, TokenType.RPAREN, "args_ ::= EPSILON");
-		table.setEntry(NonTerminal.args_, TokenType.OP_COMMA, "args_ ::= OP_COMMA args");
+		table.setEntry(NonTerminal.args_, TokenType.OP_COMMA,
+				"args_ ::= OP_COMMA args");
 
 		// basic
-		table.setEntry(NonTerminal.basic, TokenType.INT_TYPE, "basic ::=  INT_TYPE");
-		table.setEntry(NonTerminal.basic, TokenType.REAL_TYPE, "basic ::= REAL_TYPE");
-		table.setEntry(NonTerminal.basic, TokenType.STRING_TYPE, "basic ::=  STRING_TYPE");
-		table.setEntry(NonTerminal.basic, TokenType.BOOL_TYPE, "basic ::=  BOOL_TYPE");
+		table.setEntry(NonTerminal.basic, TokenType.INT_TYPE,
+				"basic ::=  INT_TYPE");
+		table.setEntry(NonTerminal.basic, TokenType.REAL_TYPE,
+				"basic ::= REAL_TYPE");
+		table.setEntry(NonTerminal.basic, TokenType.STRING_TYPE,
+				"basic ::=  STRING_TYPE");
+		table.setEntry(NonTerminal.basic, TokenType.BOOL_TYPE,
+				"basic ::=  BOOL_TYPE");
 	}
 
 }

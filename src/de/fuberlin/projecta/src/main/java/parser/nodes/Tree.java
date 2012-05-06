@@ -3,15 +3,19 @@ package parser.nodes;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
 import parser.Attribute;
 import parser.ISyntaxTree;
 import semantic.analysis.SymbolTableStack;
 
 public abstract class Tree implements ISyntaxTree {
 
-	private ArrayList<ISyntaxTree> children = new ArrayList<ISyntaxTree>();
-	private String name;
-	private ArrayList<Attribute> attributes;
+	private final ArrayList<ISyntaxTree> children = new ArrayList<ISyntaxTree>();
+	private final String name;
+	private final ArrayList<Attribute> attributes;
+
+	@Getter
+	ISyntaxTree parent = null;
 
 	/**
 	 * Creates a new empty node for non-terminals.
@@ -23,22 +27,31 @@ public abstract class Tree implements ISyntaxTree {
 		attributes = new ArrayList<Attribute>();
 	}
 
+	@Override
 	public void addTree(ISyntaxTree tree) {
+		if (tree.getParent() == this)
+			return;
+
 		children.add(tree);
+		tree.setParent(this);
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public int getChildrenCount() {
 		return children.size();
 	}
 
+	@Override
 	public ISyntaxTree getChild(int i) {
 		return children.get(i);
 	}
 
+	@Override
 	public Attribute getAttribute(String name) {
 		for (Attribute attr : attributes) {
 			if (attr.getName().equals(name)) {
@@ -48,10 +61,13 @@ public abstract class Tree implements ISyntaxTree {
 		return null;
 	}
 
+	@Override
 	public List<ISyntaxTree> getChildrenByName(String name) {
-		return null;  //To change body of implemented methods use File | Settings | File Templates.
+		return null; // To change body of implemented methods use File |
+						// Settings | File Templates.
 	}
 
+	@Override
 	public boolean setAttribute(String name, String value) {
 		for (Attribute attr : attributes) {
 			if (attr.getName().equals(name)) {
@@ -62,6 +78,7 @@ public abstract class Tree implements ISyntaxTree {
 		return false;
 	}
 
+	@Override
 	public boolean addAttribute(String name) {
 		if (getAttribute(name) == null) {
 			attributes.add(new Attribute(name));
@@ -69,7 +86,23 @@ public abstract class Tree implements ISyntaxTree {
 		}
 		return false;
 	}
-	
+
+	@Override
+	public void setParent(ISyntaxTree tree) {
+		if (tree.getParent() == this) {
+			System.out.println("Warning: Cyclic link detected.");
+			return;
+		}
+
+		if (getParent() == tree) {
+			return;
+		}
+
+		this.parent = tree;
+		tree.addTree(this);
+	}
+
+	@Override
 	public abstract void run(SymbolTableStack tables);
 
 }

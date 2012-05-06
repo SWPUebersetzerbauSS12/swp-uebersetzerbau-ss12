@@ -10,6 +10,10 @@ import semantic.analysis.SymbolTableStack;
  */
 public interface ISyntaxTree {
 
+	public void setParent(ISyntaxTree tree);
+
+	public ISyntaxTree getParent();
+
 	public void addTree(ISyntaxTree tree);
 
 	public String getName();

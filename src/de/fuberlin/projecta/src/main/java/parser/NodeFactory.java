@@ -1,7 +1,49 @@
 package parser;
 
 import lexer.IToken.TokenType;
-import parser.nodes.*;
+import parser.nodes.ConstantTree;
+import parser.nodes.ID;
+import parser.nodes.NoOpTree;
+import parser.nodes.args;
+import parser.nodes.args2;
+import parser.nodes.assign;
+import parser.nodes.assign2;
+import parser.nodes.basic;
+import parser.nodes.block;
+import parser.nodes.bool;
+import parser.nodes.bool2;
+import parser.nodes.decl;
+import parser.nodes.decls;
+import parser.nodes.equality;
+import parser.nodes.equality2;
+import parser.nodes.expr;
+import parser.nodes.expr2;
+import parser.nodes.factor;
+import parser.nodes.factor2;
+import parser.nodes.func;
+import parser.nodes.func2;
+import parser.nodes.funcs;
+import parser.nodes.join;
+import parser.nodes.join2;
+import parser.nodes.loc;
+import parser.nodes.loc2;
+import parser.nodes.loc3;
+import parser.nodes.optargs;
+import parser.nodes.optparams;
+import parser.nodes.params;
+import parser.nodes.params2;
+import parser.nodes.program;
+import parser.nodes.rel;
+import parser.nodes.rel2;
+import parser.nodes.stmt;
+import parser.nodes.stmt2;
+import parser.nodes.stmt3;
+import parser.nodes.stmts;
+import parser.nodes.term;
+import parser.nodes.term2;
+import parser.nodes.type;
+import parser.nodes.type2;
+import parser.nodes.unary;
 
 public class NodeFactory {
 	
@@ -13,7 +55,7 @@ public class NodeFactory {
 		return null;
 	}
 
-	private ISyntaxTree createNode(NonTerminal symbol) {
+	public ISyntaxTree createNode(NonTerminal symbol) {
 		if(symbol.equals(NonTerminal.program))
 			return new program("program");
 		if(symbol.equals(NonTerminal.funcs))
@@ -94,15 +136,22 @@ public class NodeFactory {
 			return new args2("args_");
 		if(symbol.equals(NonTerminal.basic))
 			return new basic("basic");
-		if(symbol.equals(NonTerminal.EPSILON))
-			return new EPSILON("EPSILON");
 
 		assert(false);
 		return null;
 	}
 
-	private ISyntaxTree createNode(TokenType name) {
-		return new NoOpTree();
+	public ISyntaxTree createNode(TokenType type) {
+		switch(type) {
+		case BOOL_LITERAL:
+		case INT_LITERAL:
+		case REAL_LITERAL:
+		case STRING_LITERAL:
+			return new ConstantTree(type);
+		case ID:
+			return new ID("id");
+		}
+		return new NoOpTree("noop");
 
 		/*
 		//terminals

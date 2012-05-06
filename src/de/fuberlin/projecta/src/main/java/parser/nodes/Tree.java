@@ -33,7 +33,7 @@ public abstract class Tree implements ISyntaxTree {
 	}
 
 	@Override
-	public void addTree(ISyntaxTree tree) {
+	public void addChild(ISyntaxTree tree) {
 		if (tree.getParent() == this)
 			return;
 
@@ -104,7 +104,7 @@ public abstract class Tree implements ISyntaxTree {
 		}
 
 		this.parent = tree;
-		tree.addTree(this);
+		tree.addChild(this);
 	}
 
 	public void printTree() {

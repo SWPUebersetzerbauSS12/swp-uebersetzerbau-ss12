@@ -89,7 +89,7 @@ public class Parser {
 					final boolean success = node.setAttribute(DefaultAttribute.TokenValue.name(),
 							token.getAttribute());
 					assert(success);
-					currentNode.addTree(node);
+					currentNode.addChild(node);
 					try {
 						token = lexer.getNextToken();
 					} catch (SyntaxErrorException e) {
@@ -105,7 +105,7 @@ public class Parser {
 				String prod = table.getEntry(nonT, token.getType());
 
 				ISyntaxTree node = nodeFactory.createNode(nonT);
-				currentNode.addTree(node);
+				currentNode.addChild(node);
 				currentNode = node;
 
 				stack.push(new Symbol(Symbol.Reserved.SP));
@@ -177,7 +177,7 @@ public class Parser {
 					}
 
 					if (newNode != null && node != null) {
-						node.addTree(newNode);
+						node.addChild(newNode);
 					}
 				}
 			}

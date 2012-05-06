@@ -14,7 +14,7 @@ public interface ISyntaxTree {
 
 	public ISyntaxTree getParent();
 
-	public void addTree(ISyntaxTree tree);
+	public void addChild(ISyntaxTree tree);
 
 	public String getName();
 

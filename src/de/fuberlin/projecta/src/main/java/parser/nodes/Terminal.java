@@ -14,7 +14,7 @@ public abstract class Terminal extends Tree {
 	/**
 	 * Should a leaf really implement this method?
 	 */
-	public void addTree(ISyntaxTree tree) {
+	public void addChild(ISyntaxTree tree) {
 		throw new UnsupportedOperationException("Can't extend a leaf!");
 	}
 

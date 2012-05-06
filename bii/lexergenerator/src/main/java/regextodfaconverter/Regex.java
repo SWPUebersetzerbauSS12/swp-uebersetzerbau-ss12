@@ -176,28 +176,53 @@ public class Regex {
 	 */
 	protected static String bracketRegex(String regex)
 			throws RegexInvalidException {
+		// 1. Bei Eingabe eines leeren Regex "()" zurückgeben
 		if (regex.length() == 0) {
-			return "";
+			return "()";
 		}
-
+		
+		// 2. Überprüfen ob der angegebene reguläre Ausdruck nur die Basisoperationen enthält.
 		if (!containsOnlyBasicOperations(regex)) {
 			throw new RegexInvalidException(
 					"Der angegebene reguläre Ausdruck darf nur die Grundoperationen enthalten!");
 		}
 
-		// ArrayList erstellen
+		// 3. Sonderfälle für das leere Zeichen behandeln:
+		// 3.1 ...(|...
+		if (regex.startsWith("|")) 
+		{
+			// Kann nur bei einem Unterausdruck mit "(|" vorkommen.
+			regex = "()" + regex;
+			
+		}
+		// 3.2 ...|)...
+		if (regex.endsWith("|")) 
+		{
+			// Kann nur bei einem Unterausdruck mit "|)" vorkommen.
+			regex = regex + "()";
+		}
+		// 3.3 ...||...
+		Pattern pattern = Pattern.compile("[^\\\\]\\|\\|"); //[^\\]\|\|
+		Matcher matcher = pattern.matcher(regex);
+		if (matcher.find())
+		{
+			String match = matcher.group();
+			regex = regex.replace(match, match.substring(0,1) + "|()|");
+		}
+
+		// 4. ArrayList erstellen
 		ArrayList<String> regexTasks = new ArrayList<String>();
 
-		// ArrayList befüllen
+		// 5. ArrayList befüllen
 		for (int i = 0; i < regex.length(); i++) {
 			char c = regex.charAt(i);
 			if (isBasicMetaCharacter(c)) {
 				if (c == '(') {
 					// Der regex enthält bereits einen geklammerten Ausdruck!
 					// Geklammerten Regex rekursiv auflösen.
-					int toClose = 1;
+					int opened = 1;
 					StringBuilder subRegex = new StringBuilder();
-					while (toClose != 0) {
+					while (opened != 0) {
 						i++;
 						if (i == regex.length()) {
 							throw new RegexInvalidException(
@@ -205,17 +230,13 @@ public class Regex {
 						}
 						if (regex.charAt(i) == '(') {
 							subRegex.append(regex.charAt(i));
-							toClose++;
+							opened++;
 						} else if (regex.charAt(i) == ')') {
-							toClose--;
-							if (toClose > 0) {
+							opened--;
+							if (opened > 0) {
 								subRegex.append(regex.charAt(i));
 							}
 						} else if (regex.charAt(i) == '\\') {
-							if (i + 1 == regex.length()) {
-								throw new RegexInvalidException(
-										"Der angegebene reguläre Ausdruck ist ungültig geklammert");
-							}
 							subRegex.append(regex.charAt(i));
 							i++;
 							subRegex.append(regex.charAt(i));
@@ -246,12 +267,12 @@ public class Regex {
 
 		}
 
-		// ArrayList abarbeiten, bis nur noch ein Eintrag übrig ist.
+		// 6. ArrayList abarbeiten, bis nur noch ein Eintrag übrig ist.
 		if (regexTasks.size() == 0) {
 			throw new RegexInvalidException(
 					"Unbekannter Ausnahmefehler. Fehlercode: r-0");
 		} else {
-			// closure
+			// 6.1 closure
 			for (int i = 0; i < regexTasks.size(); i++) {
 				if (regexTasks.get(i).equals("*")) {
 					regexTasks.set(i - 1, "(" + regexTasks.get(i - 1) + "*)");
@@ -260,7 +281,7 @@ public class Regex {
 				}
 			}
 
-			// concat
+			// 6.2 concat
 			for (int i = 0; i < regexTasks.size(); i++) {
 				if (i + 1 < regexTasks.size()) {
 					// '*' kann nicht mehr kommen, da bereits vollständig
@@ -276,7 +297,7 @@ public class Regex {
 				}
 			}
 
-			// union
+			// 6.3 union
 			for (int i = 0; i < regexTasks.size(); i++) {
 				if (regexTasks.get(i).equals("|")) {
 					regexTasks.set(i - 1, "(" + regexTasks.get(i - 1) + "|"

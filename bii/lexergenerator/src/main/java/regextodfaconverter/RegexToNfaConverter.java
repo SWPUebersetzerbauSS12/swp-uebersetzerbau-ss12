@@ -32,8 +32,6 @@
 
 package regextodfaconverter;
 
-import java.util.ArrayList;
-
 import regextodfaconverter.fsm.FiniteStateMachine;
 import regextodfaconverter.fsm.State;
 

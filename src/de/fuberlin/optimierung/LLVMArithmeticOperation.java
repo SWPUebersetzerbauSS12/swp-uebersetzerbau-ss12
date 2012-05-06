@@ -1,3 +1,7 @@
+package de.fuberlin.optimierung;
+
+import java.util.LinkedList;
+
 class LLVMArithmeticOperation implements ILLVMCommand {
 	
 	private ILLVMBlock block;
@@ -28,7 +32,7 @@ class LLVMArithmeticOperation implements ILLVMCommand {
 		
 		switch(cmd_parts.length){
 			case 6 :
-				if(cmd_parts[3].equals("nuw") == 0)
+				if(cmd_parts[3].equals("nuw"))
 					has_nuw = true;
 				else
 					has_nsw = true;
@@ -49,14 +53,13 @@ class LLVMArithmeticOperation implements ILLVMCommand {
 		operands.add(new LLVMParameter(cmd[1], cmd_parts[4]));
 	}
 	
-	
 	public void deleteCommand() {
 		
 		if(this.isFirstCommand()) {	// Loesche erstes Element
 			this.successor.setPredecessor(null);
 			this.block.setFirstCommand(this.successor);
 		}
-		if(this.isLastCommand()) {	// Loesche letztes Element
+		if(this.isFirstCommand()) {	// Loesche letztes Element
 			this.predecessor.setSuccessor(null);
 			this.block.setLastCommand(this.predecessor);
 		}
@@ -66,6 +69,10 @@ class LLVMArithmeticOperation implements ILLVMCommand {
 
 	}
 	
+	private boolean isFirstCommand() {
+		return (this.predecessor == null);
+	}
+
 	public ILLVMCommand getPredecessor() {
 		return this.predecessor;
 	}
@@ -80,5 +87,20 @@ class LLVMArithmeticOperation implements ILLVMCommand {
 
 	public void setSuccessor(ILLVMCommand c) {
 		this.successor = c;
+	}
+
+	public String getCmd() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public int getParamsCount() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public void changeParam(int position, String param) {
+		// TODO Auto-generated method stub
+		
 	}
 }

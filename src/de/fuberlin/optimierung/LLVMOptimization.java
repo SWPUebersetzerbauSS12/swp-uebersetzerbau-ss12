@@ -65,7 +65,7 @@ class LLVMOptimization implements ILLVMOptimization {
 	public static void main(String args[]) {
 
 		ILLVMOptimization optimization = new LLVMOptimization();
-		optimization.optimizeCodeFromFile("input/llvm_test");
+		optimization.optimizeCodeFromFile("input/llvm_test.llvm");
 
 	}
 

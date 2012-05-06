@@ -366,7 +366,7 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 	 * @param fsm
 	 *            Der endliche Automat, mit dem dieser endliche Automat verenigt
 	 *            werden soll.
-	 * @remarks: Durch diese Methode wird der aktuelle Zustand auf den
+	 * @remarks Durch diese Methode wird der aktuelle Zustand auf den
 	 *           Startzustand zurückgesetzt.
 	 */
 	public void union(
@@ -411,7 +411,7 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 	 * @param fsm
 	 *            Der endliche Automat, mit dem dieser endliche Automat
 	 *            verbunden werden soll.
-	 * @remarks: Durch diese Methode wird der aktuelle Zustand auf den
+	 * @remarks Durch diese Methode wird der aktuelle Zustand auf den
 	 *           Startzustand zurückgesetzt.
 	 */
 	public void concat(
@@ -443,7 +443,7 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 	/**
 	 * Fügt diesem eindlichen Automaten eine Wiederholung hinzu.
 	 * 
-	 * @remarks: Durch diese Methode wird der aktuelle Zustand auf den
+	 * @remarks Durch diese Methode wird der aktuelle Zustand auf den
 	 *           Startzustand zurückgesetzt.
 	 */
 	public void closure() {

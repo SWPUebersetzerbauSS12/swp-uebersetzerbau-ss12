@@ -2,12 +2,12 @@ package semantic.analysis;
 
 import parser.ISyntaxTree;
 
-public class SemanticAnalyser {
+public class SemanticAnalyzer {
 
 	private ISyntaxTree tree;
 	private SymbolTableStack tables;
 
-	public SemanticAnalyser(ISyntaxTree tree) {
+	public SemanticAnalyzer(ISyntaxTree tree) {
 		this.tree = tree;
 		tables = new SymbolTableStack();
 	}

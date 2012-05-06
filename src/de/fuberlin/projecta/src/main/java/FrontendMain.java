@@ -8,7 +8,7 @@ import lexer.io.StringCharStream;
 import parser.ISyntaxTree;
 import parser.Parser;
 import parser.ParserException;
-import semantic.analysis.SemanticAnalyser;
+import semantic.analysis.SemanticAnalyzer;
 import utils.IOUtils;
 
 public class FrontendMain {
@@ -49,7 +49,7 @@ public class FrontendMain {
 		ISyntaxTree tree = parser.getSyntaxTree();
 		parser.printParseTree();
 		
-		SemanticAnalyser analyzer = new SemanticAnalyser(tree);
+		SemanticAnalyzer analyzer = new SemanticAnalyzer(tree);
 		analyzer.run();
 	}
 

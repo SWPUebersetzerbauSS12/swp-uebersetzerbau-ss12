@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import parser.Parser;
 import parser.ParserException;
-import semantic.analysis.SemanticAnalyser;
+import semantic.analysis.SemanticAnalyzer;
 
 
 public class SemanticAnalysisTest {
@@ -22,7 +22,7 @@ public class SemanticAnalysisTest {
 		} catch (ParserException e) {
 			e.printStackTrace();
 		}
-		SemanticAnalyser analyzer = new SemanticAnalyser(parser.getSyntaxTree());
+		SemanticAnalyzer analyzer = new SemanticAnalyzer(parser.getSyntaxTree());
 		analyzer.run();
 	}
 

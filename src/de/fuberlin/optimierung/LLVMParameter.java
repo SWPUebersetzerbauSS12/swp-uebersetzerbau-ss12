@@ -6,6 +6,16 @@ public class LLVMParameter {
 	private LLVMParameterType type;		// Bsp: REGISTER
 	private String name;	// Bsp: %i
 	
+	public LLVMParameter(String name, String typeString) {
+		
+		if(name.charAt(0) == '%')
+			type = LLVMParameterType.REGISTER;
+		else
+			type = LLVMParameterType.INTEGER;
+		this.typeString = typeString;
+		this.name = name;
+	}
+	
 	public LLVMParameter(String name, LLVMParameterType type, String typeString) {
 		this.typeString = typeString;
 		this.type = type;

@@ -69,189 +69,17 @@ public class RegexToNfaConverter<StatePayloadType> {
 	 */
 	public FiniteStateMachine<Character, StatePayloadType> convertToNFA(
 			String regex, StatePayloadType payload) throws ConvertExecption {
-		ArrayList<FiniteStateMachine<Character, StatePayloadType>> nfas = new ArrayList<FiniteStateMachine<Character, StatePayloadType>>();
-
-		// Die nachfolgenden Character werden als Hilfs-Character verwendet und
-		// dürfen daher nicht in dem regulären Ausdruck vorkommen:
-		char cOpen = (char) 255; // ( -> (char)255
-		char cClose = (char) 254; // ) -> (char)254
-		char cGuard = (char) 253; // | -> (char)253
-		char cStar = (char) 252; // * -> (char)252
-		char cNFA = (char) 251; // NFA -> (char)251
-
-		// Sicherstellen, dass in der Eingabe keins dieser Zeichen verwendet
-		// wird:
-		if (regex.indexOf(cOpen) != -1) {
-			throw new ConvertExecption(
-					"Der reguläre Ausdruck enthält nicht unterstützte Zeichen: '"
-							+ cOpen + "'");
-		}
-		if (regex.indexOf(cClose) != -1) {
-			throw new ConvertExecption(
-					"Der reguläre Ausdruck enthält nicht unterstützte Zeichen: '"
-							+ cClose + "'");
-		}
-		if (regex.indexOf(cGuard) != -1) {
-			throw new ConvertExecption(
-					"Der reguläre Ausdruck enthält nicht unterstützte Zeichen: '"
-							+ cGuard + "'");
-		}
-		if (regex.indexOf(cStar) != -1) {
-			throw new ConvertExecption(
-					"Der reguläre Ausdruck enthält nicht unterstützte Zeichen: '"
-							+ cStar + "'");
-		}
-		if (regex.indexOf(cNFA) != -1) {
-			throw new ConvertExecption(
-					"Der reguläre Ausdruck enthält nicht unterstützte Zeichen: '"
-							+ cNFA + "'");
-		}
-
-		// Eingegebenen Regex minimieren
+		// Angegebenen Regex aif Basisoperationen reduzieren und klammern.
 		try {
 			regex = Regex.reduceAndBracketRegex(regex);
 		} catch (RegexInvalidException e) {
 			throw new ConvertExecption(
 					"Der verwendete reguläre Ausdruck '"
 							+ regex
-							+ "' ist ungültig oder verwendet nicht unterstütze Operatoren");
+							+ "' ist ungültig oder verwendet nicht unterstütze Operatoren!");
 		}
 
-		// Chars durch Hilfs-Character austauschen
-		StringBuilder sb = new StringBuilder("");
-		for (int i = 0; i < regex.length(); i++) {
-			char c = regex.charAt(i);
-			if (c == '(') {
-				sb.append(cOpen);
-			} else if (c == ')') {
-				sb.append(cClose);
-			} else if (c == '|') {
-				sb.append(cGuard);
-			} else if (c == '*') {
-				sb.append(cStar);
-			} else if (c == '\\') {
-				if (i + 1 == regex.length()) {
-					throw new ConvertExecption(
-							"Der verwendete reguläre Ausdruck endet mit einem ungütligen Zeichen: '"
-									+ c + "'");
-				}
-				if (Regex.isMetaCharacter(regex.charAt(i + 1))) {
-					sb.append(regex.charAt(i + 1));
-				} else {
-					throw new ConvertExecption(
-							"Der verwendete reguläre Ausdruck enthält einen erweiterten Operator bzw. Ausdruck: '"
-									+ c + "" + regex.charAt(i + 1) + "'");
-				}
-				i++;
-			} else {
-				sb.append(c);
-			}
-		}
-		regex = sb.toString();
-
-		// Klammerausdrücke ohne Inhalt "()" entfernen.
-		while (regex.contains("" + cOpen + cClose)) {
-			regex = regex.replace("" + cOpen + cClose, "");
-		}
-
-		// Regex-String ist nun hinreichend verarbeitet und bereit zur
-		// Automatenerstellung.
-
-		// Verarbeite den regex bis keine Klammern (bzw. geschlossene Klammern)
-		// mehr vorhanden sind.
-		while (regex.indexOf(cClose) != -1) {
-			int indexClose = regex.indexOf(cClose);
-			int indexOpen = regex.substring(0, indexClose + 1).lastIndexOf(
-					cOpen);
-			String subRegex = regex.substring(indexOpen, indexClose + 1);
-
-			if (subRegex.length() < 3) {
-				// Dieser Fall sollte im Prinzip nicht eintreten können.
-				throw new ConvertExecption(
-						"Unbekannter Ausnahmefehler. Fehlercode: w-l2");
-			} else if (subRegex.length() == 3) {
-				// Muster gefunden: (A) oder (NFA).
-				if (subRegex.equals("" + cOpen + cNFA + cClose)) {
-					// Muster gefunden: (NFA) --> NFA
-				} else {
-					// Muster gefunden: (A) --> new(NFA)
-
-					// NFA erstellen
-					FiniteStateMachine<Character, StatePayloadType> nfa = new FiniteStateMachine<Character, StatePayloadType>();
-					State<Character, StatePayloadType> state1;
-					State<Character, StatePayloadType> state2;
-
-					state1 = nfa.getCurrentState();
-					state2 = new State<Character, StatePayloadType>(payload,
-							true);
-
-					try {
-						nfa.addTransition(state1, state2, subRegex.charAt(1));
-					} catch (Exception e) {
-						// Dieser Fall sollte im Prinzip nicht eintreten können.
-						throw new ConvertExecption(
-								"Unbekannter Ausnahmefehler. Fehlercode: w-l3");
-					}
-					// NFA erstellt
-
-					// NFA ablegen
-					nfas.add(nfa);
-				}
-				regex = replaceRangeInString(regex, indexOpen, indexClose + 1,
-						"" + cNFA);
-				continue;
-			} else if (subRegex.length() == 4) {
-				// Muster gefunden: (FSM*) oder (FSMFSM)
-				if (subRegex.equals("" + cOpen + cNFA + cStar + cClose)) {
-					// Muster gefunden: (FSM*) --> closure(NFA)
-					int c = countCharFrequencyInString(
-							regex.substring(0, indexClose - 3), cNFA);
-					nfas.get(c).closure();
-				} else if (subRegex.equals("" + cOpen + cNFA + cNFA + cClose)) {
-					// Muster gefunden: (FSMFSM) --> concat(FSM,FSM)
-					int c = countCharFrequencyInString(
-							regex.substring(0, indexClose - 3), cNFA);
-					nfas.get(c).concat(nfas.get(c + 1));
-					nfas.remove(c + 1);
-				} else {
-					// Dieser Fall sollte im Prinzip nicht eintreten können.
-					throw new ConvertExecption(
-							"Unbekannter Ausnahmefehler. Fehlercode: w-l4");
-				}
-				regex = replaceRangeInString(regex, indexOpen, indexClose + 1,
-						"" + cNFA);
-				continue;
-			} else if (subRegex.length() == 5) {
-				// Muster gefunden: (FSM|FSM)
-				if (subRegex.equals("" + cOpen + cNFA + cGuard + cNFA + cClose)) {
-					// Muster gefunden: (FSM|FSM) --> union(FSM,FSM)
-					int c = countCharFrequencyInString(
-							regex.substring(0, indexClose - 3), cNFA);
-					nfas.get(c).union(nfas.get(c + 1));
-					nfas.remove(c + 1);
-				} else {
-					// Dieser Fall sollte im Prinzip nicht eintreten können.
-					throw new ConvertExecption(
-							"Unbekannter Ausnahmefehler. Fehlercode: w-l5");
-				}
-				regex = replaceRangeInString(regex, indexOpen, indexClose + 1,
-						"" + cNFA);
-				continue;
-			} else if (subRegex.length() > 5) {
-				// Dieser Fall sollte im Prinzip nicht eintreten können.
-				throw new ConvertExecption(
-						"Unbekannter Ausnahmefehler. Fehlercode: w-l6");
-			}
-		}
-		if (nfas.size() == 0) {
-			return null;
-		} else if (nfas.size() == 1) {
-			return nfas.get(0);
-		} else {
-			// Dieser Fall sollte im Prinzip nicht eintreten können.
-			throw new ConvertExecption(
-					"Unbekannter Ausnahmefehler. Fehlercode: r-s2");
-		}
+		return convertRekursivToNFA(regex, payload);
 	}
 
 	/**
@@ -272,6 +100,121 @@ public class RegexToNfaConverter<StatePayloadType> {
 	public FiniteStateMachine<Character, StatePayloadType> convertToNFA(
 			String regex) throws ConvertExecption {
 		return convertToNFA(regex, null);
+	}
+
+	/**
+	 * Erstellt aus dem angegebenen regulären Ausdruck rekursiv einen
+	 * nichtdeterministischen endlichen Automaten (nondeterministic finite
+	 * automaton, kurz NFA).
+	 * 
+	 * @param Regex
+	 *            Der reguläre Ausdruck, aus dem der NFA erstellt werden soll.
+	 * @param payload
+	 *            Der Inhalt, der in jedem Endzustand verknüpft werden soll.
+	 * @return Der NFA, der durch den regulären Ausdruck abgebildet wird. Bei
+	 *         einem leeren Regex wird null zurückgegeben.
+	 * @remakrs Es werden nur die folgenden regulären Muster unterstützt: A|B,
+	 *          AB, A*
+	 * @throws ConvertExecption
+	 *             Wenn ein Fehler beim Übersetzen des regulären Asudrucks in
+	 *             einen NFA auftritt.
+	 */
+	private FiniteStateMachine<Character, StatePayloadType> convertRekursivToNFA(
+			String regex, StatePayloadType payload) throws ConvertExecption {
+		FiniteStateMachine<Character, StatePayloadType> fsm = null;
+
+		if (regex.length() == 0) {
+			fsm = createSimpleNfa(null, payload);
+		} else if (regex.length() == 1) {
+			fsm = createSimpleNfa(regex.charAt(0), payload);
+		} else if (regex.length() == 2 && regex.startsWith("\\")) {
+			fsm = createSimpleNfa(regex.charAt(1), payload);
+		} else if (regex.charAt(regex.length() - 1) == '*') {
+			fsm = convertRekursivToNFA(regex.substring(1, regex.length() - 2),
+					payload);
+			fsm.closure();
+		} else {
+			// (...)|(...) oder (...)(...) oder (...)
+			StringBuilder sb = new StringBuilder("");
+			int opened = 1;
+			for (int i = 1; i < regex.length(); i++) {
+				char c = regex.charAt(i);
+				if (c == '\\') {
+					sb.append(c);
+					if (i + 1 < regex.length()) {
+						sb.append(regex.charAt(i + 1));
+					}
+					i++;
+				} else if (c == '(') {
+					sb.append(c);
+					opened++;
+				} else if (c == ')') {
+					opened--;
+					if (opened == 0) {
+						break;
+					} else {
+						sb.append(c);
+					}
+				} else {
+					sb.append(c);
+				}
+			}
+
+			if (sb.toString().length() == regex.length() - 2) {
+				// Fall (...)
+				fsm = convertRekursivToNFA(sb.toString(), payload);
+			} else {
+				char c = regex.charAt(sb.toString().length() + 2);
+				if (c == '|') {
+					// Fall (...)|(...)
+					fsm = convertRekursivToNFA(sb.toString(), payload);
+					fsm.union(convertRekursivToNFA(
+							regex.substring(sb.toString().length() + 4,
+									regex.length() - 1), payload));
+				} else if (c == '(') {
+					// Fall (...)(...)
+					fsm = convertRekursivToNFA(sb.toString(), payload);
+					fsm.concat(convertRekursivToNFA(
+							regex.substring(sb.toString().length() + 3,
+									regex.length() - 1), payload));
+				}
+			}
+		}
+
+		NfaToDfaConverter<Character, StatePayloadType> converter = new NfaToDfaConverter<Character, StatePayloadType>();
+		fsm = converter.convertToDfa(fsm);
+		return fsm;
+	}
+
+	/**
+	 * Erstellt eine einfachen nichtdeterministischen endlichen Automaten
+	 * (Startzustand,Bedingung,Endzustand) mit der angegebenen Bedingung für den
+	 * Übergang.
+	 * 
+	 * @param condition
+	 *            Die Bedingung für den Übergang.
+	 * @param payload
+	 *            Der Inhalt des Endzustands.
+	 * @return Eine einfacher nichtdeterministischen endlichen Automaten
+	 *         (Startzustand,Bedingung,Endzustand) mit der angegebenen Bedingung
+	 *         für den Übergang.
+	 */
+	private FiniteStateMachine<Character, StatePayloadType> createSimpleNfa(
+			Character condition, StatePayloadType payload) {
+		FiniteStateMachine<Character, StatePayloadType> nfa = new FiniteStateMachine<Character, StatePayloadType>();
+		State<Character, StatePayloadType> state1;
+		State<Character, StatePayloadType> state2;
+
+		state1 = nfa.getCurrentState();
+		state2 = new State<Character, StatePayloadType>(payload, true);
+
+		try {
+			nfa.addTransition(state1, state2, condition);
+		} catch (Exception e) {
+			// Dieser Fall kann nicht eintreten!
+		}
+
+		return nfa;
 	}
 
 	/**

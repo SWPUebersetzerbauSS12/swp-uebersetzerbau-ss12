@@ -4,9 +4,10 @@ package parser;
  * @author Christian Cikryt
  */
 public interface IAttribute {
+
 	String getName();
 
-	String getValue();
+	Object getValue();
 
-	void setValue(String value);
+	void setValue(Object value);
 }

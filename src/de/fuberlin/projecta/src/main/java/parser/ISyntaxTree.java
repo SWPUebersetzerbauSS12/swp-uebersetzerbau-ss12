@@ -46,11 +46,13 @@ public interface ISyntaxTree {
 	 *            the value to change the attribute to.
 	 * @return True if change was successful, False otherwise.
 	 */
-	public boolean setAttribute(String name, String value);
+	public boolean setAttribute(String name, Object value);
 
 	/**
 	 * Adds a new attribute to the nodes attribute collection, if this name is
 	 * not already inserted.
+	 * 
+	 * TODO: Do we need this?
 	 * 
 	 * @param name
 	 *            the attribute's name to insert.

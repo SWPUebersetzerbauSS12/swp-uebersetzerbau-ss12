@@ -50,7 +50,7 @@ public class FrontendMain {
 		parser.printParseTree();
 		
 		SemanticAnalyzer analyzer = new SemanticAnalyzer(tree);
-		analyzer.run();
+		analyzer.analyze();
 	}
 
 	public static void main(String[] args) {

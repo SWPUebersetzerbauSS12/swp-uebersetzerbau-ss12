@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 public
 @Data
 class Attribute implements IAttribute {
+
 	private final String name;
-	private String value;
+	private Object value;
+
 }

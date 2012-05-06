@@ -42,40 +42,20 @@ public class SymbolTableStack {
 		}
 		return null;
 	}
-
+	
 	/**
-	 * Searches one entry in all SymbolTables, with respect to the stack order.
-	 * After finding and updating the content, it rearranges the table stack to
-	 * the previous order.
+	 * Get the current SymbolTable on top of the stack
 	 * 
-	 * @param name
-	 *            the name to search for
-	 * @param content
-	 *            the content to override previous content
+	 * @return Symbol table 
 	 */
-	public void insertEntry(String name, Object content) {
-		List<SymbolTable> tables = new ArrayList<SymbolTable>();
-		SymbolTable table;
-
-		do {
-			table = symbolTables.pop();
-			if (table != null)
-				tables.add(table);
-			if (table.lookup(name) != null) {
-				table.insertEntry(name, content);
-				break;
-			}
-		} while (table != null);
-
-		for (int i = tables.size() - 1; i >= 0; i--) {
-			pushSymbolTable(tables.get(i));
-		}
+	public SymbolTable top() {
+		return symbolTables.peek();
 	}
 	
 	/**
 	 * Attention: popped tables must be pushed again when done writing!
 	 * 
-	 * @return the last pushed SymbolTable
+	 * @return The last pushed SymbolTable
 	 */
 	public SymbolTable popSymbolTable() {
 		return symbolTables.pop();
@@ -84,7 +64,7 @@ public class SymbolTableStack {
 	/**
 	 * Adds the given table onto the symbolTable stack
 	 * 
-	 * @param table
+	 * @param Table
 	 */
 	public void pushSymbolTable(SymbolTable table) {
 		symbolTables.push(table);

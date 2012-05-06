@@ -8,7 +8,9 @@ import lexer.IToken;
 import lexer.IToken.TokenType;
 import lexer.SyntaxErrorException;
 import lombok.Getter;
+import lombok.Setter;
 import parser.nodes.NoOpTree;
+import parser.nodes.Tree.DefaultAttribute;
 
 public class Parser {
 
@@ -17,6 +19,9 @@ public class Parser {
 	private Stack<Symbol> stack;
 	private Vector<String> outputs;
 	private NodeFactory nodeFactory;
+
+	@Getter @Setter
+	private boolean debugEnabled = false;
 
 	@Getter
 	private ISyntaxTree syntaxTree;
@@ -61,7 +66,9 @@ public class Parser {
 		ISyntaxTree currentNode = new NoOpTree("root");
 
 		do {
-			printStack();
+			if (debugEnabled)
+				printStack();
+
 			Symbol peek = stack.pop();
 
 			if (peek.isReservedTerminal()) {
@@ -78,6 +85,10 @@ public class Parser {
 				TokenType terminal = peek.asTerminal();
 				if (terminal == token.getType()) {
 					ISyntaxTree node = nodeFactory.createNode(terminal);
+					node.addAttribute(DefaultAttribute.TokenValue.name());
+					final boolean success = node.setAttribute(DefaultAttribute.TokenValue.name(),
+							token.getAttribute());
+					assert(success);
 					currentNode.addTree(node);
 					try {
 						token = lexer.getNextToken();

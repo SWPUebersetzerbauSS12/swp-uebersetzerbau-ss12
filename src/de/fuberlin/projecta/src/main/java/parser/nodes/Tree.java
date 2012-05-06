@@ -7,8 +7,13 @@ import lombok.Getter;
 import parser.Attribute;
 import parser.ISyntaxTree;
 import semantic.analysis.SymbolTableStack;
+import utils.StringUtils;
 
 public abstract class Tree implements ISyntaxTree {
+
+	public enum DefaultAttribute {
+		TokenValue
+	}
 
 	private final ArrayList<ISyntaxTree> children = new ArrayList<ISyntaxTree>();
 	private final String name;
@@ -19,7 +24,7 @@ public abstract class Tree implements ISyntaxTree {
 
 	/**
 	 * Creates a new empty node for non-terminals.
-	 *
+	 * 
 	 * @param name
 	 */
 	public Tree(String name) {
@@ -68,7 +73,7 @@ public abstract class Tree implements ISyntaxTree {
 	}
 
 	@Override
-	public boolean setAttribute(String name, String value) {
+	public boolean setAttribute(String name, Object value) {
 		for (Attribute attr : attributes) {
 			if (attr.getName().equals(name)) {
 				attr.setValue(value);
@@ -100,6 +105,21 @@ public abstract class Tree implements ISyntaxTree {
 
 		this.parent = tree;
 		tree.addTree(this);
+	}
+
+	public void printTree() {
+		printTree(0);
+	}
+
+	protected void printTree(int depth) {
+		System.out.println(StringUtils.repeat(' ', depth) + "Name: "
+				+ getName());
+
+		for (int i = 0; i < getChildrenCount(); ++i) {
+			Tree tree = (Tree) getChild(i);
+			if (tree != null)
+				tree.printTree(depth + 2);
+		}
 	}
 
 	@Override

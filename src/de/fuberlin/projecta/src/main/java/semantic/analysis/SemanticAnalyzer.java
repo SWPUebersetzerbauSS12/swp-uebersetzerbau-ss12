@@ -12,7 +12,7 @@ public class SemanticAnalyzer {
 		tables = new SymbolTableStack();
 	}
 	
-	public void run(){
+	public void analyze() throws SemanticException {
 		parseTreeForSemanticActions(tree);
 		parseTreeForRemoval();
 	}
@@ -26,6 +26,7 @@ public class SemanticAnalyzer {
 		for (int i = 0; i < tree.getChildrenCount(); i++) {
 			parseTreeForSemanticActions(tree.getChild(i));
 		}
+
 		tree.run(tables);
 	}
 

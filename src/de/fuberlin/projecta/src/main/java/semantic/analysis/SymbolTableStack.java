@@ -1,72 +1,64 @@
 package semantic.analysis;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Stack;
 
 public class SymbolTableStack {
 
-	private static Stack<SymbolTable> symbolTables;
+	private static Stack<SymbolTable> stack;
 
 	public SymbolTableStack() {
 		// start with one empty symbolTable
-		symbolTables = new Stack<SymbolTable>();
-		symbolTables.push(new SymbolTable());
+		stack = new Stack<SymbolTable>();
+		stack.push(new SymbolTable());
 	}
 
 	/**
-	 * Searches one entry in all SymbolTables, with respect to the stack order.
-	 * After finding it rearranges the table stack to the previous order.
+	 * Searches one entry in all symbol tables, beginning from the top
 	 * 
 	 * @param name
-	 * @return the object associated with name, null if none is found.
+	 * @return The object associated with name, null if none is found.
 	 */
 	public Object findEntry(String name) {
-		List<SymbolTable> tables = new ArrayList<SymbolTable>();
-		SymbolTable table;
-
-		do {
-			table = symbolTables.pop();
-			if (table != null)
-				tables.add(table);
-			if (table.lookup(name) != null) {
-				for (int i = tables.size() - 1; i >= 0; i--) {
-					pushSymbolTable(tables.get(i));
-				}
-				return table.lookup(name);
-			}
-		} while (table != null);
-
-		for (int i = tables.size() - 1; i >= 0; i--) {
-			pushSymbolTable(tables.get(i));
+		for (int i = 0; i < stack.size(); ++i) {
+			SymbolTable table = stack.get(i);
+			Object content = table.lookup(name);
+			if (content != null)
+				return content;
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Get the current SymbolTable on top of the stack
 	 * 
-	 * @return Symbol table 
+	 * @return Symbol table
 	 */
 	public SymbolTable top() {
-		return symbolTables.peek();
-	}
-	
-	/**
-	 * Attention: popped tables must be pushed again when done writing!
-	 * 
-	 * @return The last pushed SymbolTable
-	 */
-	public SymbolTable popSymbolTable() {
-		return symbolTables.pop();
+		return stack.peek();
 	}
 
 	/**
-	 * Adds the given table onto the symbolTable stack
+	 * Pop last added symbol table
+	 * 
+	 * @return The last pushed SymbolTable
+	 */
+	public SymbolTable pop() {
+		return stack.pop();
+	}
+
+	/**
+	 * Push a new symbol table on top of the stack
 	 * 
 	 * @param Table
 	 */
-	public void pushSymbolTable(SymbolTable table) {
-		symbolTables.push(table);
+	public void push() {
+		stack.push(new SymbolTable());
+	}
+
+	/**
+	 * @return Current size of the stack
+	 */
+	public int size() {
+		return stack.size();
 	}
 }

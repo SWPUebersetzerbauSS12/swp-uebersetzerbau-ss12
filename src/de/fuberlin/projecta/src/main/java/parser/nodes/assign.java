@@ -11,7 +11,7 @@ public class assign extends Tree {
 
 	@Override
 	public void run(SymbolTableStack tables) {
-		// TODO Auto-generated method stub
+		printTree();
 		
 	}
 }

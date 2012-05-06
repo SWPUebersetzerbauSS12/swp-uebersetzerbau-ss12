@@ -214,49 +214,4 @@ public class RegexToNfaConverter<StatePayloadType> {
 
 		return nfa;
 	}
-
-	/**
-	 * Ersetzt in den angegebenen String den angegebenen Bereich mit dem
-	 * angegebenen Inhalt.
-	 * 
-	 * @param inputString
-	 *            Der Eingabe String, in dem der Bereich ersetzt werden soll.
-	 * @param beginIndex
-	 *            Der Start-Index des Bereichs im Eingabe-String, der ersetzt
-	 *            werden soll.
-	 * @param endIndex
-	 *            Der End-Index des Bereichs im Eingabe-String, der ersetzt
-	 *            werden soll.
-	 * @param replaceString
-	 *            Der Inhalt, mit dem der angegebene Berech ersetzt werden soll.
-	 * @return
-	 */
-	private String replaceRangeInString(String inputString, int beginIndex,
-			int endIndex, String replaceString) {
-		return inputString.substring(0, beginIndex) + replaceString
-				+ inputString.substring(endIndex);
-	}
-
-	/**
-	 * Gibt die Häufigkeit des angegebenen Zeichens innerhalb des angegebenen
-	 * Strings zurück.
-	 * 
-	 * @param inputString
-	 *            Der String in dem die Häufigkeit gezählt werden soll.
-	 * @param c
-	 *            Das Zeichen, das gezählt werden soll.
-	 * @return Die Häufigkeit des angegebenen Zeichens innerhalb des angegebenen
-	 *         Strings.
-	 */
-	private int countCharFrequencyInString(String inputString, char c) {
-		int count = 0;
-
-		for (int i = 0; i < inputString.length(); i++) {
-			if (inputString.charAt(i) == c) {
-				count++;
-			}
-		}
-
-		return count;
-	}
 }

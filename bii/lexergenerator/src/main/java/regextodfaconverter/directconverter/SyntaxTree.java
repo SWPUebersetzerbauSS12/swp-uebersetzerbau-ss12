@@ -56,6 +56,7 @@ public class SyntaxTree implements Iterable<BinaryTreeNode> {
 	
 	public NewNodeEventHandler onNewParentNode = null;
 
+	private SyntaxTreeAttributor annotations = null;
 
 	private int blockCounter = 0;
 
@@ -88,6 +89,17 @@ public class SyntaxTree implements Iterable<BinaryTreeNode> {
 			}
 		}
 	}
+	
+	
+	public SyntaxTreeAttributor getAnnotations() {
+		return annotations;
+	}
+	
+	
+	public void setAnnotations( SyntaxTreeAttributor annotations) {
+		this.annotations = annotations;
+	}
+	
 
 	private Character readNextChar( String errorMessage)
 			throws SyntaxTreeException {

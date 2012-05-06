@@ -37,7 +37,9 @@ public class Lexer {
 
 	public static void main(String[] args) {
 
+
 		// first we will have to read settings
 		Settings.readSettings();
+
 	}
 }

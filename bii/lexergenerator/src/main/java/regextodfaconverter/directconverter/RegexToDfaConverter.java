@@ -34,6 +34,7 @@ package regextodfaconverter.directconverter;
 
 import regextodfaconverter.fsm.FiniteStateMachine;
 import utils.Notification;
+import utils.Test;
 
 /**
  * Stellt Funktionalitäten bereit, um einen vereinfachten regulären Ausdruck in eine DFA umzuwandeln. 
@@ -86,13 +87,36 @@ public class RegexToDfaConverter {
 		} );
 		
 		for ( BinaryTreeNode node : syntaxTree) {
-			syntaxTreeAttributor.followpos( node);
+			if ( !( node.nodeValue instanceof Terminal)) {
+				System.out.println( node.nodeValue);
+			  System.out.println(syntaxTreeAttributor.followpos( node));
+			  
+			}
 		}
+		
+		for ( BinaryTreeNode binaryTreeNode : syntaxTreeAttributor.followPositions.keySet()) {
+			System.out.println(binaryTreeNode.nodeValue);
+		  System.out.println(syntaxTreeAttributor.followPositions.get( binaryTreeNode));
+			
+		}
+		
+		syntaxTree.setAnnotations( syntaxTreeAttributor);
 		
 		return syntaxTree;
 	}
 	
-	private static <StatePayloadType> FiniteStateMachine<Character, StatePayloadType> convertSyntaxTreeToDfa( SyntaxTree syntaxTree) {
+	/**
+	 * Konvertiert einen annotierten 
+	 * @param syntaxTree
+	 * @return
+	 * @throws Exception 
+	 */
+	private static <StatePayloadType> FiniteStateMachine<Character, StatePayloadType> convertSyntaxTreeToDfa( SyntaxTree syntaxTree) throws Exception {
+		// ensure, that the syntax tree has annotaions
+		if ( Test.isUnassigned( syntaxTree.getAnnotations()))
+			throw new Exception( "Cannot convert syntax tree to DFA. Missing annotations.");
+		
+		//private unmarkedStates =
 		//FiniteStateMachine<Character, StatePayloadType> dfa = new FiniteStateMachine<Character, StatePayloadType>();
 		return null;
 	}

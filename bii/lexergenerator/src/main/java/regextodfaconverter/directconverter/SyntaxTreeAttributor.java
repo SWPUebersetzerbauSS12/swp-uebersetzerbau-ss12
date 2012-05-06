@@ -36,6 +36,9 @@ package regextodfaconverter.directconverter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import utils.Test;
 
 
 /**
@@ -45,7 +48,7 @@ import java.util.HashMap;
  */
 public class SyntaxTreeAttributor {
 	
-	private HashMap<BinaryTreeNode,Collection<BinaryTreeNode>> followPositions = new HashMap<BinaryTreeNode, Collection<BinaryTreeNode>>();
+	public HashMap<BinaryTreeNode,Collection<BinaryTreeNode>> followPositions = new HashMap<BinaryTreeNode, Collection<BinaryTreeNode>>();
 	private HashMap<BinaryTreeNode,Collection<BinaryTreeNode>> lastPositions = new HashMap<BinaryTreeNode, Collection<BinaryTreeNode>>();
 	private HashMap<BinaryTreeNode,Collection<BinaryTreeNode>> firstPositions = new HashMap<BinaryTreeNode, Collection<BinaryTreeNode>>();
 	private HashMap<BinaryTreeNode,Boolean> nullables = new HashMap<BinaryTreeNode, Boolean>();
@@ -53,6 +56,27 @@ public class SyntaxTreeAttributor {
 
 	
 
+	
+	private <T> Collection<T> unionCollections( Collection<T> c1, Collection<T> c2) {
+		
+		ArrayList<T> list = new ArrayList<T>();
+		
+		if ( Test.isAssigned( c1) 
+				&& Test.isAssigned( c2)) {
+		  list.addAll( c1);
+		
+			for ( T t : c2) {
+				if ( !list.contains( t))
+					list.add( t);
+			}
+		} else if ( Test.isAssigned( c1)) {
+			list.addAll( c1);
+		} else if ( Test.isAssigned( c2)) {
+			list.addAll( c2);
+		}
+		return list;
+	}
+	
 	private boolean calculateNullableForNode( BinaryTreeNode node) {
 		// \epsilon-Knoten sind per definition true
 		if ( node.nodeValue instanceof Terminal) {
@@ -92,13 +116,13 @@ public class SyntaxTreeAttributor {
 			switch ( operator.getOperatorType()) {
 				case ALTERNATIVE: {// Vereinigung der firstpos-Mengen
 					Collection<BinaryTreeNode> result = firstpos( node.leftChildNode);
-					result.addAll( firstpos( node.rightChildNode));
+					result = unionCollections( result, firstpos( node.rightChildNode));
 					return result;
 				}
 				case CONCATENATION:
 					if ( nullable( node.leftChildNode)) {
 						Collection<BinaryTreeNode> result = firstpos( node.leftChildNode);
-						result.addAll( firstpos( node.rightChildNode));
+						result = unionCollections( result, firstpos( node.rightChildNode));
 						return result;
 					} else {
 						return firstpos( node.leftChildNode);
@@ -126,13 +150,13 @@ public class SyntaxTreeAttributor {
 			switch ( operator.getOperatorType()) {
 				case ALTERNATIVE: {// Vereinigung der lastpos-Mengen
 					Collection<BinaryTreeNode> result = lastpos( node.leftChildNode);
-					result.addAll( firstpos( node.rightChildNode));
+					result = unionCollections( result, firstpos( node.rightChildNode));
 					return result;
 				}
 				case CONCATENATION:
 					if ( nullable( node.leftChildNode)) {
 						Collection<BinaryTreeNode> result = lastpos( node.leftChildNode);
-						result.addAll( lastpos( node.rightChildNode));
+						result = unionCollections( result, lastpos( node.rightChildNode));
 						return result;
 					} else {
 						return lastpos( node.rightChildNode);
@@ -146,24 +170,28 @@ public class SyntaxTreeAttributor {
 	
 	private void calculateFollowposForNode( BinaryTreeNode node) throws SyntaxTreeException {
 		if ( node.nodeValue instanceof Terminal) {
-		  throw new SyntaxTreeException( "There is no definition to calculate the folowpos on a terminal");
+		  throw new SyntaxTreeException( "There is no definition to calculate the followpos on a terminal");
 		} else { // der Knoten enthält eine Operation
 			Operator operator = (Operator) node.nodeValue;
 			switch ( operator.getOperatorType()) {
 				case ALTERNATIVE: 
 					// keine Reihenfolge -> nichts zu tun
-				case CONCATENATION:
-					for ( BinaryTreeNode lastposNode  : lastpos( node.leftChildNode)) {
-						Collection<BinaryTreeNode> union = followPositions.get( lastposNode);
-						union.addAll( firstpos( node.rightChildNode));
+				case CONCATENATION: {
+					Collection<BinaryTreeNode> lastpos = lastpos( node.leftChildNode);
+					for ( BinaryTreeNode lastposNode  : lastpos) {
+						Collection<BinaryTreeNode> union = followPositions.remove( lastposNode);
+						union = unionCollections( union, firstpos( node.rightChildNode));
 						followPositions.put( lastposNode, union);
 					}
-				default: // REPETITION
-					for ( BinaryTreeNode lastposNode  : lastpos( node)) {
-						Collection<BinaryTreeNode> union = followPositions.get( lastposNode);
-						union.addAll( firstpos( node));
+				}
+				default: { // REPETITION
+					Collection<BinaryTreeNode> lastpos = lastpos( node);
+					for ( BinaryTreeNode lastposNode  : lastpos) {
+						Collection<BinaryTreeNode> union = followPositions.remove( lastposNode);
+						union = unionCollections(  union, firstpos( node));
 						followPositions.put( lastposNode, union);
 					}
+				}
 			}
 		}
 	}

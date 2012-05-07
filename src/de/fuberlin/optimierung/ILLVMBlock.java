@@ -1,6 +1,6 @@
 package de.fuberlin.optimierung;
 
-interface ILLVMBlock {
+public interface ILLVMBlock {
 	
 	// Fuer lokale Optimierung des Blockes
 	// Parameter/Art der Rueckgabe noch zu ueberdenken

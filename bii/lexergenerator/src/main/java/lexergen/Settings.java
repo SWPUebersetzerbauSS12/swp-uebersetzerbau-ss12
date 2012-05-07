@@ -127,7 +127,7 @@ public class Settings {
 	 *         Quellprogramm enthält.
 	 */
 	public static String getSourceProgramFile() {
-		return properties.getProperty("sourceProgramFile");
+		return properties.getProperty("sourceProgramFileName");
 	}
 
 	/**

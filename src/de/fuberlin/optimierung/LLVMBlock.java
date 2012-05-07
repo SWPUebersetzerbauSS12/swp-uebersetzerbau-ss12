@@ -2,7 +2,7 @@ package de.fuberlin.optimierung;
 
 import java.util.LinkedList;
 
-import de.fuberlin.optimierung.commands.LLVM_Add;
+import de.fuberlin.optimierung.commands.LLVM_ArithmeticCommand;
 import de.fuberlin.optimierung.commands.LLVM_GenericCommand;
 
 class LLVMBlock implements ILLVMBlock {
@@ -24,6 +24,9 @@ class LLVMBlock implements ILLVMBlock {
 
 	public LLVMBlock(String blockCode) {
 	
+		children = new LinkedList<ILLVMBlock>();
+		parents = new LinkedList<ILLVMBlock>();
+		
 		this.blockCode = blockCode;
 		System.out.println(blockCode + "\n*****************\n");
 		
@@ -63,7 +66,13 @@ class LLVMBlock implements ILLVMBlock {
 			if (cmd.length > 3 && cmd[1].equals("=")){
 				
 				if (cmd[2].compareTo("add") == 0){
-					return new LLVM_Add(cmd, predecessor, this);
+					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.ADD, predecessor, this);
+				}else if(cmd[2].compareTo("sub") == 0){
+					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.SUB, predecessor, this);
+				}else if(cmd[2].compareTo("mul") == 0){
+					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.MUL, predecessor, this);
+				}else if(cmd[2].compareTo("div") == 0){
+					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.DIV, predecessor, this);
 				}
 			}
 		}
@@ -78,4 +87,20 @@ class LLVMBlock implements ILLVMBlock {
 		this.lastCommand = last;
 	}
 	
+	public String toString() {
+		String code = label+"\n";
+		
+		ILLVMCommand tmp = firstCommand;
+		while(tmp != null && !tmp.equals(lastCommand)){
+			code += tmp.toString();
+			tmp = tmp.getSuccessor();
+		}
+		code += "\n";
+		
+		for (ILLVMBlock block : children) {
+			code += block.toString();
+		}
+		
+		return code;
+	}
 }

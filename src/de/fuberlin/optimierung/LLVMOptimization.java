@@ -13,6 +13,8 @@ class LLVMOptimization implements ILLVMOptimization {
 
 	private void parseCode() {
 		
+		//TODO Block-Graph erstellen
+		
 		// Splitte Codestring in Bloecke
 		String codeBlocks[] = this.code.split("\n\n");
 		this.numberBlocks = codeBlocks.length-1;
@@ -29,8 +31,9 @@ class LLVMOptimization implements ILLVMOptimization {
 		// Code steht als String in this.code
 		// Starte Optimierung
 		this.parseCode();
-
-		return "";
+		
+		// Rekursiv durch den Block-Graph durch ausgeben
+		return startBlock.toString();
 	}
 
 	private void readCodeFromFile(String fileName){
@@ -65,8 +68,8 @@ class LLVMOptimization implements ILLVMOptimization {
 	public static void main(String args[]) {
 
 		ILLVMOptimization optimization = new LLVMOptimization();        
-		optimization.optimizeCodeFromFile("bin/de/fuberlin/optimierung/input/llvm_test.llvm");
-
+		String optimizedCode = optimization.optimizeCodeFromFile("bin/de/fuberlin/optimierung/input/llvm_test.llvm");
+		System.out.println(optimizedCode);
 	}
 
 }

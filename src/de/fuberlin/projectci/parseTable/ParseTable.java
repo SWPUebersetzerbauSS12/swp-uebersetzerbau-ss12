@@ -6,6 +6,10 @@ import java.util.Map;
 import de.fuberlin.projectci.grammar.NonTerminalSymbol;
 import de.fuberlin.projectci.grammar.TerminalSymbol;
 
+/**
+ * Repräsention der Action- und Goto-Tabellen.
+ *
+ */
 public class ParseTable {
 	private Map<State, ActionTable> state2ActionTable = new HashMap<State, ParseTable.ActionTable>();
 	private Map<State, GotoTable> state2GotoTable = new HashMap<State, ParseTable.GotoTable>();

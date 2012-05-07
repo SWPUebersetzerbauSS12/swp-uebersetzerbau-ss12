@@ -45,7 +45,7 @@ import java.security.NoSuchAlgorithmException;
 import lexergen.Settings;
 
 import regextodfaconverter.MinimalDfa;
-import regextodfaconverter.fsm.StatePayload;
+import tokenmatcher.StatePayload;
 
 /**
  * Stellt einen DFA-Provider dar, der minimale DFA's, auf Basis einer regulären

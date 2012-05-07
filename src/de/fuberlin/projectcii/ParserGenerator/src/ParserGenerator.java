@@ -36,12 +36,19 @@ public class ParserGenerator {
 		 */
 		combineLeftFactorization();
 		
+		System.out.println();
+		System.out.println("Linksfaktorisierte Grammatik");
+		printGrammar();
+		
 		/*
 		 * Eliminate indirect leftrecursions
 		 */
 		
-		eliminateIndirectLeftRekursion();
+		//eliminateIndirectLeftRekursion();
 		
+		System.out.println();
+		System.out.println("Indirekte Linksrekursion weg");
+		printGrammar();
 		/*
 		 * Eliminate direct leftrekursions
 		 */
@@ -77,13 +84,149 @@ public class ParserGenerator {
 	}
 
 	private void eliminateIndirectLeftRekursion() {
-		// TODO Auto-generated method stub
+
+		Vector <Productions> grammarMod = new Vector <Productions>();
+		int NonTerminalCounter = grammar.size();
+		grammarMod.add(grammar.firstElement());
 		
+		for (int i = 1; i < NonTerminalCounter;i++){
+			Productions nonTerminalCurrent = grammar.elementAt(i);
+			Productions nonTerminalNew = new Productions(nonTerminalCurrent.getHead());
+			for (int j = 0; j<i; j++){
+				Productions nonTerminalChecked = grammar.elementAt(j);
+				grammarMod.add(nonTerminalCurrent);
+				for (Vector<String> production:nonTerminalCurrent.productions){
+					if (production.firstElement().equals(nonTerminalChecked.getHead())){
+						for (Vector<String> productionChecked:nonTerminalChecked.productions){
+							nonTerminalNew.InsertProduction(productionChecked);
+							for (int k=1;k<production.size();k++){
+								nonTerminalNew.productions.lastElement().add(production.elementAt(k));
+							}
+						}
+					}
+					else{
+						nonTerminalNew.InsertProduction(production);
+					}
+				}
+				
+			}
+		}
+		grammar = grammarMod;
 	}
 
 	private void combineLeftFactorization() {
-		// TODO Auto-generated method stub
+		//Vector containing the modified grammar
+		Vector <Productions> grammarMod = new Vector <Productions>();
+
+		//Go through every Nonterminal in the grammar
+		for (Productions nonterminal:grammar){
+			
+			int counter=0;
+			
+			boolean goOn = true;
+			while (goOn){
+				Vector<Vector<String>> productions = nonterminal.productions;
+				
+				int[]factor = calculateLongestFactor(productions);
+				
+				int productionNr=factor[1];
+				int longest=factor[0];
+				
+				if (longest > 0){
+					Vector<String> matchingProduction = nonterminal.productions.elementAt(productionNr);
+					String head=nonterminal.getHead();
+					String head1 = head.substring(0, head.length()-1)+counter+">";
+					Productions nonTerminalOld = new Productions(head);
+					Productions nonTerminalNew = new Productions(head1);
+					Vector<String> factorisation = new Vector<String>();
+					for (int j=0; j<longest;j++){
+						factorisation.add(productions.elementAt(productionNr).elementAt(j));
+					}
+					factorisation.add(head1);
+					nonTerminalOld.InsertProduction(factorisation);
+					
+					for (Vector<String> production:productions){
+						if (production.size() >= longest){
+							boolean matched = true;
+							int i = 0;
+							while (matched){
+								if (i<longest){
+									if (matchingProduction.elementAt(i).equals(production.elementAt(i))){
+										i++;
+									}
+									else matched = false;
+								}
+								else matched = false;
+							}
+							if (i<longest){
+								nonTerminalOld.InsertProduction(production);
+							}
+							else if (i==longest){
+								if (longest == production.size()){
+									Vector<String> epsilon = new Vector<String>();
+									epsilon.add("@");
+									nonTerminalNew.InsertProduction(epsilon);
+								}
+								else{
+									for (int k=i; k<production.size() ;k++){
+										Vector<String> newProduction = new Vector<String>();
+										newProduction.add(production.elementAt(k));
+										nonTerminalNew.InsertProduction(newProduction);
+										
+									}
+								}
+							}
+						}
+						else{
+							nonTerminalOld.InsertProduction(production);
+						}
+					}
+					counter++;
+					grammarMod.remove(nonterminal);
+					nonterminal = nonTerminalOld;
+					grammarMod.add(nonTerminalOld);
+					grammarMod.add(nonTerminalNew);
+				}
+				else{
+					if(counter == 0){
+						grammarMod.add(nonterminal);
+					}
+					goOn=false;
+				}
+				System.out.println(nonterminal.getHead()+" : "+longest+" : "+productionNr);
+			}
+		}
+		grammar = grammarMod;
+	}
+
+	private int[] calculateLongestFactor(Vector<Vector<String>> productions) {
+		int productionNr=0;
+		int longest=0;
 		
+		int productionCnt = productions.size();
+		for (int i=0; i<productionCnt;i++){
+			Vector<String> production = productions.elementAt(i);
+			for(int j=i+1;j<productionCnt;j++){
+				Vector<String> productionMatch = productions.elementAt(j);
+				boolean matched = true;
+				int k=0;
+				while (matched){
+					if (production.size() > k && productionMatch.size() > k){
+						if (production.elementAt(k).equals(productionMatch.elementAt(k))){
+							k++;
+						}
+						else matched = false;
+					}
+					else matched = false;
+				}
+				if (longest < k){
+					longest = k;
+					productionNr = i;
+				}
+			}				
+		}
+		int[] factor = {longest,productionNr};
+		return factor ;
 	}
 
 	private void createFollowSet() {
@@ -154,7 +297,7 @@ public class ParserGenerator {
 				//initialise new nonterminal <"N">
 				Productions nonTerminalMod = new Productions(head);
 				//initialise new nonterminal <"N"1>
-				String head1 = head.substring(0, head.length()-1)+"1>";
+				String head1 = head.substring(0, head.length()-1)+"$>";
 				Productions nonTerminalNew = new Productions(head1);
 				i=0;
 				for (Vector<String> production:nonterminal.productions){
@@ -179,7 +322,7 @@ public class ParserGenerator {
 				}
 				//Add eplison-production to <"N"1>
 				Vector<String> production = new Vector<String>();
-				production.add(" ");
+				production.add("@");
 				nonTerminalNew.InsertProduction(production);
 				grammarMod.add(nonTerminalMod);
 				grammarMod.add(nonTerminalNew);

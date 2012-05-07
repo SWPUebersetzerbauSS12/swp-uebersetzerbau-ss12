@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import utils.Sets;
 import utils.Test;
 
 
@@ -54,28 +55,6 @@ public class SyntaxTreeAttributor {
 	private HashMap<BinaryTreeNode,Boolean> nullables = new HashMap<BinaryTreeNode, Boolean>();
 	
 
-	
-
-	
-	private <T> Collection<T> unionCollections( Collection<T> c1, Collection<T> c2) {
-		
-		ArrayList<T> list = new ArrayList<T>();
-		
-		if ( Test.isAssigned( c1) 
-				&& Test.isAssigned( c2)) {
-		  list.addAll( c1);
-		
-			for ( T t : c2) {
-				if ( !list.contains( t))
-					list.add( t);
-			}
-		} else if ( Test.isAssigned( c1)) {
-			list.addAll( c1);
-		} else if ( Test.isAssigned( c2)) {
-			list.addAll( c2);
-		}
-		return list;
-	}
 	
 	private boolean calculateNullableForNode( BinaryTreeNode node) {
 		// \epsilon-Knoten sind per definition true
@@ -116,13 +95,13 @@ public class SyntaxTreeAttributor {
 			switch ( operator.getOperatorType()) {
 				case ALTERNATIVE: {// Vereinigung der firstpos-Mengen
 					Collection<BinaryTreeNode> result = firstpos( node.leftChildNode);
-					result = unionCollections( result, firstpos( node.rightChildNode));
+					result = Sets.unionCollections( result, firstpos( node.rightChildNode));
 					return result;
 				}
 				case CONCATENATION:
 					if ( nullable( node.leftChildNode)) {
 						Collection<BinaryTreeNode> result = firstpos( node.leftChildNode);
-						result = unionCollections( result, firstpos( node.rightChildNode));
+						result = Sets.unionCollections( result, firstpos( node.rightChildNode));
 						return result;
 					} else {
 						return firstpos( node.leftChildNode);
@@ -150,13 +129,13 @@ public class SyntaxTreeAttributor {
 			switch ( operator.getOperatorType()) {
 				case ALTERNATIVE: {// Vereinigung der lastpos-Mengen
 					Collection<BinaryTreeNode> result = lastpos( node.leftChildNode);
-					result = unionCollections( result, firstpos( node.rightChildNode));
+					result = Sets.unionCollections( result, firstpos( node.rightChildNode));
 					return result;
 				}
 				case CONCATENATION:
 					if ( nullable( node.leftChildNode)) {
 						Collection<BinaryTreeNode> result = lastpos( node.leftChildNode);
-						result = unionCollections( result, lastpos( node.rightChildNode));
+						result = Sets.unionCollections( result, lastpos( node.rightChildNode));
 						return result;
 					} else {
 						return lastpos( node.rightChildNode);
@@ -180,7 +159,7 @@ public class SyntaxTreeAttributor {
 					Collection<BinaryTreeNode> lastpos = lastpos( node.leftChildNode);
 					for ( BinaryTreeNode lastposNode  : lastpos) {
 						Collection<BinaryTreeNode> union = followPositions.remove( lastposNode);
-						union = unionCollections( union, firstpos( node.rightChildNode));
+						union = Sets.unionCollections( union, firstpos( node.rightChildNode));
 						followPositions.put( lastposNode, union);
 					}
 				}
@@ -188,7 +167,7 @@ public class SyntaxTreeAttributor {
 					Collection<BinaryTreeNode> lastpos = lastpos( node);
 					for ( BinaryTreeNode lastposNode  : lastpos) {
 						Collection<BinaryTreeNode> union = followPositions.remove( lastposNode);
-						union = unionCollections(  union, firstpos( node));
+						union = Sets.unionCollections(  union, firstpos( node));
 						followPositions.put( lastposNode, union);
 					}
 				}

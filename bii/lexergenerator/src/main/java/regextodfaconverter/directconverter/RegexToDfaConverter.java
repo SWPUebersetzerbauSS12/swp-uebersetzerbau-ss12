@@ -32,8 +32,15 @@
 
 package regextodfaconverter.directconverter;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+
 import regextodfaconverter.fsm.FiniteStateMachine;
+import regextodfaconverter.fsm.State;
+import tokenmatcher.StatePayload;
 import utils.Notification;
+import utils.Sets;
 import utils.Test;
 
 /**
@@ -86,6 +93,7 @@ public class RegexToDfaConverter {
 			}
 		} );
 		
+		/*
 		for ( BinaryTreeNode node : syntaxTree) {
 			if ( !( node.nodeValue instanceof Terminal)) {
 				System.out.println( node.nodeValue);
@@ -99,6 +107,7 @@ public class RegexToDfaConverter {
 		  System.out.println(syntaxTreeAttributor.followPositions.get( binaryTreeNode));
 			
 		}
+		*/
 		
 		syntaxTree.setAnnotations( syntaxTreeAttributor);
 		
@@ -116,9 +125,57 @@ public class RegexToDfaConverter {
 		if ( Test.isUnassigned( syntaxTree.getAnnotations()))
 			throw new Exception( "Cannot convert syntax tree to DFA. Missing annotations.");
 		
-		//private unmarkedStates =
-		//FiniteStateMachine<Character, StatePayloadType> dfa = new FiniteStateMachine<Character, StatePayloadType>();
-		return null;
+		SyntaxTreeAttributor annotations = syntaxTree.getAnnotations();
+		
+		HashMap<State<Character, StatePayloadType>, Collection<BinaryTreeNode>> unhandledStates = new HashMap<State<Character,StatePayloadType>, Collection<BinaryTreeNode>>();
+		
+		HashMap<Collection<BinaryTreeNode>,State<Character,StatePayloadType>> handledStates = new HashMap<Collection<BinaryTreeNode>,State<Character,StatePayloadType>>();
+		
+		
+		FiniteStateMachine<Character, StatePayloadType> dfa = new FiniteStateMachine<Character, StatePayloadType>();
+		
+		// add start state as unhandled
+		unhandledStates.put( dfa.getCurrentState(), annotations.firstpos( syntaxTree.getRoot()));
+		
+		State<Character, StatePayloadType>  currentState;
+		Collection<BinaryTreeNode> currentCollection;
+		while ( !unhandledStates.isEmpty()) {
+			currentState = unhandledStates.keySet().iterator().next();
+			currentCollection = unhandledStates.get( currentState);
+		
+			HashMap<Character, Collection<BinaryTreeNode>> stateCandidates = new HashMap<Character, Collection<BinaryTreeNode>>();
+			Character currentTerminalCharacter;
+			for ( BinaryTreeNode node : currentCollection) {
+				assert node.nodeValue instanceof Terminal;
+				currentTerminalCharacter = ((Terminal) node.nodeValue).getValue();
+				Collection<BinaryTreeNode> union = stateCandidates.get( currentTerminalCharacter);
+				union = Sets.unionCollections( union, annotations.followpos( node));
+				stateCandidates.put( ((Terminal) node.nodeValue).getValue() , union);
+			}
+			
+			for ( Character terminalCharacter : stateCandidates.keySet()) {
+				Collection<BinaryTreeNode> stateCandidate = stateCandidates.get( terminalCharacter);
+				
+				State<Character, StatePayloadType> targetState;
+				if ( !stateCandidate.isEmpty()) { 
+					if( !handledStates.containsKey( stateCandidate)) {
+					  targetState = new State<Character, StatePayloadType>();
+					  handledStates.put( stateCandidate, targetState);
+				  } else {
+				  	targetState = handledStates.get( stateCandidate);
+			  	}
+					for ( BinaryTreeNode node : stateCandidate) {
+						assert node.nodeValue instanceof Terminal;
+						currentTerminalCharacter = ((Terminal) node.nodeValue).getValue();
+						dfa.addTransition( targetState, currentTerminalCharacter);			 
+					}
+				}
+				
+			}
+
+	  }
+		
+		return dfa;
 	}
 		
 	

@@ -148,7 +148,7 @@ public class Settings {
 	 * @return Die aktuelle Version von lexergen.
 	 */
 	public static String getVersion() {
-		return properties.getProperty("_VERSION");
+		return properties.getProperty("VERSION");
 	}
 
 	/**

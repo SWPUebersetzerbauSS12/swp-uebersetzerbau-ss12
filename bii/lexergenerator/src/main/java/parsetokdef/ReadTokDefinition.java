@@ -55,14 +55,17 @@ public class ReadTokDefinition {
 	private HashMap<String, String> definitions;
 
 	/**
-	 * reads a token defintion file. If the path is null, the default token
-	 * definition is taken.
+	 * reads a token defintion file. If file is null we take the test token
+	 * definition file definition is taken.
 	 * 
-	 * @param path
+	 * @param file
 	 * @throws IOException
 	 */
 	public ReadTokDefinition(File file) throws IOException {
-		readFile(file.getCanonicalPath());
+		if (file == null)
+			readFile(file.getCanonicalPath());
+		else
+			readFile();
 	}
 
 	/**

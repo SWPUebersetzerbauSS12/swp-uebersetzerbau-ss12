@@ -32,12 +32,15 @@ public class ReadTokDefinitionTest {
 	 */
 	@Test
 	public void testRegex() throws Exception {
-		List<IRule> rules = new ReadTokDefinition().getRules();
+		String path = null;
+		List<IRule> rules = new ReadTokDefinition(path).getRules();
 		String tokenType = rules.get(0).getTokenType();
 		String tokenValue = rules.get(0).getTokenValue();
+		String tokenRegex = rules.get(0).getRegexp();
 		System.out.println(rules.get(0));
 		Assert.assertEquals("BRACKET", tokenType);
 		Assert.assertEquals("(", tokenValue);
+		Assert.assertEquals("\\(", tokenRegex);
 		tokenType = rules.get(5).getTokenType();
 		tokenValue = rules.get(5).getTokenValue();
 		System.out.println(rules.get(5));

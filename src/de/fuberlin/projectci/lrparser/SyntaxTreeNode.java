@@ -11,7 +11,7 @@ import de.fuberlin.projectci.extern.ISyntaxTree;
 import de.fuberlin.projectci.grammar.Symbol;
 
 /**
- * Repräsentiert einen Syntaxbaum-Knoten 
+ * Repräsentiert einen 	Knoten eines Syntaxbaums 
  *
  */
 public class SyntaxTreeNode implements ISyntaxTree{

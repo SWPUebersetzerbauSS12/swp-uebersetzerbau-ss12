@@ -64,8 +64,6 @@ public class Tokenizer implements LexerToParserInterface {
 	
 	private ReadMode readMode = ReadMode.READ_NORMAL;
 	
-
-
 	public Tokenizer( LexemeReader lexemeReader,
 			DeterministicFiniteAutomata<Character, StatePayload> dfa)
 			throws Exception {

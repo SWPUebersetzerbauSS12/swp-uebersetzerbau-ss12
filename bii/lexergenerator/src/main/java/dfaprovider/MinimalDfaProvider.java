@@ -250,7 +250,7 @@ public class MinimalDfaProvider {
 	 */
 	private static MinimalDfa<Character, StatePayload> buildMinimalDfa(
 			String reDeFi) {
-		MinimalDfa<Character, StatePayload> mDummyDfa = null;
+		MinimalDfa<Character, StatePayload> buildedMDfa = null;
 		File rdFile = new File(Settings.getWorkingDirectory() + reDeFi);
 
 		int fileEndingIndex = reDeFi.lastIndexOf(".rd");
@@ -258,20 +258,19 @@ public class MinimalDfaProvider {
 
 		try {
 			MinimalDfaBuilder builder = new IndirectMinimalDfaBuilder();
-			mDummyDfa = builder.buildMinimalDfa(rdFile);
+			buildedMDfa = builder.buildMinimalDfa(rdFile);
 		} catch (MinimalDfaBuilderException e) {
 			e.printStackTrace();
 		}
 		File dfaToSave = new File(Settings.getWorkingDirectory() + dfaFileName);
 		if (dfaToSave.exists()) {
-			return mDummyDfa;
+			return buildedMDfa;
 		} else {
 			serialize(
 					Settings.getWorkingDirectory() + dfaFileName,
-					Settings.getWorkingDirectory()
-							+ Settings.getRegularDefinitionFileName(),
-					mDummyDfa);
-			return mDummyDfa;
+					Settings.getWorkingDirectory() + reDeFi,
+					buildedMDfa);
+			return buildedMDfa;
 		}
 	}
 

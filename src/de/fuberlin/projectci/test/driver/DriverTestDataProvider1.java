@@ -1,10 +1,8 @@
 package de.fuberlin.projectci.test.driver;
 
-import static org.junit.Assert.*;
+import java.util.logging.Logger;
 
-import org.junit.Before;
-import org.junit.Test;
-
+import de.fuberlin.commons.util.LogFactory;
 import de.fuberlin.projectci.extern.ILexer;
 import de.fuberlin.projectci.extern.ISyntaxTree;
 import de.fuberlin.projectci.extern.IToken;
@@ -13,26 +11,85 @@ import de.fuberlin.projectci.grammar.NonTerminalSymbol;
 import de.fuberlin.projectci.grammar.Production;
 import de.fuberlin.projectci.grammar.Symbol;
 import de.fuberlin.projectci.grammar.TerminalSymbol;
-import de.fuberlin.projectci.lrparser.Driver;
+import de.fuberlin.projectci.lrparser.SyntaxTreeNode;
 import de.fuberlin.projectci.parseTable.AcceptAction;
 import de.fuberlin.projectci.parseTable.Goto;
 import de.fuberlin.projectci.parseTable.ParseTable;
 import de.fuberlin.projectci.parseTable.ReduceAction;
 import de.fuberlin.projectci.parseTable.ShiftAction;
 import de.fuberlin.projectci.parseTable.State;
+import de.fuberlin.projectci.test.driver.DriverTest.DriverTestDataProvider;
 
-/**
- * Testcase für den Driver (anhand des Beispiels aus dem Drachenbuch)
- * @author stefan
+/** 
+ * Testdaten anhand des Beispiels aus dem Drachenbuch (TODO Referenz angeben)
  *
  */
-public class TestDriver {
-	ParseTable parseTable=null;
-	Grammar grammar=null;
-	ILexer lexer=null;
+public class DriverTestDataProvider1 implements DriverTestDataProvider{
+	private static Logger logger = LogFactory.getLogger(DriverTestDataProvider1.class);
+	private ILexer lexer;
+	private ParseTable parseTable;
+	private Grammar grammar;
+
+	public DriverTestDataProvider1() {
+		super();
+		setUp();
+	}
+
+	// **************************************************************************** 
+	// * Implementierung von DriverTestDataProvider
+	// ****************************************************************************
+
+	@Override
+	public ParseTable getParseTable() {
+		return parseTable;
+	}
+
+	@Override
+	public Grammar getGrammar() {
+		return grammar;
+	}
+
+	@Override
+	public ILexer getLexer() {
+		return lexer;
+	}
 	
-	@Before
-	public void setUp() throws Exception {
+	@Override
+	public ISyntaxTree expectedResult(){
+		/*
+		 *      Parsebaum               AST
+		 *          E                    E
+		 *      /   |   \            /   |   \
+		 *      E   +   T           T    +   id
+		 *      |       |        /  |  \
+		 *      T       F        id *  id
+		 *   /  |  \    |
+		 *   T  *  F    id
+		 *   |     |
+		 *   F     id
+		 *   |
+		 *   id
+		 */
+		
+		SyntaxTreeNode e=new SyntaxTreeNode(new NonTerminalSymbol("E")); 
+		SyntaxTreeNode t=new SyntaxTreeNode(new NonTerminalSymbol("T")); 
+		t.addTree(new SyntaxTreeNode(new TerminalSymbol("id")));
+		t.addTree(new SyntaxTreeNode(new TerminalSymbol("*")));
+		t.addTree(new SyntaxTreeNode(new TerminalSymbol("id")));
+		e.addTree(t);
+		e.addTree(new SyntaxTreeNode(new TerminalSymbol("+")));
+		e.addTree(new SyntaxTreeNode(new TerminalSymbol("id")));
+		
+		return e;
+	}
+	
+	// **************************************************************************** 
+	// * Erstellung von parseTable, grammar und lexer
+	// * TODO Generische Implementierung die den GrammarReader vewendet und die Parsetabelle aus TSV-Daten erstellt  
+	// ****************************************************************************
+
+
+	private void setUp(){
 		parseTable=new ParseTable();
 
 		State s0=new State("0");
@@ -47,7 +104,7 @@ public class TestDriver {
 		State s9=new State("9");
 		State s10=new State("10");
 		State s11=new State("11");
-		
+
 		TerminalSymbol ts0=new TerminalSymbol("id");
 		TerminalSymbol ts1=new TerminalSymbol("+");
 		TerminalSymbol ts2=new TerminalSymbol("*");		
@@ -59,7 +116,7 @@ public class TestDriver {
 		NonTerminalSymbol nts1=new NonTerminalSymbol("T");
 		NonTerminalSymbol nts2=new NonTerminalSymbol("F");
 
-		
+
 		Production p1= new Production(nts0, new Symbol[]{nts0, ts1, nts1});
 		Production p2= new Production(nts0, new Symbol[]{nts1});
 		Production p3= new Production(nts1, new Symbol[]{nts1, ts2, nts2});
@@ -74,7 +131,7 @@ public class TestDriver {
 		grammar.addProduction(p4);
 		grammar.addProduction(p5);
 		grammar.addProduction(p6);
-		
+
 		parseTable.setInitialState(s0);
 		parseTable.getActionTableForState(s0).setActionForTerminalSymbol(new ShiftAction(s5), ts0);
 		parseTable.getActionTableForState(s0).setActionForTerminalSymbol(new ShiftAction(s4), ts3);
@@ -122,7 +179,7 @@ public class TestDriver {
 		parseTable.getGotoTableForState(s6).setGotoForNonTerminalSymbol(new Goto(s9), nts1);
 		parseTable.getGotoTableForState(s6).setGotoForNonTerminalSymbol(new Goto(s3), nts2);
 		parseTable.getGotoTableForState(s7).setGotoForNonTerminalSymbol(new Goto(s10), nts2);
-		
+
 		lexer=new DummyLexer();
 		((DummyLexer)lexer).addToken(IToken.TokenType.ID, null);
 		((DummyLexer)lexer).addToken(IToken.TokenType.OP_MUL, null);
@@ -130,16 +187,6 @@ public class TestDriver {
 		((DummyLexer)lexer).addToken(IToken.TokenType.OP_ADD, null);
 		((DummyLexer)lexer).addToken(IToken.TokenType.ID, null);
 		((DummyLexer)lexer).addToken(IToken.TokenType.EOF, null);
-		
-	}
-
-	@Test
-	public void testParse() {
-		Driver driver=new Driver();
-		ISyntaxTree expectedResult=null; // TODO Construct expected AST
-		ISyntaxTree result=driver.parse(lexer, grammar, parseTable);
-		
-		assertEquals(result, expectedResult);
 	}
 
 }

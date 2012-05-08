@@ -87,6 +87,14 @@ class LLVMBlock implements ILLVMBlock {
 		this.lastCommand = last;
 	}
 	
+	public ILLVMCommand getFirstCommand() {
+		return firstCommand;
+	}
+
+	public ILLVMCommand getLastCommand() {
+		return lastCommand;
+	}
+	
 	public String toString() {
 		String code = label+"\n";
 		

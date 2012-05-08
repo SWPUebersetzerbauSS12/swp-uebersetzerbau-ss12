@@ -13,8 +13,6 @@ class LLVMOptimization implements ILLVMOptimization {
 
 	private void parseCode() {
 		
-		//TODO Block-Graph erstellen
-		
 		// Splitte Codestring in Bloecke
 		String codeBlocks[] = this.code.split("\n\n");
 		this.numberBlocks = codeBlocks.length-1;

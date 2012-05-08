@@ -9,4 +9,6 @@ public interface ILLVMBlock {
 
 	public void setFirstCommand(ILLVMCommand first);
 	public void setLastCommand(ILLVMCommand last);
+	public ILLVMCommand getFirstCommand();
+	public ILLVMCommand getLastCommand();
 }

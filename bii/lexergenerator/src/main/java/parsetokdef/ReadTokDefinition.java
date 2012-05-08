@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
+import java.util.regex.Pattern;
 
 import utils.IRule;
 import utils.Rule;
@@ -53,6 +54,7 @@ public class ReadTokDefinition {
 
 	private List<IRule> rules;
 	private HashMap<String, String> definitions;
+	private int line = 0;
 
 	/**
 	 * reads a token defintion file. If file is null we take the test token
@@ -60,8 +62,11 @@ public class ReadTokDefinition {
 	 * 
 	 * @param file
 	 * @throws IOException
+	 * @throws TokenDefinitionException
 	 */
-	public ReadTokDefinition(File file) throws IOException {
+
+	public ReadTokDefinition(File file) throws IOException,
+			TokenDefinitionException {
 		if (file != null)
 			readFile(file.getCanonicalPath());
 		else
@@ -73,8 +78,10 @@ public class ReadTokDefinition {
 	 * definition is taken.
 	 * 
 	 * @throws FileNotFoundException
+	 * @throws TokenDefinitionException
 	 */
-	public ReadTokDefinition() throws FileNotFoundException {
+	public ReadTokDefinition() throws FileNotFoundException,
+			TokenDefinitionException {
 		readFile(null);
 	}
 
@@ -84,8 +91,10 @@ public class ReadTokDefinition {
 	 * 
 	 * @param path
 	 * @throws FileNotFoundException
+	 * @throws TokenDefinitionException
 	 */
-	public ReadTokDefinition(String path) throws FileNotFoundException {
+	public ReadTokDefinition(String path) throws FileNotFoundException,
+			TokenDefinitionException {
 		readFile(path);
 	}
 
@@ -94,8 +103,10 @@ public class ReadTokDefinition {
 	 * ./src/main/resources/def/tokendefinition
 	 * 
 	 * @throws FileNotFoundException
+	 * @throws TokenDefinitionException
 	 */
-	public void readFile() throws FileNotFoundException {
+	public void readFile() throws FileNotFoundException,
+			TokenDefinitionException {
 		readFile(null);
 	}
 
@@ -105,8 +116,10 @@ public class ReadTokDefinition {
 	 * 
 	 * @param path
 	 * @throws FileNotFoundException
+	 * @throws TokenDefinitionException
 	 */
-	public void readFile(String path) throws FileNotFoundException {
+	public void readFile(String path) throws FileNotFoundException,
+			TokenDefinitionException {
 
 		path = (path == null) ? Settings.getDefaultTokenDef() : path;
 		Scanner s = new Scanner(new File(path));
@@ -127,7 +140,7 @@ public class ReadTokDefinition {
 		return rules;
 	}
 
-	private void readDefinition(Scanner s) {
+	private void readDefinition(Scanner s) throws TokenDefinitionException {
 
 		HashMap<String, Boolean> seenPattern = new HashMap<String, Boolean>();
 		definitions = (definitions == null) ? new HashMap<String, String>()
@@ -136,6 +149,7 @@ public class ReadTokDefinition {
 		while (s.hasNextLine()) {
 			String pattern = s.next();
 			String name = null;
+			line++;
 
 			// check, if line is empty
 			if (pattern.matches("\\t+|\\s+|\n")) {
@@ -154,6 +168,12 @@ public class ReadTokDefinition {
 				continue;
 			}
 
+			// do not allow digits in declarations
+			if (name.matches("\\{d[0-9]*,[0-9][0-9]*\\})|(\\{[0-9][0-9]*\\})|(\\{[0-9][0-9]*,\\}")) {
+				throw new TokenDefinitionException(line,
+						"Number are not allowed in declarations");
+			}
+
 			// try to make a definition entry
 			if (!definitions.containsKey(name)) {
 				pattern = replaceDef(pattern);
@@ -170,6 +190,8 @@ public class ReadTokDefinition {
 
 			String pattern = null;
 			String action = null;
+
+			line++;
 
 			if (s.hasNext())
 				pattern = s.next();

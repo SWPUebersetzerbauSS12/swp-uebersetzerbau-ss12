@@ -34,6 +34,8 @@ package dfaprovider;
 
 import java.io.File;
 
+import parsetokdef.TokenDefinitionException;
+
 import regextodfaconverter.MinimalDfa;
 import tokenmatcher.StatePayload;
 
@@ -55,7 +57,8 @@ public interface MinimalDfaBuilder {
 	 * @return Der minimalen DFA für die angegebenen regulären Definitionen.
 	 * @throws MinimalDfaBuilderException
 	 *             Wenn ein Fehler beim Erstellen des DFA's auftritt.
+	 * @throws TokenDefinitionException 
 	 */
 	public MinimalDfa<Character, StatePayload> buildMinimalDfa(
-			File regularDefinitionFile) throws MinimalDfaBuilderException;
+			File regularDefinitionFile) throws MinimalDfaBuilderException, TokenDefinitionException;
 }

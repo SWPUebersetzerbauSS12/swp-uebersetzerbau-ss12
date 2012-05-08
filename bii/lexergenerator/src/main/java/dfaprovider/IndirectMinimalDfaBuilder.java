@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import parsetokdef.ReadTokDefinition;
+import parsetokdef.TokenDefinitionException;
 
 import regextodfaconverter.ConvertExecption;
 import regextodfaconverter.MinimalDfa;
@@ -66,9 +67,10 @@ public class IndirectMinimalDfaBuilder implements MinimalDfaBuilder {
 	 * @return Der minimalen DFA für die angegebenen regulären Definitionen.
 	 * @throws MinimalDfaBuilderException
 	 *             Wenn ein Fehler beim Erstellen des DFA's auftritt.
+	 * @throws TokenDefinitionException 
 	 */
 	public MinimalDfa<Character, StatePayload> buildMinimalDfa(
-			File regularDefinitionFile) throws MinimalDfaBuilderException {
+			File regularDefinitionFile) throws MinimalDfaBuilderException, TokenDefinitionException {
 		if (regularDefinitionFile == null) {
 			throw new MinimalDfaBuilderException(
 					"Der Parameter 'regularDefinitionFile' darf nicht null sein!");

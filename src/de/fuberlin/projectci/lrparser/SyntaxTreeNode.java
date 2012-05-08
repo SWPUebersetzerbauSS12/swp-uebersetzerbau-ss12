@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
+import de.fuberlin.commons.util.LogFactory;
 import de.fuberlin.projectci.extern.IAttribute;
 import de.fuberlin.projectci.extern.ISyntaxTree;
 import de.fuberlin.projectci.grammar.Symbol;
@@ -15,7 +17,7 @@ import de.fuberlin.projectci.grammar.Symbol;
  *
  */
 public class SyntaxTreeNode implements ISyntaxTree{
-
+	private static Logger logger = LogFactory.getLogger(SyntaxTreeNode.class);
 	// Das [[Non]Terminal]Symbol
 	private Symbol symbol;
 	// Attribute 

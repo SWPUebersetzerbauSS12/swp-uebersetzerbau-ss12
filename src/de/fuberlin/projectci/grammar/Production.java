@@ -73,7 +73,7 @@ public class Production {
 		this.lhs = lhs;
 		
 		// Das Array in eine Liste umwandeln
-		this.rhs = new LinkedList<Symbol>(Arrays.asList(rhs));
+		this.rhs = Arrays.asList(rhs);
 		
 	}
 	

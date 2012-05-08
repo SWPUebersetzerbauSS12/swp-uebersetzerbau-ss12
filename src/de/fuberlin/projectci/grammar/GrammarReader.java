@@ -20,6 +20,11 @@ public class GrammarReader {
 	 * @return Grammatik-Object mit eingelesenen Produktionen.
 	 * @throws BNFParsingErrorException Falls die Textdatei keine gültige BNF
 	 */
+	
+	// XXX Warum sind readGrammar und parseProduction statisch?
+	/* XXX Vorschlag: Mehrere überladene Signaturen für readGrammar: Implementierung in readGrammar(Reader reader) und Aufruf in readGrammar(String), readGrammar(File) etc
+	 * 	-->	Dann kann man den GrammarReader zum Testen auch mit einem StringReader aufrufen
+	*/
 	public static Grammar readGrammar(String filename) throws BNFParsingErrorException {
 		Grammar grammar = new Grammar();
 		int foundedProductions = 0;
@@ -41,10 +46,10 @@ public class GrammarReader {
 			}
 		} catch (FileNotFoundException e) {
 			// Textdatei nicht gefunden oder nicht zugreifbar
-			throw new BNFParsingErrorException(e.getStackTrace());
+			throw new BNFParsingErrorException(e);
 		} catch (IOException e) {
 			// Lesefehler z.B. durch Interrupt
-			throw new BNFParsingErrorException(e.getStackTrace());
+			throw new BNFParsingErrorException(e);
 		}
 		if(foundedProductions == 0)
 			System.out.println("GrammarReader: WARNING Created Grammar contains no Productions!");

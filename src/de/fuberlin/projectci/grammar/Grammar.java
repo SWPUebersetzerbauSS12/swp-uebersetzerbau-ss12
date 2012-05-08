@@ -1,29 +1,32 @@
 package de.fuberlin.projectci.grammar;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class Grammar {
  
 	// Die Liste enthält alle Produktion in der Reihenfolge, wie sie zur Grammatik hinzugefügt worden
-	private List<Production> productions = new LinkedList<Production>();
+	private List<Production> productions = new ArrayList<Production>();
 	
 	// Speichern der Terminal Symbole
-	private HashMap<String, TerminalSymbol> TerminalSymbols = new HashMap<String, TerminalSymbol>();
+	private Map<String, TerminalSymbol> name2Terminal = new HashMap<String, TerminalSymbol>();
 	
 	// Speichern der Nicht Terminal Symbole
-	private HashMap<String, NonTerminalSymbol> NonTerminalSymbols = new HashMap<String, NonTerminalSymbol>();
+	private Map<String, NonTerminalSymbol> name2NonTerminal = new HashMap<String, NonTerminalSymbol>();
 	
 	
 	// Speichert zu jedem Nichtterminal eine Liste von Produktionen, bei denen es auf der linken Regelseite vorkommt
-	private HashMap<NonTerminalSymbol, List<Production>> ProdList = new HashMap<NonTerminalSymbol, List<Production>>();
+	private Map<NonTerminalSymbol, List<Production>> nonTerminal2Productions = new HashMap<NonTerminalSymbol, List<Production>>();
 	
 	//Startsymbol	
 	NonTerminalSymbol startSymbol = null;
 	
 	//TODO Leeres Wort definieren
+	// XXX Warum nicht Epsilon: EMPTY_STRING = "\u03B5";
 	public static final String EMPTY_STRING = "@" ;
 	
 	private static final TerminalSymbol EPSILON = new TerminalSymbol(EMPTY_STRING);
@@ -48,14 +51,14 @@ public class Grammar {
 		// In die Liste Nonterminal Symbol --> Porduktionen einfügen
 		// Eintrag schon vorhanden?
 		
-		List<Production> temp = ProdList.get(production.getLhs());
+		List<Production> temp = nonTerminal2Productions.get(production.getLhs());
 		
 		if (temp != null) {
-			ProdList.get(production.getLhs()).add(production);
+			nonTerminal2Productions.get(production.getLhs()).add(production);
 		} else {
 			List<Production> p = new LinkedList<Production>();
 			p.add(production);
-			ProdList.put(production.getLhs(), p);
+			nonTerminal2Productions.put(production.getLhs(), p);
 		}
 		
 	}
@@ -67,11 +70,11 @@ public class Grammar {
 	 */
 	public NonTerminalSymbol createNonTerminalSymbol(String name) {		
 		// Gibt es zu diesem Token schon ein Nicht Terminalsymbol?
-		NonTerminalSymbol result = NonTerminalSymbols.get(name);
+		NonTerminalSymbol result = name2NonTerminal.get(name);
 		
 		if(result == null) {
 			result = new NonTerminalSymbol(name);
-			NonTerminalSymbols.put(name, result);
+			name2NonTerminal.put(name, result);
 		}
 		
 		
@@ -85,7 +88,7 @@ public class Grammar {
 	 * @return Das dazu passende Objekt
 	 */
 	public TerminalSymbol createTerminalSymbol(String name) {
-		TerminalSymbol result = TerminalSymbols.get(name);
+		TerminalSymbol result = name2Terminal.get(name);
 		
 		if(result == null) {
 			
@@ -99,7 +102,7 @@ public class Grammar {
 				
 				*/
 			
-			TerminalSymbols.put(name,result);
+			name2Terminal.put(name,result);
 		}
 		
 		
@@ -128,7 +131,7 @@ public class Grammar {
 	 * @return
 	 */
 	public Set<NonTerminalSymbol> getAllNonTerminals() {
-		return ProdList.keySet();
+		return nonTerminal2Productions.keySet();
 	}
 	
 		

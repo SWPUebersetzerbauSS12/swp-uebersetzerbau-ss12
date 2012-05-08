@@ -3,7 +3,6 @@ package de.fuberlin.projectci.test.grammar;
 import de.fuberlin.projectci.grammar.BNFParsingErrorException;
 import de.fuberlin.projectci.grammar.Grammar;
 import de.fuberlin.projectci.grammar.GrammarReader;
-
 public class GrammarReaderTest {
 
 	/**

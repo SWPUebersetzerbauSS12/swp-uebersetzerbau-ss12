@@ -155,5 +155,26 @@ public class Grammar {
 		return grammarSB.toString();
 	}
 	 
+	// **************************************************************************** 
+	// * Implementierung einiger grundlegender Grammatik-Algorithmen
+	// ****************************************************************************
+
+	/**
+	 * Berechnet die First-Menge zu einem Symbol.
+	 */
+	public Set<TerminalSymbol> first(Symbol s) {
+		// TODO Implementiere mich.
+		return null;
+	}
+	 
+	/**
+	 * Berechnet die Follow-Menge zu einem Nicht-Terminalsymbol.
+	 */
+	
+	public Set<TerminalSymbol> follow(NonTerminalSymbol nts) {
+		// TODO Implementiere mich.
+		return null;
+	}
+	
 }
  

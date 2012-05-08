@@ -43,8 +43,8 @@ public class TokenDefinitionException extends Exception {
 	}
 	
 	public TokenDefinitionException(int line, String message) {
-		this("Something went wrong when reading the token definition in line: "
-				+ line + "\n" + message);
+		this("Something went wrong when reading the token definition\nline "
+				+ line + ": " + message);
 	}
 }
 

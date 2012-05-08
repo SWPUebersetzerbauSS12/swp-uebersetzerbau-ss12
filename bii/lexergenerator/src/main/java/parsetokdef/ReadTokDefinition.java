@@ -169,7 +169,7 @@ public class ReadTokDefinition {
 			}
 
 			// do not allow digits in declarations
-			if (name.matches("\\{d[0-9]*,[0-9][0-9]*\\})|(\\{[0-9][0-9]*\\})|(\\{[0-9][0-9]*,\\}")) {
+			if (name.matches("([0-9][0-9]*,[0-9][0-9]*)|([0-9][0-9]*)|([0-9][0-9]*,)")) {
 				throw new TokenDefinitionException(line,
 						"Number are not allowed in declarations");
 			}
@@ -182,7 +182,7 @@ public class ReadTokDefinition {
 		}
 	}
 
-	private void readRules(Scanner s) {
+	private void readRules(Scanner s) throws TokenDefinitionException {
 
 		rules = (rules == null) ? new ArrayList<IRule>() : rules;
 
@@ -196,12 +196,12 @@ public class ReadTokDefinition {
 			if (s.hasNext())
 				pattern = s.next();
 			else
-				break;
+				throw new TokenDefinitionException(line, "missing pattern");
 
 			if (s.hasNext())
 				action = s.next().replace("}", "");
 			else
-				break;
+				throw new TokenDefinitionException(line, "missing rule");
 
 			pattern = replaceDef(pattern);
 			IRule tpl = new Rule(getTokenType(action), getTokenValue(action),

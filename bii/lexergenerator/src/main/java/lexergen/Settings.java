@@ -197,8 +197,9 @@ public class Settings {
 	 * 
 	 * @return path to the token definition file
 	 */
+	@Deprecated
 	public static String getDefaultTokenDef() {
-		return getApplicationPath() + getRegularDefinitionFileName();
+		return getRegularDefinitionFileName();
 	}
 
 	public static String getConfigFilePath() {

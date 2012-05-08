@@ -3,15 +3,32 @@ package de.fuberlin.optimierung;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+/**
+ * Ermöglicht die Zuordnung von Definition und Verwendungen (als ILLVMCommands) zu einem Register
+ * Identifikation laeuft ueber den Namen des Registers als String
+ */
 public class LLVMRegisterMap {
 
+	// Hashmap, die dem Namen eines Registers den Befehl zuordnet, in dem das Register definiert wird
 	private HashMap<String,ILLVMCommand> definitionMap = new HashMap<String,ILLVMCommand>();
+	
+	// Hashmap, die dem Namen eines Registers die Befehle zuordnet, in dem das Register genutzt wird
 	private HashMap<String,LinkedList<ILLVMCommand>> useMap = new HashMap<String,LinkedList<ILLVMCommand>>();
 	
+	/**
+	 * Gibt die Definition des Registers zurueck
+	 * @param registerName Name des Registers
+	 * @return Befehl, das Register definiert, null, falls nicht vorhanden
+	 */
 	public ILLVMCommand getDefinition(String registerName) {
 		return this.definitionMap.get(registerName);
 	}
 	
+	/**
+	 * Gibt die Verwendungen des Registers zurueck
+	 * @param registerName Name des Registers
+	 * @return  Befehle, die Register nutzen, null, falls nicht vorhanden
+	 */
 	public LinkedList<ILLVMCommand> getUses(String registerName) {
 		return this.useMap.get(registerName);
 	}

@@ -1,9 +1,10 @@
 package de.fuberlin.projectci.parseTable;
 
-import de.fuberlin.projectci.grammar.Grammar;
-import java.util.Set;
-import de.fuberlin.projectci.grammar.Symbol;
 import java.util.List;
+import java.util.Set;
+
+import de.fuberlin.projectci.grammar.Grammar;
+import de.fuberlin.projectci.grammar.Symbol;
 
 /**
  * Baut eine SLR-Parsetabelle (Action- und Goto-Tabelle) zu einer erweiterten Grammatik.
@@ -32,7 +33,7 @@ public class SLRParseTableBuilder extends ParseTableBuilder {
 	}
 	 
 	/**
-	 *Vgl. Drachembuch: S.296
+	 *Vgl. Drachembuch: S.296/ Beispiel 4.27
 	 */
 	public Set<LR0Item> gotoSet(Set<LR0Item> items, Symbol s) {
 		// TODO Implementiere mich

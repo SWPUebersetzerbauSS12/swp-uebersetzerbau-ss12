@@ -17,6 +17,8 @@ class LLVMOptimization implements ILLVMOptimization {
 		
 		for(ILLVMBlock block : this.blocks) {	// Gehe Bloecke durch
 			
+			// Ist Block leer?
+			
 			for(ILLVMCommand c = block.getFirstCommand(); !c.isLastCommand(); c = c.getSuccessor()) {
 				
 				// Fuege c in Register Maps ein
@@ -24,6 +26,25 @@ class LLVMOptimization implements ILLVMOptimization {
 			}
 	
 		}
+	}
+	
+	private void eliminateDeadRegisters() {
+		
+		// Iteriere ueber alle definierten Register
+		for(String registerName : this.registerMap.getDefinedRegisterNames()) {
+			
+			// Teste fuer jedes Register r ob Verwendungen existieren
+			if(!this.registerMap.existsUses(registerName)) {
+				
+				// Wenn nein, loesche Befehl (Definition)
+				ILLVMCommand c = this.registerMap.getDefinition(registerName);
+				this.registerMap.deleteCommand(c);
+				c.deleteCommand();
+				
+			}
+			
+		}
+		
 	}
 
 	private void parseCode() {
@@ -44,6 +65,9 @@ class LLVMOptimization implements ILLVMOptimization {
 		// Code steht als String in this.code
 		// Starte Optimierung
 		this.parseCode();
+		
+		//this.createRegisterMaps();
+		//this.eliminateDeadRegisters();
 		
 		// Rekursiv durch den Block-Graph durch ausgeben
 		return startBlock.toString();

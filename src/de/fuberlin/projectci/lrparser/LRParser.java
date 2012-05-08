@@ -52,7 +52,6 @@ public class LRParser {
 	 * Erweitert die übergebene Grammatik mit einem neuen Startsymbol 
 	 * und einer neuen Produktion vom neuen Startsymbol auf das alte Startsymbol.
 	 * @param grammar eine Grammatik, die erweitert werden soll
-	 * @return eine erweiterte Kopie der übergebenen Grammatik
 	 */
 	public void extendGrammar(Grammar grammar){
 		// TODO Implementiere mich.

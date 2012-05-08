@@ -35,7 +35,7 @@ package dfaprovider;
 import java.io.File;
 
 import regextodfaconverter.MinimalDfa;
-import regextodfaconverter.fsm.StatePayload;
+import tokenmatcher.StatePayload;
 
 /**
  * Stellt einen MinimalDFA-Builder dar.

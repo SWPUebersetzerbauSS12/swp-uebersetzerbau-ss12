@@ -62,7 +62,7 @@ public class ReadTokDefinition {
 	 * @throws IOException
 	 */
 	public ReadTokDefinition(File file) throws IOException {
-		if (file == null)
+		if (file != null)
 			readFile(file.getCanonicalPath());
 		else
 			readFile();

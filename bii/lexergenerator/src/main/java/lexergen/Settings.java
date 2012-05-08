@@ -104,7 +104,8 @@ public class Settings {
 	 *         Definitionen enthält.
 	 */
 	public static String getRegularDefinitionFileName() {
-		return properties.getProperty("regularDefinitionFile");
+		return getApplicationPath()
+				+ properties.getProperty("regularDefinitionFile");
 	}
 
 	/**

@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -21,19 +23,24 @@ public class GrammarReader {
 	 * @throws BNFParsingErrorException Falls die Textdatei keine gültige BNF
 	 */
 	
-	// XXX Warum sind readGrammar und parseProduction statisch?
-	/* XXX Vorschlag: Mehrere überladene Signaturen für readGrammar: Implementierung in readGrammar(Reader reader) und Aufruf in readGrammar(String), readGrammar(File) etc
-	 * 	-->	Dann kann man den GrammarReader zum Testen auch mit einem StringReader aufrufen
-	*/
-	public static Grammar readGrammar(String filename) throws BNFParsingErrorException {
+	public Grammar readGrammar(String filename) throws BNFParsingErrorException {
+		try {
+			return readGrammar(new FileReader(filename));
+		} catch (FileNotFoundException e) {
+			// Textdatei nicht gefunden oder nicht zugreifbar
+			throw new BNFParsingErrorException(e);
+		}
+	}
+	
+	public Grammar readGrammar(Reader reader) throws BNFParsingErrorException {
 		Grammar grammar = new Grammar();
 		int foundedProductions = 0;
 		try {
 			// Textdatei zeilenweise einlesen
-			BufferedReader reader = new BufferedReader(new FileReader(filename));
+			BufferedReader bufReader = new BufferedReader(reader);
 			String line = null;
 			
-			while((line = reader.readLine()) != null) {
+			while((line = bufReader.readLine()) != null) {
 				if(line.length() > 0) { // Leerzeilen ignorieren
 					//System.out.println("Parsing line..."); // TODO DEBUG (Markierung, um diese hinterher wieder leicht entfernen zu können)
 					// pro Zeile genau eine Produktion parsen
@@ -44,10 +51,8 @@ public class GrammarReader {
 					}
 				}
 			}
-		} catch (FileNotFoundException e) {
-			// Textdatei nicht gefunden oder nicht zugreifbar
-			throw new BNFParsingErrorException(e);
-		} catch (IOException e) {
+		} 
+		catch (IOException e) {
 			// Lesefehler z.B. durch Interrupt
 			throw new BNFParsingErrorException(e);
 		}
@@ -64,9 +69,13 @@ public class GrammarReader {
 	 * @return Produktions-Objekt
 	 * @throws BNFParsingErrorException Falls der String keine gültige Produkton ist.
 	 */
-	private static List<Production> parseProduction(String string, Grammar grammar) throws BNFParsingErrorException{
+	private List<Production> parseProduction(String string, Grammar grammar) throws BNFParsingErrorException{
 		// alle Whitespaces entfernen
 		string = string.replaceAll("\\s", "");
+		if (string.isEmpty()){
+			// leere Zeilen ignorieren
+			return new ArrayList<Production>();
+		}
 		System.out.println(string); // TODO DEBUG
 		
 		// Reguläre Ausdrücke

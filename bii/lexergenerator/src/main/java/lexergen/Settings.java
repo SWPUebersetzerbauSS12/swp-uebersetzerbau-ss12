@@ -128,7 +128,7 @@ public class Settings {
 	 *         Quellprogramm enthält.
 	 */
 	public static String getSourceProgramFile() {
-		return properties.getProperty("sourceProgramFile");
+		return properties.getProperty("sourceProgramFileName");
 	}
 
 	/**
@@ -149,7 +149,7 @@ public class Settings {
 	 * @return Die aktuelle Version von lexergen.
 	 */
 	public static String getVersion() {
-		return properties.getProperty("_VERSION");
+		return properties.getProperty("VERSION");
 	}
 
 	/**

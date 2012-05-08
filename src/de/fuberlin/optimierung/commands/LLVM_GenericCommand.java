@@ -46,13 +46,16 @@ public abstract class LLVM_GenericCommand implements ILLVMCommand{
 		this.predecessor.setSuccessor(this.successor);
 		this.successor.setPredecessor(this.predecessor);
 	}
-	protected boolean isFirstCommand() {
+	
+	public boolean isFirstCommand() {
 		return (this.predecessor == null);
 	}
-	private boolean isLastCommand() {
+	
+	public boolean isLastCommand() {
 		return (this.successor == null);
 	}
-	private boolean isEmpty() {
+	
+	public boolean isEmpty() {
 		return (this.isFirstCommand() && this.isLastCommand());
 	}
 	

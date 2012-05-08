@@ -10,6 +10,21 @@ class LLVMOptimization implements ILLVMOptimization {
 	private ILLVMBlock endBlock;
 	private ILLVMBlock blocks[];
 	private int numberBlocks;
+	
+	private LLVMRegisterMap registerMap = new LLVMRegisterMap();
+	
+	private void createRegisterMaps() {
+		
+		for(ILLVMBlock block : this.blocks) {	// Gehe Bloecke durch
+			
+			for(ILLVMCommand c = block.getFirstCommand(); !c.isLastCommand(); c = c.getSuccessor()) {
+				
+				// Fuege c in Register Maps ein
+				this.registerMap.addCommand(c);
+			}
+	
+		}
+	}
 
 	private void parseCode() {
 		

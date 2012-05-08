@@ -20,5 +20,9 @@ public interface ILLVMCommand {
 	public void setTarget(LLVMParameter target);
 	public LLVMParameter getTarget();
 	
+	public boolean isFirstCommand();
+	public boolean isLastCommand();
+	public boolean isEmpty();
+	
 	public String toString();
 }

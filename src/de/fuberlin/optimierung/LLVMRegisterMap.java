@@ -68,7 +68,12 @@ public class LLVMRegisterMap {
 				// Loesche Befehel aus useMap
 				uses = this.getUses(op.getName());
 				uses.remove(c);
-				this.useMap.put(op.getName(), uses);
+				if(uses.isEmpty()) {
+					this.useMap.remove(op.getName());
+				}
+				else {
+					this.useMap.put(op.getName(), uses);
+				}
 				
 			}
 	

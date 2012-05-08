@@ -29,7 +29,7 @@ public class Grammar {
 	// XXX Warum nicht Epsilon: EMPTY_STRING = "\u03B5";
 	public static final String EMPTY_STRING = "@" ;
 	
-	private static final TerminalSymbol EPSILON = new TerminalSymbol(EMPTY_STRING);
+	public static final TerminalSymbol EPSILON = new TerminalSymbol(EMPTY_STRING);
 	
 	
 	public List<Production> getProductions() {

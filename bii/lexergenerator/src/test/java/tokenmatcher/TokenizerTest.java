@@ -56,6 +56,12 @@ public class TokenizerTest {
 			System.out.println(tokenString);
 			i++;
 		}
+		
+		//TODO while (true) durch etwas wie while canGetNextToken oder while not EndOffile...
+//		if (i+1 != tokensToFind.length)
+//		{
+//			throw new Exception("Es wurden nicht alle tokens gefunden!");
+//		}
 	}
 	
 	/**

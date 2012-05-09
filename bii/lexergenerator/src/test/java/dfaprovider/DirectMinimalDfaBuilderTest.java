@@ -4,9 +4,9 @@ import java.io.File;
 
 import lexergen.Settings;
 
+import org.junit.Assert;
 import org.junit.Test;
 
-import bufferedreader.BufferedLexemeReader;
 import bufferedreader.*;
 
 import regextodfaconverter.MinimalDfa;
@@ -15,7 +15,7 @@ import tokenmatcher.Token;
 import tokenmatcher.Tokenizer;
 
 /**
- * Test-Klasse für die buildMinimalDfa-Klasse.
+ * Test-Klasse für die DirectMinimalDfaBuilder-Klasse.
  * 
  * @author Daniel Rotar
  * 
@@ -38,16 +38,19 @@ public class DirectMinimalDfaBuilderTest {
 		mDfa = builder.buildMinimalDfa(new File(rdFile));
 
 		LexemeReader lexemeReader = new BufferedLexemeReader(sourceFile);
-//		 LexemeReader lexemeReader = new SimpleLexemeReader(sourceFile);
+//		LexemeReader lexemeReader = new SimpleLexemeReader(sourceFile);
 		Tokenizer tokenizer = new Tokenizer(lexemeReader, mDfa);
 
 		Token currentToken;
+		String tokenString;
+		String[] tokensToFind = {}; //TODO Daniel:...
+		int i = 0;
 		while (true) {
 			currentToken = tokenizer.getNextToken();
-			System.out.print(currentToken.getType());
-			System.out.println("  " + currentToken.getAttribute());
+			tokenString = "<" + currentToken.getType() + ", " + currentToken.getAttribute() + ">";
+			Assert.assertEquals(tokensToFind[i], tokenString);
+			System.out.println(tokenString);
+			i++;
 		}
-		
-		//TODO Daniel: assert...
 	}
 }

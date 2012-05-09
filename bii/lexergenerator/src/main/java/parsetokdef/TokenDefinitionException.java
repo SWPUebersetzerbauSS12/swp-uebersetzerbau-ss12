@@ -46,5 +46,10 @@ public class TokenDefinitionException extends Exception {
 		this("Something went wrong when reading the token definition\nline "
 				+ line + ": " + message);
 	}
+	
+	public TokenDefinitionException(int line, int col, String message) {
+		this("Something went wrong when reading the token definition\n("
+				+ line + ","+col+") : " + message);
+	}
 }
 

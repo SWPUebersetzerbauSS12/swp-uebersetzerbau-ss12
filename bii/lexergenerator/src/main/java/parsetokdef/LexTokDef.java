@@ -70,16 +70,17 @@ public class LexTokDef extends ReadTokDefAbstract {
 		int col = 0;
 		line = 1;
 
-		// read declartions charaterwise
+		// read declarations character wise
 		while ((r = br.read()) != -1) {
 
-			if ("%%".equals(sb.toString())){
+			if ("%%".equals(sb.toString())) {
+				// delete the input
 				sb = new StringBuilder();
+				// read the rules
 				break;
 			}
 
 			col++;
-
 			if (r == '\t' && sb.length() > 0) {
 
 				pattern = sb.toString();
@@ -87,26 +88,37 @@ public class LexTokDef extends ReadTokDefAbstract {
 				if (!seenPattern.containsKey(pattern)) {
 					seenPattern.put(pattern, true);
 					sb = new StringBuilder();
-				} else {
-					throw new TokenDefinitionException(line,
-							"double pattern found");
+					continue;
 				}
+
+				// this pattern was already, which makes no sense
+				throw new TokenDefinitionException(line, col,
+						"double pattern found");
 			}
 
 			if (r == '\n' && sb.length() > 0) {
 
 				String name = sb.toString().replace("{", "").replace("}", "");
 
+				// do not allow digits in declarations
+				if (name.matches("([0-9][0-9]*,[0-9][0-9]*)|([0-9][0-9]*)|([0-9][0-9]*,)")) {
+					throw new TokenDefinitionException(line, col,
+							"Number are not allowed in declarations");
+				}
+
 				// try to make a definition entry
 				if (!definitions.containsKey(name)) {
 					pattern = replaceDef(pattern);
 					definitions.put(name, pattern);
+					line++;
+					col = 0;
+					sb = new StringBuilder();
+					continue;
 				}
 
-				line++;
-				col = 0;
-				sb = new StringBuilder();
-				continue;
+				// do not use a name for declaration twice
+				throw new TokenDefinitionException(line, col,
+						"this declaration name already exists");
 			}
 
 			if (r == '\n') {
@@ -116,9 +128,9 @@ public class LexTokDef extends ReadTokDefAbstract {
 			}
 
 			if (r == '\t') {
-				col++;
 				continue;
 			}
+
 			sb.append((char) r);
 		}
 
@@ -141,9 +153,10 @@ public class LexTokDef extends ReadTokDefAbstract {
 			}
 
 			if (r == '\n' && sb.length() > 0) {
-				
+
 				String action = sb.toString().replace("{", "").replace("}", "");
-				IRule rule = new Rule(getTokenType(action), getTokenValue(action), pattern);
+				IRule rule = new Rule(getTokenType(action),
+						getTokenValue(action), pattern);
 				rules.add(rule);
 
 				line++;

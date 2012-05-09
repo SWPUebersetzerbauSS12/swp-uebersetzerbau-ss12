@@ -37,9 +37,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Scanner;
-import java.util.Stack;
 
 import lexergen.Settings;
 import utils.IRule;
@@ -76,7 +74,7 @@ public class ReadTokDefinition extends ReadTokDefAbstract {
 	 * @throws TokenDefinitionException
 	 */
 	public ReadTokDefinition() throws FileNotFoundException,
-			TokenDefinitionException {
+			TokenDefinitionException, IOException {
 		readFile(null);
 	}
 
@@ -89,7 +87,7 @@ public class ReadTokDefinition extends ReadTokDefAbstract {
 	 * @throws TokenDefinitionException
 	 */
 	public ReadTokDefinition(String path) throws FileNotFoundException,
-			TokenDefinitionException {
+			TokenDefinitionException, IOException {
 		readFile(path);
 	}
 

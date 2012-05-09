@@ -5,6 +5,7 @@ import java.util.List;
 import lexergen.Settings;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import utils.IRule;
@@ -15,20 +16,21 @@ import utils.IRule;
  */
 public class ReadTokDefinitionTest {
 
+	@Before
+	public void readSettings() {
+		Settings.readSettings();
+	}
+
 	/**
 	 * Test of readFile method, of class ReadTokDefinition.
 	 */
 	@Test
 	public void testReadFile() throws Exception {
-		Settings.readSettings();
 		String path = Settings.getDefaultTokenDef();
 		ReadTokDefinition instance = new ReadTokDefinition();
 		instance.readFile(path);
 	}
 
-	/**
-	 * 
-	 */
 	@Test
 	public void testRegex() throws Exception {
 		String path = null;

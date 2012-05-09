@@ -37,11 +37,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import parsetokdef.LexTokDef;
-import parsetokdef.LexTokDefTest;
 import parsetokdef.ReadTokDefAbstract;
-import parsetokdef.ReadTokDefinition;
 import parsetokdef.TokenDefinitionException;
-
 import regextodfaconverter.ConvertExecption;
 import regextodfaconverter.MinimalDfa;
 import regextodfaconverter.RegexToNfaConverter;
@@ -70,10 +67,11 @@ public class IndirectMinimalDfaBuilder implements MinimalDfaBuilder {
 	 * @return Der minimalen DFA für die angegebenen regulären Definitionen.
 	 * @throws MinimalDfaBuilderException
 	 *             Wenn ein Fehler beim Erstellen des DFA's auftritt.
-	 * @throws TokenDefinitionException 
+	 * @throws TokenDefinitionException
 	 */
 	public MinimalDfa<Character, StatePayload> buildMinimalDfa(
-			File regularDefinitionFile) throws MinimalDfaBuilderException, TokenDefinitionException {
+			File regularDefinitionFile) throws MinimalDfaBuilderException,
+			TokenDefinitionException {
 		if (regularDefinitionFile == null) {
 			throw new MinimalDfaBuilderException(
 					"Der Parameter 'regularDefinitionFile' darf nicht null sein!");
@@ -91,13 +89,17 @@ public class IndirectMinimalDfaBuilder implements MinimalDfaBuilder {
 		String regex = "";
 		FiniteStateMachine<Character, StatePayload> fsm = null;
 
+		// Informationen aus *.rd-Datei auslesen.
 		ReadTokDefAbstract rtd = null;
+
 		try {
 			rtd = new LexTokDef(regularDefinitionFile);
-		} catch (IOException e1) {
-			// Problem with the File Descriptor
-			e1.printStackTrace();
+		} catch (IOException e) {
+			throw new MinimalDfaBuilderException(
+					"Fehler beim auslesen der Definitions-Datei: "
+							+ e.getMessage());
 		}
+		
 		int counter = 0;
 		for (IRule irule : rtd.getRules()) {
 			counter++;
@@ -117,23 +119,6 @@ public class IndirectMinimalDfaBuilder implements MinimalDfaBuilder {
 			}
 			fsms.add(fsm);
 		}
-
-		// TEMP:
-		payload = new regextodfaconverter.fsm.StatePayload("VAR_NAME", "llo",
-				-3);
-		regex = "llo";
-
-		// Aus Regex NFA machen.
-		try {
-			fsm = converter.convertToNFA(regex, payload);
-		} catch (ConvertExecption e) {
-			throw new MinimalDfaBuilderException("Der reguläre Ausdruck '"
-					+ regex
-					+ "' kann nicht in einen Automaten umgewandelt werden: "
-					+ e.getMessage());
-		}
-		fsms.add(fsm);
-		// -----------------------------------------------------------------------------
 
 		// Alle FSMs vereinigen
 		if (fsms.size() == 0) {

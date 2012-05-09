@@ -44,7 +44,7 @@ import tokenmatcher.StatePayload;
  * @author ?
  * 
  */
-public class DirectMinimalDfaBuilder {
+public class DirectMinimalDfaBuilder implements MinimalDfaBuilder {
 
 	/**
 	 * Erstellt den minimalen DFA für die angegebenen regulären Definitionen und

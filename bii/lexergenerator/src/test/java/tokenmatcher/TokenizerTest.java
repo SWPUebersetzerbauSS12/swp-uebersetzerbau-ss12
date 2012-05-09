@@ -1,12 +1,12 @@
-package lexergen;
-
-import static org.junit.Assert.*;
+package tokenmatcher;
 
 import java.util.ArrayList;
 
+import lexergen.Settings;
+
+import org.junit.Assert;
 import org.junit.Test;
 
-import regextodfaconverter.ConvertExecption;
 import regextodfaconverter.MinimalDfa;
 import regextodfaconverter.NfaToDfaConverter;
 import regextodfaconverter.fsm.FiniteStateMachine;
@@ -15,17 +15,55 @@ import tokenmatcher.StatePayload;
 import tokenmatcher.Token;
 import tokenmatcher.TokenType;
 import tokenmatcher.Tokenizer;
-import bufferedreader.BufferedLexemeReader;
-import bufferedreader.LexemeReader;
+import tokenmatcher.errorhandler.ErrorCorrector.CorrectionMode;
+import bufferedreader.*;
 
-public class LexerTest {
+/**
+ * Test-Klasse für die Tokenizer-Klasse.
+ * @author  Johannes Dahlke
+ *
+ */
+public class TokenizerTest {
 
+	/**
+	 * Test of getNextToken method, of class Tokenizer.
+	 */
 	@Test
-	public void test() throws ConvertExecption, Exception {
+	public void testGetNextToken() throws Exception {
+		String sourceFile = "src/test/resources/source/tokenmatcher.testrelop.fun";
+		
 		Settings.readSettings();
-		runTest();
-	}
+		Settings.setErrorCorrectionMode(CorrectionMode.PANIC_MODE); // Dieser Test ist nur im PANIC_MODE durchführbar.
+		
+		FiniteStateMachine<Character, StatePayload> fsm = generateRelopFSM();
+		fsm.union(generateCommentFSM());
+		NfaToDfaConverter<Character, StatePayload> nfaToDfaConverter = new NfaToDfaConverter<Character, StatePayload>();
+		fsm = nfaToDfaConverter.convertToDfa(fsm);
 
+		LexemeReader lexemeReader = new BufferedLexemeReader(sourceFile);
+//		LexemeReader lexemeReader = new SimpleLexemeReader(sourceFile);
+
+		Tokenizer tokenizer = new Tokenizer(lexemeReader, new MinimalDfa<Character, StatePayload>(fsm));
+
+		Token currentToken;
+		String tokenString;
+		String[] tokensToFind = {"<OP, LE>", "<OP, LT>", "<OP, NE>", "<OP, LT>", "<OP, NE>", "<OP, LT>", "<OP, NE>", "<OP, LE>", "<OP, LT>", "<OP, LT>"};
+		int i = 0;
+		while (true) {
+			currentToken = tokenizer.getNextToken();
+			tokenString = "<" + currentToken.getType() + ", " + currentToken.getAttribute() + ">";
+			Assert.assertEquals(tokensToFind[i], tokenString);
+			System.out.println(tokenString);
+			i++;
+		}
+		
+		//TODO while (true) durch etwas wie while canGetNextToken oder while not EndOffile...
+//		if (i+1 != tokensToFind.length)
+//		{
+//			throw new Exception("Es wurden nicht alle tokens gefunden!");
+//		}
+	}
+	
 	/**
 	 * Erstellt einen Automaten für Wörter, die gültige Zahlen darstellen.
 	 * 
@@ -206,29 +244,6 @@ public class LexerTest {
 		}
 
 		return fsm;
-	}
-
-	public static void runTest() throws ConvertExecption, Exception {
-
-		FiniteStateMachine<Character, StatePayload> fsm = generateRelopFSM();
-		// FiniteStateMachine<Character, StatePayload> fsm =
-		// generateCommentFSM();
-		fsm.union(generateCommentFSM());
-		NfaToDfaConverter<Character, StatePayload> nfaToDfaConverter = new NfaToDfaConverter<Character, StatePayload>();
-		fsm = nfaToDfaConverter.convertToDfa(fsm);
-
-		LexemeReader lexemeReader = new BufferedLexemeReader("testrelop.fun");// new
-																				// SimpleLexemeReader(
-																				// "testrelop.fun");
-		Tokenizer tokenizer = new Tokenizer(lexemeReader,
-				new MinimalDfa<Character, StatePayload>(fsm));
-
-		Token currentToken;
-		while (true) {
-			currentToken = tokenizer.getNextToken();
-			System.out.print(currentToken.getType());
-			System.out.println("  " + currentToken.getAttribute());
-		}
 	}
 
 }

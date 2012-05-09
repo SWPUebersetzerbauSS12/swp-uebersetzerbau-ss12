@@ -1,8 +1,10 @@
 package de.fuberlin.projectci.parseTable;
 
+import de.fuberlin.commons.util.EasyComparableObject;
 import de.fuberlin.projectci.grammar.Production;
+import de.fuberlin.projectci.grammar.Symbol;
 
-public class LR0Item {
+public class LR0Item extends EasyComparableObject{
  
 	/**
 	 * Die Produktion, auf die sich dieses LRItem bezieht
@@ -18,6 +20,11 @@ public class LR0Item {
 		this.index = index;		
 	}
 
+	@Override
+	protected Object[] getSignificantFields() {
+		return new Object[]{production, index, getClass()};
+	}
+	
 	public int getIndex() {
 		return index;
 	}
@@ -34,6 +41,27 @@ public class LR0Item {
 	public boolean isKernelItem() {
 		return false;
 	}
-	 
+	
+	@Override
+	public String toString() {
+		StringBuffer strBuf=new StringBuffer();
+		strBuf.append(production.getLhs());
+		strBuf.append(" -->");
+		int i=0;
+		for (Symbol aSymbol : production.getRhs()) {
+			if (index==i){
+				strBuf.append(" \u00b7");
+			}
+			strBuf.append(" ");
+			strBuf.append(aSymbol);
+			i++;
+		}
+		if (index==i){
+			strBuf.append(" \u00b7");
+		}
+		return strBuf.toString();
+	}
+
+	
 }
  

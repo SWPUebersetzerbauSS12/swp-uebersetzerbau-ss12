@@ -1,8 +1,9 @@
 package de.fuberlin.projectci.grammar;
 
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
+
+import de.fuberlin.commons.util.EasyComparableObject;
 
 
 /*
@@ -43,7 +44,7 @@ public class Production {
 
 */
 
-public class Production {
+public class Production extends EasyComparableObject{
 	
 	// Rechte Regelseite (Nichtterminalsymbol)
 	private NonTerminalSymbol lhs;
@@ -75,6 +76,11 @@ public class Production {
 		// Das Array in eine Liste umwandeln
 		this.rhs = Arrays.asList(rhs);
 		
+	}
+	
+	@Override
+	protected Object[] getSignificantFields() {
+		return new Object[]{lhs, rhs};
 	}
 	
 	/**

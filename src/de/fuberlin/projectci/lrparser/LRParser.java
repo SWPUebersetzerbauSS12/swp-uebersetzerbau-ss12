@@ -24,7 +24,8 @@ public class LRParser {
 		
 		// Grammatik einlesen
 		try {
-			this.grammar=GrammarReader.readGrammar(grammarFile.getAbsolutePath());
+			GrammarReader grammarReader=new GrammarReader();
+			this.grammar=grammarReader.readGrammar(grammarFile.getAbsolutePath());
 		} 
 		catch (BNFParsingErrorException e) {
 			logger.log(Level.WARNING, "Failed to read grammar from file: "+grammarFile.getAbsolutePath(), e);

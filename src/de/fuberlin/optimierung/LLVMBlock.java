@@ -103,6 +103,28 @@ class LLVMBlock implements ILLVMBlock {
 					return new LLVM_Alloca(cmd, LLVMOperation.OR, predecessor, this, comment);
 				}else if (cmd[2].compareTo("xor") == 0){
 					return new LLVM_Alloca(cmd, LLVMOperation.XOR, predecessor, this, comment);
+				}else if (cmd[2].compareTo("icmp") == 0){
+					if (cmd[3].compareTo("eq") == 0){
+						return new LLVM_IcmpCommand(cmd, LLVMOperation.ICMP_EQ, predecessor, this, comment);
+					}else if (cmd[3].compareTo("ne") == 0){
+						return new LLVM_IcmpCommand(cmd, LLVMOperation.ICMP_NE, predecessor, this, comment);
+					}else if (cmd[3].compareTo("ugt") == 0){
+						return new LLVM_IcmpCommand(cmd, LLVMOperation.ICMP_UGT, predecessor, this, comment);
+					}else if (cmd[3].compareTo("uge") == 0){
+						return new LLVM_IcmpCommand(cmd, LLVMOperation.ICMP_UGE, predecessor, this, comment);
+					}else if (cmd[3].compareTo("ult") == 0){
+						return new LLVM_IcmpCommand(cmd, LLVMOperation.ICMP_ULT, predecessor, this, comment);
+					}else if (cmd[3].compareTo("ule") == 0){
+						return new LLVM_IcmpCommand(cmd, LLVMOperation.ICMP_ULE, predecessor, this, comment);
+					}else if (cmd[3].compareTo("sgt") == 0){
+						return new LLVM_IcmpCommand(cmd, LLVMOperation.ICMP_SGT, predecessor, this, comment);
+					}else if (cmd[3].compareTo("sge") == 0){
+						return new LLVM_IcmpCommand(cmd, LLVMOperation.ICMP_SGE, predecessor, this, comment);
+					}else if (cmd[3].compareTo("slt") == 0){
+						return new LLVM_IcmpCommand(cmd, LLVMOperation.ICMP_SLT, predecessor, this, comment);
+					}else if (cmd[3].compareTo("sle") == 0){
+						return new LLVM_IcmpCommand(cmd, LLVMOperation.ICMP_SLE, predecessor, this, comment);
+					}
 				}
 			}
 		}

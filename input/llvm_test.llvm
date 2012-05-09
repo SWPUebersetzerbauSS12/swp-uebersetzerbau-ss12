@@ -34,5 +34,6 @@ define i32 @main(i32 %argc, i8** %argv) nounwind uwtable {
 
 ; <label>:13                                      ; preds = %4
   %14 = load i32* %a, align 4
+  %15 = icmp eq i32 4, 5	;EQ-Test
   ret i32 %14
 }

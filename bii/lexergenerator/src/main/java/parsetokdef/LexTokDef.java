@@ -76,6 +76,8 @@ public class LexTokDef extends ReadTokDefAbstract {
 			if ("%%".equals(sb.toString())) {
 				// delete the input
 				sb = new StringBuilder();
+				line++;
+
 				// read the rules
 				break;
 			}
@@ -96,9 +98,14 @@ public class LexTokDef extends ReadTokDefAbstract {
 						"double pattern found");
 			}
 
+			// read the declaration identifier
 			if (r == '\n' && sb.length() > 0) {
 
 				String name = sb.toString().replace("{", "").replace("}", "");
+
+				if (pattern == null)
+					throw new TokenDefinitionException(line, col,
+							"no pattern defined");
 
 				// do not allow digits in declarations
 				if (name.matches("([0-9][0-9]*,[0-9][0-9]*)|([0-9][0-9]*)|([0-9][0-9]*,)")) {
@@ -112,6 +119,7 @@ public class LexTokDef extends ReadTokDefAbstract {
 					definitions.put(name, pattern);
 					line++;
 					col = 0;
+					pattern = null;
 					sb = new StringBuilder();
 					continue;
 				}
@@ -119,6 +127,12 @@ public class LexTokDef extends ReadTokDefAbstract {
 				// do not use a name for declaration twice
 				throw new TokenDefinitionException(line, col,
 						"this declaration name already exists");
+			}
+
+			// match some errors
+			if (r == '\n' && pattern != null) {
+				throw new TokenDefinitionException(line, col,
+						"missing declaration");
 			}
 
 			if (r == '\n') {
@@ -138,7 +152,6 @@ public class LexTokDef extends ReadTokDefAbstract {
 		while ((r = br.read()) != -1) {
 
 			col++;
-
 			if (r == '\t' && sb.length() > 0) {
 
 				pattern = sb.toString();
@@ -146,23 +159,35 @@ public class LexTokDef extends ReadTokDefAbstract {
 				if (!seenPattern.containsKey(pattern)) {
 					pattern = replaceDef(pattern);
 					sb = new StringBuilder();
-				} else {
-					throw new TokenDefinitionException(line,
-							"double pattern found");
+					continue;
 				}
+
+				throw new TokenDefinitionException(line, "double pattern found");
 			}
 
 			if (r == '\n' && sb.length() > 0) {
 
+				if (pattern == null)
+					throw new TokenDefinitionException(line, col,
+							"no pattern defined");
+
+				// add the new rule
 				String action = sb.toString().replace("{", "").replace("}", "");
 				IRule rule = new Rule(getTokenType(action),
 						getTokenValue(action), pattern);
 				rules.add(rule);
 
+				// set back some control variables
 				line++;
 				col = 0;
 				sb = new StringBuilder();
+				pattern = null;
 				continue;
+			}
+
+			// match some errors
+			if (r == '\n' && pattern != null) {
+				throw new TokenDefinitionException(line, col, "missing rule");
 			}
 
 			if (r == '\n') {
@@ -175,6 +200,7 @@ public class LexTokDef extends ReadTokDefAbstract {
 				col++;
 				continue;
 			}
+
 			sb.append((char) r);
 		}
 

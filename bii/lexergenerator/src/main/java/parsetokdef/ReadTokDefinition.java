@@ -125,7 +125,7 @@ public class ReadTokDefinition {
 		Scanner s = new Scanner(new File(path));
 
 		// new delimeter for getting the tokens
-		s.useDelimiter("(\\n+)|(\\s+\\{)");
+		s.useDelimiter("(\\n+)|(\\t+\\{)");
 
 		readDefinition(s);
 		readRules(s);

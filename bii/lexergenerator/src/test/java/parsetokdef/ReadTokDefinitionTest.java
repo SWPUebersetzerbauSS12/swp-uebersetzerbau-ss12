@@ -21,12 +21,11 @@ public class ReadTokDefinitionTest {
 	@Test
 	public void testReadFile() throws Exception {
 		Settings.readSettings();
-		System.out.println(Settings.getRegularDefinitionFileName());
 		String path = Settings.getDefaultTokenDef();
 		ReadTokDefinition instance = new ReadTokDefinition();
 		instance.readFile(path);
 	}
-	
+
 	/**
 	 * 
 	 */

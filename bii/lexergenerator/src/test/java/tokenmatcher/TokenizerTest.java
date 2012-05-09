@@ -7,7 +7,6 @@ import lexergen.Settings;
 import org.junit.Assert;
 import org.junit.Test;
 
-import regextodfaconverter.ConvertExecption;
 import regextodfaconverter.MinimalDfa;
 import regextodfaconverter.NfaToDfaConverter;
 import regextodfaconverter.fsm.FiniteStateMachine;

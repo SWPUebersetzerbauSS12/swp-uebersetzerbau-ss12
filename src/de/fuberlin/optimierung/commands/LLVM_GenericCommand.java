@@ -38,10 +38,12 @@ public abstract class LLVM_GenericCommand implements ILLVMCommand{
 		if(this.isFirstCommand()) {	// Loesche erstes Element
 			this.successor.setPredecessor(null);
 			this.getBlock().setFirstCommand(this.successor);
+			return;
 		}
 		if(this.isLastCommand()) {	// Loesche letztes Element
 			this.predecessor.setSuccessor(null);
 			this.getBlock().setLastCommand(this.predecessor);
+			return;
 		}
  
 		this.predecessor.setSuccessor(this.successor);

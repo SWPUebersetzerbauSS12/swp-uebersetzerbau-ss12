@@ -11,8 +11,8 @@ import org.junit.Test;
 import utils.IRule;
 
 /**
- * 
- * @author benjamin
+ * Test-Klasse für die ReadTokDefinition-Klasse.
+ * @author Benjamin Weißenfels
  */
 public class ReadTokDefinitionTest {
 

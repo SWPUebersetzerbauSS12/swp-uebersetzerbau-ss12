@@ -70,7 +70,7 @@ public class Tokenizer implements LexerToParserInterface {
 		super();
 		this.dfa = dfa;
 		this.lexemeReader = lexemeReader;
-		errorCorrector = new ErrorCorrector( Settings.getErrorCorrectionMode());
+		errorCorrector = new ErrorCorrector( ErrorCorrector.CorrectionMode.PANIC_MODE);//Settings.getErrorCorrectionMode());
 	}
 	
 	

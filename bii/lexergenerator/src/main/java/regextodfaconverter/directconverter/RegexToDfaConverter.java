@@ -75,11 +75,11 @@ public class RegexToDfaConverter {
 	 * 
 	 */
 	public static <StatePayloadType> FiniteStateMachine<Character, StatePayloadType> convert(
-			String regex) throws Exception {
+			String regex, StatePayloadType payload) throws Exception {
 		try {
 			String terminizedRegex = "(" + regex + ")" + RegexSpecialChars.TERMINATOR;
 			SyntaxTree syntaxTree = convertRegexToSyntaxTree( terminizedRegex);
-			FiniteStateMachine<Character, StatePayloadType> dfa = convertSyntaxTreeToDfa( syntaxTree);
+			FiniteStateMachine<Character, StatePayloadType> dfa = convertSyntaxTreeToDfa( syntaxTree, payload);
 			return dfa;
 		} catch ( Exception e) {
 			Notification.printDebugException( e);
@@ -122,7 +122,7 @@ public class RegexToDfaConverter {
 	 * @return
 	 * @throws Exception 
 	 */
-	private static <StatePayloadType> FiniteStateMachine<Character, StatePayloadType> convertSyntaxTreeToDfa( SyntaxTree syntaxTree) throws Exception {
+	private static <StatePayloadType> FiniteStateMachine<Character, StatePayloadType> convertSyntaxTreeToDfa( SyntaxTree syntaxTree, StatePayloadType payload) throws Exception {
 		// ensure, that the syntax tree has annotaions
 		if ( Test.isUnassigned( syntaxTree.getAnnotations()))
 			throw new Exception( "Cannot convert syntax tree to DFA. Missing annotations.");
@@ -131,7 +131,7 @@ public class RegexToDfaConverter {
 		
 		HashMap<State<Character, StatePayloadType>, BinaryTreeNodeCollection> unhandledStates = new HashMap<State<Character,StatePayloadType>, BinaryTreeNodeCollection>();
 		
-		HashMap<BinaryTreeNodeCollection,State<Character,StatePayloadType>> handledStates = new HashMap<BinaryTreeNodeCollection,State<Character,StatePayloadType>>();
+		HashMap<BinaryTreeNodeCollection, State<Character, StatePayloadType>> handledStates = new HashMap<BinaryTreeNodeCollection, State<Character, StatePayloadType>>();
 		
 		
 		FiniteStateMachine<Character, StatePayloadType> dfa = new FiniteStateMachine<Character, StatePayloadType>();
@@ -144,9 +144,9 @@ public class RegexToDfaConverter {
 		while ( !unhandledStates.isEmpty()) {
 			// get the next unhandled state ...
 			currentState = unhandledStates.keySet().iterator().next();
-			currentCollection = unhandledStates.get( currentState);
+			currentCollection = unhandledStates.remove( currentState);
 			// ... and mark it as handled
-			handledStates.put( unhandledStates.remove( currentState), currentState);
+			handledStates.put( currentCollection, currentState);
 		
 			HashMap<Character, BinaryTreeNodeCollection> stateCandidates = new HashMap<Character, BinaryTreeNodeCollection>();
 			Character currentTerminalCharacter;
@@ -174,13 +174,10 @@ public class RegexToDfaConverter {
 						dfa.addTransition( targetState, currentTerminalCharacter);		
 						if ( currentTerminalCharacter == RegexSpecialChars.TERMINATOR) {
 							targetState.setFinite( true);
+							targetState.setPayload( payload);
 						}
 					}
 				}
-				
-			}
-			for ( BinaryTreeNodeCollection binaryTreeNode : handledStates.keySet()) {
-				System.out.println( binaryTreeNode);
 				
 			}
 

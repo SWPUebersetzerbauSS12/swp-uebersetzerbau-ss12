@@ -2,8 +2,7 @@ package de.fuberlin.optimierung;
 
 import java.util.LinkedList;
 
-import de.fuberlin.optimierung.commands.LLVM_ArithmeticCommand;
-import de.fuberlin.optimierung.commands.LLVM_GenericCommand;
+import de.fuberlin.optimierung.commands.*;
 
 class LLVMBlock implements ILLVMBlock {
 	
@@ -77,6 +76,8 @@ class LLVMBlock implements ILLVMBlock {
 					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.MUL, predecessor, this);
 				}else if(cmd[2].compareTo("div") == 0){
 					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.DIV, predecessor, this);
+				}else if (cmd[2].compareTo("alloca") == 0){
+					return new LLVM_Alloca(cmd, LLVMOperation.ALLOCA, predecessor, this);
 				}
 			}
 		}

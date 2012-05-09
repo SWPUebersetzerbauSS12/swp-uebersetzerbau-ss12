@@ -111,7 +111,7 @@ class LLVMOptimization implements ILLVMOptimization {
 	public static void main(String args[]) {
 
 		ILLVMOptimization optimization = new LLVMOptimization();        
-		String optimizedCode = optimization.optimizeCodeFromFile("bin/de/fuberlin/optimierung/input/llvm_test.llvm");
+		String optimizedCode = optimization.optimizeCodeFromFile("input/llvm_test.llvm");
 		System.out.println(optimizedCode);
 	}
 

@@ -184,7 +184,6 @@ public class Settings {
 		try {
 			path = new java.io.File(".").getCanonicalPath().replaceFirst(
 					pattern, "");
-			System.out.println(path);
 		} catch (IOException ex) {
 			Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null,
 					ex);
@@ -197,8 +196,9 @@ public class Settings {
 	 * 
 	 * @return path to the token definition file
 	 */
+	@Deprecated
 	public static String getDefaultTokenDef() {
-		return getApplicationPath() + getRegularDefinitionFileName();
+		return getRegularDefinitionFileName();
 	}
 
 	public static String getConfigFilePath() {

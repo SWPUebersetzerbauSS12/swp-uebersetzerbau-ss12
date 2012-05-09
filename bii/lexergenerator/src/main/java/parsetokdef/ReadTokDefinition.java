@@ -37,22 +37,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Scanner;
-import java.util.Stack;
 
+import lexergen.Settings;
 import utils.IRule;
 import utils.Rule;
-import lexergen.Settings;
 
 /**
  * 
  * @author Benjamin Weißenfels
  */
-public class ReadTokDefinition {
-
-	private List<IRule> rules;
-	private HashMap<String, String> definitions;
+public class ReadTokDefinition extends ReadTokDefAbstract {
 
 	/**
 	 * reads a token defintion file. If file is null we take the test token
@@ -60,8 +55,11 @@ public class ReadTokDefinition {
 	 * 
 	 * @param file
 	 * @throws IOException
+	 * @throws TokenDefinitionException
 	 */
-	public ReadTokDefinition(File file) throws IOException {
+
+	public ReadTokDefinition(File file) throws IOException,
+			TokenDefinitionException {
 		if (file != null)
 			readFile(file.getCanonicalPath());
 		else
@@ -73,8 +71,10 @@ public class ReadTokDefinition {
 	 * definition is taken.
 	 * 
 	 * @throws FileNotFoundException
+	 * @throws TokenDefinitionException
 	 */
-	public ReadTokDefinition() throws FileNotFoundException {
+	public ReadTokDefinition() throws FileNotFoundException,
+			TokenDefinitionException, IOException {
 		readFile(null);
 	}
 
@@ -84,8 +84,10 @@ public class ReadTokDefinition {
 	 * 
 	 * @param path
 	 * @throws FileNotFoundException
+	 * @throws TokenDefinitionException
 	 */
-	public ReadTokDefinition(String path) throws FileNotFoundException {
+	public ReadTokDefinition(String path) throws FileNotFoundException,
+			TokenDefinitionException, IOException {
 		readFile(path);
 	}
 
@@ -94,8 +96,10 @@ public class ReadTokDefinition {
 	 * ./src/main/resources/def/tokendefinition
 	 * 
 	 * @throws FileNotFoundException
+	 * @throws TokenDefinitionException
 	 */
-	public void readFile() throws FileNotFoundException {
+	public void readFile() throws FileNotFoundException,
+			TokenDefinitionException {
 		readFile(null);
 	}
 
@@ -105,29 +109,22 @@ public class ReadTokDefinition {
 	 * 
 	 * @param path
 	 * @throws FileNotFoundException
+	 * @throws TokenDefinitionException
 	 */
-	public void readFile(String path) throws FileNotFoundException {
+	public void readFile(String path) throws FileNotFoundException,
+			TokenDefinitionException {
 
 		path = (path == null) ? Settings.getDefaultTokenDef() : path;
 		Scanner s = new Scanner(new File(path));
 
 		// new delimeter for getting the tokens
-		s.useDelimiter("(\\n+)|(\\s+\\{)");
+		s.useDelimiter("(\\n+)|(\\t+\\{)");
 
 		readDefinition(s);
 		readRules(s);
 	}
 
-	/**
-	 * Returns all rules.
-	 * 
-	 * @return is empty, if you do not execute read() method
-	 */
-	public List<IRule> getRules() {
-		return rules;
-	}
-
-	private void readDefinition(Scanner s) {
+	protected void readDefinition(Scanner s) throws TokenDefinitionException {
 
 		HashMap<String, Boolean> seenPattern = new HashMap<String, Boolean>();
 		definitions = (definitions == null) ? new HashMap<String, String>()
@@ -136,6 +133,7 @@ public class ReadTokDefinition {
 		while (s.hasNextLine()) {
 			String pattern = s.next();
 			String name = null;
+			line++;
 
 			// check, if line is empty
 			if (pattern.matches("\\t+|\\s+|\n")) {
@@ -154,6 +152,12 @@ public class ReadTokDefinition {
 				continue;
 			}
 
+			// do not allow digits in declarations
+			if (name.matches("([0-9][0-9]*,[0-9][0-9]*)|([0-9][0-9]*)|([0-9][0-9]*,)")) {
+				throw new TokenDefinitionException(line,
+						"Number are not allowed in declarations");
+			}
+
 			// try to make a definition entry
 			if (!definitions.containsKey(name)) {
 				pattern = replaceDef(pattern);
@@ -162,7 +166,7 @@ public class ReadTokDefinition {
 		}
 	}
 
-	private void readRules(Scanner s) {
+	protected void readRules(Scanner s) throws TokenDefinitionException {
 
 		rules = (rules == null) ? new ArrayList<IRule>() : rules;
 
@@ -171,15 +175,17 @@ public class ReadTokDefinition {
 			String pattern = null;
 			String action = null;
 
+			line++;
+
 			if (s.hasNext())
 				pattern = s.next();
 			else
-				break;
+				throw new TokenDefinitionException(line, "missing pattern");
 
 			if (s.hasNext())
 				action = s.next().replace("}", "");
 			else
-				break;
+				throw new TokenDefinitionException(line, "missing rule");
 
 			pattern = replaceDef(pattern);
 			IRule tpl = new Rule(getTokenType(action), getTokenValue(action),
@@ -188,68 +194,4 @@ public class ReadTokDefinition {
 		}
 	}
 
-	/**
-	 * Replaces the definitions in the pattern.
-	 * 
-	 * @param pattern
-	 * @return returns something, which is only including regular expressions
-	 */
-	private String replaceDef(String pattern) {
-
-		Stack<String> stack = new Stack<String>();
-
-		int i = 0;
-		while (i < pattern.length()) {
-			if ('"' == pattern.charAt(i)) {
-				while (i < pattern.length() && '"' != pattern.charAt(i)) {
-					i++;
-				}
-			}
-
-			if (i < pattern.length() && '{' == pattern.charAt(i)) {
-				i++;
-				String def = new String();
-
-				while (i < pattern.length() && '}' != pattern.charAt(i)) {
-					def = def + pattern.charAt(i);
-					i++;
-				}
-				stack.push(def);
-			}
-
-			i++;
-		}
-
-		for (String def : stack) {
-
-			if (!definitions.containsKey(def)) {
-				continue;
-			}
-
-			String tmpPattern = definitions.get(def);
-			pattern = pattern.replace("{" + def + "}", tmpPattern);
-		}
-
-		return pattern;
-	}
-
-	private String getTokenType(String action) {
-
-		String tokenAttributes[] = action.split("\"");
-
-		if (tokenAttributes.length > 1)
-			return tokenAttributes[1];
-		else
-			return null;
-	}
-
-	private String getTokenValue(String action) {
-
-		String tokenAttributes[] = action.split("\"");
-
-		if (tokenAttributes.length > 3) {
-			return tokenAttributes[3];
-		}
-		return null;
-	}
 }

@@ -42,6 +42,8 @@ import java.io.ObjectOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import parsetokdef.TokenDefinitionException;
+
 import lexergen.Settings;
 
 import regextodfaconverter.MinimalDfa;
@@ -71,10 +73,11 @@ public class MinimalDfaProvider {
 	 *            : Der absolute Pfad zu der Datei, die die regulären
 	 *            Definitionen (<dateiname>.rd) enthalten.
 	 * @return: Der minimale DFA für die angegebenen regulären Definitionen.
+	 * @throws TokenDefinitionException 
 	 */
 	@SuppressWarnings("unchecked")
 	public static MinimalDfa<Character, StatePayload> getMinimalDfa(
-			String rdFileName) throws MinimalDfaProviderException {
+			String rdFileName) throws MinimalDfaProviderException, TokenDefinitionException {
 		// Anfängliche Überprüfungen, welche die Weiterverarbeitung (inkl.
 		// (De-)Serialisierung) ermöglicht
 		if (!rdFileName.endsWith(".rd")) {
@@ -247,9 +250,10 @@ public class MinimalDfaProvider {
 	 *            Definitionen (<dateiname>.rd) enthält.
 	 * @return: minimaler DFA, der aus der übergebenen Datei (@param: reDeFi),
 	 *          erzeugt wurde.
+	 * @throws TokenDefinitionException 
 	 */
 	private static MinimalDfa<Character, StatePayload> buildMinimalDfa(
-			String reDeFi) {
+			String reDeFi) throws TokenDefinitionException {
 		MinimalDfa<Character, StatePayload> buildedMDfa = null;
 		File rdFile = new File(Settings.getWorkingDirectory() + reDeFi);
 

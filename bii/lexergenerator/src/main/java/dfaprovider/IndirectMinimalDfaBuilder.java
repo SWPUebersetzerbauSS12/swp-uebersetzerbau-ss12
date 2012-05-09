@@ -36,7 +36,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import parsetokdef.LexTokDef;
+import parsetokdef.LexTokDefTest;
+import parsetokdef.ReadTokDefAbstract;
 import parsetokdef.ReadTokDefinition;
+import parsetokdef.TokenDefinitionException;
 
 import regextodfaconverter.ConvertExecption;
 import regextodfaconverter.MinimalDfa;
@@ -66,9 +70,10 @@ public class IndirectMinimalDfaBuilder implements MinimalDfaBuilder {
 	 * @return Der minimalen DFA für die angegebenen regulären Definitionen.
 	 * @throws MinimalDfaBuilderException
 	 *             Wenn ein Fehler beim Erstellen des DFA's auftritt.
+	 * @throws TokenDefinitionException 
 	 */
 	public MinimalDfa<Character, StatePayload> buildMinimalDfa(
-			File regularDefinitionFile) throws MinimalDfaBuilderException {
+			File regularDefinitionFile) throws MinimalDfaBuilderException, TokenDefinitionException {
 		if (regularDefinitionFile == null) {
 			throw new MinimalDfaBuilderException(
 					"Der Parameter 'regularDefinitionFile' darf nicht null sein!");
@@ -86,9 +91,9 @@ public class IndirectMinimalDfaBuilder implements MinimalDfaBuilder {
 		String regex = "";
 		FiniteStateMachine<Character, StatePayload> fsm = null;
 
-		ReadTokDefinition rtd = null;
+		ReadTokDefAbstract rtd = null;
 		try {
-			rtd = new ReadTokDefinition(regularDefinitionFile);
+			rtd = new LexTokDef(regularDefinitionFile);
 		} catch (IOException e1) {
 			// Problem with the File Descriptor
 			e1.printStackTrace();

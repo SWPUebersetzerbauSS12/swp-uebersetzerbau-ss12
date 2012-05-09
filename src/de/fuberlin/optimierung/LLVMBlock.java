@@ -81,6 +81,13 @@ class LLVMBlock implements ILLVMBlock {
 		String[] cmd = com[0].trim().split("[ \t]");
 		
 		if (cmd.length > 0){
+			if (cmd[0].compareTo("br") == 0){
+				if (cmd[1].compareTo("label") == 0){
+					return new LLVM_BranchCommand(cmd, LLVMOperation.BR, predecessor, this, comment);
+				}else{
+					return new LLVM_BranchCommand(cmd, LLVMOperation.BR_CON, predecessor, this, comment);
+				}
+			}
 			if (cmd.length > 3 && cmd[1].equals("=")){
 				
 				if (cmd[2].compareTo("add") == 0){

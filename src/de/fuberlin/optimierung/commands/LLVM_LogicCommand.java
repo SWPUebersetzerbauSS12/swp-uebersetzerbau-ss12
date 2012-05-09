@@ -15,18 +15,14 @@ import de.fuberlin.optimierung.LLVMParameter;
 
 public class LLVM_LogicCommand extends LLVM_GenericCommand{
 	
-	public LLVM_LogicCommand(String[] cmd, LLVMOperation operation, ILLVMCommand predecessor, ILLVMBlock block){
-		super(operation, predecessor, block);
+	public LLVM_LogicCommand(String[] cmd, LLVMOperation operation, ILLVMCommand predecessor, ILLVMBlock block, String comment){
+		super(operation, predecessor, block, comment);
 		// Init operands
 		operands = new LinkedList<LLVMParameter>();
 		
 		target = new LLVMParameter(cmd[0], cmd[3]);
 		operands.add(new LLVMParameter(cmd[4], cmd[3]));
 		operands.add(new LLVMParameter(cmd[5], cmd[3]));
-		
-		for (int j = 6; j < cmd.length ;j++){
-			tail += cmd[j];
-		}
 		
 		System.out.println("Operation generiert: ");
 		System.out.println(this.toString());
@@ -53,8 +49,8 @@ public class LLVM_LogicCommand extends LLVM_GenericCommand{
 		cmd_output += operands.get(0).getName()+", ";
 		cmd_output += operands.get(1).getName();
 		
-		cmd_output += tail+"\n";
-
+		cmd_output += getComment();
+		
 		return cmd_output;
 	}
 }

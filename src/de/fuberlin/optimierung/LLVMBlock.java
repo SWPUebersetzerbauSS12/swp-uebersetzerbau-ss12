@@ -64,30 +64,45 @@ class LLVMBlock implements ILLVMBlock {
 	// Ermittelt Operation und erzeugt Command mit passender Klasse
 	//TODO elegante Methode finden, switch funktioniert auf Strings nicht!
 	private LLVM_GenericCommand mapCommands(String cmdLine, ILLVMCommand predecessor){
-		String[] cmd = cmdLine.trim().split("[ \t]");
+		
+		// Kommentar Handling
+		String[] com = cmdLine.trim().split(";");
+		String comment = "";
+		
+		if (com.length > 1){
+			for (int i = 1; i < com.length; i++){
+				comment += com[i]; 
+			}
+		}
+		
+		if (com.length == 0) return null;
+		
+		// Kommando Handling
+		String[] cmd = com[0].trim().split("[ \t]");
+		
 		if (cmd.length > 0){
 			if (cmd.length > 3 && cmd[1].equals("=")){
 				
 				if (cmd[2].compareTo("add") == 0){
-					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.ADD, predecessor, this);
+					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.ADD, predecessor, this, comment);
 				}else if(cmd[2].compareTo("sub") == 0){
-					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.SUB, predecessor, this);
+					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.SUB, predecessor, this, comment);
 				}else if(cmd[2].compareTo("mul") == 0){
-					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.MUL, predecessor, this);
+					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.MUL, predecessor, this, comment);
 				}else if(cmd[2].compareTo("div") == 0){
-					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.DIV, predecessor, this);
+					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.DIV, predecessor, this, comment);
 				}else if(cmd[2].compareTo("urem") == 0){
-					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.UREM, predecessor, this);
+					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.UREM, predecessor, this, comment);
 				}else if(cmd[2].compareTo("srem") == 0){
-					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.SREM, predecessor, this);
+					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.SREM, predecessor, this, comment);
 				}else if (cmd[2].compareTo("alloca") == 0){
-					return new LLVM_Alloca(cmd, LLVMOperation.ALLOCA, predecessor, this);
+					return new LLVM_Alloca(cmd, LLVMOperation.ALLOCA, predecessor, this, comment);
 				}else if (cmd[2].compareTo("and") == 0){
-					return new LLVM_Alloca(cmd, LLVMOperation.AND, predecessor, this);
+					return new LLVM_Alloca(cmd, LLVMOperation.AND, predecessor, this, comment);
 				}else if (cmd[2].compareTo("or") == 0){
-					return new LLVM_Alloca(cmd, LLVMOperation.OR, predecessor, this);
+					return new LLVM_Alloca(cmd, LLVMOperation.OR, predecessor, this, comment);
 				}else if (cmd[2].compareTo("xor") == 0){
-					return new LLVM_Alloca(cmd, LLVMOperation.XOR, predecessor, this);
+					return new LLVM_Alloca(cmd, LLVMOperation.XOR, predecessor, this, comment);
 				}
 			}
 		}

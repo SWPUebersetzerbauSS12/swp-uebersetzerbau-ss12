@@ -20,8 +20,8 @@ public class LLVM_ArithmeticCommand extends LLVM_GenericCommand{
 	private boolean has_nuw = false;
 	private boolean has_nsw = false;
 	
-	public LLVM_ArithmeticCommand(String[] cmd, LLVMOperation operation, ILLVMCommand predecessor, ILLVMBlock block){
-		super(operation, predecessor, block);
+	public LLVM_ArithmeticCommand(String[] cmd, LLVMOperation operation, ILLVMCommand predecessor, ILLVMBlock block, String comment){
+		super(operation, predecessor, block, comment);
 		// Init operands
 		operands = new LinkedList<LLVMParameter>();
 		
@@ -54,10 +54,6 @@ public class LLVM_ArithmeticCommand extends LLVM_GenericCommand{
 				operands.add(new LLVMParameter(cmd[4], cmd[3]));
 				operands.add(new LLVMParameter(cmd[5], cmd[3]));
 				break;
-		}
-		
-		for (int j = i + 2; j < cmd.length ;j++){
-			tail += cmd[j];
 		}
 		
 		System.out.println("Operation generiert: ");
@@ -96,8 +92,8 @@ public class LLVM_ArithmeticCommand extends LLVM_GenericCommand{
 		cmd_output += operands.get(0).getName()+", ";
 		cmd_output += operands.get(1).getName();
 		
-		cmd_output += tail+"\n";
-
+		cmd_output += getComment();
+		
 		return cmd_output;
 	}
 }

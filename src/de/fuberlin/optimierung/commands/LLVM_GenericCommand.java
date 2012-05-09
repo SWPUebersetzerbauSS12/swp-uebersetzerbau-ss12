@@ -17,12 +17,13 @@ public abstract class LLVM_GenericCommand implements ILLVMCommand{
 	protected LLVMParameter target;
 	protected LinkedList<LLVMParameter> operands;
 	
-	protected String tail = "";
+	protected String comment = "";
 	
-	public LLVM_GenericCommand(LLVMOperation operation, ILLVMCommand predecessor, ILLVMBlock block){
+	public LLVM_GenericCommand(LLVMOperation operation, ILLVMCommand predecessor, ILLVMBlock block, String comment){
 		// Setze die Zeiger
 		this.predecessor = predecessor;
 		this.operation = operation;
+		this.comment = comment;
 		
 		if(!this.isFirstCommand()) {
 			this.predecessor.setSuccessor(this);		
@@ -47,17 +48,12 @@ public abstract class LLVM_GenericCommand implements ILLVMCommand{
 		this.successor.setPredecessor(this.predecessor);
 	}
 	
-	public void tailComment(String[] cmd) {
-		int commentStart = -1;
-		for (int i = 0; i < cmd.length && commentStart > -1; i++){
-			commentStart = cmd[i].contains(";")?i:-1;
+	public String getComment(){
+		if (comment == ""){
+			return "\n";
+		}else{
+			return " ; " + comment + "\n";
 		}
-		if (commentStart > -1){
-			for (int j = commentStart; j < cmd.length; j++){
-				tail += cmd[j];
-				cmd[j] = ""; //Löscht Kommentar, TODO Array kürzen?
-			}
-		}	
 	}
 	
 	public boolean isFirstCommand() {

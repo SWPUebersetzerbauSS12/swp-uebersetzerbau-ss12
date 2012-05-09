@@ -14,18 +14,16 @@ import de.fuberlin.optimierung.LLVMParameter;
 
 public class LLVM_Alloca extends LLVM_GenericCommand{
 	
-	public LLVM_Alloca(String[] cmd, LLVMOperation operation, ILLVMCommand predecessor, ILLVMBlock block){
-		super(operation, predecessor, block);
+	public LLVM_Alloca(String[] cmd, LLVMOperation operation, ILLVMCommand predecessor, ILLVMBlock block, String comment){
+		super(operation, predecessor, block, comment);
 		// Init operands
 		operands = new LinkedList<LLVMParameter>();
 		
 		target = new LLVMParameter(cmd[0], cmd[3]);
 		
-		for (int j = 4; (j+1 < cmd.length) && !cmd[j].contains(";") && !cmd[j+1].contains(";"); j = j + 2){
+		for (int j = 4; (j+1 < cmd.length); j = j + 2){
 			operands.add(new LLVMParameter(cmd[j+1], cmd[j]));
 		}
-		
-		this.tailComment(cmd);
 		
 		System.out.println("Operation generiert: ");
 		System.out.println(this.toString());
@@ -49,7 +47,7 @@ public class LLVM_Alloca extends LLVM_GenericCommand{
 			cmd_output += operands.get(i).getName();
 		}
 		
-		cmd_output += tail+"\n";
+		cmd_output += getComment();
 
 		return cmd_output;
 	}

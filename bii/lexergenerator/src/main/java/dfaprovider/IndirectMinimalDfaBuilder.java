@@ -91,7 +91,9 @@ public class IndirectMinimalDfaBuilder implements MinimalDfaBuilder {
 		String regex = "";
 		FiniteStateMachine<Character, StatePayload> fsm = null;
 
+		// Informationen aus *.rd-Datei auslesen.
 		ReadTokDefAbstract rtd = null;
+		
 		try {
 			rtd = new LexTokDef(regularDefinitionFile);
 		} catch (IOException e1) {
@@ -117,23 +119,6 @@ public class IndirectMinimalDfaBuilder implements MinimalDfaBuilder {
 			}
 			fsms.add(fsm);
 		}
-
-		// TEMP:
-		payload = new regextodfaconverter.fsm.StatePayload("VAR_NAME", "llo",
-				-3);
-		regex = "llo";
-
-		// Aus Regex NFA machen.
-		try {
-			fsm = converter.convertToNFA(regex, payload);
-		} catch (ConvertExecption e) {
-			throw new MinimalDfaBuilderException("Der reguläre Ausdruck '"
-					+ regex
-					+ "' kann nicht in einen Automaten umgewandelt werden: "
-					+ e.getMessage());
-		}
-		fsms.add(fsm);
-		// -----------------------------------------------------------------------------
 
 		// Alle FSMs vereinigen
 		if (fsms.size() == 0) {

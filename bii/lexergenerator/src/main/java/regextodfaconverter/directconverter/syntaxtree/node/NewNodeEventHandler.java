@@ -1,4 +1,4 @@
-package regextodfaconverter.directconverter;
+package regextodfaconverter.directconverter.syntaxtree.node;
 
 
 public interface NewNodeEventHandler {

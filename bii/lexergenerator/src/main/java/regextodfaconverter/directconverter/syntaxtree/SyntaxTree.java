@@ -30,7 +30,7 @@
  *
  */
 
-package regextodfaconverter.directconverter;
+package regextodfaconverter.directconverter.syntaxtree;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,6 +38,14 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.ArrayBlockingQueue;
+
+import regextodfaconverter.directconverter.RegexSpecialChars;
+import regextodfaconverter.directconverter.syntaxtree.node.BinaryTreeNode;
+import regextodfaconverter.directconverter.syntaxtree.node.NewNodeEventHandler;
+import regextodfaconverter.directconverter.syntaxtree.node.NodeValue;
+import regextodfaconverter.directconverter.syntaxtree.node.Operator;
+import regextodfaconverter.directconverter.syntaxtree.node.OperatorType;
+import regextodfaconverter.directconverter.syntaxtree.node.Terminal;
 
 import utils.Notification;
 import utils.Test;
@@ -165,7 +173,7 @@ public class SyntaxTree implements Iterable<BinaryTreeNode> {
 			blockCounter--;
 
 		BinaryTreeNode leafNode = ( readedTerminal.getValue() == RegexSpecialChars.REGEX_GROUP_BEGIN) ? buildSubTree()
-				: new BinaryTreeNode( readedTerminal, null, null);
+				: newBinaryTreeNode( readedTerminal, null, null);
 
 		return leafNode;
 	}
@@ -196,11 +204,14 @@ public class SyntaxTree implements Iterable<BinaryTreeNode> {
 			}
 		}
 
-		BinaryTreeNode newNode = new BinaryTreeNode( operator, leftNode, rightNode);
+		return newBinaryTreeNode( operator, leftNode, rightNode);
+	}
+	
+	private BinaryTreeNode newBinaryTreeNode( NodeValue value, BinaryTreeNode leftNode, BinaryTreeNode rightNode) {
+		BinaryTreeNode newNode = new BinaryTreeNode( value, leftNode, rightNode);
 		if ( Test.isAssigned( onNewParentNode)) {
 			onNewParentNode.doOnEvent( this, newNode);
 		}
-		
 		return newNode;
 	}
 

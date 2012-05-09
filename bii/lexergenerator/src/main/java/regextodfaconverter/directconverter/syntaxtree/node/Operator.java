@@ -30,7 +30,9 @@
  *
  */
 
-package regextodfaconverter.directconverter;
+package regextodfaconverter.directconverter.syntaxtree.node;
+
+import regextodfaconverter.directconverter.syntaxtree.SyntaxTree;
 
 
 /**
@@ -39,7 +41,7 @@ package regextodfaconverter.directconverter;
  * @author Johannes Dahlke
  *
  */
-class Operator extends NodeValue {	
+public class Operator extends NodeValue {	
   
 	private OperatorType operatorType;
 	

@@ -16,7 +16,7 @@ public class RegexSpecialChars {
 	public static final char REGEX_JOKER = '.';
 
 	public static final char EMPTY_STRING = 0x00;
-
+	public static final char TERMINATOR = 0x03; // ETX = End Of Text
 
 	/**
 	 * Prüft, ob ein Zeichen ein Zeichen mit besonderer Bedeutung bezüglich regulärer Ausdrücke ist.

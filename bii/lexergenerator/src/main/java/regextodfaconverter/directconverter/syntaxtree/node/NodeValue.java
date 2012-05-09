@@ -30,30 +30,16 @@
  *
  */
 
-package regextodfaconverter.directconverter;
+package regextodfaconverter.directconverter.syntaxtree.node;
+
+import regextodfaconverter.directconverter.syntaxtree.SyntaxTree;
+
 
 /**
- * Liefert den Wert eines Blattes des {@link SyntaxTree Syntaxbaumes}.
+ * Basisklasse zur Wertspeicherung in den Knoten des ({@link SyntaxTree Syntaxbaumes})
  * 
  * @author Johannes Dahlke
  *
  */
-class Terminal extends NodeValue {	
-	
-	private Character value;
-	
-	public Terminal( Character value) {
-		super();
-		this.value = value;
-	}
-	
-	public Character getValue() {
-		return value;
-	}
-	
-	@Override
-	public String toString() {
-		return value + "";
-	}
-	
+public class NodeValue {
 }

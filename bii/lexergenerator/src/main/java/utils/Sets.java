@@ -51,24 +51,40 @@ public class Sets {
 	 * @param c2
 	 * @return a HashSet with all elements of both lists once.
 	 */
-	public static <T> Collection<T> unionCollections( Collection<T> c1,
-			Collection<T> c2) {
+	public static <T, C extends Collection<T>> C unionCollections(  C c1,
+			 C c2) {
 
-		Collection<T> list = new HashSet<T>();
+		C list = null;
+		try {
+			try {
+				list = (C) c1.getClass().newInstance();
+			} catch (Exception e) {
+				//Notification.printDebugException( e);
+				try {
+					list = (C) c2.getClass().newInstance();
+				} catch ( Exception e2) {
+					Notification.printDebugException( e2);
+				}		
+			} 
+		} finally {
+			if (Test.isUnassigned( list))
+				return null;
 
-		if ( Test.isAssigned( c1) && Test.isAssigned( c2)) {
-			list.addAll( c1);
+			if ( Test.isAssigned( c1) && Test.isAssigned( c2)) {
+				list.addAll( c1);
 
-			for ( T t : c2) {
-				if ( !list.contains( t))
-					list.add( t);
+				for ( T t : c2) {
+					if ( !list.contains( t))
+						list.add( t);
+				}
+			} else if ( Test.isAssigned( c1)) {
+				list.addAll( c1);
+			} else if ( Test.isAssigned( c2)) {
+				list.addAll( c2);
 			}
-		} else if ( Test.isAssigned( c1)) {
-			list.addAll( c1);
-		} else if ( Test.isAssigned( c2)) {
-			list.addAll( c2);
+			return list;
+			
 		}
-		return list;
 	}
 
 }

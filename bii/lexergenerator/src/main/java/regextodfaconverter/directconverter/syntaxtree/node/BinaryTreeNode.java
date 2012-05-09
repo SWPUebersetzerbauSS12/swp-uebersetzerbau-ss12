@@ -30,8 +30,9 @@
  *
  */
 
-package regextodfaconverter.directconverter;
+package regextodfaconverter.directconverter.syntaxtree.node;
 
+import regextodfaconverter.directconverter.syntaxtree.SyntaxTree;
 import utils.Test;
 
 
@@ -41,12 +42,12 @@ import utils.Test;
  * @author Johannes Dahlke
  *
  */
-class BinaryTreeNode {
+public class BinaryTreeNode {
 	
-	NodeValue nodeValue; 
-	BinaryTreeNode leftChildNode;
-	BinaryTreeNode rightChildNode;
-	BinaryTreeNode parentNode;
+	public NodeValue nodeValue; 
+	public BinaryTreeNode leftChildNode;
+	public BinaryTreeNode rightChildNode;
+	public BinaryTreeNode parentNode;
 	
 	public BinaryTreeNode( NodeValue nodeValue, BinaryTreeNode leftChildNode, BinaryTreeNode rightChildNode) {
 		super();
@@ -60,5 +61,18 @@ class BinaryTreeNode {
 		if ( Test.isAssigned( this.rightChildNode))
 		  this.rightChildNode.parentNode = this;
 	}
+	
+	@Override
+	public String toString() {
+		String result = "";
+
+		result += " ( ";
+		result += Test.isAssigned( leftChildNode) ? leftChildNode.toString() : "null";
+		result += " ) <-- ";
+		result += Test.isAssigned( nodeValue) ? nodeValue.toString() : "null";
+		result += " --> ( ";
+		result += Test.isAssigned( rightChildNode) ? rightChildNode.toString() : "null";
+		result += " ) ";
+		return result;	}
 	
 }

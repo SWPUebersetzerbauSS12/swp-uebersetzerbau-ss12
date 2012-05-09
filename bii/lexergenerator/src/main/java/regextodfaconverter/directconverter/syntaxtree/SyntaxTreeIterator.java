@@ -31,10 +31,12 @@
  */
 
 
-package regextodfaconverter.directconverter;
+package regextodfaconverter.directconverter.syntaxtree;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import regextodfaconverter.directconverter.syntaxtree.node.BinaryTreeNode;
 
 import utils.Test;
 

@@ -64,7 +64,7 @@ class LLVMBlock implements ILLVMBlock {
 	// Ermittelt Operation und erzeugt Command mit passender Klasse
 	//TODO elegante Methode finden, switch funktioniert auf Strings nicht!
 	private LLVM_GenericCommand mapCommands(String cmdLine, ILLVMCommand predecessor){
-		String[] cmd = cmdLine.trim().split(" ");
+		String[] cmd = cmdLine.trim().split("[ \t]");
 		if (cmd.length > 0){
 			if (cmd.length > 3 && cmd[1].equals("=")){
 				
@@ -76,6 +76,10 @@ class LLVMBlock implements ILLVMBlock {
 					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.MUL, predecessor, this);
 				}else if(cmd[2].compareTo("div") == 0){
 					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.DIV, predecessor, this);
+				}else if(cmd[2].compareTo("urem") == 0){
+					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.UREM, predecessor, this);
+				}else if(cmd[2].compareTo("srem") == 0){
+					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.SREM, predecessor, this);
 				}else if (cmd[2].compareTo("alloca") == 0){
 					return new LLVM_Alloca(cmd, LLVMOperation.ALLOCA, predecessor, this);
 				}else if (cmd[2].compareTo("and") == 0){

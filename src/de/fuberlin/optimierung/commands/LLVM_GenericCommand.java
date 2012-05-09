@@ -47,6 +47,19 @@ public abstract class LLVM_GenericCommand implements ILLVMCommand{
 		this.successor.setPredecessor(this.predecessor);
 	}
 	
+	public void tailComment(String[] cmd) {
+		int commentStart = -1;
+		for (int i = 0; i < cmd.length && commentStart > -1; i++){
+			commentStart = cmd[i].contains(";")?i:-1;
+		}
+		if (commentStart > -1){
+			for (int j = commentStart; j < cmd.length; j++){
+				tail += cmd[j];
+				cmd[j] = ""; //Löscht Kommentar, TODO Array kürzen?
+			}
+		}	
+	}
+	
 	public boolean isFirstCommand() {
 		return (this.predecessor == null);
 	}

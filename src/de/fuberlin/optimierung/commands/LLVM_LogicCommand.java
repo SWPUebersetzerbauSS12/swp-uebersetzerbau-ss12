@@ -24,6 +24,10 @@ public class LLVM_LogicCommand extends LLVM_GenericCommand{
 		operands.add(new LLVMParameter(cmd[4], cmd[3]));
 		operands.add(new LLVMParameter(cmd[5], cmd[3]));
 		
+		for (int j = 6; j < cmd.length ;j++){
+			tail += cmd[j];
+		}
+		
 		System.out.println("Operation generiert: ");
 		System.out.println(this.toString());
 	}

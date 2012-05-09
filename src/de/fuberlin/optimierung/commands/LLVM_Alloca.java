@@ -21,9 +21,11 @@ public class LLVM_Alloca extends LLVM_GenericCommand{
 		
 		target = new LLVMParameter(cmd[0], cmd[3]);
 		
-		for (int j = 4; (j < cmd.length) && (cmd.length - 4) % 2 == 0; j = j + 2){
+		for (int j = 4; (j+1 < cmd.length) && !cmd[j].contains(";") && !cmd[j+1].contains(";"); j = j + 2){
 			operands.add(new LLVMParameter(cmd[j+1], cmd[j]));
 		}
+		
+		this.tailComment(cmd);
 		
 		System.out.println("Operation generiert: ");
 		System.out.println(this.toString());

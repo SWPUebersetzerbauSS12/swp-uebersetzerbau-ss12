@@ -5,7 +5,7 @@ target triple = "x86_64-unknown-linux-gnu"
 define i32 @main(i32 %argc, i8** %argv) nounwind uwtable {
   %1 = alloca i32, align 4
   %2 = alloca i32, align 4
-  %3 = alloca i8**, align 8
+  %3 = alloca i8**, align 8					;Tail-Test
   %i = alloca i32, align 4
   %a = alloca i32, align 4
   store i32 0, i32* %1
@@ -22,7 +22,7 @@ define i32 @main(i32 %argc, i8** %argv) nounwind uwtable {
 
 ; <label>:7                                       ; preds = %4
   %8 = load i32* %a, align 4
-  %9 = add nsw i32 %8, 1
+  %9 = add nsw i32 %8, 1						;Tail-Test
   store i32 %9, i32* %a, align 4
   br label %10
 

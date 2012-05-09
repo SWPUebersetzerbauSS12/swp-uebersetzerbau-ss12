@@ -8,10 +8,12 @@ public class LLVMParameter {
 	
 	public LLVMParameter(String name, String typeString) {
 		
-		if(name.charAt(0) == '%')
-			type = LLVMParameterType.REGISTER;
-		else
-			type = LLVMParameterType.INTEGER;
+		if (name.length() > 0){
+			if (name.charAt(0) == '%')
+				type = LLVMParameterType.REGISTER;
+			else
+				type = LLVMParameterType.INTEGER;
+		}
 		this.typeString = typeString;
 		
 		// Kommas entfernen

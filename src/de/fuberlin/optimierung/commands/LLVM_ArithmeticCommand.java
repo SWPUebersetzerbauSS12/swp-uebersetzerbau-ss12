@@ -56,6 +56,10 @@ public class LLVM_ArithmeticCommand extends LLVM_GenericCommand{
 				break;
 		}
 		
+		for (int j = i + 2; j < cmd.length ;j++){
+			tail += cmd[j];
+		}
+		
 		System.out.println("Operation generiert: ");
 		System.out.println(this.toString());
 	}
@@ -75,6 +79,12 @@ public class LLVM_ArithmeticCommand extends LLVM_GenericCommand{
 				break;
 			case DIV :
 				cmd_output +="div ";
+				break;
+			case UREM :
+				cmd_output +="urem ";
+				break;
+			case SREM :
+				cmd_output +="srem ";
 				break;
 			default:
 				return "";

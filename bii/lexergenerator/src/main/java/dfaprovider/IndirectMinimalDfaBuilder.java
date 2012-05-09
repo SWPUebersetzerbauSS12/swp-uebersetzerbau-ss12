@@ -67,10 +67,11 @@ public class IndirectMinimalDfaBuilder implements MinimalDfaBuilder {
 	 * @return Der minimalen DFA für die angegebenen regulären Definitionen.
 	 * @throws MinimalDfaBuilderException
 	 *             Wenn ein Fehler beim Erstellen des DFA's auftritt.
-	 * @throws TokenDefinitionException 
+	 * @throws TokenDefinitionException
 	 */
 	public MinimalDfa<Character, StatePayload> buildMinimalDfa(
-			File regularDefinitionFile) throws MinimalDfaBuilderException, TokenDefinitionException {
+			File regularDefinitionFile) throws MinimalDfaBuilderException,
+			TokenDefinitionException {
 		if (regularDefinitionFile == null) {
 			throw new MinimalDfaBuilderException(
 					"Der Parameter 'regularDefinitionFile' darf nicht null sein!");
@@ -90,13 +91,15 @@ public class IndirectMinimalDfaBuilder implements MinimalDfaBuilder {
 
 		// Informationen aus *.rd-Datei auslesen.
 		ReadTokDefAbstract rtd = null;
-		
+
 		try {
 			rtd = new LexTokDef(regularDefinitionFile);
-		} catch (IOException e1) {
-			// Problem with the File Descriptor
-			e1.printStackTrace();
+		} catch (IOException e) {
+			throw new MinimalDfaBuilderException(
+					"Fehler beim auslesen der Definitions-Datei: "
+							+ e.getMessage());
 		}
+		
 		int counter = 0;
 		for (IRule irule : rtd.getRules()) {
 			counter++;

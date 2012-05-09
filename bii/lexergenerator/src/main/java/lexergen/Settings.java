@@ -184,7 +184,6 @@ public class Settings {
 		try {
 			path = new java.io.File(".").getCanonicalPath().replaceFirst(
 					pattern, "");
-			System.out.println(path);
 		} catch (IOException ex) {
 			Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null,
 					ex);

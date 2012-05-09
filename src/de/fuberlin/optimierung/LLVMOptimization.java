@@ -1,68 +1,27 @@
 package de.fuberlin.optimierung;
 
 import java.io.*;
+import java.util.LinkedList;
 
 class LLVMOptimization implements ILLVMOptimization {
 	
 	private String code = "";
-
-	private ILLVMBlock startBlock;
-	private ILLVMBlock endBlock;
-	private ILLVMBlock blocks[];
-	private int numberBlocks;
 	
-	private LLVMRegisterMap registerMap = new LLVMRegisterMap();
+	private LinkedList<LLVM_Function> functions;
 	
-	private void createRegisterMaps() {
-		
-		for(ILLVMBlock block : this.blocks) {	// Gehe Bloecke durch
-			
-			// Ist Block leer?
-			if(!block.isEmpty()) {
-			
-				// Gehe Befehle des Blockes durch
-				for(ILLVMCommand c = block.getFirstCommand(); !c.isLastCommand(); c = c.getSuccessor()) {
-					
-					// Fuege c in Register Maps ein
-					this.registerMap.addCommand(c);
-				}
-				
-			}
 	
-		}
+	public LLVMOptimization(){
+		functions = new LinkedList<LLVM_Function>();
 	}
 	
-	private void eliminateDeadRegisters() {
-		
-		// Iteriere ueber alle definierten Register
-		for(String registerName : this.registerMap.getDefinedRegisterNames()) {
-			
-			// Teste fuer jedes Register r ob Verwendungen existieren
-			if(!this.registerMap.existsUses(registerName)) {
-				
-				// Wenn nein, loesche Befehl (Definition)
-				ILLVMCommand c = this.registerMap.getDefinition(registerName);
-				this.registerMap.deleteCommand(c);
-				c.deleteCommand();
-				
-			}
-			
-		}
-		
-	}
-
 	private void parseCode() {
 		
-		// Splitte Codestring in Bloecke
-		String codeBlocks[] = this.code.split("\n\n");
-		this.numberBlocks = codeBlocks.length-1;
-		this.blocks = new LLVMBlock[this.numberBlocks];
-		for(int i=1; i<=this.numberBlocks; i++) {
-			this.blocks[i-1] = new LLVMBlock(codeBlocks[i]);
+		// Splitte in Funktionen
+		String[] functions = this.code.split("define");
+		
+		for (int i = 1; i < functions.length; i++) {
+			this.functions.add(new LLVM_Function(functions[i]));
 		}
-		this.startBlock = this.blocks[0];
-		this.endBlock = this.blocks[this.numberBlocks-1];
-
 	}
 
 	private String optimizeCode() {
@@ -75,8 +34,22 @@ class LLVMOptimization implements ILLVMOptimization {
 		//this.createRegisterMaps();
 		//this.eliminateDeadRegisters();
 		
-		// Rekursiv durch den Block-Graph durch ausgeben
-		return startBlock.toString();
+		String outputLLVM = "";
+		LLVM_Function tmp;
+		
+		for (int i = 0; i < functions.size(); i++) {
+			// aktuelle Funktion fuer Optimierung
+			tmp = functions.get(i);
+			
+			// Optimierungsfunktionen
+			tmp.createRegisterMaps();
+			//tmp.eliminateDeadRegisters();
+			
+			// Optimierte Ausgabe
+			outputLLVM += tmp.toString();
+		}
+		
+		return outputLLVM;
 	}
 
 	private void readCodeFromFile(String fileName){
@@ -111,7 +84,7 @@ class LLVMOptimization implements ILLVMOptimization {
 	public static void main(String args[]) {
 
 		ILLVMOptimization optimization = new LLVMOptimization();        
-		String optimizedCode = optimization.optimizeCodeFromFile("input/llvm_test.llvm");
+		String optimizedCode = optimization.optimizeCodeFromFile("input/llvm_dead_registers2");
 		System.out.println(optimizedCode);
 	}
 

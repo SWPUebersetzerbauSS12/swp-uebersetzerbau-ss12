@@ -78,6 +78,12 @@ class LLVMBlock implements ILLVMBlock {
 					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.DIV, predecessor, this);
 				}else if (cmd[2].compareTo("alloca") == 0){
 					return new LLVM_Alloca(cmd, LLVMOperation.ALLOCA, predecessor, this);
+				}else if (cmd[2].compareTo("and") == 0){
+					return new LLVM_Alloca(cmd, LLVMOperation.AND, predecessor, this);
+				}else if (cmd[2].compareTo("or") == 0){
+					return new LLVM_Alloca(cmd, LLVMOperation.OR, predecessor, this);
+				}else if (cmd[2].compareTo("xor") == 0){
+					return new LLVM_Alloca(cmd, LLVMOperation.XOR, predecessor, this);
 				}
 			}
 		}

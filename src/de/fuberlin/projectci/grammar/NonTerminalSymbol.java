@@ -7,7 +7,8 @@ public class NonTerminalSymbol extends Symbol {
 	}
 	 
 	public String toString()  {
-		return getName();
+		
+			return getName();
 	}
 }
  

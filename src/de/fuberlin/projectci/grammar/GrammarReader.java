@@ -1,9 +1,12 @@
 package de.fuberlin.projectci.grammar;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -11,36 +14,33 @@ import java.util.regex.Pattern;
 
 
 public class GrammarReader {
- 
-	/**
-	 * Liest eine Textdatei mit enthaltener BNF-Grammatik und erstellt daraus ein neues
-	 * Grammar Object.
-	 * Die Textdatei darf auch Leerzeilen enthalten, welche beim Parsen ignoriert werden.
-	 * @param filename Pfad zur Textdatei, welche die Eingabegrammatik in BNF enthält.
-	 * @return Grammatik-Object mit eingelesenen Produktionen.
-	 * @throws BNFParsingErrorException Falls die Textdatei keine gültige BNF
-	 */
 	
-	// XXX Warum sind readGrammar und parseProduction statisch?
-	/* XXX Vorschlag: Mehrere überladene Signaturen für readGrammar: Implementierung in readGrammar(Reader reader) und Aufruf in readGrammar(String), readGrammar(File) etc
-	 * 	-->	Dann kann man den GrammarReader zum Testen auch mit einem StringReader aufrufen
-	*/
-	public static Grammar readGrammar(String filename) throws BNFParsingErrorException {
+	/**
+	 * Liest von einem Reader-Objekt die BNF-Grammatik ein und erstellt daraus ein neues
+	 * Grammar-Objekt.
+	 * @param r Reader-Objekt der BNF-Grammatik. Produktionen müssen mit Zeilenumbrüchen getrennt sein.
+	 * @return Grammatik-Object mit eingelesenen Produktionen.
+	 * @throws BNFParsingErrorException Falls das Reader-Objekt keine gültige BNF-Grammatik
+	 * einlesen konnte.
+	 */
+	public static Grammar readGrammar(Reader r) throws BNFParsingErrorException {
 		Grammar grammar = new Grammar();
-		int foundedProductions = 0;
+		int foundProductions = 0;
 		try {
 			// Textdatei zeilenweise einlesen
-			BufferedReader reader = new BufferedReader(new FileReader(filename));
+			BufferedReader reader = new BufferedReader(r);
 			String line = null;
 			
 			while((line = reader.readLine()) != null) {
 				if(line.length() > 0) { // Leerzeilen ignorieren
-					//System.out.println("Parsing line..."); // TODO DEBUG (Markierung, um diese hinterher wieder leicht entfernen zu können)
 					// pro Zeile genau eine Produktion parsen
 					List<Production> productions = parseProduction(line, grammar);
 					for(Production production : productions){
 						grammar.addProduction(production);
-						++foundedProductions;
+						++foundProductions;
+						// Annahme: erste Produktion enthält Startsymbol (TODO evtl. ändern)
+						if(foundProductions == 1)
+							grammar.setStartSymbol(production.getLhs());
 					}
 				}
 			}
@@ -51,10 +51,58 @@ public class GrammarReader {
 			// Lesefehler z.B. durch Interrupt
 			throw new BNFParsingErrorException(e);
 		}
-		if(foundedProductions == 0)
-			System.out.println("GrammarReader: WARNING Created Grammar contains no Productions!");
-		System.out.println(); // TODO DEBUG
+		
+		if(foundProductions == 0)
+			System.out.println("GrammarReader: WARNING Created grammar contains no productions!");
+
 		return grammar;
+	}
+	
+	/**
+	 * Erstellt einen Reader für ein gegebenes File-Objekt, welches die BNF-Grammatik enthält
+	 * und erstellt daraus ein neues Grammar-Objekt.
+	 * @param file File-Objekt, das auf eine BNF-Grammatik-Datei verweist.
+	 * @return Grammatik-Object mit eingelesenen Produktionen.
+	 * @throws BNFParsingErrorException Falls das File-Objekt keine gültige BNF enthält 
+	 * oder nicht gelesen werden konnte.
+	 */
+	public static Grammar readGrammar(File file) throws BNFParsingErrorException{
+		FileReader reader = null;
+		
+		try {
+			reader = new FileReader(file);
+		} catch (FileNotFoundException e) {
+			// Textdatei nicht gefunden oder nicht zugreifbar
+			throw new BNFParsingErrorException(e);
+		}
+
+		return readGrammar(reader);
+	}
+ 
+	/**
+	 * Liest eine Textdatei mit enthaltener BNF-Grammatik und erstellt daraus ein neues
+	 * Grammar-Objekt.
+	 * Die Textdatei darf auch Leerzeilen enthalten, welche beim Parsen ignoriert werden.
+	 * @param filename Pfad zur Textdatei, welche die Eingabegrammatik in BNF enthält.
+	 * @return Grammatik-Object mit eingelesenen Produktionen.
+	 * @throws BNFParsingErrorException Falls die Textdatei keine gültige BNF ist.
+	 */
+	
+	// XXX Warum sind readGrammar und parseProduction statisch?
+	/* XXX Vorschlag: Mehrere überladene Signaturen für readGrammar: Implementierung in readGrammar(Reader reader) und Aufruf in readGrammar(String), readGrammar(File) etc
+	 * 	-->	Dann kann man den GrammarReader zum Testen auch mit einem StringReader aufrufen
+	*/
+	public static Grammar readGrammar(String filename) throws BNFParsingErrorException {
+		FileReader reader = null;
+		
+		try {
+			reader = new FileReader(filename);
+		} catch (FileNotFoundException e) {
+			// Textdatei nicht gefunden oder nicht zugreifbar
+			throw new BNFParsingErrorException(e);
+		}
+
+		return readGrammar(reader);
 	}
 	
 	/**
@@ -126,7 +174,7 @@ public class GrammarReader {
 				productions.add(new Production(leftHandSite, rightHandSite));
 			}
 		} else {
-			throw new BNFParsingErrorException("No guilty Production!");
+			throw new BNFParsingErrorException("Illegal production!");
 		}
 		
 		return productions;

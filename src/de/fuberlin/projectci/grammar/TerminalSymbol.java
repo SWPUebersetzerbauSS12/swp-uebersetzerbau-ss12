@@ -7,8 +7,11 @@ public class TerminalSymbol extends Symbol {
 	}
 	
 	@Override
-	public String toString() {
-		return "\""+getName()+"\"";
+	public String toString()  {
+		if (getName().equals(Grammar.EMPTY_STRING))
+			return "ε";
+		else
+			return "\""+getName()+"\"";
 	}
  
 }

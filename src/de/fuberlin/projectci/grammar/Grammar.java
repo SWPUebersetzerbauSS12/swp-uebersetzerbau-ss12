@@ -1,7 +1,9 @@
 package de.fuberlin.projectci.grammar;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,12 @@ public class Grammar {
 	
 	//Startsymbol	
 	NonTerminalSymbol startSymbol = null;
+	
+	// Map für die FirstMengen
+	private Map<Symbol,Set<TerminalSymbol>> firstSets = null;
+	
+	// Set für die Terminalsymbole
+	private Set<TerminalSymbol> terminalSymbols = new HashSet<TerminalSymbol>();
 	
 	//TODO Leeres Wort definieren
 	// XXX Warum nicht Epsilon: EMPTY_STRING = "\u03B5";
@@ -56,7 +64,7 @@ public class Grammar {
 		if (temp != null) {
 			nonTerminal2Productions.get(production.getLhs()).add(production);
 		} else {
-			List<Production> p = new LinkedList<Production>();
+			List<Production> p = new LinkedList<Production>();	// XXX temp benutzen?
 			p.add(production);
 			nonTerminal2Productions.put(production.getLhs(), p);
 		}
@@ -106,6 +114,7 @@ public class Grammar {
 		}
 		
 		
+		terminalSymbols.add(result);
 		return result;
 	}
 	
@@ -132,9 +141,17 @@ public class Grammar {
 	 */
 	public Set<NonTerminalSymbol> getAllNonTerminals() {
 		return nonTerminal2Productions.keySet();
-	}
+	}	
 	
-		
+	
+	/**
+	 * Gibt eine Menge @see java.util.Set aller Sets zurück
+	 * @return
+	 */
+	public Set<TerminalSymbol> getAllTerminalSymols() {
+		return terminalSymbols;
+	}
+
 	/**
 	 * Gibt eine menschenlesbare Textdarstellung der Grammatik zurück.
 	 */
@@ -159,12 +176,98 @@ public class Grammar {
 	// * Implementierung einiger grundlegender Grammatik-Algorithmen
 	// ****************************************************************************
 
+	
+	/*
+	 * Überlegung für den Algorithmus für die First Mengen:
+	 * - die First Mengen werden alle aufeinmal paralell berechnet
+	 * - Vielleicht zuerst eine HashMap Symbol -> Set<Terminal> füllen
+	 */
+	
+
 	/**
-	 * Berechnet die First-Menge zu einem Symbol.
+	 * Berechnet die Firstmenge für ein Symbol s der Grammatik
+	 * @param s Das Symbol (Terminal oder nicht Terminal) der Grammatik
+	 * @return Die Firstmenge für das Symbol S. Gibt null zurück, wenn es Symbol nicht gibt
 	 */
 	public Set<TerminalSymbol> first(Symbol s) {
-		// TODO Implementiere mich.
+		// Wenn die FirstMengen noch nicht berechnet wurden, dann mach dies jetzt
+		if(firstSets == null)
+			firstSets = computeFirstSets();
+	
+		// Die Firstmenge für das Symbol zurück geben
+		return firstSets.get(s);
+		
+		//TODO eventuell noch bessere Fehlerbehandlung
+	}
+	
+	
+	public Set<TerminalSymbol> first(List<Symbol> s) {
+		//TODO implementiere mich!
 		return null;
+		
+	}
+	/**
+	 * Berechnet parallel und erschöpfend die First-Mengen für alle Symbole der Grammatik.
+	 * Implementierung des Algorithmus aus dem Drachenbuch Kapitel 4.4.2 Seite 221 (Englische Fassung)
+	 * 
+	 * @return Es wird ein Wörterbuch von Symbolen auf eine Menge von Terminalsymbolen zurück gegeben
+	 */
+	
+	public Map<Symbol,Set<TerminalSymbol>> computeFirstSets() {
+		firstSets = new HashMap<Symbol,Set<TerminalSymbol>>();
+		// 1. Für alle Terminalsymbole die Mengen erzeugen.
+		// Für ein Terminal t gilt FIRST(t) = {ŧ}
+	
+		for(TerminalSymbol t : terminalSymbols) {
+			// Neue leere Menge anlegen
+			Set<TerminalSymbol> tempSet = new HashSet<TerminalSymbol>();
+			
+			// Terminalsymbol erzeugen
+			tempSet.add(t);
+			firstSets.put(t, tempSet);
+		}
+		
+		// Für alle Nichtterminale initialisieren
+		for(NonTerminalSymbol t : getAllNonTerminals()) {
+			firstSets.put(t, new HashSet<TerminalSymbol>());
+			}
+		
+		// 2. Zu allen Epsilonproduktionen wird Epsilon zur FIRST Menge der LHS hinzugefügt.
+		// Über die Produktionen iterieren
+		
+		boolean changed = true;
+		
+				
+		// Ich versuchs auch noch mal
+		while(changed) { // erschöpfende Ausführung 
+			changed = false;
+			for(Production p : productions) {
+				
+				// 2. Regel: Gibt es eine Produktion X → ε, so füge ε zu FIRST(X) hinzu.
+				if(p.getRhs().get(0).equals(EPSILON))			
+					changed = changed || firstSets.get(p.getLhs()).add(EPSILON);
+				
+				boolean removed = false;
+				// 3.Regel
+				
+				for(Symbol y : p.getRhs()) {
+					//TODO nicht so schön
+					Set<TerminalSymbol> firstY = new HashSet<TerminalSymbol>(firstSets.get(y)); // Kopie erzeugen
+					
+					removed = firstY.remove(EPSILON);
+					changed = changed || firstSets.get(p.getLhs()).addAll(firstY); // FIRST(Yi)/ε zu FIRST(X) hinzufügen
+					
+					if(!removed)
+						break; // Wenn kein ε vorkam, schluss
+
+				}
+				// ε Einfügen wenn alle FIRST(Yi) ε enthalten
+				 if(removed)
+					 changed = changed || firstSets.get(p.getLhs()).add(EPSILON);
+			}
+		}
+		
+		return firstSets;
 	}
 	 
 	/**
@@ -173,6 +276,14 @@ public class Grammar {
 	
 	public Set<TerminalSymbol> follow(NonTerminalSymbol nts) {
 		// TODO Implementiere mich.
+		
+		// 1. Regel: Füge $ (Endmarkierung) zur FOLLOW Menge des Startsymbols ein
+		
+		// 2. Regel: für eine Produktion A → αBβ, füge alles von FIRST(β) außer ε
+		// zu FOLLOW(B) hinzu
+		
+		// 3. Regel: für alle A → αB oder A → αBβ mit ε ∈ FIRST(β),
+		// füge FOLLOW(A) zu FOLLOW(B) hinzu
 		return null;
 	}
 	

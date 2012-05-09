@@ -30,7 +30,9 @@ public class TokenizerTest {
 	 * Test of getNextToken method, of class Tokenizer.
 	 */
 	@Test
-	public void testGetNextToken() throws ConvertExecption, Exception {
+	public void testGetNextToken() throws Exception {
+		String sourceFile = "src/test/resources/source/tokenmatcher.testrelop.fun";
+		
 		Settings.readSettings();
 		Settings.setErrorCorrectionMode(CorrectionMode.PANIC_MODE); // Dieser Test ist nur im PANIC_MODE durchführbar.
 		
@@ -39,11 +41,10 @@ public class TokenizerTest {
 		NfaToDfaConverter<Character, StatePayload> nfaToDfaConverter = new NfaToDfaConverter<Character, StatePayload>();
 		fsm = nfaToDfaConverter.convertToDfa(fsm);
 
-		LexemeReader lexemeReader = new BufferedLexemeReader("src/test/resources/source/testrelop.fun");
-		//LexemeReader lexemeReader = new SimpleLexemeReader("src/test/resources/source/testrelop.fun");
+		LexemeReader lexemeReader = new BufferedLexemeReader(sourceFile);
+		//LexemeReader lexemeReader = new SimpleLexemeReader(sourceFile);
 
-		Tokenizer tokenizer = new Tokenizer(lexemeReader,
-				new MinimalDfa<Character, StatePayload>(fsm));
+		Tokenizer tokenizer = new Tokenizer(lexemeReader, new MinimalDfa<Character, StatePayload>(fsm));
 
 		Token currentToken;
 		String tokenString;

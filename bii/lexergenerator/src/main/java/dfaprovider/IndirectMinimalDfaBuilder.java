@@ -37,11 +37,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import parsetokdef.LexTokDef;
-import parsetokdef.LexTokDefTest;
 import parsetokdef.ReadTokDefAbstract;
-import parsetokdef.ReadTokDefinition;
 import parsetokdef.TokenDefinitionException;
-
 import regextodfaconverter.ConvertExecption;
 import regextodfaconverter.MinimalDfa;
 import regextodfaconverter.RegexToNfaConverter;

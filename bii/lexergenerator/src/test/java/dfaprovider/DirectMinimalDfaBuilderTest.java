@@ -6,12 +6,13 @@ import lexergen.Settings;
 
 import org.junit.Test;
 
+import bufferedreader.BufferedLexemeReader;
+import bufferedreader.*;
+
 import regextodfaconverter.MinimalDfa;
 import tokenmatcher.StatePayload;
 import tokenmatcher.Token;
 import tokenmatcher.Tokenizer;
-import bufferedreader.BufferedLexemeReader;
-import bufferedreader.LexemeReader;
 
 /**
  * Test-Klasse für die buildMinimalDfa-Klasse.
@@ -19,7 +20,7 @@ import bufferedreader.LexemeReader;
  * @author Daniel Rotar
  * 
  */
-public class IndirectMinimalDfaBuilderTest {
+public class DirectMinimalDfaBuilderTest {
 
 	/**
 	 * Test of buildMinimalDfa method, of class IndirectMinimalDfaBuilder.
@@ -32,12 +33,12 @@ public class IndirectMinimalDfaBuilderTest {
 		Settings.readSettings();
 
 		MinimalDfa<Character, StatePayload> mDfa = null;
-		MinimalDfaBuilder builder = new IndirectMinimalDfaBuilder();
+		MinimalDfaBuilder builder = new DirectMinimalDfaBuilder();
 
 		mDfa = builder.buildMinimalDfa(new File(rdFile));
 
 		LexemeReader lexemeReader = new BufferedLexemeReader(sourceFile);
-//		LexemeReader lexemeReader = new SimpleLexemeReader(sourceFile);
+//		 LexemeReader lexemeReader = new SimpleLexemeReader(sourceFile);
 		Tokenizer tokenizer = new Tokenizer(lexemeReader, mDfa);
 
 		Token currentToken;
@@ -50,4 +51,3 @@ public class IndirectMinimalDfaBuilderTest {
 		//TODO Daniel: assert...
 	}
 }
-

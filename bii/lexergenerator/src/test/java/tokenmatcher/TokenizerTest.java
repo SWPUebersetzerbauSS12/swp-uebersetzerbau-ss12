@@ -42,7 +42,7 @@ public class TokenizerTest {
 		fsm = nfaToDfaConverter.convertToDfa(fsm);
 
 		LexemeReader lexemeReader = new BufferedLexemeReader(sourceFile);
-		//LexemeReader lexemeReader = new SimpleLexemeReader(sourceFile);
+//		LexemeReader lexemeReader = new SimpleLexemeReader(sourceFile);
 
 		Tokenizer tokenizer = new Tokenizer(lexemeReader, new MinimalDfa<Character, StatePayload>(fsm));
 

@@ -14,8 +14,9 @@ public class LLVM_Function {
 	public LLVM_Function(String code) {
 		
 		func_define = "define"+code.split("\n")[0];
+		String[] firstSplit = code.split("[{}]");
 		
-		String codeBlocks[] = code.split("\n\n");
+		String codeBlocks[] = firstSplit[1].split("\n\n");
 		this.numberBlocks = codeBlocks.length;
 		this.blocks = new LLVMBlock[this.numberBlocks];
 		for(int i = 0; i < this.numberBlocks; i++) {
@@ -44,8 +45,8 @@ public class LLVM_Function {
 		}
 	}
 	
-	public void eliminateDeadRegisters() {
-		
+	public boolean eliminateDeadRegisters() {
+		boolean deleted = false;
 		// Iteriere ueber alle definierten Register
 		for(String registerName : this.registerMap.getDefinedRegisterNames()) {
 			
@@ -56,11 +57,11 @@ public class LLVM_Function {
 				ILLVMCommand c = this.registerMap.getDefinition(registerName);
 				this.registerMap.deleteCommand(c);
 				c.deleteCommand();
-				
+				deleted = true;
 			}
 			
 		}
-		
+		return deleted;
 	}
 	
 	public String toString() {

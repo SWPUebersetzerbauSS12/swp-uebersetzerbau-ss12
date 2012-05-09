@@ -36,6 +36,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import parsetokdef.LexTokDef;
+import parsetokdef.LexTokDefTest;
+import parsetokdef.ReadTokDefAbstract;
 import parsetokdef.ReadTokDefinition;
 import parsetokdef.TokenDefinitionException;
 
@@ -88,9 +91,9 @@ public class IndirectMinimalDfaBuilder implements MinimalDfaBuilder {
 		String regex = "";
 		FiniteStateMachine<Character, StatePayload> fsm = null;
 
-		ReadTokDefinition rtd = null;
+		ReadTokDefAbstract rtd = null;
 		try {
-			rtd = new ReadTokDefinition(regularDefinitionFile);
+			rtd = new LexTokDef(regularDefinitionFile);
 		} catch (IOException e1) {
 			// Problem with the File Descriptor
 			e1.printStackTrace();

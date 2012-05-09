@@ -18,11 +18,15 @@ class LLVMOptimization implements ILLVMOptimization {
 		for(ILLVMBlock block : this.blocks) {	// Gehe Bloecke durch
 			
 			// Ist Block leer?
+			if(!block.isEmpty()) {
 			
-			for(ILLVMCommand c = block.getFirstCommand(); !c.isLastCommand(); c = c.getSuccessor()) {
+				// Gehe Befehle des Blockes durch
+				for(ILLVMCommand c = block.getFirstCommand(); !c.isLastCommand(); c = c.getSuccessor()) {
+					
+					// Fuege c in Register Maps ein
+					this.registerMap.addCommand(c);
+				}
 				
-				// Fuege c in Register Maps ein
-				this.registerMap.addCommand(c);
 			}
 	
 		}
@@ -65,6 +69,8 @@ class LLVMOptimization implements ILLVMOptimization {
 		// Code steht als String in this.code
 		// Starte Optimierung
 		this.parseCode();
+		
+		// TODO Erstelle Flussbaum
 		
 		//this.createRegisterMaps();
 		//this.eliminateDeadRegisters();

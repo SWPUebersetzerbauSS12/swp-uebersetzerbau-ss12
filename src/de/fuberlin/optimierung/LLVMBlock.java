@@ -33,6 +33,10 @@ class LLVMBlock implements ILLVMBlock {
 		this.createCommands();
 
 	}
+	
+	public boolean isEmpty() {
+		return (this.firstCommand==null);
+	}
 
 	public void optimizeBlock() {
 

@@ -11,4 +11,6 @@ public interface ILLVMBlock {
 	public void setLastCommand(ILLVMCommand last);
 	public ILLVMCommand getFirstCommand();
 	public ILLVMCommand getLastCommand();
+	
+	public boolean isEmpty();
 }

@@ -53,10 +53,15 @@ class LLVMBlock implements ILLVMBlock {
 		String commandsArray[] = this.blockCode.split("\n");
 		this.firstCommand = mapCommands(commandsArray[0], null);
 		
-		ILLVMCommand predecessor = this.firstCommand;
+		ILLVMCommand predecessor = firstCommand;
 		for(int i=1; i<commandsArray.length; i++) {
-			ILLVMCommand c = mapCommands(commandsArray[i],predecessor);
-			predecessor = c;
+			ILLVMCommand c = mapCommands(commandsArray[i], predecessor);
+			if(firstCommand == null){
+				firstCommand = c;
+				predecessor = c;
+			}else{
+				predecessor = c;
+			}
 		}
 		this.lastCommand = predecessor;
 	}
@@ -126,18 +131,19 @@ class LLVMBlock implements ILLVMBlock {
 	}
 	
 	public String toString() {
-		String code = label+"\n";
+		
+		String code = "";
+		
+		if(!label.equals("")){
+			code = label+"\n";
+		}
 		
 		ILLVMCommand tmp = firstCommand;
 		while(tmp != null && !tmp.equals(lastCommand)){
-			code += tmp.toString();
+			code += "\t"+tmp.toString();
 			tmp = tmp.getSuccessor();
 		}
 		code += "\n";
-		
-		for (ILLVMBlock block : children) {
-			code += block.toString();
-		}
 		
 		return code;
 	}

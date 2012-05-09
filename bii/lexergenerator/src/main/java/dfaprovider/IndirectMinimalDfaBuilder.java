@@ -33,7 +33,6 @@
 package dfaprovider;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import parsetokdef.LexTokDef;
@@ -70,8 +69,7 @@ public class IndirectMinimalDfaBuilder implements MinimalDfaBuilder {
 	 * @throws TokenDefinitionException
 	 */
 	public MinimalDfa<Character, StatePayload> buildMinimalDfa(
-			File regularDefinitionFile) throws MinimalDfaBuilderException,
-			TokenDefinitionException {
+			File regularDefinitionFile) throws MinimalDfaBuilderException {
 		if (regularDefinitionFile == null) {
 			throw new MinimalDfaBuilderException(
 					"Der Parameter 'regularDefinitionFile' darf nicht null sein!");
@@ -94,7 +92,7 @@ public class IndirectMinimalDfaBuilder implements MinimalDfaBuilder {
 
 		try {
 			rtd = new LexTokDef(regularDefinitionFile);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			throw new MinimalDfaBuilderException(
 					"Fehler beim auslesen der Definitions-Datei: "
 							+ e.getMessage());
@@ -106,7 +104,10 @@ public class IndirectMinimalDfaBuilder implements MinimalDfaBuilder {
 			payload = new regextodfaconverter.fsm.StatePayload(
 					irule.getTokenType(), irule.getTokenValue(), counter * (-1));
 			regex = irule.getRegexp();
-
+			
+			System.out.println(payload.getTokenType() + ", " + payload.getAttribute());
+			System.out.println(regex);
+			
 			// Aus Regex NFA machen.
 			try {
 				fsm = converter.convertToNFA(regex, payload);

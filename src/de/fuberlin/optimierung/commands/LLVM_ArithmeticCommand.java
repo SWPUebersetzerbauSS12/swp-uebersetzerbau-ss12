@@ -57,10 +57,7 @@ public class LLVM_ArithmeticCommand extends LLVM_GenericCommand{
 		}
 		
 		System.out.println("Operation generiert: ");
-		System.out.println("Target: " + this.target.getName());
-		System.out.println("Operandtyp: " + operands.get(0).getTypeString());
-		System.out.println("Operand: " + operands.get(0).getName());
-		System.out.println("Operand: " + operands.get(1).getName()+"\n");
+		System.out.println(this.toString());
 	}
 	
 	public String toString() {

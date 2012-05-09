@@ -5,7 +5,6 @@ public class LLVMParameter {
 	private String typeString;		// Bsp: "i32"
 	private LLVMParameterType type;		// Bsp: REGISTER
 	private String name;	// Bsp: %i 
-	private boolean kommaAfter;
 	
 	public LLVMParameter(String name, String typeString) {
 		
@@ -15,11 +14,9 @@ public class LLVMParameter {
 			type = LLVMParameterType.INTEGER;
 		this.typeString = typeString;
 		
-		if (name.contains(",")){
-			kommaAfter = true;			
-			this.name = name.replace(',', ' ').trim();
-		}
-		else this.name = name.trim();
+		// Kommas entfernen
+		this.typeString = typeString.replace(',', ' ').trim();
+		this.name = name.replace(',', ' ').trim();
 	}
 	
 	public LLVMParameter(String name, LLVMParameterType type, String typeString) {

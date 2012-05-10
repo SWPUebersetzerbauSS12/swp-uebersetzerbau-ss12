@@ -33,11 +33,16 @@
 package dfaprovider;
 
 /**
- * Stellt einen Fehler dar, der auftritt, wenn die übergebene reguläre Definitionsdatei
- * für den MinimalDfaProvider fehlerhafte ist bzw. nicht existiert.
+ * Stellt einen Fehler dar, der auftritt, wenn im {@link MinimalDfaProvider} ein
+ * Fehler vorliegt.
+ * 
+ * Mögliche Fehlerfälle sind: - die übergebene reguläre Definitionsdatei ist
+ * fehlerhaft bzw. existiert nicht - der übergebene MinimalDfaBuilder ist
+ * fehlerhaft bzw. existiert nicht - die Fallback-Erzeugung des minimalen DFA
+ * fehlschlägt (auf Basis der regulären Definitionsdatei)
  * 
  * @author Maximilian Schröder
- *
+ * 
  */
 public class MinimalDfaProviderException extends Exception {
 
@@ -45,14 +50,14 @@ public class MinimalDfaProviderException extends Exception {
 	 * serialVersionUID
 	 */
 	private static final long serialVersionUID = 6521418734139082883L;
-	
+
 	/**
 	 * Erstellt ein neues MinimalDfaProviderException Objekt.
 	 */
 	public MinimalDfaProviderException() {
 		super();
 	}
-	
+
 	/**
 	 * Erstellt ein neues MinimalDfaProviderException Objekt.
 	 * 
@@ -62,5 +67,5 @@ public class MinimalDfaProviderException extends Exception {
 	public MinimalDfaProviderException(String message) {
 		super(message);
 	}
-	
+
 }

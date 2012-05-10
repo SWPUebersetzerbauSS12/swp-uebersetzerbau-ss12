@@ -1,0 +1,1 @@
+def int someFunction(int arg1, int arg2);

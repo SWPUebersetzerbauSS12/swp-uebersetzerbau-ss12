@@ -32,7 +32,9 @@
 
 package tokenmatcher;
 
-public interface StatePayload {
+import java.io.Serializable;
+
+public interface StatePayload extends Serializable {
 
 	/**
 	 * Gibt den Tokentyp zurück.

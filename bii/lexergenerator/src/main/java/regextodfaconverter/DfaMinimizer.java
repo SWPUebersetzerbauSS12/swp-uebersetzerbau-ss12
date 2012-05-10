@@ -32,6 +32,8 @@
 
 package regextodfaconverter;
 
+import java.io.Serializable;
+
 import regextodfaconverter.fsm.FiniteStateMachine;
 
 /**
@@ -48,7 +50,7 @@ import regextodfaconverter.fsm.FiniteStateMachine;
  *            Der Typ des Inhalts der Zustände beim verwendeten endlichen
  *            Automaten.
  */
-public class DfaMinimizer<TransitionConditionType extends Comparable<TransitionConditionType>, StatePayloadType> {
+public class DfaMinimizer<TransitionConditionType extends Comparable<TransitionConditionType>, StatePayloadType extends Serializable> {
 
 	/**
 	 * Macht aus dem angegebenen (deterministischen) endlichen Automaten einen minimalen deterministischen endlichen Automaten.

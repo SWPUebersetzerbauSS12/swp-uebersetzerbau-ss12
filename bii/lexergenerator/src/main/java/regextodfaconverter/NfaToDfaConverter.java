@@ -32,6 +32,7 @@
 
 package regextodfaconverter;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -58,7 +59,7 @@ import regextodfaconverter.fsm.Transition;
  *            Der Typ des Inhalts der Zustände beim verwendeten endlichen
  *            Automaten.
  */
-public class NfaToDfaConverter<TransitionConditionType extends Comparable<TransitionConditionType>, StatePayloadType> {
+public class NfaToDfaConverter<TransitionConditionType extends Comparable<TransitionConditionType>, StatePayloadType extends Serializable> {
 
 	/**
 	 * Macht aus dem angegebenen endlichen Automaten einen deterministischen

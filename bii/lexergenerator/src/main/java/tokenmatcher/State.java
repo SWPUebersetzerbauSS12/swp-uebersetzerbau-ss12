@@ -32,6 +32,7 @@
 
 package tokenmatcher;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -49,7 +50,7 @@ import java.util.Collection;
  *            Der Typ des Inhalts der Zustände beim verwendeten endlichen
  *            Automaten.
  */
-public interface State<ConditionType extends Comparable<ConditionType>, PayloadType> {
+public interface State<ConditionType extends Comparable<ConditionType>, PayloadType extends Serializable>  extends Serializable{
 
 	/**
 	 * Dient der Abfrage, ob es sich bei dem Zustand um einen Endzustand

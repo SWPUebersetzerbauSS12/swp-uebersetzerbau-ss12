@@ -50,7 +50,7 @@ import regextodfaconverter.fsm.excpetions.TransitionAlreadyExistsException;
  * @param <PayloadType>
  *            Der Typ des Inhalts.
  */
-public class State<TransitionConditionType extends Comparable<TransitionConditionType>, PayloadType>
+public class State<TransitionConditionType extends Comparable<TransitionConditionType>, PayloadType extends Serializable>
 		implements Comparable<State<TransitionConditionType, PayloadType>>,
 		tokenmatcher.State<TransitionConditionType, PayloadType>, Serializable {
 

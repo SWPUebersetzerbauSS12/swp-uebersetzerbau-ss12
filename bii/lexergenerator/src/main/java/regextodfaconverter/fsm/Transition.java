@@ -45,7 +45,7 @@ import java.io.Serializable;
  * @param <StatePayloadType>
  *            Der Typ des Inhalts der Zustände.
  */
-public class Transition<ConditionType extends Comparable<ConditionType>, StatePayloadType>
+public class Transition<ConditionType extends Comparable<ConditionType>, StatePayloadType extends Serializable>
 		implements Comparable<Transition<ConditionType, StatePayloadType>>, Serializable {
 
 	/**

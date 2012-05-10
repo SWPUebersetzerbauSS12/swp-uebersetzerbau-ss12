@@ -51,7 +51,7 @@ import regextodfaconverter.fsm.excpetions.TransitionAlreadyExistsException;
  * @param <StatePayloadType>
  *            Der Typ des Inhalts der Zustände.
  */
-public class FiniteStateMachine<TransitionConditionType extends Comparable<TransitionConditionType>, StatePayloadType>
+public class FiniteStateMachine<TransitionConditionType extends Comparable<TransitionConditionType>, StatePayloadType extends Serializable>
 		implements Serializable {
 
 	/**

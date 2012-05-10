@@ -53,7 +53,7 @@ import tokenmatcher.State;
  *            Der Typ des Inhalts der Zustände beim verwendeten endlichen
  *            Automaten.
  */
-public class MinimalDfa<ConditionType extends Comparable<ConditionType>, PayloadType>
+public class MinimalDfa<ConditionType extends Comparable<ConditionType>, PayloadType extends Serializable>
 		implements DeterministicFiniteAutomata<ConditionType, PayloadType>,
 		Serializable {
 

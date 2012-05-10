@@ -15,16 +15,13 @@ class LLVM_Block implements ILLVM_Block {
 
 	// Vorgaenger- und Nachfolgerbloecke
 	// Hieraus entsteht der Flussgraph zwischen den Bloecken
-	private LinkedList<ILLVM_Block> children;
-	private LinkedList<ILLVM_Block> parents;
+	private LinkedList<ILLVM_Block> nextBlocks = new LinkedList<ILLVM_Block>();
+	private LinkedList<ILLVM_Block> previousBlocks = new LinkedList<ILLVM_Block>();
 	
 	// Kompletter Code des Blocks als String
 	private String blockCode;
 
 	public LLVM_Block(String blockCode) {
-	
-		children = new LinkedList<ILLVM_Block>();
-		parents = new LinkedList<ILLVM_Block>();
 		
 		this.blockCode = blockCode;
 		System.out.println(blockCode + "\n*****************\n");
@@ -163,6 +160,22 @@ class LLVM_Block implements ILLVM_Block {
 
 	public ILLVM_Command getLastCommand() {
 		return lastCommand;
+	}
+	
+	public LinkedList<ILLVM_Block> getNextBlocks() {
+		return nextBlocks;
+	}
+
+	public void setNextBlocks(LinkedList<ILLVM_Block> nextBlocks) {
+		this.nextBlocks = nextBlocks;
+	}
+
+	public LinkedList<ILLVM_Block> getPreviousBlocks() {
+		return previousBlocks;
+	}
+
+	public void setPreviousBlocks(LinkedList<ILLVM_Block> previousBlocks) {
+		this.previousBlocks = previousBlocks;
 	}
 	
 	public String toString() {

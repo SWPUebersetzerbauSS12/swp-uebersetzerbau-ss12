@@ -50,6 +50,12 @@ public class LLVM_Function {
 		}
 	}
 	
+	/**
+	 * Teste, ob gegebenes Register nicht verwendet wird
+	 * Wenn es tot ist, so wird die Definition geloescht
+	 * @param registerName Name des Registers
+	 * @return geloeschte Definition (um spaeter Operanden zu testen) oder null, falls nichts geloescht wurde
+	 */
 	private ILLVM_Command eliminateDeadRegister(String registerName) {
 		// Teste, ob Verwendungen existieren
 		if(!this.registerMap.existsUses(registerName)) {
@@ -64,6 +70,12 @@ public class LLVM_Function {
 		return null;
 	}
 	
+	/**
+	 * Register in Operanden der uebergebenen Befehle werden auf spaetere Verwendung getestet
+	 * Werden sie nich verwendet, so wird die Definition geloescht
+	 * @param list zu testende Befehle
+	 * @return geloeschte Definitionen (um Operanden nochmals testen zu koennen)
+	 */
 	public LinkedList<ILLVM_Command> eliminateDeadRegistersFromList(LinkedList<ILLVM_Command> list) {
 		
 		LinkedList<ILLVM_Command> deletedCommands = new LinkedList<ILLVM_Command>();
@@ -82,6 +94,11 @@ public class LLVM_Function {
 		return deletedCommands;
 	}
 	
+	/**
+	 * Tote Register werden aus Programm entfernt, d.h. ihre Definitionen werden geloescht
+	 * Die Register-Maps (Definition und Verwendung) muessen aktuell sein
+	 * Abhängigkeiten von toten Registern werden abgearbeitet
+	 */
 	public void eliminateDeadRegistersGlobal() {
 		
 		LinkedList<ILLVM_Command> deletedCommands = new LinkedList<ILLVM_Command>();
@@ -96,6 +113,9 @@ public class LLVM_Function {
 			
 		}
 		
+		// Bisher geloeschte Befehle koennen Operanden enthalten, die nun keine Verwendung mehr haben
+		// Dann koennen diese ebenfalls geloescht werden
+		// Teste also geloeschte Befehle durch, bis nichts mehr geloescht werden kann
 		while(!deletedCommands.isEmpty()) {
 		
 			deletedCommands = this.eliminateDeadRegistersFromList(deletedCommands);

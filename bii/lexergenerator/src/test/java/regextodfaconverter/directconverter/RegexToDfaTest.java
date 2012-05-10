@@ -11,6 +11,7 @@ import regextodfaconverter.fsm.FiniteStateMachine;
 import tokenmatcher.StatePayload;
 import tokenmatcher.Token;
 import tokenmatcher.Tokenizer;
+import utils.Notification;
 
 
 public class RegexToDfaTest {
@@ -18,10 +19,13 @@ public class RegexToDfaTest {
 	@Test
 	public void testReduceAndBracketRegex() throws Exception {
 
+		
+		Notification.enableDebugPrinting();
+		
 		FiniteStateMachine<Character, ? extends StatePayload> fsm = new RegexToDfaConverter()
-				.convert( "(a|b)*abb", new regextodfaconverter.fsm.StatePayload( "OP", "LE"));
+				.convert( "<=|<>|<<|<", new regextodfaconverter.fsm.StatePayload( "OP", "LE"));
 
-		LexemeReader lexemeReader = new BufferedLexemeReader( "src/test/resources/source/tokenmatcher.testrelop.fun");// new
+		LexemeReader lexemeReader = new BufferedLexemeReader( "src/test/resources/source/tokenmatcher/testrelop.fun");// new
 																																						// SimpleLexemeReader(
 		System.out.println(fsm);
 				System.out.println();

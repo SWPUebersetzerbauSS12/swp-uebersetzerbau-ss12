@@ -79,7 +79,8 @@ public class SyntaxTree implements Iterable<BinaryTreeNode> {
 			throws SyntaxTreeException {
 		super();
 		this.onNewParentNode = newNodeEventHandler;
-		init( regex);
+		String terminizedRegex = "(" + regex + ")" + RegexSpecialChars.TERMINATOR;
+		init( terminizedRegex);
 		buildTree();
 		if ( blockCounter != 0)
 			throw new SyntaxTreeException(
@@ -273,6 +274,16 @@ public class SyntaxTree implements Iterable<BinaryTreeNode> {
 			}
 		}
 		return characters; 
+	}
+	
+	public BinaryTreeNode getTerminatorNode() {
+		for ( BinaryTreeNode node : this) {
+			if ( Test.isAssigned( node) 
+					&& node.nodeValue instanceof Terminal
+					&& ( (Terminal) node.nodeValue).getValue() == RegexSpecialChars.TERMINATOR) 
+				return node;
+		}
+		return null; 
 	}
 
 

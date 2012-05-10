@@ -153,28 +153,43 @@ public class RegexToDfaConverter {
 			for ( BinaryTreeNode node : currentCollection) {
 				assert node.nodeValue instanceof Terminal;
 				currentTerminalCharacter = ((Terminal) node.nodeValue).getValue();
+				
+				if ( currentTerminalCharacter == RegexSpecialChars.TERMINATOR) {
+					continue;
+				}
+				
 				BinaryTreeNodeCollection union = stateCandidates.remove( currentTerminalCharacter);
 				union = (BinaryTreeNodeCollection) Sets.unionCollections( union, annotations.followpos( node));
 				stateCandidates.put( currentTerminalCharacter, union);
 			}
+			
 			for ( Character terminalCharacter : stateCandidates.keySet()) {
 				BinaryTreeNodeCollection stateCandidate = stateCandidates.get( terminalCharacter);
-				State<Character, StatePayloadType> targetState;
+				State<Character, StatePayloadType> targetState = null;
 				if ( !stateCandidate.isEmpty()) { 
-					if( !handledStates.containsKey( stateCandidate)) {
+					if( !handledStates.containsKey( stateCandidate) &&
+							!unhandledStates.containsValue( stateCandidate)) {
 					  targetState = new State<Character, StatePayloadType>();
 					  unhandledStates.put( targetState, stateCandidate);
-				  } else {
+				  } else if ( handledStates.containsKey( stateCandidate)) {
 				  	targetState = handledStates.get( stateCandidate);
+			  	} else {
+			  		for ( State state : unhandledStates.keySet()) {
+							if ( unhandledStates.get( state).equals( stateCandidate)) {
+								targetState = state;
+							}
+						}
 			  	}
+					
+					// setze Übergang
 					for ( BinaryTreeNode node : stateCandidate) {
-					//	System.out.println(node);
 						assert node.nodeValue instanceof Terminal;
-						currentTerminalCharacter = ((Terminal) node.nodeValue).getValue();
-						dfa.addTransition( targetState, currentTerminalCharacter);		
+						currentTerminalCharacter = ((Terminal) node.nodeValue).getValue();	
 						if ( currentTerminalCharacter == RegexSpecialChars.TERMINATOR) {
 							targetState.setFinite( true);
 							targetState.setPayload( payload);
+						} else {
+							dfa.addTransition( targetState, currentTerminalCharacter);	
 						}
 					}
 				}

@@ -40,8 +40,9 @@ public interface LexemeReader {
 	 * wird das {@link SpecialChars#CHAR_EOF} geliefert. 
 	 * @return das nächste Zeichen.
 	 * @throws LexemeReaderException wenn es zu einen IO Fehler kam. 
+	 * @throws EndOfFileException 
 	 */
-	char getNextChar() throws LexemeReaderException;
+	char getNextChar() throws LexemeReaderException, EndOfFileException;
 	
 	
 	/**

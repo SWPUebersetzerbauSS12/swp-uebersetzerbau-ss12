@@ -121,10 +121,11 @@ public class BufferedLexemeReader implements LexemeReader {
 	 * Liefert das nächste Zeichen der Eingabe.
 	 * 
 	 * @return das nächste Zeichen.
+	 * @throws EndOfFileException 
 	 * @throw LexemeReaderException wenn das Ende der Datei erreicht ist oder 
 	 * ein IO-Fehler beim Lesen der Datei aufgetreten ist.
 	 */
-	public char getNextChar() throws LexemeReaderException {
+	public char getNextChar() throws LexemeReaderException, EndOfFileException {
 		char result;
 		char readedChar = readCharFromBufferAtPosition( forwardPosition);
 		if ( readedChar == EOF_CHAR) {
@@ -152,7 +153,7 @@ public class BufferedLexemeReader implements LexemeReader {
 		  	// return it (to stop the lexical analysis)
 		  	// Result := EOF_CHAR;
 		  	// or throw an exception to avoid an extra check
-				throw new LexemeReaderException( "End of file");   
+				throw new EndOfFileException();   
 			}
 		} else
 		    // otherwise return the readed char

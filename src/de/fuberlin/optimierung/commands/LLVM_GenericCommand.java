@@ -1,25 +1,25 @@
 package de.fuberlin.optimierung.commands;
 
 import java.util.LinkedList;
-import de.fuberlin.optimierung.ILLVMBlock;
-import de.fuberlin.optimierung.ILLVMCommand;
-import de.fuberlin.optimierung.LLVMOperation;
-import de.fuberlin.optimierung.LLVMParameter;
+import de.fuberlin.optimierung.ILLVM_Block;
+import de.fuberlin.optimierung.ILLVM_Command;
+import de.fuberlin.optimierung.LLVM_Operation;
+import de.fuberlin.optimierung.LLVM_Parameter;
 
-public abstract class LLVM_GenericCommand implements ILLVMCommand{
+public abstract class LLVM_GenericCommand implements ILLVM_Command{
 	
-	protected ILLVMBlock block;
+	protected ILLVM_Block block;
 
-	protected ILLVMCommand predecessor = null;
-	protected ILLVMCommand successor = null;
+	protected ILLVM_Command predecessor = null;
+	protected ILLVM_Command successor = null;
 	
-	protected LLVMOperation operation;
-	protected LLVMParameter target;
-	protected LinkedList<LLVMParameter> operands;
+	protected LLVM_Operation operation;
+	protected LLVM_Parameter target;
+	protected LinkedList<LLVM_Parameter> operands;
 	
 	protected String comment = "";
 	
-	public LLVM_GenericCommand(LLVMOperation operation, ILLVMCommand predecessor, ILLVMBlock block, String comment){
+	public LLVM_GenericCommand(LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
 		// Setze die Zeiger
 		this.predecessor = predecessor;
 		this.operation = operation;
@@ -71,41 +71,41 @@ public abstract class LLVM_GenericCommand implements ILLVMCommand{
 		return (this.isFirstCommand() && this.isLastCommand());
 	}
 	
-	public ILLVMCommand getPredecessor() {
+	public ILLVM_Command getPredecessor() {
 		return this.predecessor;
 	}
-	public ILLVMCommand getSuccessor() {
+	public ILLVM_Command getSuccessor() {
 		return this.successor;
 	}
-	public LinkedList<LLVMParameter> getOperands() {
+	public LinkedList<LLVM_Parameter> getOperands() {
 		return operands;
 	}
-	public LLVMOperation getOperation() {
+	public LLVM_Operation getOperation() {
 		return operation;
 	}
-	public LLVMParameter getTarget() {
+	public LLVM_Parameter getTarget() {
 		return target;
 	}
-	public ILLVMBlock getBlock() {
+	public ILLVM_Block getBlock() {
 		return block;
 	}
 	
-	public void setPredecessor(ILLVMCommand c) {
+	public void setPredecessor(ILLVM_Command c) {
 		this.predecessor = c;
 	}
-	public void setSuccessor(ILLVMCommand c) {
+	public void setSuccessor(ILLVM_Command c) {
 		this.successor = c;
 	}
-	public void setOperation(LLVMOperation operation) {
+	public void setOperation(LLVM_Operation operation) {
 		this.operation = operation;
 	}
-	public void setOperands(LinkedList<LLVMParameter> operands) {
+	public void setOperands(LinkedList<LLVM_Parameter> operands) {
 		this.operands = operands;
 	}
-	public void setTarget(LLVMParameter target) {
+	public void setTarget(LLVM_Parameter target) {
 		this.target = target;
 	}
-	public void setBlock(ILLVMBlock block) {
+	public void setBlock(ILLVM_Block block) {
 		this.block = block;
 	}
 }

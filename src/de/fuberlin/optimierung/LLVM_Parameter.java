@@ -1,18 +1,18 @@
 package de.fuberlin.optimierung;
 
-public class LLVMParameter {
+public class LLVM_Parameter {
 
 	private String typeString;		// Bsp: "i32"
-	private LLVMParameterType type;		// Bsp: REGISTER
+	private LLVM_ParameterType type;		// Bsp: REGISTER
 	private String name;	// Bsp: %i 
 	
-	public LLVMParameter(String name, String typeString) {
+	public LLVM_Parameter(String name, String typeString) {
 		
 		if (name.length() > 0){
 			if (name.charAt(0) == '%')
-				type = LLVMParameterType.REGISTER;
+				type = LLVM_ParameterType.REGISTER;
 			else
-				type = LLVMParameterType.INTEGER;
+				type = LLVM_ParameterType.INTEGER;
 		}
 		this.typeString = typeString;
 		
@@ -21,7 +21,7 @@ public class LLVMParameter {
 		this.name = name.replace(',', ' ').trim();
 	}
 	
-	public LLVMParameter(String name, LLVMParameterType type, String typeString) {
+	public LLVM_Parameter(String name, LLVM_ParameterType type, String typeString) {
 		this.typeString = typeString;
 		this.type = type;
 		this.name = name;
@@ -35,11 +35,11 @@ public class LLVMParameter {
 		this.typeString = typeString;
 	}
 
-	public LLVMParameterType getType() {
+	public LLVM_ParameterType getType() {
 		return type;
 	}
 
-	public void setType(LLVMParameterType type) {
+	public void setType(LLVM_ParameterType type) {
 		this.type = type;
 	}
 

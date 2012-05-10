@@ -4,12 +4,12 @@ public class LLVM_Function {
 
 	String func_define = "";
 	
-	private ILLVMBlock startBlock;
-	private ILLVMBlock endBlock;
-	private ILLVMBlock blocks[];
+	private ILLVM_Block startBlock;
+	private ILLVM_Block endBlock;
+	private ILLVM_Block blocks[];
 	private int numberBlocks;
 	
-	private LLVMRegisterMap registerMap = new LLVMRegisterMap();
+	private LLVM_RegisterMap registerMap = new LLVM_RegisterMap();
 	
 	public LLVM_Function(String code) {
 		
@@ -18,9 +18,9 @@ public class LLVM_Function {
 		
 		String codeBlocks[] = firstSplit[1].split("\n\n");
 		this.numberBlocks = codeBlocks.length;
-		this.blocks = new LLVMBlock[this.numberBlocks];
+		this.blocks = new LLVM_Block[this.numberBlocks];
 		for(int i = 0; i < this.numberBlocks; i++) {
-			this.blocks[i] = new LLVMBlock(codeBlocks[i]);
+			this.blocks[i] = new LLVM_Block(codeBlocks[i]);
 		}
 		this.startBlock = this.blocks[0];
 		this.endBlock = this.blocks[this.numberBlocks-1];
@@ -28,13 +28,13 @@ public class LLVM_Function {
 	
 	public void createRegisterMaps() {
 		
-		for(ILLVMBlock block : this.blocks) {	// Gehe Bloecke durch
+		for(ILLVM_Block block : this.blocks) {	// Gehe Bloecke durch
 			
 			// Ist Block leer?
 			if(!block.isEmpty()) {
 			
 				// Gehe Befehle des Blockes durch
-				for(ILLVMCommand c = block.getFirstCommand(); !c.isLastCommand(); c = c.getSuccessor()) {
+				for(ILLVM_Command c = block.getFirstCommand(); !c.isLastCommand(); c = c.getSuccessor()) {
 					
 					// Fuege c in Register Maps ein
 					this.registerMap.addCommand(c);
@@ -54,7 +54,7 @@ public class LLVM_Function {
 			if(!this.registerMap.existsUses(registerName)) {
 				
 				// Wenn nein, loesche Befehl (Definition)
-				ILLVMCommand c = this.registerMap.getDefinition(registerName);
+				ILLVM_Command c = this.registerMap.getDefinition(registerName);
 				this.registerMap.deleteCommand(c);
 				c.deleteCommand();
 				deleted = true;

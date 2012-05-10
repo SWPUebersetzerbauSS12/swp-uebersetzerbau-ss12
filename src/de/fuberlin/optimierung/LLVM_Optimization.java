@@ -3,14 +3,14 @@ package de.fuberlin.optimierung;
 import java.io.*;
 import java.util.LinkedList;
 
-class LLVMOptimization implements ILLVMOptimization {
+class LLVM_Optimization implements ILLVM_Optimization {
 	
 	private String code = "";
 	
 	private LinkedList<LLVM_Function> functions;
 	
 	
-	public LLVMOptimization(){
+	public LLVM_Optimization(){
 		functions = new LinkedList<LLVM_Function>();
 	}
 	
@@ -85,7 +85,7 @@ class LLVMOptimization implements ILLVMOptimization {
 	
 	public static void main(String args[]) {
 
-		ILLVMOptimization optimization = new LLVMOptimization();        
+		ILLVM_Optimization optimization = new LLVM_Optimization();        
 		String optimizedCode = optimization.optimizeCodeFromFile("input/llvm_dead_registers2");
 		System.out.println(optimizedCode);
 	}

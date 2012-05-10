@@ -1,10 +1,10 @@
 package de.fuberlin.optimierung.commands;
 
 import java.util.LinkedList;
-import de.fuberlin.optimierung.ILLVMBlock;
-import de.fuberlin.optimierung.ILLVMCommand;
-import de.fuberlin.optimierung.LLVMOperation;
-import de.fuberlin.optimierung.LLVMParameter;
+import de.fuberlin.optimierung.ILLVM_Block;
+import de.fuberlin.optimierung.ILLVM_Command;
+import de.fuberlin.optimierung.LLVM_Operation;
+import de.fuberlin.optimierung.LLVM_Parameter;
 
 /*
  * Syntax:
@@ -16,17 +16,17 @@ import de.fuberlin.optimierung.LLVMParameter;
 
 public class LLVM_BranchCommand extends LLVM_GenericCommand{
 	
-	public LLVM_BranchCommand(String[] cmd, LLVMOperation operation, ILLVMCommand predecessor, ILLVMBlock block, String comment){
+	public LLVM_BranchCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
 		super(operation, predecessor, block, comment);
 		// Init operands
-		operands = new LinkedList<LLVMParameter>();
+		operands = new LinkedList<LLVM_Parameter>();
 		
 		if (cmd.length == 3){
-			operands.add(new LLVMParameter(cmd[2], cmd[1]));
+			operands.add(new LLVM_Parameter(cmd[2], cmd[1]));
 		}else if (cmd.length > 3){
-			operands.add(new LLVMParameter(cmd[2], cmd[1]));
-			operands.add(new LLVMParameter(cmd[4], cmd[3]));
-			operands.add(new LLVMParameter(cmd[6], cmd[5]));
+			operands.add(new LLVM_Parameter(cmd[2], cmd[1]));
+			operands.add(new LLVM_Parameter(cmd[4], cmd[3]));
+			operands.add(new LLVM_Parameter(cmd[6], cmd[5]));
 		}
 		
 		System.out.println("Operation generiert: ");

@@ -4,27 +4,27 @@ import java.util.LinkedList;
 
 import de.fuberlin.optimierung.commands.*;
 
-class LLVMBlock implements ILLVMBlock {
+class LLVM_Block implements ILLVM_Block {
 	
 	// Erster und letzter Befehl des Blockes
-	private ILLVMCommand firstCommand = null;
-	private ILLVMCommand lastCommand = null;
+	private ILLVM_Command firstCommand = null;
+	private ILLVM_Command lastCommand = null;
 
 	// Ursprüngliches Label des Blockes
 	private String label = "";
 
 	// Vorgaenger- und Nachfolgerbloecke
 	// Hieraus entsteht der Flussgraph zwischen den Bloecken
-	private LinkedList<ILLVMBlock> children;
-	private LinkedList<ILLVMBlock> parents;
+	private LinkedList<ILLVM_Block> children;
+	private LinkedList<ILLVM_Block> parents;
 	
 	// Kompletter Code des Blocks als String
 	private String blockCode;
 
-	public LLVMBlock(String blockCode) {
+	public LLVM_Block(String blockCode) {
 	
-		children = new LinkedList<ILLVMBlock>();
-		parents = new LinkedList<ILLVMBlock>();
+		children = new LinkedList<ILLVM_Block>();
+		parents = new LinkedList<ILLVM_Block>();
 		
 		this.blockCode = blockCode;
 		System.out.println(blockCode + "\n*****************\n");
@@ -53,9 +53,9 @@ class LLVMBlock implements ILLVMBlock {
 		String commandsArray[] = this.blockCode.split("\n");
 		this.firstCommand = mapCommands(commandsArray[1], null);
 		
-		ILLVMCommand predecessor = firstCommand;
+		ILLVM_Command predecessor = firstCommand;
 		for(int i=2; i<commandsArray.length; i++) {
-			ILLVMCommand c = mapCommands(commandsArray[i], predecessor);
+			ILLVM_Command c = mapCommands(commandsArray[i], predecessor);
 			if(firstCommand == null){
 				firstCommand = c;
 				predecessor = c;
@@ -68,7 +68,7 @@ class LLVMBlock implements ILLVMBlock {
 	
 	// Ermittelt Operation und erzeugt Command mit passender Klasse
 	//TODO elegante Methode finden, switch funktioniert auf Strings nicht!
-	private LLVM_GenericCommand mapCommands(String cmdLine, ILLVMCommand predecessor){
+	private LLVM_GenericCommand mapCommands(String cmdLine, ILLVM_Command predecessor){
 		
 		// Kommentar Handling
 		String[] com = cmdLine.trim().split(";");
@@ -88,60 +88,60 @@ class LLVMBlock implements ILLVMBlock {
 		if (cmd.length > 0){
 			if (cmd[0].compareTo("br") == 0){
 				if (cmd[1].compareTo("label") == 0){
-					return new LLVM_BranchCommand(cmd, LLVMOperation.BR, predecessor, this, comment);
+					return new LLVM_BranchCommand(cmd, LLVM_Operation.BR, predecessor, this, comment);
 				}else{
-					return new LLVM_BranchCommand(cmd, LLVMOperation.BR_CON, predecessor, this, comment);
+					return new LLVM_BranchCommand(cmd, LLVM_Operation.BR_CON, predecessor, this, comment);
 				}
 			} else if (cmd[0].compareTo("ret") == 0){
 				if (cmd[1].compareTo("void") == 0){
-					return new LLVM_ReturnCommand(cmd, LLVMOperation.RET, predecessor, this, comment);
+					return new LLVM_ReturnCommand(cmd, LLVM_Operation.RET, predecessor, this, comment);
 				}else{
-					return new LLVM_ReturnCommand(cmd, LLVMOperation.RET_CODE, predecessor, this, comment);
+					return new LLVM_ReturnCommand(cmd, LLVM_Operation.RET_CODE, predecessor, this, comment);
 				}
 			}
 			if (cmd.length > 3 && cmd[1].equals("=")){
 				
 				if (cmd[2].compareTo("add") == 0){
-					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.ADD, predecessor, this, comment);
+					return new LLVM_ArithmeticCommand(cmd, LLVM_Operation.ADD, predecessor, this, comment);
 				}else if(cmd[2].compareTo("sub") == 0){
-					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.SUB, predecessor, this, comment);
+					return new LLVM_ArithmeticCommand(cmd, LLVM_Operation.SUB, predecessor, this, comment);
 				}else if(cmd[2].compareTo("mul") == 0){
-					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.MUL, predecessor, this, comment);
+					return new LLVM_ArithmeticCommand(cmd, LLVM_Operation.MUL, predecessor, this, comment);
 				}else if(cmd[2].compareTo("div") == 0){
-					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.DIV, predecessor, this, comment);
+					return new LLVM_ArithmeticCommand(cmd, LLVM_Operation.DIV, predecessor, this, comment);
 				}else if(cmd[2].compareTo("urem") == 0){
-					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.UREM, predecessor, this, comment);
+					return new LLVM_ArithmeticCommand(cmd, LLVM_Operation.UREM, predecessor, this, comment);
 				}else if(cmd[2].compareTo("srem") == 0){
-					return new LLVM_ArithmeticCommand(cmd, LLVMOperation.SREM, predecessor, this, comment);
+					return new LLVM_ArithmeticCommand(cmd, LLVM_Operation.SREM, predecessor, this, comment);
 				}else if (cmd[2].compareTo("alloca") == 0){
-					return new LLVM_Alloca(cmd, LLVMOperation.ALLOCA, predecessor, this, comment);
+					return new LLVM_Alloca(cmd, LLVM_Operation.ALLOCA, predecessor, this, comment);
 				}else if (cmd[2].compareTo("and") == 0){
-					return new LLVM_Alloca(cmd, LLVMOperation.AND, predecessor, this, comment);
+					return new LLVM_Alloca(cmd, LLVM_Operation.AND, predecessor, this, comment);
 				}else if (cmd[2].compareTo("or") == 0){
-					return new LLVM_Alloca(cmd, LLVMOperation.OR, predecessor, this, comment);
+					return new LLVM_Alloca(cmd, LLVM_Operation.OR, predecessor, this, comment);
 				}else if (cmd[2].compareTo("xor") == 0){
-					return new LLVM_Alloca(cmd, LLVMOperation.XOR, predecessor, this, comment);
+					return new LLVM_Alloca(cmd, LLVM_Operation.XOR, predecessor, this, comment);
 				}else if (cmd[2].compareTo("icmp") == 0){
 					if (cmd[3].compareTo("eq") == 0){
-						return new LLVM_IcmpCommand(cmd, LLVMOperation.ICMP_EQ, predecessor, this, comment);
+						return new LLVM_IcmpCommand(cmd, LLVM_Operation.ICMP_EQ, predecessor, this, comment);
 					}else if (cmd[3].compareTo("ne") == 0){
-						return new LLVM_IcmpCommand(cmd, LLVMOperation.ICMP_NE, predecessor, this, comment);
+						return new LLVM_IcmpCommand(cmd, LLVM_Operation.ICMP_NE, predecessor, this, comment);
 					}else if (cmd[3].compareTo("ugt") == 0){
-						return new LLVM_IcmpCommand(cmd, LLVMOperation.ICMP_UGT, predecessor, this, comment);
+						return new LLVM_IcmpCommand(cmd, LLVM_Operation.ICMP_UGT, predecessor, this, comment);
 					}else if (cmd[3].compareTo("uge") == 0){
-						return new LLVM_IcmpCommand(cmd, LLVMOperation.ICMP_UGE, predecessor, this, comment);
+						return new LLVM_IcmpCommand(cmd, LLVM_Operation.ICMP_UGE, predecessor, this, comment);
 					}else if (cmd[3].compareTo("ult") == 0){
-						return new LLVM_IcmpCommand(cmd, LLVMOperation.ICMP_ULT, predecessor, this, comment);
+						return new LLVM_IcmpCommand(cmd, LLVM_Operation.ICMP_ULT, predecessor, this, comment);
 					}else if (cmd[3].compareTo("ule") == 0){
-						return new LLVM_IcmpCommand(cmd, LLVMOperation.ICMP_ULE, predecessor, this, comment);
+						return new LLVM_IcmpCommand(cmd, LLVM_Operation.ICMP_ULE, predecessor, this, comment);
 					}else if (cmd[3].compareTo("sgt") == 0){
-						return new LLVM_IcmpCommand(cmd, LLVMOperation.ICMP_SGT, predecessor, this, comment);
+						return new LLVM_IcmpCommand(cmd, LLVM_Operation.ICMP_SGT, predecessor, this, comment);
 					}else if (cmd[3].compareTo("sge") == 0){
-						return new LLVM_IcmpCommand(cmd, LLVMOperation.ICMP_SGE, predecessor, this, comment);
+						return new LLVM_IcmpCommand(cmd, LLVM_Operation.ICMP_SGE, predecessor, this, comment);
 					}else if (cmd[3].compareTo("slt") == 0){
-						return new LLVM_IcmpCommand(cmd, LLVMOperation.ICMP_SLT, predecessor, this, comment);
+						return new LLVM_IcmpCommand(cmd, LLVM_Operation.ICMP_SLT, predecessor, this, comment);
 					}else if (cmd[3].compareTo("sle") == 0){
-						return new LLVM_IcmpCommand(cmd, LLVMOperation.ICMP_SLE, predecessor, this, comment);
+						return new LLVM_IcmpCommand(cmd, LLVM_Operation.ICMP_SLE, predecessor, this, comment);
 					}
 				}
 			}
@@ -149,19 +149,19 @@ class LLVMBlock implements ILLVMBlock {
 		return null;
 	}
 
-	public void setFirstCommand(ILLVMCommand first) {
+	public void setFirstCommand(ILLVM_Command first) {
 		this.firstCommand = first;
 	}
 
-	public void setLastCommand(ILLVMCommand last) {
+	public void setLastCommand(ILLVM_Command last) {
 		this.lastCommand = last;
 	}
 	
-	public ILLVMCommand getFirstCommand() {
+	public ILLVM_Command getFirstCommand() {
 		return firstCommand;
 	}
 
-	public ILLVMCommand getLastCommand() {
+	public ILLVM_Command getLastCommand() {
 		return lastCommand;
 	}
 	
@@ -173,7 +173,7 @@ class LLVMBlock implements ILLVMBlock {
 			code = label+":\n";
 		}
 		
-		ILLVMCommand tmp = firstCommand;
+		ILLVM_Command tmp = firstCommand;
 		while(tmp != null){
 			code += "\t"+tmp.toString();
 			tmp = tmp.getSuccessor();

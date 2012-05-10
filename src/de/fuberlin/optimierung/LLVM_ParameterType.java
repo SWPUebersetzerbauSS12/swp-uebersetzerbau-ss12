@@ -1,5 +1,5 @@
 package de.fuberlin.optimierung;
 
-public enum LLVMParameterType {
+public enum LLVM_ParameterType {
 	INTEGER, FLOAT, REGISTER, LABEL
 }

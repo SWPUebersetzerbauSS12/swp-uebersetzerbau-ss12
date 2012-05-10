@@ -1,10 +1,10 @@
 package de.fuberlin.optimierung.commands;
 
 import java.util.LinkedList;
-import de.fuberlin.optimierung.ILLVMBlock;
-import de.fuberlin.optimierung.ILLVMCommand;
-import de.fuberlin.optimierung.LLVMOperation;
-import de.fuberlin.optimierung.LLVMParameter;
+import de.fuberlin.optimierung.ILLVM_Block;
+import de.fuberlin.optimierung.ILLVM_Command;
+import de.fuberlin.optimierung.LLVM_Operation;
+import de.fuberlin.optimierung.LLVM_Parameter;
 
 /*
  * Syntax:
@@ -14,15 +14,15 @@ import de.fuberlin.optimierung.LLVMParameter;
 
 public class LLVM_Alloca extends LLVM_GenericCommand{
 	
-	public LLVM_Alloca(String[] cmd, LLVMOperation operation, ILLVMCommand predecessor, ILLVMBlock block, String comment){
+	public LLVM_Alloca(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
 		super(operation, predecessor, block, comment);
 		// Init operands
-		operands = new LinkedList<LLVMParameter>();
+		operands = new LinkedList<LLVM_Parameter>();
 		
-		target = new LLVMParameter(cmd[0], cmd[3]);
+		target = new LLVM_Parameter(cmd[0], cmd[3]);
 		
 		for (int j = 4; (j + 1 < cmd.length); j = j + 2){
-			operands.add(new LLVMParameter(cmd[j+1], cmd[j]));
+			operands.add(new LLVM_Parameter(cmd[j+1], cmd[j]));
 		}
 		
 		System.out.println("Operation generiert: ");

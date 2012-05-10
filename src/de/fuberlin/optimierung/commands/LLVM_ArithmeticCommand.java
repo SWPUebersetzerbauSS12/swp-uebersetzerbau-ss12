@@ -1,10 +1,10 @@
 package de.fuberlin.optimierung.commands;
 
 import java.util.LinkedList;
-import de.fuberlin.optimierung.ILLVMBlock;
-import de.fuberlin.optimierung.ILLVMCommand;
-import de.fuberlin.optimierung.LLVMOperation;
-import de.fuberlin.optimierung.LLVMParameter;
+import de.fuberlin.optimierung.ILLVM_Block;
+import de.fuberlin.optimierung.ILLVM_Command;
+import de.fuberlin.optimierung.LLVM_Operation;
+import de.fuberlin.optimierung.LLVM_Parameter;
 
 /*
  * Syntax: sample "add" but also for "sub", "mul", "div"
@@ -20,10 +20,10 @@ public class LLVM_ArithmeticCommand extends LLVM_GenericCommand{
 	private boolean has_nuw = false;
 	private boolean has_nsw = false;
 	
-	public LLVM_ArithmeticCommand(String[] cmd, LLVMOperation operation, ILLVMCommand predecessor, ILLVMBlock block, String comment){
+	public LLVM_ArithmeticCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
 		super(operation, predecessor, block, comment);
 		// Init operands
-		operands = new LinkedList<LLVMParameter>();
+		operands = new LinkedList<LLVM_Parameter>();
 		
 		int i = -1;
 		for (int j = 0; j < cmd.length; j++){
@@ -38,21 +38,21 @@ public class LLVM_ArithmeticCommand extends LLVM_GenericCommand{
 					has_nuw = true;
 				else
 					has_nsw = true;
-				target = new LLVMParameter(cmd[0], cmd[4]);
-				operands.add(new LLVMParameter(cmd[5], cmd[4]));
-				operands.add(new LLVMParameter(cmd[6], cmd[4]));
+				target = new LLVM_Parameter(cmd[0], cmd[4]);
+				operands.add(new LLVM_Parameter(cmd[5], cmd[4]));
+				operands.add(new LLVM_Parameter(cmd[6], cmd[4]));
 				break;
 			case 6 :
 				has_nuw = true;
 				has_nsw = true;
-				target = new LLVMParameter(cmd[0], cmd[5]);
-				operands.add(new LLVMParameter(cmd[6], cmd[5]));
-				operands.add(new LLVMParameter(cmd[7], cmd[5]));
+				target = new LLVM_Parameter(cmd[0], cmd[5]);
+				operands.add(new LLVM_Parameter(cmd[6], cmd[5]));
+				operands.add(new LLVM_Parameter(cmd[7], cmd[5]));
 				break;
 			default:
-				target = new LLVMParameter(cmd[0], cmd[3]);
-				operands.add(new LLVMParameter(cmd[4], cmd[3]));
-				operands.add(new LLVMParameter(cmd[5], cmd[3]));
+				target = new LLVM_Parameter(cmd[0], cmd[3]);
+				operands.add(new LLVM_Parameter(cmd[4], cmd[3]));
+				operands.add(new LLVM_Parameter(cmd[5], cmd[3]));
 				break;
 		}
 		

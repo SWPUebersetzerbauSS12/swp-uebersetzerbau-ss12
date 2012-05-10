@@ -1,7 +1,6 @@
 package parser;
 
 import java.util.Stack;
-import java.util.Vector;
 
 import lexer.ILexer;
 import lexer.IToken;
@@ -16,9 +15,8 @@ public class Parser {
 
 	private ILexer lexer;
 	private ParseTable table;
-	private Stack<Symbol> stack;
-	private Vector<String> outputs;
-	private NodeFactory nodeFactory;
+	private Stack<Symbol> stack = new Stack<Symbol>();
+	private NodeFactory nodeFactory = new NodeFactory();
 
 	@Getter @Setter
 	private boolean debugEnabled = false;
@@ -35,11 +33,6 @@ public class Parser {
 		} catch (ParserException e) {
 			e.printStackTrace();
 		}
-
-		nodeFactory = new NodeFactory();
-
-		stack = new Stack<Symbol>();
-		outputs = new Vector<String>();
 	}
 
 	private void initStack() {
@@ -123,7 +116,6 @@ public class Parser {
 							stack.push(symbol);
 						}
 					}
-					outputs.add(prod);
 				} else if (prod.trim().equals("")) {
 					throw new ParserException(
 							"Syntax error: No rule in parsing table (Stack: "
@@ -145,75 +137,6 @@ public class Parser {
 
 		// TODO: Do we need this any more?
 		// createSyntaxTree();
-	}
-
-	/**
-	 * Call to create the corresponding parse tree from the previous parse call.
-	 * 
-	 * @throws ParserException
-	 */
-	private void createSyntaxTree() throws ParserException {
-		for (String t : outputs) {
-
-			String[] tmp = t.split("::=");
-			String[] tmp2 = tmp[1].split(" ");
-
-			ISyntaxTree node = getNextOccurrence(tmp[0].trim());
-
-			for (int i = 0; i < tmp2.length; i++) {
-				if (!tmp2[i].equals("")) {
-					ISyntaxTree newNode;
-					newNode = nodeFactory.createNode(new Symbol(tmp2[i]));
-
-					if (node == null) {
-						throw new ParserException(
-								"node is null! Can't append new nodes to null! Tried to append: "
-										+ newNode.getName() + " into "
-										+ tmp[0].trim());
-					}
-
-					if (newNode == null) {
-						throw new ParserException("Can't add null! " + tmp2[i]);
-					}
-
-					if (newNode != null && node != null) {
-						node.addChild(newNode);
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * Using Depth-First search to find the node.
-	 * 
-	 * @param name
-	 * @return the next occurrence of the given node, if it has no children yet.
-	 */
-	private ISyntaxTree getNextOccurrence(String name) {
-		assert (syntaxTree != null);
-
-		if (syntaxTree.getName().equals(name)
-				&& syntaxTree.getChildrenCount() == 0) {
-			return syntaxTree;
-		}
-
-		Stack<ISyntaxTree> stack = new Stack<ISyntaxTree>();
-		stack.push(syntaxTree);
-
-		while (!stack.isEmpty()) {
-			ISyntaxTree tmp = stack.pop();
-			if (tmp.getName().equals(name) && tmp.getChildrenCount() == 0) {
-				return tmp;
-			} else // push all children onto the stack backwards
-			{
-				int count = tmp.getChildrenCount();
-				for (int i = count - 1; i >= 0; i--) {
-					stack.push(tmp.getChild(i));
-				}
-			}
-		}
-		return null;
 	}
 
 	/**

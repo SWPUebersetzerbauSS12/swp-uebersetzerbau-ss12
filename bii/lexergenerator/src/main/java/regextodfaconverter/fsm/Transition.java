@@ -45,8 +45,7 @@ import java.io.Serializable;
  * @param <StatePayloadType>
  *            Der Typ des Inhalts der Zustände.
  */
-public class Transition<ConditionType extends Comparable<ConditionType>, StatePayloadType extends Serializable>
-		implements Comparable<Transition<ConditionType, StatePayloadType>>, Serializable {
+public class Transition<ConditionType extends Serializable, StatePayloadType extends Serializable> implements Serializable {
 
 	/**
 	 * UID für die Serialisierung/Abspeicherung als *.dfa 
@@ -102,12 +101,33 @@ public class Transition<ConditionType extends Comparable<ConditionType>, StatePa
 		_state = state;
 	}
 
-	public int compareTo(Transition<ConditionType, StatePayloadType> o) {
-		if (o.getCondition() == getCondition() && o.getState() == getState()) {
-			return 0;
-		} else {
-			return -1;
-		}
+	@Override
+	public boolean equals(Object o) {
+	    if (this == o) 
+    	{
+	    	return true;
+    	}
+	    
+	    if (o == null)
+	    {
+	    	return false;
+	    }
+	    
+	    if (!(o instanceof Transition<?,?>))
+    	{
+	    	return false;
+    	} 
+	    else 
+	    {
+	    	Transition<?,?> t = (Transition<?,?>)o;
+	    	if (t.getCondition().equals(getCondition()) && t.getState().equals(getState())) {
+	    		return true;
+	    	}
+	    	else
+	    	{
+	    		return false;
+	    	}
+	    }
 	}
 
 	/**

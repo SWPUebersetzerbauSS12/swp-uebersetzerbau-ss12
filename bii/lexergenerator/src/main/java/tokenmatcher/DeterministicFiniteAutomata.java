@@ -49,7 +49,7 @@ import java.util.Collection;
  *            Der Typ des Inhalts der Zustände beim verwendeten endlichen
  *            Automaten.
  */
-public interface DeterministicFiniteAutomata<ConditionType extends Comparable<ConditionType>, PayloadType extends Serializable> extends Serializable{
+public interface DeterministicFiniteAutomata<ConditionType extends Serializable, PayloadType extends Serializable> extends Serializable{
 
 	/**
 	 * Wechselt in einen anderen Zustand, sofern es einen Übergang in der

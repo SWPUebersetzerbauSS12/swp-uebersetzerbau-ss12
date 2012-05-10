@@ -39,7 +39,6 @@ import java.util.UUID;
 
 import regextodfaconverter.fsm.excpetions.NullStateException;
 import regextodfaconverter.fsm.excpetions.StateNotReachableException;
-import regextodfaconverter.fsm.excpetions.TransitionAlreadyExistsException;
 
 /**
  * Stellt einen endlichen Automaten (finite state machine, kurz FSM) dar.
@@ -51,7 +50,7 @@ import regextodfaconverter.fsm.excpetions.TransitionAlreadyExistsException;
  * @param <StatePayloadType>
  *            Der Typ des Inhalts der Zustände.
  */
-public class FiniteStateMachine<TransitionConditionType extends Comparable<TransitionConditionType>, StatePayloadType extends Serializable>
+public class FiniteStateMachine<TransitionConditionType extends Serializable, StatePayloadType extends Serializable>
 		implements Serializable {
 
 	/**
@@ -306,20 +305,19 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 	 * @param condition
 	 *            Die Bedingung für den Zustandsübergang (null für einen
 	 *            Epsilon-Übergang).
+	 * @return true, wenn der Übergang (bzw. ein äquivalenter Übergang) noch nicht Vorhanden war, sonst false.
 	 * @throws NullStateException
 	 *             Wenn null als Parameter für den Ausgangszustand oder
 	 *             Zielzustand übergeben wird.
 	 * @throws StateNotReachableException
 	 *             Wenn der Ausgangszustand nicht erreichbar oder Teil des
 	 *             endlichen Automats ist.
-	 * @throws TransitionAlreadyExistsException
-	 *             Wenn der Übergang bereits vorhanden ist.
 	 */
-	public void addTransition(
+	public boolean addTransition(
 			State<TransitionConditionType, StatePayloadType> sourceState,
 			State<TransitionConditionType, StatePayloadType> destinationState,
 			TransitionConditionType condition) throws NullStateException,
-			StateNotReachableException, TransitionAlreadyExistsException {
+			StateNotReachableException {
 		if (sourceState == null || destinationState == null)
 			throw new NullStateException();
 		if (!containsStateWithUUID(sourceState.getUUID()))
@@ -328,7 +326,7 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 		if (!containsStateWithUUID(destinationState.getUUID())) {
 			getStates().put(destinationState.getUUID(), destinationState);
 		}
-		sourceState.addState(condition, destinationState);
+		return sourceState.addState(condition, destinationState);
 	}
 
 	/**
@@ -340,23 +338,22 @@ public class FiniteStateMachine<TransitionConditionType extends Comparable<Trans
 	 * @param condition
 	 *            Die Bedingung für den Zustandsübergang (null für einen
 	 *            Epsilon-Übergang).
+	 * @return true, wenn der Übergang (bzw. ein äquivalenter Übergang) noch nicht Vorhanden war, sonst false.
 	 * @throws NullStateException
 	 *             Wenn null als Parameter für den Zielzustand übergeben wird.
-	 * @throws TransitionAlreadyExistsException
-	 *             Wenn der Übergang bereits vorhanden ist.
 	 */
-	public void addTransition(
+	public boolean addTransition(
 			State<TransitionConditionType, StatePayloadType> destinationState,
-			TransitionConditionType condition) throws NullStateException,
-			TransitionAlreadyExistsException {
+			TransitionConditionType condition) throws NullStateException {
 		if (destinationState == null)
 			throw new NullStateException();
 		try {
-			addTransition(getCurrentState(), destinationState, condition);
+			return addTransition(getCurrentState(), destinationState, condition);
 		} catch (StateNotReachableException e) {
 			// Dieser Fall kann niemals eintreten!
 			e.printStackTrace();
 		}
+		return false;
 	}
 
 	/**

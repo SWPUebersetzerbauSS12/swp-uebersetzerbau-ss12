@@ -34,6 +34,7 @@ package tokenmatcher;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.UUID;
 
 /**
  * Modelliert einen Zustand der Finite State Machine. Ein Zustand kann als
@@ -50,7 +51,7 @@ import java.util.Collection;
  *            Der Typ des Inhalts der Zustände beim verwendeten endlichen
  *            Automaten.
  */
-public interface State<ConditionType extends Comparable<ConditionType>, PayloadType extends Serializable>  extends Serializable{
+public interface State<ConditionType extends Serializable, PayloadType extends Serializable> extends Serializable {
 
 	/**
 	 * Dient der Abfrage, ob es sich bei dem Zustand um einen Endzustand
@@ -75,6 +76,13 @@ public interface State<ConditionType extends Comparable<ConditionType>, PayloadT
 	 */
 	PayloadType getPayload();
 
+//	/**
+//	 * Gibt die eindetige UUID dieses Zustandes zurück.
+//	 * 
+//	 * @return Die eindetige UUID dieses Zustandes.
+//	 */
+//	public UUID getUUID();
+	
 	/**
 	 * Gibt alle Elemente, die den ausgehenden Übergängen zugeordnet sind
 	 * zurück.

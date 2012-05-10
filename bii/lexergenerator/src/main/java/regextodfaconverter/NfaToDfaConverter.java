@@ -59,7 +59,7 @@ import regextodfaconverter.fsm.Transition;
  *            Der Typ des Inhalts der Zustände beim verwendeten endlichen
  *            Automaten.
  */
-public class NfaToDfaConverter<TransitionConditionType extends Comparable<TransitionConditionType>, StatePayloadType extends Serializable> {
+public class NfaToDfaConverter<TransitionConditionType extends Serializable, StatePayloadType extends Serializable> {
 
 	/**
 	 * Macht aus dem angegebenen endlichen Automaten einen deterministischen

@@ -32,29 +32,22 @@
 
 package regextodfaconverter.fsm;
 
-import java.io.Serializable;
-
-import tokenmatcher.TokenType;
-
 /**
  * Implementiert Interface {@link tokenmatcher.StatePayload}
  * 
  * @author Johannes Dahlke
  * @author Daniel Rotar
  */
-public class StatePayload implements tokenmatcher.StatePayload, Serializable {
+public class StatePayload implements tokenmatcher.StatePayload {
 
 	/**
-	 * UID für die Serialisierung/Abspeicherung als *.dfa 
+	 * UID für die Serialisierung/Abspeicherung als *.dfa
 	 */
 	private static final long serialVersionUID = 6562577552654605535L;
 
 	private String tokenType;
 
 	private String attribute;
-
-	// no longer used
-	// private int backsteps = 0;
 
 	/**
 	 * Die Priorität dieses Objekts (je größer die Zahl desto größer die
@@ -85,9 +78,17 @@ public class StatePayload implements tokenmatcher.StatePayload, Serializable {
 		return tokenType;
 	}
 
-	/*
-	 * no longer used public int getBacksteps() { return backsteps; }
-	 */
+	public void setTokenType(String tokenType) {
+		this.tokenType = tokenType;
+	}
+
+	public String getAttribute() {
+		return attribute;
+	}
+
+	public void setAttribute(String attribute) {
+		this.attribute = attribute;
+	}
 
 	/**
 	 * Gibt die Priorität dieses Objekts zurück.
@@ -112,10 +113,7 @@ public class StatePayload implements tokenmatcher.StatePayload, Serializable {
 
 	@Override
 	public String toString() {
-		return tokenType.toString();
-	}
-
-	public String getAttribute() {
-		return attribute;
+		return getTokenType().toString() + ", " + getAttribute().toString()
+				+ " @priority " + getPriority();
 	}
 }

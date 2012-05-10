@@ -201,9 +201,39 @@ public class Grammar {
 	}
 	
 	
-	public Set<TerminalSymbol> first(List<Symbol> s) {
-		//TODO implementiere mich!
-		return null;
+	/**
+	 * Berechnet die Firstmenge für einen String von Symbolen X1X2...Xn
+	 * @param Eine geordnete Liste von Symbolen, die den Eingabestring darstellt.
+	 * @return Die Firstmenge zu den String
+	 */
+	public Set<TerminalSymbol> first(List<Symbol> symbols) {
+		// Wenn die FirstMengen noch nicht berechnet wurden, dann mach dies jetzt
+		if (firstSets == null)
+			firstSets = computeFirstSets();
+		
+		HashSet<TerminalSymbol> resultFirstSet = new HashSet<TerminalSymbol>();
+		
+		
+		boolean containsEpsilon = false;
+		// Berechne die Firstmenge für einen String X1X2...Xn
+		for(Symbol x : symbols) {
+			// Die Fistmenge von x ohne ε bestimmen (Kopie notwendig)
+			HashSet<TerminalSymbol> firstSetOfX = new HashSet<TerminalSymbol>(firstSets.get(x));
+			containsEpsilon = firstSetOfX.remove(EPSILON);
+			
+			// FIRST(Xi)/ε zu FIRST(X1X2...Xn) hinzufügen
+			resultFirstSet.addAll(firstSetOfX);
+			
+			// Nur wenn FIRST(Xi) ein ε enthielt muss FIRST(Xi+1) untersucht werden
+			if(!containsEpsilon)
+				break;
+		}
+		
+		// Wenn in allen Xi ein ε gefunden wurde, dann füge ε zu FIRST(X1X2...n) hinzu
+		if(containsEpsilon)
+			resultFirstSet.add(EPSILON);
+		
+		return resultFirstSet;
 		
 	}
 	/**
@@ -212,7 +242,7 @@ public class Grammar {
 	 * 
 	 * @return Es wird ein Wörterbuch von Symbolen auf eine Menge von Terminalsymbolen zurück gegeben
 	 */
-	
+	//TODO Eventuell private
 	public Map<Symbol,Set<TerminalSymbol>> computeFirstSets() {
 		firstSets = new HashMap<Symbol,Set<TerminalSymbol>>();
 		// 1. Für alle Terminalsymbole die Mengen erzeugen.

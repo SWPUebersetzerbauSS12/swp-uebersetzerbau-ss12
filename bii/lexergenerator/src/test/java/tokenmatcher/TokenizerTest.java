@@ -30,7 +30,7 @@ public class TokenizerTest {
 	 */
 	@Test
 	public void testGetNextToken() throws Exception {
-		String sourceFile = "src/test/resources/source/tokenmatcher.testrelop.fun";
+		String sourceFile = "src/test/resources/source/tokenmatcher/testrelop.fun";
 		
 		Settings.readSettings();
 		Settings.setErrorCorrectionMode(CorrectionMode.PANIC_MODE); // Dieser Test ist nur im PANIC_MODE durchführbar.

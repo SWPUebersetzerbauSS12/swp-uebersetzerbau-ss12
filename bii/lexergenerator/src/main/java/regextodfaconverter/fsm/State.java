@@ -37,8 +37,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.UUID;
 
-import regextodfaconverter.fsm.excpetions.TransitionAlreadyExistsException;
-
 /**
  * Stellt einen Zustand eines endlicher Automaten (bzw. einer Zustandsmaschine)
  * dar.
@@ -50,15 +48,14 @@ import regextodfaconverter.fsm.excpetions.TransitionAlreadyExistsException;
  * @param <PayloadType>
  *            Der Typ des Inhalts.
  */
-public class State<TransitionConditionType extends Comparable<TransitionConditionType>, PayloadType>
-		implements Comparable<State<TransitionConditionType, PayloadType>>,
-		tokenmatcher.State<TransitionConditionType, PayloadType>, Serializable {
+public class State<TransitionConditionType extends Serializable, PayloadType extends Serializable>
+		implements tokenmatcher.State<TransitionConditionType, PayloadType> {
 
 	/**
-	 * UID für die Serialisierung/Abspeicherung als *.dfa 
+	 * UID für die Serialisierung/Abspeicherung als *.dfa
 	 */
 	private static final long serialVersionUID = 9083069509544119290L;
-	
+
 	/**
 	 * Die eindetige UUID dieses Zustandes.
 	 */
@@ -218,7 +215,8 @@ public class State<TransitionConditionType extends Comparable<TransitionConditio
 	}
 
 	/**
-	 * Setzt den Zustandtypen dieses Zustands auf einen exklusiven Default-Zustand.
+	 * Setzt den Zustandtypen dieses Zustands auf einen exklusiven
+	 * Default-Zustand.
 	 */
 	public void setTypeToDefault() {
 		setInitial(false);
@@ -232,7 +230,7 @@ public class State<TransitionConditionType extends Comparable<TransitionConditio
 		setInitial(true);
 		setFinite(true);
 	}
-	
+
 	/**
 	 * Gibt an, ob es sich bei diesem Zustand um einen Endzustand handelt.
 	 * 
@@ -268,25 +266,40 @@ public class State<TransitionConditionType extends Comparable<TransitionConditio
 	 *            Die Bedingung für den Zustandsübergang.
 	 * @param state
 	 *            Der einzufügende Nachfolgezustand.
-	 * @throws TransitionAlreadyExistsException
-	 *             Wenn der Übergang bereits vorhanden ist.
+	 * @return true, wenn der Zustand mit der angegebenen Bedingung noch nicht noch nicht vorhanden war, sonst false.
 	 */
-	protected void addState(TransitionConditionType condition,
-			State<TransitionConditionType, PayloadType> state)
-			throws TransitionAlreadyExistsException {
-		if (!getTransitions().add(
-				new Transition<TransitionConditionType, PayloadType>(condition,
-						state))) {
-			throw new TransitionAlreadyExistsException();
-		}
+	protected boolean addState(TransitionConditionType condition,
+			State<TransitionConditionType, PayloadType> state) {
+		return getTransitions().add(new Transition<TransitionConditionType, PayloadType>(condition, state));
 	}
 
-	public int compareTo(State<TransitionConditionType, PayloadType> o) {
-		if (o.getUUID() == getUUID()) {
-			return 0;
-		} else {
-			return -1;
-		}
+	@Override
+	public boolean equals(Object o) {
+	    if ( this == o) 
+    	{
+	    	return true;
+    	}
+	    
+	    if (o == null)
+	    {
+	    	return false;
+	    }
+	    
+	    if (!(o instanceof State<?,?>))
+    	{
+	    	return false;
+    	}
+	    else
+	    {
+	    	State<?,?> s = (State<?,?>)o;
+	    	if (s.getUUID().equals(getUUID())) {
+	    		return true;
+	    	}
+	    	else
+	    	{
+	    		return false;
+	    	}
+	    }
 	}
 
 	/**

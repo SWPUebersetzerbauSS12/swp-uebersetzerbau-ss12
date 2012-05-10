@@ -60,5 +60,5 @@ public interface MinimalDfaBuilder {
 	 * @throws TokenDefinitionException 
 	 */
 	public MinimalDfa<Character, StatePayload> buildMinimalDfa(
-			File regularDefinitionFile) throws MinimalDfaBuilderException, TokenDefinitionException;
+			File regularDefinitionFile) throws MinimalDfaBuilderException;
 }

@@ -32,6 +32,8 @@
 
 package regextodfaconverter;
 
+import java.io.Serializable;
+
 import regextodfaconverter.fsm.FiniteStateMachine;
 import regextodfaconverter.fsm.State;
 
@@ -46,7 +48,7 @@ import regextodfaconverter.fsm.State;
  *            Der Typ des Inhalts der Zustände beim verwendeten endlichen
  *            Automaten.
  */
-public class RegexToNfaConverter<StatePayloadType> {
+public class RegexToNfaConverter<StatePayloadType extends Serializable> {
 
 	/**
 	 * Erstellt aus dem angegebenen regulären Ausdruck einen

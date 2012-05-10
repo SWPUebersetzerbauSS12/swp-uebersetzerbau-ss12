@@ -25,29 +25,30 @@ public abstract class LLVM_GenericCommand implements ILLVMCommand{
 		this.operation = operation;
 		this.comment = comment;
 		
+		// Setze den zugehoerigen Basisblock
+		this.setBlock(block);
+		
 		if(!this.isFirstCommand()) {
 			this.predecessor.setSuccessor(this);		
 		}
-
-		// Setze den zugehoerigen Basisblock
-		this.setBlock(block);
 	}
 	
 	public void deleteCommand() {
-		
-		if(this.isFirstCommand()) {	// Loesche erstes Element
+		System.out.println("del " + this.toString());
+
+		if (this.isSingleElement()){
+			this.successor = null;
+			this.predecessor = null;
+		} else if(this.isFirstCommand()) {	// Loesche erstes Element
 			this.successor.setPredecessor(null);
 			this.getBlock().setFirstCommand(this.successor);
-			return;
-		}
-		if(this.isLastCommand()) {	// Loesche letztes Element
+		} else if(this.isLastCommand()) {	// Loesche letztes Element
 			this.predecessor.setSuccessor(null);
 			this.getBlock().setLastCommand(this.predecessor);
-			return;
+		} else{
+			this.predecessor.setSuccessor(this.successor);
+			this.successor.setPredecessor(this.predecessor);
 		}
- 
-		this.predecessor.setSuccessor(this.successor);
-		this.successor.setPredecessor(this.predecessor);
 	}
 	
 	public String getComment(){
@@ -66,7 +67,7 @@ public abstract class LLVM_GenericCommand implements ILLVMCommand{
 		return (this.successor == null);
 	}
 	
-	public boolean isEmpty() {
+	public boolean isSingleCommand() {
 		return (this.isFirstCommand() && this.isLastCommand());
 	}
 	

@@ -51,10 +51,10 @@ class LLVMBlock implements ILLVMBlock {
 
 	private void createCommands() {
 		String commandsArray[] = this.blockCode.split("\n");
-		this.firstCommand = mapCommands(commandsArray[0], null);
+		this.firstCommand = mapCommands(commandsArray[1], null);
 		
 		ILLVMCommand predecessor = firstCommand;
-		for(int i=1; i<commandsArray.length; i++) {
+		for(int i=2; i<commandsArray.length; i++) {
 			ILLVMCommand c = mapCommands(commandsArray[i], predecessor);
 			if(firstCommand == null){
 				firstCommand = c;
@@ -91,6 +91,12 @@ class LLVMBlock implements ILLVMBlock {
 					return new LLVM_BranchCommand(cmd, LLVMOperation.BR, predecessor, this, comment);
 				}else{
 					return new LLVM_BranchCommand(cmd, LLVMOperation.BR_CON, predecessor, this, comment);
+				}
+			} else if (cmd[0].compareTo("ret") == 0){
+				if (cmd[1].compareTo("void") == 0){
+					return new LLVM_ReturnCommand(cmd, LLVMOperation.RET, predecessor, this, comment);
+				}else{
+					return new LLVM_ReturnCommand(cmd, LLVMOperation.RET_CODE, predecessor, this, comment);
 				}
 			}
 			if (cmd.length > 3 && cmd[1].equals("=")){
@@ -164,15 +170,15 @@ class LLVMBlock implements ILLVMBlock {
 		String code = "";
 		
 		if(!label.equals("")){
-			code = label+"\n";
+			code = label+":\n";
 		}
 		
 		ILLVMCommand tmp = firstCommand;
-		while(tmp != null && !tmp.equals(lastCommand)){
+		while(tmp != null){
 			code += "\t"+tmp.toString();
 			tmp = tmp.getSuccessor();
 		}
-		code += "\n";
+		//code += "\n";
 		
 		return code;
 	}

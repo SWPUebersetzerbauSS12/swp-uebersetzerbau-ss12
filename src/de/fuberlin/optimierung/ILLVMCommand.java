@@ -22,7 +22,7 @@ public interface ILLVMCommand {
 	
 	public boolean isFirstCommand();
 	public boolean isLastCommand();
-	public boolean isEmpty();
+	public boolean isSingleCommand();
 	
 	public String toString();
 }

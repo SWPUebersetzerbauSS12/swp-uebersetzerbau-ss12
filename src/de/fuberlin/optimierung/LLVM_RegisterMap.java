@@ -55,20 +55,25 @@ public class LLVM_RegisterMap {
 		
 		// Fuege Verwendungen ein
 		LinkedList<LLVM_Parameter> operands = c.getOperands();
-		LinkedList<ILLVM_Command> uses;
-		for(LLVM_Parameter op : operands) {	// Gehe Operanden durch
+		
+		if(operands!=null) {	// Gibt es Verwendungen zum Einfuegen?
 			
-			if(op.getType()==LLVM_ParameterType.REGISTER) {	// Ist Operand ein Register?
-			
-				// Fuege Befehl in useMap ein
-				uses = this.getUses(op.getName());
-				if(uses==null) {
-					uses = new LinkedList<ILLVM_Command>();
-				}
-				uses.add(c);
-				this.useMap.put(op.getName(), uses);
+			LinkedList<ILLVM_Command> uses;
+			for(LLVM_Parameter op : operands) {	// Gehe Operanden durch
 				
+				if(op.getType()==LLVM_ParameterType.REGISTER) {	// Ist Operand ein Register?
+				
+					// Fuege Befehl in useMap ein
+					uses = this.getUses(op.getName());
+					if(uses==null) {
+						uses = new LinkedList<ILLVM_Command>();
+					}
+					uses.add(c);
+					this.useMap.put(op.getName(), uses);
+					
+				}
 			}
+			
 		}
 	}
 	
@@ -86,23 +91,26 @@ public class LLVM_RegisterMap {
 		
 		// Loesche Verwendungen
 		LinkedList<LLVM_Parameter> operands = c.getOperands();
-		LinkedList<ILLVM_Command> uses;
-		for(LLVM_Parameter op : operands) {	// Gehe Operanden durch
+		
+		if(operands!=null) {	// Gibt es Verwendungen zum Loeschen?
 			
-			if(op.getType()==LLVM_ParameterType.REGISTER) {	// Ist Operand ein Register?
+			LinkedList<ILLVM_Command> uses;
+			for(LLVM_Parameter op : operands) {	// Gehe Operanden durch
 				
-				// Loesche Befehel aus useMap
-				uses = this.getUses(op.getName());
-				uses.remove(c);
-				if(uses.isEmpty()) {
-					this.useMap.remove(op.getName());
+				if(op.getType()==LLVM_ParameterType.REGISTER) {	// Ist Operand ein Register?
+					
+					// Loesche Befehel aus useMap
+					uses = this.getUses(op.getName());
+					uses.remove(c);
+					if(uses.isEmpty()) {
+						this.useMap.remove(op.getName());
+					}
+					else {
+						this.useMap.put(op.getName(), uses);
+					}
+					
 				}
-				else {
-					this.useMap.put(op.getName(), uses);
-				}
-				
 			}
-	
 		}
 		
 	}

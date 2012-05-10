@@ -32,12 +32,15 @@ public class LLVM_Function {
 			
 			// Ist Block leer?
 			if(!block.isEmpty()) {
-			
+				
 				// Gehe Befehle des Blockes durch
-				for(ILLVM_Command c = block.getFirstCommand(); !c.isLastCommand(); c = c.getSuccessor()) {
+				ILLVM_Command c = block.getFirstCommand();
+				while(c!=null) {
 					
 					// Fuege c in Register Maps ein
 					this.registerMap.addCommand(c);
+					c = c.getSuccessor();
+					
 				}
 				
 			}

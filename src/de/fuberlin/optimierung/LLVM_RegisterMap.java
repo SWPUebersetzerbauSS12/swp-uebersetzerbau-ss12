@@ -25,6 +25,14 @@ public class LLVM_RegisterMap {
 	}
 	
 	/**
+	 * Loesche alle Eintraege
+	 */
+	public void clean() {
+		this.definitionMap.clear();
+		this.useMap.clear();
+	}
+	
+	/**
 	 * Gibt die Definition des Registers zurueck
 	 * @param registerName Name des Registers
 	 * @return Befehl, das Register definiert, null, falls nicht vorhanden

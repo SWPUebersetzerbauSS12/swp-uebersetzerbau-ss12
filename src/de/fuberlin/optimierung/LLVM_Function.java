@@ -28,8 +28,16 @@ public class LLVM_Function {
 		this.endBlock = this.blocks[this.numberBlocks-1];
 	}
 	
+	/**
+	 * Definition und Verwendungen der Register werden in registerMap abgelegt
+	 * Alte Informationen werden entfernt, aktuelle gesetzt
+	 */
 	public void createRegisterMaps() {
 		
+		// Loesche alte Werte
+		this.registerMap.clean();
+		
+		// Setze neue Werte
 		for(ILLVM_Block block : this.blocks) {	// Gehe Bloecke durch
 			
 			// Ist Block leer?
@@ -82,11 +90,14 @@ public class LLVM_Function {
 		
 		// Teste, ob Operanden aus list geloescht werden koennen
 		for(ILLVM_Command c : list) {
-			for(LLVM_Parameter op : c.getOperands()) {
-				if(op.getType()==LLVM_ParameterType.REGISTER) {
-					ILLVM_Command del = this.eliminateDeadRegister(op.getName());
-					if(del!=null)
-						deletedCommands.addFirst(del);
+			LinkedList<LLVM_Parameter> operands = c.getOperands();
+			if(operands!=null) {
+				for(LLVM_Parameter op : operands) {
+					if(op.getType()==LLVM_ParameterType.REGISTER) {
+						ILLVM_Command del = this.eliminateDeadRegister(op.getName());
+						if(del!=null)
+							deletedCommands.addFirst(del);
+					}
 				}
 			}
 		}

@@ -41,6 +41,7 @@ import regextodfaconverter.directconverter.syntaxtree.SyntaxTreeAttributor;
 import regextodfaconverter.directconverter.syntaxtree.SyntaxTreeException;
 import regextodfaconverter.directconverter.syntaxtree.node.BinaryTreeNode;
 import regextodfaconverter.directconverter.syntaxtree.node.BinaryTreeNodeCollection;
+import regextodfaconverter.directconverter.syntaxtree.node.BinaryTreeNodeSet;
 import regextodfaconverter.directconverter.syntaxtree.node.NewNodeEventHandler;
 import regextodfaconverter.directconverter.syntaxtree.node.Terminal;
 import regextodfaconverter.fsm.FiniteStateMachine;
@@ -150,42 +151,54 @@ public class RegexToDfaConverter {
 		
 			HashMap<Character, BinaryTreeNodeCollection> stateCandidates = new HashMap<Character, BinaryTreeNodeCollection>();
 			Character currentTerminalCharacter;
-			for ( BinaryTreeNode node : currentCollection) {
-				assert node.nodeValue instanceof Terminal;
-				currentTerminalCharacter = ((Terminal) node.nodeValue).getValue();
-				BinaryTreeNodeCollection union = stateCandidates.remove( currentTerminalCharacter);
-				union = (BinaryTreeNodeCollection) Sets.unionCollections( union, annotations.followpos( node));
-				stateCandidates.put( currentTerminalCharacter, union);
-			}
-			for ( Character terminalCharacter : stateCandidates.keySet()) {
-				BinaryTreeNodeCollection stateCandidate = stateCandidates.get( terminalCharacter);
-				State<Character, StatePayloadType> targetState;
-				if ( !stateCandidate.isEmpty()) { 
-					if( !handledStates.containsKey( stateCandidate)) {
-					  targetState = new State<Character, StatePayloadType>();
-					  unhandledStates.put( targetState, stateCandidate);
-				  } else {
-				  	targetState = handledStates.get( stateCandidate);
-			  	}
-					for ( BinaryTreeNode node : stateCandidate) {
-					//	System.out.println(node);
+
+			for ( Character currentCharacterOfCharSet : syntaxTree.getCharacterSet()) {
+
+				BinaryTreeNodeCollection followPositionsOfTerminal = new BinaryTreeNodeSet();
+				for ( BinaryTreeNode node : currentCollection) {
+					assert node.nodeValue instanceof Terminal;
+					followPositionsOfTerminal.addAll( annotations.followpos( node));
+				}
+				
+				System.out.println(followPositionsOfTerminal);
+				
+				// if set not empty, then add set to states 
+				State<Character, StatePayloadType> targetState = null;
+				if ( !followPositionsOfTerminal.isEmpty()) {
+					if ( !handledStates.containsKey( followPositionsOfTerminal)
+							&& !unhandledStates.containsValue( followPositionsOfTerminal)) {
+						targetState = new State<Character, StatePayloadType>();
+						unhandledStates.put( targetState, followPositionsOfTerminal);
+					} else if ( handledStates.containsKey( followPositionsOfTerminal)) {
+						targetState = handledStates.get( followPositionsOfTerminal);
+					} else {
+						for ( State state : unhandledStates.keySet()) {
+							if ( unhandledStates.get( state).equals( followPositionsOfTerminal)) {
+								targetState = state;
+							}
+						}
+					}
+					
+					// setze Übergang
+					for ( BinaryTreeNode node : followPositionsOfTerminal) {
 						assert node.nodeValue instanceof Terminal;
-						currentTerminalCharacter = ((Terminal) node.nodeValue).getValue();
-						dfa.addTransition( targetState, currentTerminalCharacter);		
+						currentTerminalCharacter = ( (Terminal) node.nodeValue)
+								.getValue();
 						if ( currentTerminalCharacter == RegexSpecialChars.TERMINATOR) {
 							targetState.setFinite( true);
 							targetState.setPayload( payload);
+						} else {
+							dfa.addTransition( targetState, currentTerminalCharacter);
 						}
 					}
+					
 				}
-				
+
 			}
 
-	  }
-		
+		}
+
 		return dfa;
 	}
-		
-	
-	
+
 }

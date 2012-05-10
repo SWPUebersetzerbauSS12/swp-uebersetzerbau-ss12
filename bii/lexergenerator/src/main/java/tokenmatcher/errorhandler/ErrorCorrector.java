@@ -40,6 +40,7 @@ import tokenmatcher.DeterministicFiniteAutomata;
 import tokenmatcher.LexemIdentificationException;
 import tokenmatcher.StatePayload;
 import utils.Notification;
+import bufferedreader.EndOfFileException;
 import bufferedreader.LexemeReader;
 import bufferedreader.LexemeReaderException;
 import bufferedreader.SpecialChars;
@@ -90,7 +91,7 @@ public class ErrorCorrector {
 	private void handleMismatchInPanicMode( Character currentChar,
 			LexemeReader lexemeReader,
 			DeterministicFiniteAutomata<Character, StatePayload> dfa, int lineNumber,
-			int positionInLine) throws LexemeReaderException {
+			int positionInLine) throws LexemeReaderException, EndOfFileException {
 
 		int skippedChars = 0;
 		dfa.resetToInitialState();
@@ -166,10 +167,11 @@ public class ErrorCorrector {
 	 * @param positionInLine
 	 *          die Position in der Zeile, in der der Fehler auftritt.
 	 * @throws LexemeReaderException
+	 * @throws EndOfFileException 
 	 */
 	public void handleMismatch( Character currentChar, LexemeReader lexemeReader,
 			DeterministicFiniteAutomata<Character, StatePayload> dfa, int lineNumber,
-			int positionInLine) throws LexemeReaderException {
+			int positionInLine) throws LexemeReaderException, EndOfFileException {
 		if ( correctionMode == CorrectionMode.PANIC_MODE)
 			handleMismatchInPanicMode( currentChar, lexemeReader, dfa, lineNumber, positionInLine);
 		else

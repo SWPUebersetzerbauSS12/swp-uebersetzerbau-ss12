@@ -160,7 +160,8 @@ public class Tokenizer implements LexerToParserInterface {
 			} else if ( currentChar == SpecialChars.CHAR_EOF) {
 				throw new EndOfFileException();
 		  } else if ( readMode == ReadMode.READ_NORMAL){
-		  	errorCorrector.handleMismatch( currentChar, lexemeReader, dfa, currentLine, currentPositionInLine);	
+		  	//errorCorrector.handleMismatch( currentChar, lexemeReader, dfa, currentLine, currentPositionInLine);	
+		  System.err.println( currentChar);
 		  } else {
 		  	// ignore, cause we scan a comment at the moment
 		  }

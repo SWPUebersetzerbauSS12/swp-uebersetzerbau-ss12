@@ -3,6 +3,7 @@ package regextodfaconverter.directconverter;
 import org.junit.Test;
 
 import bufferedreader.BufferedLexemeReader;
+import bufferedreader.EndOfFileException;
 import bufferedreader.LexemeReader;
 
 import regextodfaconverter.MinimalDfa;
@@ -18,18 +19,27 @@ public class RegexToDfaTest {
 	public void testReduceAndBracketRegex() throws Exception {
 
 		FiniteStateMachine<Character, ? extends StatePayload> fsm = new RegexToDfaConverter()
-				.convert( "<=|<>", new regextodfaconverter.fsm.StatePayload( "OP", "LE"));
+				.convert( "(a|b)*abb", new regextodfaconverter.fsm.StatePayload( "OP", "LE"));
 
 		LexemeReader lexemeReader = new BufferedLexemeReader( "src/test/resources/source/tokenmatcher.testrelop.fun");// new
 																																						// SimpleLexemeReader(
-																																						// "testrelop.fun");
+		System.out.println(fsm);
+				System.out.println();
+		assert fsm.isDeterministic();
+		System.out.println( fsm.isDeterministic());
+		
+		System.out.println(new MinimalDfa( fsm));
 		Tokenizer tokenizer = new Tokenizer( lexemeReader, new MinimalDfa( fsm));
 
+		try {
 		Token currentToken;
 		while ( true) {
 			currentToken = tokenizer.getNextToken();
 			System.out.print( currentToken.getType());
 			System.out.println( " " + currentToken.getAttribute());
+		}
+		} catch( EndOfFileException e){
+			
 		}
 	}
 

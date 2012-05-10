@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -260,6 +261,19 @@ public class SyntaxTree implements Iterable<BinaryTreeNode> {
 		return root;
 	}
 
+	
+	public Collection<Character> getCharacterSet() {
+		Collection<Character> characters = new HashSet<Character>();
+		for ( BinaryTreeNode node : this) {
+			if ( Test.isAssigned( node) 
+					&& node.nodeValue instanceof Terminal) {
+				Character currentTerminal = ( (Terminal) node.nodeValue).getValue();
+				if ( currentTerminal != RegexSpecialChars.TERMINATOR)
+          characters.add( ( (Terminal) node.nodeValue).getValue());
+			}
+		}
+		return characters; 
+	}
 
 
 }

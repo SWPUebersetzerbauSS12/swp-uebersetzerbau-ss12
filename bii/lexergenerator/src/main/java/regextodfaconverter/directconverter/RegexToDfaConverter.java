@@ -32,6 +32,7 @@
 
 package regextodfaconverter.directconverter;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -75,7 +76,7 @@ public class RegexToDfaConverter {
 	 * @throws Exception
 	 * 
 	 */
-	public static <StatePayloadType> FiniteStateMachine<Character, StatePayloadType> convert(
+	public static <StatePayloadType extends Serializable> FiniteStateMachine<Character, StatePayloadType> convert(
 			String regex, StatePayloadType payload) throws Exception {
 		try {
 			String terminizedRegex = "(" + regex + ")" + RegexSpecialChars.TERMINATOR;
@@ -123,7 +124,7 @@ public class RegexToDfaConverter {
 	 * @return
 	 * @throws Exception 
 	 */
-	private static <StatePayloadType> FiniteStateMachine<Character, StatePayloadType> convertSyntaxTreeToDfa( SyntaxTree syntaxTree, StatePayloadType payload) throws Exception {
+	private static <StatePayloadType extends Serializable> FiniteStateMachine<Character, StatePayloadType> convertSyntaxTreeToDfa( SyntaxTree syntaxTree, StatePayloadType payload) throws Exception {
 		// ensure, that the syntax tree has annotaions
 		if ( Test.isUnassigned( syntaxTree.getAnnotations()))
 			throw new Exception( "Cannot convert syntax tree to DFA. Missing annotations.");

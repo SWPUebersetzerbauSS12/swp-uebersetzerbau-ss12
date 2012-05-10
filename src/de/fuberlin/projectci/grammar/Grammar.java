@@ -281,7 +281,6 @@ public class Grammar {
 				// 3.Regel
 				
 				for(Symbol y : p.getRhs()) {
-					//TODO nicht so schön
 					Set<TerminalSymbol> firstY = new HashSet<TerminalSymbol>(firstSets.get(y)); // Kopie erzeugen
 					
 					removed = firstY.remove(EPSILON);

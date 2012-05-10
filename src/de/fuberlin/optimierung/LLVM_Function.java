@@ -1,5 +1,7 @@
 package de.fuberlin.optimierung;
 
+import java.util.LinkedList;
+
 public class LLVM_Function {
 
 	String func_define = "";
@@ -48,23 +50,58 @@ public class LLVM_Function {
 		}
 	}
 	
-	public boolean eliminateDeadRegisters() {
-		boolean deleted = false;
+	private ILLVM_Command eliminateDeadRegister(String registerName) {
+		// Teste, ob Verwendungen existieren
+		if(!this.registerMap.existsUses(registerName)) {
+			
+			// Wenn nein, loesche Befehl (Definition)
+			ILLVM_Command c = this.registerMap.getDefinition(registerName);
+			this.registerMap.deleteCommand(c);
+			c.deleteCommand();
+			return c;
+
+		}
+		return null;
+	}
+	
+	public LinkedList<ILLVM_Command> eliminateDeadRegistersFromList(LinkedList<ILLVM_Command> list) {
+		
+		LinkedList<ILLVM_Command> deletedCommands = new LinkedList<ILLVM_Command>();
+		
+		// Teste, ob Operanden aus list geloescht werden koennen
+		for(ILLVM_Command c : list) {
+			for(LLVM_Parameter op : c.getOperands()) {
+				if(op.getType()==LLVM_ParameterType.REGISTER) {
+					ILLVM_Command del = this.eliminateDeadRegister(op.getName());
+					if(del!=null)
+						deletedCommands.addFirst(del);
+				}
+			}
+		}
+		
+		return deletedCommands;
+	}
+	
+	public void eliminateDeadRegistersGlobal() {
+		
+		LinkedList<ILLVM_Command> deletedCommands = new LinkedList<ILLVM_Command>();
+		
 		// Iteriere ueber alle definierten Register
 		for(String registerName : this.registerMap.getDefinedRegisterNames()) {
 			
-			// Teste fuer jedes Register r ob Verwendungen existieren
-			if(!this.registerMap.existsUses(registerName)) {
-				
-				// Wenn nein, loesche Befehl (Definition)
-				ILLVM_Command c = this.registerMap.getDefinition(registerName);
-				this.registerMap.deleteCommand(c);
-				c.deleteCommand();
-				deleted = true;
-			}
+			// Teste fuer jedes Register r, ob Verwendungen existieren
+			ILLVM_Command c = this.eliminateDeadRegister(registerName);
+			if(c!=null)
+				deletedCommands.addFirst(c);
 			
 		}
-		return deleted;
+		
+		while(!deletedCommands.isEmpty()) {
+		
+			deletedCommands = this.eliminateDeadRegistersFromList(deletedCommands);
+			
+		}
+		
 	}
 	
 	public String toString() {

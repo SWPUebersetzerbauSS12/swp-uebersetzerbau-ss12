@@ -43,9 +43,7 @@ class LLVM_Optimization implements ILLVM_Optimization {
 			
 			// Optimierungsfunktionen
 			tmp.createRegisterMaps();
-			while(tmp.eliminateDeadRegisters()){
-				tmp.createRegisterMaps();
-			}
+			tmp.eliminateDeadRegistersGlobal();
 			
 			// Optimierte Ausgabe
 			outputLLVM += tmp.toString();

@@ -29,17 +29,15 @@ class LLVM_Optimization implements ILLVM_Optimization {
 		// Starte Optimierung
 		this.parseCode();
 		
-		// TODO Erstelle Flussbaum
-		
-		//this.createRegisterMaps();
-		//this.eliminateDeadRegisters();
-		
 		String outputLLVM = "";
 		LLVM_Function tmp;
 		
 		for (int i = 0; i < functions.size(); i++) {
 			// aktuelle Funktion fuer Optimierung
 			tmp = functions.get(i);
+			
+			// Erstelle Flussgraph
+			tmp.createFlowGraph();
 			
 			// Optimierungsfunktionen
 			tmp.createRegisterMaps();

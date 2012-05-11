@@ -28,6 +28,27 @@ public class LLVM_Function {
 		this.endBlock = this.blocks[this.numberBlocks-1];
 	}
 	
+	public void createFlowGraph() {
+		
+		for(ILLVM_Block block : this.blocks) {
+			ILLVM_Command branchCommand = block.getLastCommand();
+			if(branchCommand.getOperation()==LLVM_Operation.RET) {
+				
+			}
+			else if(branchCommand.getOperation()==LLVM_Operation.RET_CODE) {
+				
+			}
+			else if(branchCommand.getOperation()==LLVM_Operation.BR) {
+				
+			}
+			else if(branchCommand.getOperation()==LLVM_Operation.BR_CON) {
+				
+			}
+				
+		}
+		
+	}
+	
 	/**
 	 * Definition und Verwendungen der Register werden in registerMap abgelegt
 	 * Alte Informationen werden entfernt, aktuelle gesetzt
@@ -84,7 +105,7 @@ public class LLVM_Function {
 	 * @param list zu testende Befehle
 	 * @return geloeschte Definitionen (um Operanden nochmals testen zu koennen)
 	 */
-	public LinkedList<ILLVM_Command> eliminateDeadRegistersFromList(LinkedList<ILLVM_Command> list) {
+	private LinkedList<ILLVM_Command> eliminateDeadRegistersFromList(LinkedList<ILLVM_Command> list) {
 		
 		LinkedList<ILLVM_Command> deletedCommands = new LinkedList<ILLVM_Command>();
 		

@@ -51,7 +51,8 @@ public class LexTokDef extends ReadTokDefAbstract {
 		super();
 	}
 
-	public LexTokDef(File regularDefinitionFile) throws IOException, TokenDefinitionException {
+	public LexTokDef(File regularDefinitionFile) throws IOException,
+			TokenDefinitionException {
 		super(regularDefinitionFile);
 	}
 
@@ -177,7 +178,7 @@ public class LexTokDef extends ReadTokDefAbstract {
 							"no pattern defined");
 
 				// add the new rule
-				String action = sb.toString().replace("{", "").replace("}", "");
+				String action = sb.substring(1, sb.length() - 1);
 				IRule rule = new Rule(getTokenType(action),
 						getTokenValue(action), pattern);
 				rules.add(rule);

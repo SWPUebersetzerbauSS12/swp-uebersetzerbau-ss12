@@ -33,16 +33,16 @@ public class LRParseTableBuilder extends ParseTableBuilder {
 				List<Production> productions = super.getGrammar().getProductions();
 				for(Production prod: productions){
 //					if (prod.getLhs().equals(nextNonTerminal)) {
-//						
+//						List<Symbol> rhs = prod.getRhs();
+//						List<Symbol> terminals = getFirst(rhs.substring(item.getIndex())++item.getLookaheadSymbol())
+//						for(Symbol terminal: terminals){
+//							LR1Item newItem = new LR1Item(prod,0,terminal);
+//							items.add(newItem);
+//							added=true;
+//						}
 //					}
 //					else continue;
-					List<Symbol> rhs = prod.getRhs();
-//					List<Symbol> terminals = getFirst(rhs.substring(item.getIndex())++item.getLookaheadSymbol())
-//					for(Symbol terminal: terminals){
-//						LR1Item newItem = new LR1Item(prod,0,terminal);
-//						items.add(newItem);
-//						added=true;
-//					}
+					
 				}
 				
 			}

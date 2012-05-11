@@ -166,16 +166,16 @@ class LLVM_Block implements ILLVM_Block {
 		return nextBlocks;
 	}
 
-	public void setNextBlocks(LinkedList<ILLVM_Block> nextBlocks) {
-		this.nextBlocks = nextBlocks;
+	public void appendToNextBlocks(ILLVM_Block block) {
+		this.nextBlocks.add(block);
 	}
 
 	public LinkedList<ILLVM_Block> getPreviousBlocks() {
 		return previousBlocks;
 	}
 
-	public void setPreviousBlocks(LinkedList<ILLVM_Block> previousBlocks) {
-		this.previousBlocks = previousBlocks;
+	public void appendToPreviousBlocks(ILLVM_Block block) {
+		this.previousBlocks.add(block);
 	}
 	
 	public String toString() {

@@ -210,6 +210,22 @@ public class LexTokDef extends ReadTokDefAbstract {
 			sb.append((char) r);
 		}
 
-	}
+		// read last line
+		if (r == -1 && sb.length() > 0) {
 
+			if (pattern == null)
+				throw new TokenDefinitionException(line, col,
+						"no pattern defined");
+
+			// add the new rule
+			String action = sb.substring(1, sb.length() - 1);
+			IRule rule = new Rule(getTokenType(action), getTokenValue(action),
+					pattern);
+			rules.add(rule);
+
+			// set back some control variables
+			line++;
+			col = 0;
+		}
+	}
 }

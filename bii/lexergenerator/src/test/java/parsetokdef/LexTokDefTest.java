@@ -11,7 +11,7 @@ import org.junit.Test;
 import utils.IRule;
 
 /**
- * Test-Klasse für die ReadTokDefinition-Klasse.
+ * Test-Klasse für die {@link LexTokDef} Klasse.
  * 
  * @author Benjamin Weißenfels
  */
@@ -27,15 +27,17 @@ public class LexTokDefTest {
 	 */
 	@Test
 	public void testReadFile() throws Exception {
-		String path = Settings.getDefaultTokenDef();
-		ReadTokDefinition instance = new ReadTokDefinition();
-		instance.readFile(path);
+		ReadTokDefAbstract instance = new LexTokDef();
+		instance.readFile(Settings.getRegularDefinitionFileName());
 	}
 
 	@Test
 	public void testRegex() throws Exception {
+
 		String path = null;
-		List<IRule> rules = new ReadTokDefinition(path).getRules();
+		List<IRule> rules = new LexTokDef().getRules();
+
+		printRules(rules);
 
 		String tokenType = rules.get(0).getTokenType();
 		String tokenValue = rules.get(0).getTokenValue();
@@ -55,5 +57,11 @@ public class LexTokDefTest {
 		tokenValue = rules.get(5).getTokenValue();
 		Assert.assertEquals("OP", tokenType);
 		Assert.assertEquals("L", tokenValue);
+	}
+
+	private void printRules(List<IRule> rules) {
+		System.out.println("Try to reading default Tokendefinition:");
+		for (IRule r : rules)
+			System.out.println(r);
 	}
 }

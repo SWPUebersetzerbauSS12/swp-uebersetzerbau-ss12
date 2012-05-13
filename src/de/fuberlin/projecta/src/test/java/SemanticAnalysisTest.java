@@ -21,7 +21,7 @@ public class SemanticAnalysisTest {
 			assertTrue(false);
 		}
 
-		SemanticAnalyzer analyzer = new SemanticAnalyzer(parser.getSyntaxTree());
+		SemanticAnalyzer analyzer = new SemanticAnalyzer(parser.getParseTree());
 		analyzer.analyze();
 	}
 

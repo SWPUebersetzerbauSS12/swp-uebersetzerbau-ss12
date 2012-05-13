@@ -1,5 +1,7 @@
 package parser;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import lexer.ILexer;
@@ -8,21 +10,21 @@ import lexer.IToken.TokenType;
 import lexer.SyntaxErrorException;
 import lombok.Getter;
 import lombok.Setter;
-import parser.nodes.NoOpTree;
-import parser.nodes.Tree.DefaultAttribute;
+import parser.ITree.DefaultAttribute;
+import parser.AstNodes.Type;
 
 public class Parser {
 
 	private ILexer lexer;
 	private ParseTable table;
 	private Stack<Symbol> stack = new Stack<Symbol>();
-	private NodeFactory nodeFactory = new NodeFactory();
 
-	@Getter @Setter
+	@Getter
+	@Setter
 	private boolean debugEnabled = false;
 
 	@Getter
-	private ISyntaxTree syntaxTree;
+	private ISyntaxTree parseTree, ast;
 
 	public Parser(ILexer lexer) {
 		this.lexer = lexer;
@@ -56,7 +58,7 @@ public class Parser {
 			e.printStackTrace();
 		}
 
-		ISyntaxTree currentNode = new NoOpTree("root");
+		ISyntaxTree currentNode = new Tree(new Symbol(Symbol.Reserved.EPSILON));
 
 		do {
 			if (debugEnabled)
@@ -70,18 +72,19 @@ public class Parser {
 				switch (reservedTerminal) {
 				case SP:
 					currentNode = currentNode.getParent();
-				case EPSILON: // fall-though, do nothing
+				case EPSILON: // fall-through, do nothing
 				default:
 					break;
 				}
 			} else if (peek.isTerminal()) {
 				TokenType terminal = peek.asTerminal();
 				if (terminal == token.getType()) {
-					ISyntaxTree node = nodeFactory.createNode(terminal);
+					ISyntaxTree node = new Tree(new Symbol(terminal));
 					node.addAttribute(DefaultAttribute.TokenValue.name());
-					final boolean success = node.setAttribute(DefaultAttribute.TokenValue.name(),
+					final boolean success = node.setAttribute(
+							DefaultAttribute.TokenValue.name(),
 							token.getAttribute());
-					assert(success);
+					assert (success);
 					currentNode.addChild(node);
 					try {
 						token = lexer.getNextToken();
@@ -97,7 +100,7 @@ public class Parser {
 				NonTerminal nonT = peek.asNonTerminal();
 				String prod = table.getEntry(nonT, token.getType());
 
-				ISyntaxTree node = nodeFactory.createNode(nonT);
+				ISyntaxTree node = new Tree(new Symbol(nonT));
 				currentNode.addChild(node);
 				currentNode = node;
 
@@ -133,10 +136,52 @@ public class Parser {
 		assert (stack.size() == 1); // containing the EOF symbol
 
 		assert (currentNode != null);
-		syntaxTree = currentNode;
+		parseTree = currentNode;
 
-		// TODO: Do we need this any more?
-		// createSyntaxTree();
+		ast = generateAst(parseTree);
+	}
+
+	public ISyntaxTree generateAst(ISyntaxTree parseTree) {
+
+		List<ISyntaxTree> children = new ArrayList<ISyntaxTree>();
+
+		for (int i = 0; i < parseTree.getChildrenCount(); i++) {
+			children.add(generateAst(parseTree.getChild(i)));
+		}
+
+		if (parseTree.getSymbol().equals(new Symbol(TokenType.DEF))) {
+			return null;
+		} else if (parseTree.getSymbol().equals(new Symbol(TokenType.INT_TYPE))) {
+			ISyntaxTree node = new Type(new Symbol(TokenType.INT_TYPE));
+			insertToken(node);
+			return node;
+		} else if (parseTree.getSymbol()
+				.equals(new Symbol(TokenType.REAL_TYPE))) {
+			ISyntaxTree node = new Type(new Symbol(TokenType.REAL_TYPE));
+			insertToken(node);
+			return node;
+		} else if (parseTree.getSymbol()
+				.equals(new Symbol(TokenType.BOOL_TYPE))) {
+			ISyntaxTree node = new Type(new Symbol(TokenType.BOOL_TYPE));
+			insertToken(node);
+			return node;
+		} else if (parseTree.getSymbol().equals(
+				new Symbol(TokenType.STRING_TYPE))) {
+			ISyntaxTree node = new Type(new Symbol(TokenType.STRING_TYPE));
+			insertToken(node);
+			return node;
+		}  else if (parseTree.getSymbol().equals(
+				new Symbol(TokenType.RECORD))) {
+			ISyntaxTree node = new Type(new Symbol(TokenType.RECORD));
+			insertToken(node);
+			return node;
+		}
+
+		return null;
+	}
+
+	private void insertToken(ISyntaxTree node) {
+		// TODO !
 	}
 
 	/**
@@ -144,7 +189,7 @@ public class Parser {
 	 * direction is still from the top to the bottom.
 	 */
 	public void printParseTree() {
-		printParseTree(syntaxTree, 0);
+		printParseTree(parseTree, 0);
 	}
 
 	private void printStack() {
@@ -158,7 +203,7 @@ public class Parser {
 		for (int i = 0; i <= depth; i++) {
 			System.out.print("\t");
 		}
-		System.out.print(tree.getName());
+		System.out.print(tree.getSymbol());
 		System.out.println("");
 		int count = tree.getChildrenCount();
 		if (count != 0) {
@@ -375,8 +420,6 @@ public class Parser {
 				"stmt_ ::= EPSILON");
 		table.setEntry(NonTerminal.stmt_, TokenType.BOOL_LITERAL,
 				"stmt_ ::= EPSILON");
-		// TODO: missing table.setEntry(NonTerminal.stmt_, TokenType.ELSE,
-		// "stmt_ ::= EPSILON");
 
 		// stmt__
 		table.setEntry(NonTerminal.stmt__, TokenType.ID,
@@ -451,9 +494,6 @@ public class Parser {
 				"assign_ ::= EPSILON ");
 		table.setEntry(NonTerminal.assign_, TokenType.OP_SEMIC,
 				"assign_ ::= EPSILON ");
-		// TODO: missing table.setEntry(NonTerminal.assign_,
-		// TokenType.OP_ASSIGN,
-		// "assign_ ::= EPSILON ");
 
 		// bool
 		table.setEntry(NonTerminal.bool, TokenType.ID, "bool ::=  join bool_");

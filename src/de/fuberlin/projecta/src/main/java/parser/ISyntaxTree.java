@@ -16,7 +16,7 @@ public interface ISyntaxTree {
 
 	public void addChild(ISyntaxTree tree);
 
-	public String getName();
+	public Symbol getSymbol();
 
 	/**
 	 * @return the number of children
@@ -33,7 +33,6 @@ public interface ISyntaxTree {
 	/**
 	 * @return The desired attribute. Null if none is found.
 	 */
-	public IAttribute getAttribute(String name);
 
 	public List<ISyntaxTree> getChildrenByName(String name);
 
@@ -47,6 +46,8 @@ public interface ISyntaxTree {
 	 * @return True if change was successful, False otherwise.
 	 */
 	public boolean setAttribute(String name, Object value);
+
+	public Object getAttribute(String name);
 
 	/**
 	 * Adds a new attribute to the nodes attribute collection, if this name is

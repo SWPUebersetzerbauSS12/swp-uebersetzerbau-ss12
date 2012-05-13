@@ -48,6 +48,19 @@ public class Grammar {
 		return productions.get(index);
 	}
 	
+	/**
+	 * Gibt alle Produktionen zurück, die das übergebene NonTerminalSymbol auf der linken Seite haben.
+	 */
+	public List<Production> getProductionsByLhs(NonTerminalSymbol lhs) {
+		List<Production> result = new ArrayList<Production>();
+		for (Production aProduction : productions) {
+			if (aProduction.getLhs().equals(lhs)){
+				result.add(aProduction);
+			}
+		}		
+		return result;
+	}
+	
 	void setProductions(List<Production> productions) {
 		this.productions = productions;
 	}

@@ -1,4 +1,11 @@
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
+import java.util.Map.Entry;
 
 /* 
  * The ParserGenerator reads a Grammar and tries to convert the 
@@ -16,8 +23,12 @@ public class ParserGenerator {
 	//Contains the Grammar the Parsetable is created from
 	private Vector <Productions> grammar;
 	
+	private String start;
 	private Vector<String> Terminals;
 	private Vector<String> Nonterminal;
+	
+	public Map<String, Set<String>> followSets = new HashMap<String, Set<String>>();
+	public Map<String, Set<String>> firstSets = new HashMap<String, Set<String>>();
 	
 	public ParserGenerator(){
 		Terminals = new Vector<String>();
@@ -31,6 +42,8 @@ public class ParserGenerator {
 		//Read the Grammar from file
 		readGrammar(file);
 		
+		start = grammar.firstElement().getHead();
+		
 		/*
 		 * do leftfactorisation
 		 */
@@ -40,11 +53,17 @@ public class ParserGenerator {
 		System.out.println("Linksfaktorisierte Grammatik");
 		printGrammar();
 		
+		eliminateDirectLeftRekursion();
+		
+		System.out.println();
+		System.out.println("Direkte weg 1");
+		printGrammar();
+		
 		/*
 		 * Eliminate indirect leftrecursions
 		 */
 		
-		//eliminateIndirectLeftRekursion();
+		eliminateIndirectLeftRekursion();
 		
 		System.out.println();
 		System.out.println("Indirekte Linksrekursion weg");
@@ -91,24 +110,43 @@ public class ParserGenerator {
 		
 		for (int i = 1; i < NonTerminalCounter;i++){
 			Productions nonTerminalCurrent = grammar.elementAt(i);
+			boolean[] bitmap = new boolean[nonTerminalCurrent.productions.size()];
+			for (int y=0; y<nonTerminalCurrent.productions.size();y++){
+				bitmap[y] = false;
+			}
 			Productions nonTerminalNew = new Productions(nonTerminalCurrent.getHead());
+			boolean rekursive = false;
 			for (int j = 0; j<i; j++){
-				Productions nonTerminalChecked = grammar.elementAt(j);
-				grammarMod.add(nonTerminalCurrent);
+				Productions nonTerminalChecked = grammarMod.elementAt(j);
+				int x = 0;
 				for (Vector<String> production:nonTerminalCurrent.productions){
 					if (production.firstElement().equals(nonTerminalChecked.getHead())){
+						rekursive = true;
+						bitmap[x] = true;
 						for (Vector<String> productionChecked:nonTerminalChecked.productions){
-							nonTerminalNew.InsertProduction(productionChecked);
+							Vector<String> newProduction = new Vector<String>();
+							for (String symbol:productionChecked){
+								newProduction.add(symbol);
+							}
+							nonTerminalNew.InsertProduction(newProduction);
 							for (int k=1;k<production.size();k++){
 								nonTerminalNew.productions.lastElement().add(production.elementAt(k));
 							}
 						}
 					}
-					else{
-						nonTerminalNew.InsertProduction(production);
+					x++;
+				}
+			}
+			if (rekursive){
+				for (int y=0; y<nonTerminalCurrent.productions.size();y++){
+					if (!bitmap[y]){
+						nonTerminalNew.InsertProduction(nonTerminalCurrent.productions.elementAt(y));
 					}
 				}
-				
+				grammarMod.add(nonTerminalNew);
+			}
+			else{
+				grammarMod.add(nonTerminalCurrent);
 			}
 		}
 		grammar = grammarMod;
@@ -230,13 +268,114 @@ public class ParserGenerator {
 	}
 
 	private void createFollowSet() {
-		// TODO Auto-generated method stub
-		
+		for (String head : Nonterminal) {
+			// String head = p.getHead();
+			followSets.put(head, evalFollowSet(head));
+		}
+		showFollowSets(); 
+	}
+	
+	private Set<String> evalFollowSet(String head) {
+		if (followSets.containsKey(head)) {
+			return followSets.get(head);
+		}
+		Set<String> fs = new HashSet<String>();
+		if (start.equals(head)) {
+			fs.add("$");
+		}
+		for (Productions p : grammar) {
+			for (Vector<String> product : p.productions) {
+				for (Iterator<String> itr = product.iterator(); itr.hasNext();) {
+					if (itr.next().equals(head)) {
+						if (itr.hasNext()) {
+							// not last symbol
+							String follow = itr.next();
+							if (Terminals.contains(follow)){
+								fs.add(follow);
+							}
+							else{
+								HashSet<String> first = new HashSet<String>(firstSets.get(follow));
+
+								if (first.contains("@")){
+									if (!p.getHead().equals(head)) { fs.addAll(evalFollowSet(p.getHead()));}
+									first.remove("@");
+									fs.addAll(first);
+								} else {
+									fs.addAll(first);
+								}
+							}
+						}
+						else{
+							if (!p.getHead().equals(head)){
+								//  the last symbol
+								fs.addAll(evalFollowSet(p.getHead()));
+							}
+						}						
+						break;
+					}
+				}
+			}
+		}
+		return fs;
+	}
+	
+	private Set<String> evalFirstSet(String head,
+			Map<String, Vector<Vector<String>>> grammarMap) {
+		if (firstSets.containsKey(head)) {
+			return firstSets.get(head);
+		}
+		Set<String> fs = new HashSet<String>();
+		for (Vector<String> production : grammarMap.get(head)) {
+			String term = production.get(0);
+			if (Terminals.contains(term)) {
+				fs.add(term);
+			} else {
+				fs.addAll(evalFirstSet(term, grammarMap));
+			}
+		}
+		return fs;
+	}
+	
+	private Map<String, Vector<Vector<String>>> buildGrammarMap() {
+		Map<String, Vector<Vector<String>>> gMap = new LinkedHashMap<String, Vector<Vector<String>>>();
+		for (Productions p : grammar) {
+			gMap.put(p.getHead(), p.productions);
+		}
+		return gMap;
 	}
 
 	private void createFirstSet() {
-		// TODO Auto-generated method stub
+		System.out.println("grammar = " + grammar);
+		System.out.println("Terminals = " + Terminals);
+		System.out.println("Nonterminal = " + Nonterminal);
+		Map<String, Vector<Vector<String>>> grammarMap = buildGrammarMap();
+		// grammarMap = buildTestGrammarMap();
+
+		for (String head : Nonterminal) {
+			// String head = p.getHead();
+			firstSets.put(head, evalFirstSet(head, grammarMap));
+		}
+		showFirstSets();
 		
+	}
+	
+	/**
+	 * print out all the First Set of nonterminal symbols
+	 * 
+	 * @author Ying Wei
+	 */
+	private void showFirstSets() {
+		System.out.println("the First Set as follow: ");
+		for (Entry<String, Set<String>> fs : firstSets.entrySet()) {
+			System.out.println("First(" + fs.getKey() + ") = " + fs.getValue());
+		}
+	}
+
+	private void showFollowSets() {
+		System.out.println("the Follow Set as follow: ");
+		for (Entry<String, Set<String>> fs : followSets.entrySet()) {
+			System.out.println("Follow(" + fs.getKey() + ") = " + fs.getValue());
+		}
 	}
 
 	/*

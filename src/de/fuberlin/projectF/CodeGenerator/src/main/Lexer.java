@@ -56,23 +56,22 @@ public class Lexer {
 	
 	public Token getNextToken() {
 		String strLine;
+		String[] splitLine;
 		
 		try {
 			//Einlesen der nächsten Zeile
 			while((strLine = br.readLine()) != null) {
 				
-				strLine = filterLine(strLine);
+				 splitLine = splitInformation(strLine);
 				
-				//Wenn Zeile "leer" dann neue Zeile lesen
-				if(strLine.length() == 0)
+				if(splitLine.length == 0)
 					continue;
 				
-				//Wenn Zeile nicht "leer" dann Token erzeugen und zurückgeben
-				
-				return fillToken(strLine);
+				return fillToken(splitLine);
 			}
 		} catch(Exception e) {
 			System.err.println("Error: " + e.getMessage());
+		
 		}
 		
 		Token endToken = new Token();
@@ -80,172 +79,168 @@ public class Lexer {
 		return endToken;
 	}
 
-	private String filterLine(String strLine) {
-		strLine = strLine.trim();
+	private String[] splitInformation(String line) {
+		line = line.trim();
 		
-		String[] strings;
+		String[] tmpSplitLine;
+		String[] splitLine;
 		
-		strings = strLine.split(" ");
-		strLine = "";
+		line = line.replace("(", " (");
+		line = line.replace(")", ") ");
+		line = line.replace("[", " [");
+		line = line.replace("]", "] ");
+		line = line.replace("{", " {");
+		line = line.replace("}", "} ");
+		line = line.replace(",", " , ");
 		
-		for(int i = 0; i < strings.length; i++) {
-			if(strings[i].isEmpty())
-				continue;
-			strLine = strLine.concat(strings[i]);
-			if(i != strings.length - 1)
-				strLine = strLine.concat(" ");
+		line = replaceBetweenBrackets(line,'(',')',' ','#');
+		line = replaceBetweenBrackets(line,'[',']',' ','#');
+		line = replaceBetweenBrackets(line,'{','}',' ','#');
+		
+		System.out.println(line);
+		
+		tmpSplitLine = line.split(" ");
+		
+		int count = 0;
+		for(int i = 0; i < tmpSplitLine.length; i++) {
+			if(tmpSplitLine[i].isEmpty()) {}
+			else if(tmpSplitLine[i].contentEquals(",")) {}
+			else if(tmpSplitLine[i].contentEquals("nounwind")) {}
+			else if(tmpSplitLine[i].contentEquals("nsw")) {}
+			else if(tmpSplitLine[i].contentEquals("align")) {break;}
+			
+			else{count++;}
 		}
 		
-		return strLine;
+		splitLine = new String[count];
+		
+		count = 0;
+		for(int i = 0; i < tmpSplitLine.length; i++) {
+			if(tmpSplitLine[i].isEmpty()) {}
+			else if(tmpSplitLine[i].contentEquals(",")) {}
+			else if(tmpSplitLine[i].contentEquals("nounwind")) {}
+			else if(tmpSplitLine[i].contentEquals("nsw")) {}
+			else if(tmpSplitLine[i].contentEquals("align")) {break;}
+			
+			else{splitLine[count++] = new String(tmpSplitLine[i]);}
+		}
+		
+		return splitLine;
 	}
+	
+	private String replaceBetweenBrackets(String line, char leftBracket, char rightBracket, char oldChar, char newChar) {
+		int p1, p2;
+		
+		p1 = line.lastIndexOf(leftBracket);
+		if(p1 == -1)
+			return line;
+		p2 = line.indexOf(rightBracket, p1);
+		if(p2 == -1)
+			return line;
 
-	private Token fillToken(String strLine) {
+		String tmpLine1,tmpLine2;
+		tmpLine1 = line.substring(p1, p2 + 1);
+		tmpLine2 = line.substring(p2 + 1);
+		line = line.substring(0, p1);
+		
+		line = line.concat(tmpLine1.replace(oldChar, newChar));
+		line = line.concat(tmpLine2);
+		
+		return line;
+	}
+	
+
+	private Token fillToken(String[] line) {
 		Token newToken = new Token();
 		
-		// Zuweisungszeilen
-		if(strLine.contains(" = ")) {
+		//Definitionen (bei Methodendeklarationen)
+		if(line[0].contentEquals("define")) {
+			newToken.setType(TokenType.Definition);
+			
+			newToken.setTarget(line[2]);
+			newToken.setTypeTarget(line[1]);
+			
+			fillParameter(newToken, line[3].replace('#', ' '));
+		}
+		
+		// Wertzuweisungen
+		else if(line[0].contentEquals("store")) {
+			newToken.setType(TokenType.Assignment);
+			
+			newToken.setTarget(line[4]);
+			newToken.setTypeTarget(line[3]);
+			
+			newToken.setOp1(line[2]);
+			newToken.setTypeOp1(line[1]);
+		}
+		
+		//Return anweisungen
+		else if(line[0].contentEquals("ret")) {
+			newToken.setType(TokenType.Return);
+			
+			newToken.setTypeOp1(line[1]);
+			
+			if(line.length > 2) {
+				newToken.setOp1(line[2]);
+			}
+		}
+		
+		//Ende einer Definition
+		else if(line[0].contentEquals("}")) {
+			newToken.setType(TokenType.DefinitionEnd);
+		}
+		
+		else if(line[1].contentEquals("=")) {
 			//Typ-Definition (STRUCT, RECORD)
-			if(strLine.contains(" type ")) {
+			if(line[2].contentEquals("type")) {
 				newToken.setType(TokenType.TypeDefinition);
-				newToken.setTarget(strLine.substring(0, strLine.indexOf(' ')));
-				fillParameter(newToken, strLine);
+				newToken.setTarget(line[0]);
+				fillParameter(newToken, line[3].replace('#',' '));
 
 			}
 	
 			//Additionen
-			else if(strLine.contains(" add ") || strLine.contains(" fadd ") ) {
+			else if(line[2].contentEquals("add") || line[2].contentEquals("fadd")) {
 				//Type: ADDITION
 				newToken.setType(TokenType.Addition);
-				newToken.setTarget(strLine.substring(0, strLine.indexOf(' ')));
 				
-				int p1 = strLine.indexOf('%', 1);
-				int p2 = strLine.indexOf('%', p1 + 1);
-				int komma = strLine.indexOf(',', p1);
+				newToken.setTarget(line[0]);
+				newToken.setTypeTarget(line[3]);
 				
-				newToken.setOp1(strLine.substring(p1, komma));
-				newToken.setOp2(strLine.substring(p2));
-				
-				p2 = strLine.substring(0, p1).lastIndexOf(' ');
-				p1 = strLine.substring(0, p2 - 1).lastIndexOf(' ');
-				
-				newToken.setTypeTarget(strLine.substring(p1 + 1, p2));
+				newToken.setOp1(line[4]);
+				newToken.setOp2(line[5]);
 			}
 			//Subtraktionen
-			else if(strLine.contains(" sub ")) {
+			else if(line[2].contentEquals("sub")) {
 				newToken.setType(TokenType.Subtraction);
-				newToken.setTarget(strLine.substring(0, strLine.indexOf(' ')));
+				newToken.setTarget(line[0]);
+				newToken.setTypeTarget(line[3]);
 				
-				int p1 = strLine.indexOf('%', 1);
-				int p2 = strLine.indexOf('%', p1 + 1);
-				int komma = strLine.indexOf(',', p1);
-				
-				newToken.setOp1(strLine.substring(p1, komma));
-				newToken.setOp2(strLine.substring(p2));
-				
-				p2 = strLine.substring(0, p1).lastIndexOf(' ');
-				p1 = strLine.substring(0, p2 - 1).lastIndexOf(' ');
-				
-				newToken.setTypeTarget(strLine.substring(p1 + 1, p2));
+				newToken.setOp1(line[4]);
+				newToken.setOp2(line[5]);
 			}
 			//Wert aus Speicher lesen
-			else if(strLine.contains(" load ")) {
+			else if(line[2].contentEquals("load")) {
 				newToken.setType(TokenType.Load);
-				newToken.setTarget(strLine.substring(0, strLine.indexOf(' ')));
 				
-				int p1 = strLine.indexOf('%', 1);
-				int p2 = strLine.indexOf(',', p1 + 1);
-				
-				if(p2 == -1)
-					p2 = strLine.length() - 1;
+				newToken.setTarget(line[0]);
 					
-				newToken.setOp1(strLine.substring(p1, p2));
-				
-				p2 = strLine.substring(0, p1).lastIndexOf(' ');
-				p1 = strLine.substring(0, p2 - 1).lastIndexOf(' ');
-				
-				newToken.setTypeOp1(strLine.substring(p1 + 1, p2));
+				newToken.setOp1(line[4]);
+				newToken.setTypeOp1(line[3]);
 			}
 			
 			//Speicher Allocierungen
 			//TODO
-			else if(strLine.contains(" alloca ") ) {
+			else if( line[2].contentEquals("alloca") ) {
 				newToken.setType(TokenType.Allocation);
-				newToken.setTarget(strLine.substring(0, strLine.indexOf(' ')));
 				
-				int p1 = strLine.indexOf("alloca");
-				p1 = strLine.indexOf(' ',p1) + 1;
-				
-				int p2 = strLine.indexOf(',',p1+1);
-				if(p2 == -1)
-					p2 = strLine.length();
-				
-				newToken.setTypeTarget(strLine.substring(p1, p2));
+				newToken.setTarget(line[0]);
+				newToken.setTypeTarget(line[3].replace('#', ' '));
 			}
 			else
 				newToken.setType(TokenType.Undefined);
 		}
 		
-		//Definitionen (bei Methodendeklarationen)
-		else if(strLine.contains("define ") && strLine.charAt(0) != '%') {
-			newToken.setType(TokenType.Definition);
-			
-			int p1 = strLine.indexOf('@') + 1;
-			int p2 = strLine.indexOf('(', p1);
-			
-			newToken.setTarget(strLine.substring(p1, p2));
-			
-			p2 = strLine.substring(0, p1).lastIndexOf(' ');
-			p1 = strLine.substring(0, p2 - 1).lastIndexOf(' ');
-			
-			newToken.setTypeTarget(strLine.substring(p1 + 1, p2));
-			
-			fillParameter(newToken, strLine);
-		}
-		
-		// Wertzuweisungen
-		else if(strLine.contains("store ") && strLine.charAt(0) != '%') {
-			newToken.setType(TokenType.Assignment);
-			
-			int p1 = strLine.indexOf(' ', 1) + 1;
-			int p2 = strLine.indexOf(' ', p1);
-			
-			newToken.setTypeOp1(strLine.substring(p1, p2));
-			
-			p1 = strLine.indexOf(',', p2);
-			
-			newToken.setOp1(strLine.substring(++p2, p1));
-			
-			p2 = strLine.indexOf(' ', p1 + 2);
-			
-			newToken.setTypeTarget(strLine.substring(p1 + 2, p2));
-			
-			p1 = strLine.indexOf(',', ++p2);
-			if(p1 == -1)
-				p1 = strLine.length();
-			
-			newToken.setTarget(strLine.substring(p2, p1));
-		}
-		
-		//Return anweisungen
-		else if(strLine.contains("ret ") && strLine.charAt(0) != '%') {
-			newToken.setType(TokenType.Return);
-			int p1 = strLine.indexOf(' ', 1) + 1;
-			int p2 = strLine.indexOf(' ', p1);
-			
-			if(p2 == -1) {
-				newToken.setOp1(strLine.substring(p1, strLine.length()));
-				return newToken;
-			}
-			newToken.setTypeOp1(strLine.substring(p1, p2));
-			
-			p1 = strLine.length();
-			
-			newToken.setOp1(strLine.substring(++p2, p1));
-		}
-		
-		//Ende einer Definition
-		else if(strLine.compareTo("}") == 0 )
-			newToken.setType(TokenType.DefinitionEnd);
 		else
 			newToken.setType(TokenType.Undefined);
 		
@@ -253,6 +248,9 @@ public class Lexer {
 	}
 
 	private void fillParameter(Token newToken, String strLine) {
+		
+		System.out.println(strLine);
+		
 		int p1 = strLine.indexOf('(');
 		String pair;
 		String[] split;

@@ -37,8 +37,21 @@ public class LLVM_Function {
 	 */
 	private void mapLabelsToBlocks() {
 		
+		// Durchlaufe alle Bloecke
 		for(int i=0; i<this.numberBlocks; i++) {
 			String label = this.blocks[i].getLabel();
+			
+			/* Zum Testen
+			if(i==1)
+				label = "%4";
+			if(i==2)
+				label = "%7";
+			if(i==3)
+				label = "%10";
+			if(i==4)
+				label = "%13";
+			*/
+			
 			this.labelToBlock.put(label, i);
 		}
 		
@@ -52,6 +65,10 @@ public class LLVM_Function {
 		
 		// falls Labels gesetzt sind:
 		
+		// Erstelle Label zu Block Mapping
+		this.mapLabelsToBlocks();
+		
+		// Setze Zeiger
 		for(ILLVM_Block block : this.blocks) {	// Durchlaufe Bloecke
 			
 			ILLVM_Command branchCommand = block.getLastCommand();

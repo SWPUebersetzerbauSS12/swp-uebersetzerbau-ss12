@@ -19,11 +19,12 @@ public class LLVM_ReturnCommand extends LLVM_GenericCommand{
 	public LLVM_ReturnCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
 		super(operation, predecessor, block, comment);
 		// Init operands
+		operands = new LinkedList<LLVM_Parameter>();
 		
 		if (cmd.length == 2){
-			target = new LLVM_Parameter(cmd[1], cmd[1]);
+			operands.add(new LLVM_Parameter(cmd[1], cmd[1]));
 		}else if (cmd.length == 3){
-			target = new LLVM_Parameter(cmd[2], cmd[1]);
+			operands.add(new LLVM_Parameter(cmd[2], cmd[1]));
 		}
 		
 		System.out.println("Operation generiert: ");
@@ -35,11 +36,11 @@ public class LLVM_ReturnCommand extends LLVM_GenericCommand{
 		
 		switch(operation){
 			case RET :
-				cmd_output += target.getTypeString() + " ";
+				cmd_output += operands.get(0).getTypeString() + " ";
 				break;
 			case RET_CODE :
-				cmd_output += target.getTypeString() + " ";
-				cmd_output += target.getName() + " ";
+				cmd_output += operands.get(0).getTypeString() + " ";
+				cmd_output += operands.get(0).getName() + " ";
 				break;
 			default:
 				return "";

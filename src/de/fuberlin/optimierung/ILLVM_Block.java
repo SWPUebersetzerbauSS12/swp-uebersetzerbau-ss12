@@ -11,6 +11,10 @@ public interface ILLVM_Block {
 	public void setLastCommand(ILLVM_Command last);
 	public ILLVM_Command getFirstCommand();
 	public ILLVM_Command getLastCommand();
+	public String getLabel();
+	
+	public void appendToPreviousBlocks(ILLVM_Block block);
+	public void appendToNextBlocks(ILLVM_Block block);
 	
 	public boolean isEmpty();
 }

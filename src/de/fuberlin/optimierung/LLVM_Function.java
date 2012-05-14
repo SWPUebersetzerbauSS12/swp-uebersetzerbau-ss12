@@ -1,5 +1,6 @@
 package de.fuberlin.optimierung;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class LLVM_Function {
@@ -10,6 +11,8 @@ public class LLVM_Function {
 	private ILLVM_Block endBlock;
 	private ILLVM_Block blocks[];
 	private int numberBlocks;
+	
+	private HashMap<String,Integer> labelToBlock = new HashMap<String,Integer>();
 	
 	private LLVM_RegisterMap registerMap = new LLVM_RegisterMap();
 	
@@ -28,10 +31,32 @@ public class LLVM_Function {
 		this.endBlock = this.blocks[this.numberBlocks-1];
 	}
 	
+	/**
+	 * Initialisiert die Hashmap labelToBlock, die Labelnamen dem jeweiligen Block zuordnet
+	 * (als Index in this.blocks)
+	 */
+	private void mapLabelsToBlocks() {
+		
+		for(int i=0; i<this.numberBlocks; i++) {
+			String label = this.blocks[i].getLabel();
+			this.labelToBlock.put(label, i);
+		}
+		
+	}
+	
+	/**
+	 * Erstellt den Flussgraphen zwischen den Bloecken, d.h. die Attribute
+	 * nextBlocks und previousBlocks der Bloecke werden gesetzt.
+	 */
 	public void createFlowGraph() {
 		
-		for(ILLVM_Block block : this.blocks) {
+		// falls Labels gesetzt sind:
+		
+		for(ILLVM_Block block : this.blocks) {	// Durchlaufe Bloecke
+			
 			ILLVM_Command branchCommand = block.getLastCommand();
+			LinkedList<LLVM_Parameter> operands = branchCommand.getOperands();
+			
 			if(branchCommand.getOperation()==LLVM_Operation.RET) {
 				
 			}
@@ -39,6 +64,13 @@ public class LLVM_Function {
 				
 			}
 			else if(branchCommand.getOperation()==LLVM_Operation.BR) {
+				// Unbedingter Sprung
+				String label = operands.getFirst().getName();
+				Integer blockPosition = this.labelToBlock.get(label);
+				if(blockPosition!=null) {
+					block.appendToNextBlocks(this.blocks[blockPosition]);
+					this.blocks[blockPosition].appendToPreviousBlocks(block);
+				}
 				
 			}
 			else if(branchCommand.getOperation()==LLVM_Operation.BR_CON) {

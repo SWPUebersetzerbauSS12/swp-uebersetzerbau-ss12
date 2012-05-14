@@ -178,6 +178,10 @@ class LLVM_Block implements ILLVM_Block {
 		this.previousBlocks.add(block);
 	}
 	
+	public String getLabel() {
+		return label;
+	}
+	
 	public String toString() {
 		
 		String code = "";

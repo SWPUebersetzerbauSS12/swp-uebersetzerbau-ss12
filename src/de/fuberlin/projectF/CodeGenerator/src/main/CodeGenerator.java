@@ -52,6 +52,8 @@ public class CodeGenerator {
 			//Eingabe Datei parsen
 			lex.open(inputFile.get((Integer)i));
 			
+			Translator trans = new Translator();
+			
 			Token tok  = new Token();
 			int linecount = 0;
 			
@@ -60,7 +62,12 @@ public class CodeGenerator {
 				System.out.println("File #" + i + " Token #" + linecount++);
 				
 				printToken(tok);
+				trans.translate(tok);
 			}
+			
+			System.out.println("\nGenerated Code:");
+			trans.print();
+			System.out.println();
 			
 			lex.close();
 			

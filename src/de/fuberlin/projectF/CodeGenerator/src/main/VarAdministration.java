@@ -1,13 +1,13 @@
-package src.main;
+package main;
 
 
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 
-import src.main.model.Address;
-import src.main.model.RegisterAddress;
-import src.main.model.Variable;
+import main.model.Address;
+import main.model.RegisterAddress;
+import main.model.Variable;
 
 public class VarAdministration {
 	

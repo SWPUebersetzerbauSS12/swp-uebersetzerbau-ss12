@@ -1,4 +1,4 @@
-package src.main.model;
+package main.model;
 
 
 public class Address {

@@ -1,10 +1,10 @@
-package src.main;
+package main;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import src.main.model.Address;
-import src.main.model.Variable;
+import main.model.Address;
+import main.model.Variable;
 
 public class VariableTableContainer {
 	static int numRegister = 4;

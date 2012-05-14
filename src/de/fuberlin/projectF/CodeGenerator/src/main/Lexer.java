@@ -1,8 +1,8 @@
-package src.main;
+package main;
 import java.io.*;
 
-import src.main.model.Token;
-import src.main.model.TokenType;
+import main.model.Token;
+import main.model.TokenType;
 
 /**
  * 

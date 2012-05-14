@@ -1,6 +1,6 @@
-package src.main;
+package main;
 
-import src.main.model.Token;
+import main.model.Token;
 
 public class Translator {
 	private StringBuffer sectionData;
@@ -13,6 +13,7 @@ public class Translator {
 		/* Variablen/Registerverwaltung erstellen (oder werden die übergeben?) */
 		sectionData = new StringBuffer().append(".section .data\n");
 		sectionText = new StringBuffer().append(".section .text\n");
+		sectionText.append(".global main\n");
 	}
 	
 	public void translate(Token t){
@@ -22,6 +23,11 @@ public class Translator {
 			sectionText.append("type ").append(name).append(", @function\n").append(name).append(":\n");
 			sectionText.append("\tenter $0, $0\n"); //Durch spätere Optimierung oder durch lookahead auf die nächsten Token könnte hier bereits Stackspeicher reserviert werden, 
 			/* TODO: Variablenkontext wechseln, Sonderbehandlung main */
+			break;
+			
+		case DefinitionEnd:
+			sectionText.append("\tleave\n");
+			sectionText.append("\tret\n");
 			break;
 
 		default:

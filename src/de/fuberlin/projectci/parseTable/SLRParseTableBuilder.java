@@ -1,10 +1,15 @@
 package de.fuberlin.projectci.parseTable;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import de.fuberlin.projectci.grammar.Grammar;
+import de.fuberlin.projectci.grammar.NonTerminalSymbol;
+import de.fuberlin.projectci.grammar.Production;
 import de.fuberlin.projectci.grammar.Symbol;
+import de.fuberlin.projectci.grammar.TerminalSymbol;
 
 /**
  * Baut eine SLR-Parsetabelle (Action- und Goto-Tabelle) zu einer erweiterten Grammatik.
@@ -40,9 +45,30 @@ public class SLRParseTableBuilder extends ParseTableBuilder {
 //			until keine Items mehr in einer Runde zu J hinzugefügt wurden
 //			return J;
 //		}
-		
-		// TODO Implementiere mich
-		return null;
+		List<LR0Item> result=new ArrayList<LR0Item>(items);
+		boolean added= false;
+
+		do{
+			added=false;
+			for (int i = 0; i < result.size(); i++) {
+				LR0Item anItem = result.get(i);
+				Symbol nextSymbol = anItem.getNextSymbol();
+				if(nextSymbol == null) 
+					continue;
+				else if(nextSymbol instanceof TerminalSymbol)
+					continue;
+				List<Production> productions = getGrammar().getProductionsByLhs((NonTerminalSymbol) nextSymbol);
+				for(Production aProduction: productions){
+					LR0Item itemCandidate = new LR0Item(aProduction, 0);
+					if(!result.contains(itemCandidate)){
+						result.add(itemCandidate);
+						added = true;
+					}
+				}
+			}
+		}
+		while(added);
+		return new HashSet<LR0Item>(result);
 	}
 	 
 	/**

@@ -16,6 +16,9 @@ public class LR0Item extends EasyComparableObject{
 	private int index;
 	
 	public LR0Item(Production production, int index) {	
+		if (index<0 || index>production.getRhs().size()){
+			throw new IllegalArgumentException("Illegal index "+index+" for production "+production);
+		}
 		this.production = production;
 		this.index = index;		
 	}
@@ -62,6 +65,18 @@ public class LR0Item extends EasyComparableObject{
 		return strBuf.toString();
 	}
 
-	
+	/**
+	 * 
+	 * @return das Symbol nach dem 'Punkt' - oder null, wenn der 'Punkt' am Ende steht
+	 */
+	public Symbol getNextSymbol(){
+		if (index==production.getRhs().size()){
+			// Punkt steht am Ende
+			return null;
+		}
+		else{
+			return production.getRhs().get(index);
+		}
+	}
 }
  

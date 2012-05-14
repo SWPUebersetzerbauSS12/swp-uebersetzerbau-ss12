@@ -26,8 +26,21 @@ public class SLRParseTableBuilder extends ParseTableBuilder {
 	 
 	/**
 	 *Vgl. Drachenbuch: Abbildung 4.32
+	 *
 	 */
 	public Set<LR0Item> closure(Set<LR0Item> items) {
+//		Algorithmus aus Drachenbuch: Abbildung 4.32
+//		SetOfItems CLOSURE(I) {
+//			J=I;
+//			repeat
+//				for ( jedes Item A → α.Bβ in J )
+//					for ( jede Produktion B → γ von G)
+//						if (B → .γ ist nicht in J)
+//							füge B → .γ zu J hinzu
+//			until keine Items mehr in einer Runde zu J hinzugefügt wurden
+//			return J;
+//		}
+		
 		// TODO Implementiere mich
 		return null;
 	}

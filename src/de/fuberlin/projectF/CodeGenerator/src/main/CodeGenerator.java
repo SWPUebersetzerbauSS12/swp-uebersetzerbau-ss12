@@ -1,10 +1,11 @@
-package main;
+package src.main;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import main.model.Token;
-import main.model.Variable;
+import src.main.model.Token;
+import src.main.model.TokenType;
+import src.main.model.Variable;
 
 
 public class CodeGenerator {
@@ -55,11 +56,10 @@ public class CodeGenerator {
 			int linecount = 0;
 			
 			//hole immer neuen Token bis Token mit dem Type EOF kommt
-			while((tok = lex.getNextToken()).getType().compareTo("EOF") != 0) {
+			while((tok = lex.getNextToken()).getType() != TokenType.EOF) {
 				System.out.println("File #" + i + " Token #" + linecount++);
 				
 				printToken(tok);
-				
 			}
 			
 			lex.close();
@@ -108,7 +108,7 @@ public class CodeGenerator {
 	public static void printToken(Token tok) {
 		//Ausgabe Type des Tokens
 		if(tok.getType() != null)
-			System.out.println("\tType: " + tok.getType());
+			System.out.println("\tType: " + tok.getType().toString());
 		
 		//Ausgabe Target der LLVM Zeile
 		if(tok.getTarget() != null) {

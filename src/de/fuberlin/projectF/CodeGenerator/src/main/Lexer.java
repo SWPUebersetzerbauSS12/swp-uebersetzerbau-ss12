@@ -1,7 +1,8 @@
-package main;
+package src.main;
 import java.io.*;
 
-import main.model.Token;
+import src.main.model.Token;
+import src.main.model.TokenType;
 
 /**
  * 
@@ -75,7 +76,7 @@ public class Lexer {
 		}
 		
 		Token endToken = new Token();
-		endToken.setType("EOF");
+		endToken.setType(TokenType.EOF);
 		return endToken;
 	}
 
@@ -105,7 +106,7 @@ public class Lexer {
 		if(strLine.contains(" = ")) {
 			//Typ-Definition (STRUCT, RECORD)
 			if(strLine.contains(" type ")) {
-				newToken.setType("TYPE DEFINITION");
+				newToken.setType(TokenType.TypeDefinition);
 				newToken.setTarget(strLine.substring(0, strLine.indexOf(' ')));
 				fillParameter(newToken, strLine);
 
@@ -114,7 +115,7 @@ public class Lexer {
 			//Additionen
 			else if(strLine.contains(" add ") || strLine.contains(" fadd ") ) {
 				//Type: ADDITION
-				newToken.setType("ADDITION");
+				newToken.setType(TokenType.Addition);
 				newToken.setTarget(strLine.substring(0, strLine.indexOf(' ')));
 				
 				int p1 = strLine.indexOf('%', 1);
@@ -131,7 +132,7 @@ public class Lexer {
 			}
 			//Subtraktionen
 			else if(strLine.contains(" sub ")) {
-				newToken.setType("SUBTRACTION");
+				newToken.setType(TokenType.Subtraction);
 				newToken.setTarget(strLine.substring(0, strLine.indexOf(' ')));
 				
 				int p1 = strLine.indexOf('%', 1);
@@ -148,7 +149,7 @@ public class Lexer {
 			}
 			//Wert aus Speicher lesen
 			else if(strLine.contains(" load ")) {
-				newToken.setType("LOAD");
+				newToken.setType(TokenType.Load);
 				newToken.setTarget(strLine.substring(0, strLine.indexOf(' ')));
 				
 				int p1 = strLine.indexOf('%', 1);
@@ -168,7 +169,7 @@ public class Lexer {
 			//Speicher Allocierungen
 			//TODO
 			else if(strLine.contains(" alloca ") ) {
-				newToken.setType("ALLOCATION");
+				newToken.setType(TokenType.Allocation);
 				newToken.setTarget(strLine.substring(0, strLine.indexOf(' ')));
 				
 				int p1 = strLine.indexOf("alloca");
@@ -181,12 +182,12 @@ public class Lexer {
 				newToken.setTypeTarget(strLine.substring(p1, p2));
 			}
 			else
-				newToken.setType(strLine);
+				newToken.setType(TokenType.Undefined);
 		}
 		
 		//Definitionen (bei Methodendeklarationen)
 		else if(strLine.contains("define ") && strLine.charAt(0) != '%') {
-			newToken.setType("DEFINITION");
+			newToken.setType(TokenType.Definition);
 			
 			int p1 = strLine.indexOf('@') + 1;
 			int p2 = strLine.indexOf('(', p1);
@@ -203,7 +204,7 @@ public class Lexer {
 		
 		// Wertzuweisungen
 		else if(strLine.contains("store ") && strLine.charAt(0) != '%') {
-			newToken.setType("ASSIGNEMENT");
+			newToken.setType(TokenType.Assignment);
 			
 			int p1 = strLine.indexOf(' ', 1) + 1;
 			int p2 = strLine.indexOf(' ', p1);
@@ -227,7 +228,7 @@ public class Lexer {
 		
 		//Return anweisungen
 		else if(strLine.contains("ret ") && strLine.charAt(0) != '%') {
-			newToken.setType("RETURN");
+			newToken.setType(TokenType.Return);
 			int p1 = strLine.indexOf(' ', 1) + 1;
 			int p2 = strLine.indexOf(' ', p1);
 			
@@ -244,9 +245,9 @@ public class Lexer {
 		
 		//Ende einer Definition
 		else if(strLine.compareTo("}") == 0 )
-			newToken.setType("DEFINITION END");
+			newToken.setType(TokenType.DefinitionEnd);
 		else
-			newToken.setType(strLine);
+			newToken.setType(TokenType.Undefined);
 		
 		return newToken;
 	}

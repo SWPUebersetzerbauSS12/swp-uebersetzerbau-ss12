@@ -1,4 +1,4 @@
-package main.model;
+package src.main.model;
 
 
 public class RegisterAddress extends Address {

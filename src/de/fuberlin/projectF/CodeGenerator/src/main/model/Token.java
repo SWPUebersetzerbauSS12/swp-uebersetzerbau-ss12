@@ -1,4 +1,4 @@
-package main.model;
+package src.main.model;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,7 +10,7 @@ import java.util.Map;
  */
 
 public class Token {
-		protected String type;		//Typ des Tokens
+		protected TokenType type;		//Typ des Tokens
 		protected String target;	//Ziel aus der 3Adress-Code Zeile
 		protected String typeTarget;//Variablentyp des Ziels
 		protected String op1;		//Operand1 aus der 3Adress-Code Zeile
@@ -19,11 +19,11 @@ public class Token {
 		protected String typeOp2;	//Variablentyp des Operand2
 		protected Map<Integer, Parameter> parameterList;	//Argumentenliste bei Methodendefinitionen. Da kann es viel in einer Zeile geben
 		
-		public String getType() {
+		public TokenType getType() {
 			return type;
 		}
 		
-		public void setType(String type) {
+		public void setType(TokenType type) {
 			this.type = type;
 		}
 		

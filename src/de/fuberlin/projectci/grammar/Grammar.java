@@ -1,7 +1,6 @@
 package de.fuberlin.projectci.grammar;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -30,6 +29,9 @@ public class Grammar {
 	// Map für die FirstMengen
 	private Map<Symbol,Set<TerminalSymbol>> firstSets = null;
 	
+	// Map für die Follomengen
+	private Map<NonTerminalSymbol,Set<TerminalSymbol>> followSets = null;
+	
 	// Set für die Terminalsymbole
 	private Set<TerminalSymbol> terminalSymbols = new HashSet<TerminalSymbol>();
 	
@@ -38,6 +40,12 @@ public class Grammar {
 	public static final String EMPTY_STRING = "@" ;
 	
 	public static final TerminalSymbol EPSILON = new TerminalSymbol(EMPTY_STRING);
+	
+	/**
+	 * Markiert das rechte Ende des Inputstrings. Wird für die Followmengen benötigt.
+	 * Im Drachenbuch als $ notiert.
+	 */
+	public static final TerminalSymbol INPUT_ENDMARKER = new TerminalSymbol("ENDMARKER");
 	
 	
 	public List<Production> getProductions() {
@@ -51,6 +59,7 @@ public class Grammar {
 	/**
 	 * Gibt alle Produktionen zurück, die das übergebene NonTerminalSymbol auf der linken Seite haben.
 	 */
+	// TODO gibts schon: nonTerminal2Productions
 	public List<Production> getProductionsByLhs(NonTerminalSymbol lhs) {
 		List<Production> result = new ArrayList<Production>();
 		for (Production aProduction : productions) {
@@ -205,7 +214,7 @@ public class Grammar {
 	public Set<TerminalSymbol> first(Symbol s) {
 		// Wenn die FirstMengen noch nicht berechnet wurden, dann mach dies jetzt
 		if(firstSets == null)
-			firstSets = computeFirstSets();
+			firstSets = calculateFirstSets();
 	
 		// Die Firstmenge für das Symbol zurück geben
 		return firstSets.get(s);
@@ -222,7 +231,7 @@ public class Grammar {
 	public Set<TerminalSymbol> first(List<Symbol> symbols) {
 		// Wenn die FirstMengen noch nicht berechnet wurden, dann mach dies jetzt
 		if (firstSets == null)
-			firstSets = computeFirstSets();
+			firstSets = calculateFirstSets();
 		
 		HashSet<TerminalSymbol> resultFirstSet = new HashSet<TerminalSymbol>();
 		
@@ -256,7 +265,7 @@ public class Grammar {
 	 * @return Es wird ein Wörterbuch von Symbolen auf eine Menge von Terminalsymbolen zurück gegeben
 	 */
 	//TODO Eventuell private
-	public Map<Symbol,Set<TerminalSymbol>> computeFirstSets() {
+	public Map<Symbol,Set<TerminalSymbol>> calculateFirstSets() {
 		firstSets = new HashMap<Symbol,Set<TerminalSymbol>>();
 		// 1. Für alle Terminalsymbole die Mengen erzeugen.
 		// Für ein Terminal t gilt FIRST(t) = {ŧ}
@@ -313,21 +322,82 @@ public class Grammar {
 	}
 	 
 	/**
-	 * Berechnet die Follow-Menge zu einem Nicht-Terminalsymbol.
+	 * Berechnet die Follow-Menge zu einem Nicht-Terminalsymbol nach dem Algorithmus im Drachenbuch.
+	 * Abschnitt 4.4.2 "FIRST and FOLLOW" Seite 221f (Englische, 2. Ausgabe)
 	 */
 	
 	public Set<TerminalSymbol> follow(NonTerminalSymbol nts) {
+		// ohne gesetztes Startsymbol kann der Algorithmus nicht arbeiten
+		if(startSymbol == null)
+			return null; // TODO Vielleicht lieber eine Exception werfen?
+		
+		// Ohne Firstmengen kann der Algorithmus nicht laufen
+		if(firstSets == null )
+			firstSets = calculateFirstSets();
+		
+		if(followSets == null)
+			followSets = calculateFollowSets();
 		// TODO Implementiere mich.
 		
-		// 1. Regel: Füge $ (Endmarkierung) zur FOLLOW Menge des Startsymbols ein
-		
-		// 2. Regel: für eine Produktion A → αBβ, füge alles von FIRST(β) außer ε
-		// zu FOLLOW(B) hinzu
-		
-		// 3. Regel: für alle A → αB oder A → αBβ mit ε ∈ FIRST(β),
-		// füge FOLLOW(A) zu FOLLOW(B) hinzu
-		return null;
+
+		return followSets.get(nts);
 	}
+
+	public Map<NonTerminalSymbol, Set<TerminalSymbol>> calculateFollowSets() {
+		// ohne gesetztes Startsymbol kann der Algorithmus nicht arbeiten
+		if(startSymbol == null)
+			return null; // TODO Vielleicht lieber eine Exception werfen?
+		
+		// Die Mengen in der Map initialisieren		
+		followSets = new HashMap<NonTerminalSymbol,Set<TerminalSymbol>>();		
+
+		for(NonTerminalSymbol nt : getAllNonTerminals()) {
+			followSets.put(nt, new HashSet<TerminalSymbol>());	
+		}
+		
+		// [Algorithm] 1. Regel: Füge $ (Endmarkierung) zur FOLLOW Menge des Startsymbols ein
+		followSets.get(startSymbol).add(INPUT_ENDMARKER);
+		
+		
+		// erschöpfende Ausführung			
+		boolean changed = true;
+		while(changed) {
+			changed = false;
+			// [Algorithm] 2. Regel: für eine Produktion A → αBβ, füge alles von FIRST(β) außer ε
+			// zu FOLLOW(B) hinzu
+			
+			//hmm wie alpha beta und b erkennen? alle präfixe durchgehen?
+			// ja also die Symbole(nur Nichtterminale als "B" betrachten) der Reihe nach durchgehen und jeweils den Suffix als beta nehmen?
+			
+			for(Production p : productions) {
+				for(int i = 0; i < p.getRhs().size(); i++) {
+					Symbol B = p.getRhs().get(i);
+					NonTerminalSymbol A = p.getLhs();
+					
+					if(B instanceof NonTerminalSymbol) { // an der Stelle i wäre jetzt B
+						// alles hinter B gehört zu β 
+						List<Symbol> beta = p.getRhs().subList(i+1, p.getRhs().size());
+						
+						// füge FIRST(β)\ε zu FOLLOW(B) hinzu
+						Set<TerminalSymbol> firstOfBeta = first(beta);
+						boolean betaHasEpsilon = firstOfBeta.remove(EPSILON);
+						changed = changed || followSets.get(B).addAll(firstOfBeta);
+						
+						// [Algorithm] 3. Regel: für alle A → αB oder A → αBβ mit ε ∈ FIRST(β),
+						// füge FOLLOW(A) zu FOLLOW(B) hinzu
+						if(beta.isEmpty() || betaHasEpsilon){
+							changed = changed || followSets.get(B).addAll(followSets.get(A));
+						}
+					}
+				}
+			}
+		}
+
+		return followSets;
+	}
+	
+	
+	
 	
 }
  

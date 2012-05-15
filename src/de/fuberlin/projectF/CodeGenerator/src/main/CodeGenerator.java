@@ -44,6 +44,7 @@ public class CodeGenerator {
 			System.out.println("Inputfile #" + i + ": " + inputFile.get((Integer)i));
 		}
 		
+		
 		// Start der Übersetzung
 		for(int i = 0; i < inputFile.size(); i++) {
 			

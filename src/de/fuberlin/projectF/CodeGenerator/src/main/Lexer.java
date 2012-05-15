@@ -93,9 +93,21 @@ public class Lexer {
 		line = line.replace("}", "} ");
 		line = line.replace(",", " , ");
 		
-		line = replaceBetweenBrackets(line,'(',')',' ','#');
-		line = replaceBetweenBrackets(line,'[',']',' ','#');
-		line = replaceBetweenBrackets(line,'{','}',' ','#');
+		int p1 = line.lastIndexOf('(');
+		int p2 = line.indexOf(')', p1);
+		line = replaceBetween(line,p1,p2,' ','#');
+		
+		p1 = line.lastIndexOf('[');
+		p2 = line.indexOf(']', p1);
+		line = replaceBetween(line,p1,p2,' ','#');
+		
+		p1 = line.lastIndexOf('{');
+		p2 = line.indexOf('}', p1);
+		line = replaceBetween(line,p1,p2,' ','#');
+		
+		p1 = line.indexOf('"');
+		p2 = line.indexOf('"', p1 + 1);
+		line = replaceBetween(line,p1,p2,' ',(char)1);
 		
 		System.out.println(line);
 		
@@ -128,24 +140,19 @@ public class Lexer {
 		return splitLine;
 	}
 	
-	private String replaceBetweenBrackets(String line, char leftBracket, char rightBracket, char oldChar, char newChar) {
-		int p1, p2;
-		
-		p1 = line.lastIndexOf(leftBracket);
-		if(p1 == -1)
+	private String replaceBetween(String line, int startpoint, int endpoint, char oldChar, char newChar) {
+
+		if(startpoint == -1)
 			return line;
-		p2 = line.indexOf(rightBracket, p1);
-		if(p2 == -1)
+		if(endpoint == -1)
 			return line;
 
 		String tmpLine1,tmpLine2;
-		tmpLine1 = line.substring(p1, p2 + 1);
-		tmpLine2 = line.substring(p2 + 1);
-		line = line.substring(0, p1);
-		
+		tmpLine1 = line.substring(startpoint, endpoint + 1);
+		tmpLine2 = line.substring(endpoint + 1);
+		line = line.substring(0, startpoint);
 		line = line.concat(tmpLine1.replace(oldChar, newChar));
 		line = line.concat(tmpLine2);
-		
 		return line;
 	}
 	
@@ -156,30 +163,31 @@ public class Lexer {
 		//Definitionen (bei Methodendeklarationen)
 		if(line[0].contentEquals("define")) {
 			newToken.setType(TokenType.Definition);
-			
 			newToken.setTarget(line[2]);
 			newToken.setTypeTarget(line[1]);
-			
 			fillParameter(newToken, line[3].replace('#', ' '));
 		}
 		
 		// Wertzuweisungen
 		else if(line[0].contentEquals("store")) {
 			newToken.setType(TokenType.Assignment);
-			
 			newToken.setTarget(line[4]);
 			newToken.setTypeTarget(line[3]);
-			
 			newToken.setOp1(line[2]);
 			newToken.setTypeOp1(line[1]);
+		}
+		
+		else if(line[0].contentEquals("call")) {
+			newToken.setType(TokenType.Call);
+			newToken.setOp1(line[2]);
+			newToken.setTypeTarget(line[1]);
+			fillParameter(newToken, line[3].replace('#', ' '));
 		}
 		
 		//Return anweisungen
 		else if(line[0].contentEquals("ret")) {
 			newToken.setType(TokenType.Return);
-			
 			newToken.setTypeOp1(line[1]);
-			
 			if(line.length > 2) {
 				newToken.setOp1(line[2]);
 			}
@@ -191,22 +199,27 @@ public class Lexer {
 		}
 		
 		else if(line[1].contentEquals("=")) {
+			
 			//Typ-Definition (STRUCT, RECORD)
 			if(line[2].contentEquals("type")) {
 				newToken.setType(TokenType.TypeDefinition);
 				newToken.setTarget(line[0]);
 				fillParameter(newToken, line[3].replace('#',' '));
-
+			}
+			
+			else if(line[0].startsWith("@.str")) {
+				newToken.setType(TokenType.String);
+				newToken.setTarget(line[0]);
+				newToken.setTypeTarget(line[5].replace('#', ' '));
+				newToken.setOp1(line[6].substring(1).replace((char)1, ' '));
 			}
 	
 			//Additionen
 			else if(line[2].contentEquals("add") || line[2].contentEquals("fadd")) {
 				//Type: ADDITION
 				newToken.setType(TokenType.Addition);
-				
 				newToken.setTarget(line[0]);
 				newToken.setTypeTarget(line[3]);
-				
 				newToken.setOp1(line[4]);
 				newToken.setOp2(line[5]);
 			}
@@ -215,32 +228,33 @@ public class Lexer {
 				newToken.setType(TokenType.Subtraction);
 				newToken.setTarget(line[0]);
 				newToken.setTypeTarget(line[3]);
-				
 				newToken.setOp1(line[4]);
 				newToken.setOp2(line[5]);
 			}
 			//Wert aus Speicher lesen
 			else if(line[2].contentEquals("load")) {
 				newToken.setType(TokenType.Load);
-				
 				newToken.setTarget(line[0]);
-					
 				newToken.setOp1(line[4]);
 				newToken.setTypeOp1(line[3]);
 			}
 			
 			//Speicher Allocierungen
-			//TODO
 			else if( line[2].contentEquals("alloca") ) {
 				newToken.setType(TokenType.Allocation);
-				
 				newToken.setTarget(line[0]);
 				newToken.setTypeTarget(line[3].replace('#', ' '));
+			}
+			else if(line[2].contentEquals("call")) {
+				newToken.setType(TokenType.Call);
+				newToken.setTarget(line[0]);
+				newToken.setTypeTarget(line[3]);
+				newToken.setOp1(line[4]);
+				fillParameter(newToken, line[5].replace('#', ' '));
 			}
 			else
 				newToken.setType(TokenType.Undefined);
 		}
-		
 		else
 			newToken.setType(TokenType.Undefined);
 		
@@ -248,8 +262,6 @@ public class Lexer {
 	}
 
 	private void fillParameter(Token newToken, String strLine) {
-		
-		System.out.println(strLine);
 		
 		int p1 = strLine.indexOf('(');
 		String pair;

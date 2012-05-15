@@ -12,5 +12,15 @@
 <stmt>		::= <assign>";" | "if""("<assign>")"<stmt> | "if""("<assign>")"<stmt>"else"<stmt> | "while""("<assign>")"<stmt> | "do"<stmt>"while""("<assign>")"";" | "break"";" | "return"";" | "return"<loc>";" | "print"<loc>";"|<block> 
 <loc>		::= <loc> "[" <assign> "]" | "id" | <loc> "." "id"
 
-
-
+<assign>	::= <loc> "=" <assign> | <bool>
+<bool>		::= <bool> "||" <join> | <join>
+<join>		::= <join> "&&" <equality> | <equality>
+<equality>	::= <equality> "==" <rel> | <equality> "!=" <rel> | <rel>
+<rel>		::= <expr> "<" <expr> | <expr> "<=" <expr> | <expr> ">=" <expr> | <expr> ">" <expr> | <expr>
+<expr>		::= <expr> "+" <term> | <expr> "-" <term> | <term>
+<term>		::= <term> "*" <unary> | <term> "/" <unary> | <unary>
+<unary>		::= "!" <unary> | "-" <unary> | <factor>
+<factor>	::= "(" <assign> ")" | <loc> | "num" | "real" | "true" | "false" | "string" | <funccall>
+<funccall>	::= "id" "(" <optargs> ")"
+<optargs>	::= <args> | "@"
+<args>		::= <assign> "," <args> | <assign>

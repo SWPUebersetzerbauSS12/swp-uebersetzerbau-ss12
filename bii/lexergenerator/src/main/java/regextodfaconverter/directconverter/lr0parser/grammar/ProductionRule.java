@@ -1,6 +1,8 @@
 package regextodfaconverter.directconverter.lr0parser.grammar;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -18,7 +20,27 @@ public class ProductionRule implements Iterable<RuleElement> {
 			RuleElementSequenz rightRuleSide) {
 		super();
 		this.leftRuleSide = leftRuleSide;
-		this.rightRuleSide = rightRuleSide;
+		if ( Test.isAssigned( rightRuleSide) 
+				&& rightRuleSide.size() > 0) {
+   		this.rightRuleSide = filterEmptyStrings( rightRuleSide);
+		} else {
+			this.rightRuleSide = (RuleElementSequenz) new ArrayList<RuleElement>();
+		  this.rightRuleSide.add( new EmptyString());
+		}
+	}
+	
+	public ProductionRule( Nonterminal leftRuleSide,
+			RuleElement ... rightRuleSideElements) {
+		this( leftRuleSide, (RuleElementSequenz) Arrays.asList( rightRuleSideElements));
+	}
+	
+	private RuleElementSequenz filterEmptyStrings( RuleElementSequenz elementSequenz) {
+		int len = elementSequenz.size();
+		for ( int i = len-1; i > 0; i--) {
+			if ( elementSequenz.get(i) instanceof EmptyString)
+				elementSequenz.remove( i);
+		}
+		return elementSequenz;
 	}
 
 
@@ -26,6 +48,23 @@ public class ProductionRule implements Iterable<RuleElement> {
 		return leftRuleSide;
 	}
 
+	
+	protected boolean isRightSideRuleEmpty() {
+		boolean result = true;
+		for ( RuleElement ruleElement : rightRuleSide) {
+			result &= ( ruleElement instanceof EmptyString);
+		}
+		return result;
+	}
+	
+	protected int rightSideRuleSize() {
+		int result = 0;
+		for ( RuleElement ruleElement : rightRuleSide) {
+			result += ( ruleElement instanceof EmptyString) ? 0 : 1;
+		}
+		return result;
+	}
+	
 
 	public RuleElementSequenz getRightRuleSide() {
 		return rightRuleSide;

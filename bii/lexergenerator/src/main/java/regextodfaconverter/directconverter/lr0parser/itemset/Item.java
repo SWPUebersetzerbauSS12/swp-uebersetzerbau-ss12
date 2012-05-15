@@ -2,6 +2,7 @@ package regextodfaconverter.directconverter.lr0parser.itemset;
 
 import java.util.List;
 
+import regextodfaconverter.directconverter.lr0parser.grammar.EmptyString;
 import regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
 import regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
 import regextodfaconverter.directconverter.lr0parser.grammar.RuleElement;
@@ -15,6 +16,11 @@ public class Item extends ProductionRule {
 	public Item( Nonterminal leftRuleSide, RuleElementSequenz rightRuleSide) {
 		super( leftRuleSide, rightRuleSide);
   }
+	
+	public Item( Nonterminal leftRuleSide,
+			RuleElement ... rightRuleSideElements) {
+		super( leftRuleSide, rightRuleSideElements);
+	}
 	
 	public Item( Nonterminal leftRuleSide, RuleElementSequenz rightRuleSide, int analysePosition) {
 		super( leftRuleSide, rightRuleSide);
@@ -31,12 +37,14 @@ public class Item extends ProductionRule {
 		this.analysePosition = analysePosition;
 	}
 	
+	
+	
 	public boolean IsProcessed() {
-		return this.getRightRuleSide().size() <= analysePosition;
+		return this.rightSideRuleSize() <= analysePosition;
 	}
 	
 	public boolean canStepForward() {
-		return this.getRightRuleSide().size() > analysePosition;
+		return this.rightSideRuleSize() > analysePosition;
 	}
 
 	

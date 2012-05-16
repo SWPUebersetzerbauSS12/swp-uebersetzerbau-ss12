@@ -41,16 +41,16 @@ public class LLVM_Function {
 		for(int i=0; i<this.numberBlocks; i++) {
 			String label = this.blocks[i].getLabel();
 			
-			/* Zum Testen
-			if(i==1)
+			// Zum Testen
+			/*if(i==1)
 				label = "%4";
 			if(i==2)
 				label = "%7";
 			if(i==3)
 				label = "%10";
 			if(i==4)
-				label = "%13";
-			*/
+				label = "%13";*/
+			
 			
 			this.labelToBlock.put(label, i);
 		}
@@ -75,9 +75,12 @@ public class LLVM_Function {
 			LinkedList<LLVM_Parameter> operands = branchCommand.getOperands();
 			
 			if(branchCommand.getOperation()==LLVM_Operation.RET) {
-				
+				// void-return
+				// Aktueller Block ist this.endBlock
 			}
 			else if(branchCommand.getOperation()==LLVM_Operation.RET_CODE) {
+				// Return mit Rueckgabewert
+				// Aktueller Block ist this.endBlock
 				
 			}
 			else if(branchCommand.getOperation()==LLVM_Operation.BR) {
@@ -91,6 +94,19 @@ public class LLVM_Function {
 				
 			}
 			else if(branchCommand.getOperation()==LLVM_Operation.BR_CON) {
+				// Bedingter Sprung
+				String label1 = operands.get(1).getName();
+				String label2 = operands.get(2).getName();
+				Integer blockPosition1 = this.labelToBlock.get(label1);
+				Integer blockPosition2 = this.labelToBlock.get(label2);
+				if(blockPosition1!=null) {
+					block.appendToNextBlocks(this.blocks[blockPosition1]);
+					this.blocks[blockPosition1].appendToPreviousBlocks(block);
+				}
+				if(blockPosition2!=null) {
+					block.appendToNextBlocks(this.blocks[blockPosition2]);
+					this.blocks[blockPosition2].appendToPreviousBlocks(block);
+				}
 				
 			}
 				

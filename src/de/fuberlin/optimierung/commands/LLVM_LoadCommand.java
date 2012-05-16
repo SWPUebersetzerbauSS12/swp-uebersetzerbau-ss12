@@ -32,9 +32,9 @@ public class LLVM_LoadCommand extends LLVM_GenericCommand{
 	
 	public String toString() {
 		String cmd_out = target.getName()+" = ";
-		cmd_out += "load";
+		cmd_out += "load ";
 		
-		cmd_out += operands.get(0).getTypeString()+"";
+		cmd_out += operands.get(0).getTypeString()+" ";
 		cmd_out += operands.get(0).getName();
 		
 		cmd_out += getComment();

@@ -95,21 +95,21 @@ public class Lexer {
 		
 		int p1 = line.lastIndexOf('(');
 		int p2 = line.indexOf(')', p1);
-		line = replaceBetween(line,p1,p2,' ','#');
+		line = replaceBetween(line,p1,p2,' ',(char)1);
 		
 		p1 = line.lastIndexOf('[');
 		p2 = line.indexOf(']', p1);
-		line = replaceBetween(line,p1,p2,' ','#');
+		line = replaceBetween(line,p1,p2,' ',(char)1);
 		
 		p1 = line.lastIndexOf('{');
 		p2 = line.indexOf('}', p1);
-		line = replaceBetween(line,p1,p2,' ','#');
+		line = replaceBetween(line,p1,p2,' ',(char)1);
 		
 		p1 = line.indexOf('"');
 		p2 = line.indexOf('"', p1 + 1);
 		line = replaceBetween(line,p1,p2,' ',(char)1);
 		
-		System.out.println(line);
+		//System.out.println(line);
 		
 		tmpSplitLine = line.split(" ");
 		
@@ -165,7 +165,7 @@ public class Lexer {
 			newToken.setType(TokenType.Definition);
 			newToken.setTarget(line[2]);
 			newToken.setTypeTarget(line[1]);
-			fillParameter(newToken, line[3].replace('#', ' '));
+			fillParameter(newToken, line[3].replace((char)1, ' '));
 		}
 		
 		// Wertzuweisungen
@@ -181,7 +181,7 @@ public class Lexer {
 			newToken.setType(TokenType.Call);
 			newToken.setOp1(line[2]);
 			newToken.setTypeTarget(line[1]);
-			fillParameter(newToken, line[3].replace('#', ' '));
+			fillParameter(newToken, line[3].replace((char)1, ' '));
 		}
 		
 		//Return anweisungen
@@ -204,13 +204,13 @@ public class Lexer {
 			if(line[2].contentEquals("type")) {
 				newToken.setType(TokenType.TypeDefinition);
 				newToken.setTarget(line[0]);
-				fillParameter(newToken, line[3].replace('#',' '));
+				fillParameter(newToken, line[3].replace((char)1,' '));
 			}
 			
 			else if(line[0].startsWith("@.str")) {
 				newToken.setType(TokenType.String);
 				newToken.setTarget(line[0]);
-				newToken.setTypeTarget(line[5].replace('#', ' '));
+				newToken.setTypeTarget(line[5].replace((char)1, ' '));
 				newToken.setOp1(line[6].substring(1).replace((char)1, ' '));
 			}
 	
@@ -243,14 +243,14 @@ public class Lexer {
 			else if( line[2].contentEquals("alloca") ) {
 				newToken.setType(TokenType.Allocation);
 				newToken.setTarget(line[0]);
-				newToken.setTypeTarget(line[3].replace('#', ' '));
+				newToken.setTypeTarget(line[3].replace((char)1, ' '));
 			}
 			else if(line[2].contentEquals("call")) {
 				newToken.setType(TokenType.Call);
 				newToken.setTarget(line[0]);
 				newToken.setTypeTarget(line[3]);
 				newToken.setOp1(line[4]);
-				fillParameter(newToken, line[5].replace('#', ' '));
+				fillParameter(newToken, line[5].replace((char)1, ' '));
 			}
 			else
 				newToken.setType(TokenType.Undefined);

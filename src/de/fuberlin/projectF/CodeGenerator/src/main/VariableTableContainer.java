@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import main.model.Address;
+import main.model.Token;
 import main.model.Variable;
 
 public class VariableTableContainer {
@@ -13,8 +14,10 @@ public class VariableTableContainer {
 	
 	public VariableTableContainer() {
 		variableTableList = new HashMap<String,VarAdministration>();
-		
 		addVariableTable("global");
+		System.out.println("Action: add variabletable global");
+		changeVariableTable("global");
+		System.out.println("Action: change to variabletable " + actTable);
 	}
 	
 	public void addVariableTable(String name) {
@@ -40,6 +43,32 @@ public class VariableTableContainer {
 	
 	public List<Address> getAddresses(Variable var) {
 		return getVariableTable(this.actTable).getAddresses(var);
+	}
+	
+	public void updateVarAdministration(Token tok) {
+		switch(tok.getType()) {
+			case Definition:
+				addVariableTable(tok.getTarget());
+				System.out.println("\tAction: add variabletable " + tok.getTarget());
+				changeVariableTable(tok.getTarget());
+				System.out.println("\tAction: change to variabletable " + actTable);
+				break;
+							
+			case DefinitionEnd:
+				changeVariableTable("global");
+				System.out.println("\tAction: change to variabletable " + actTable);
+				break;
+				
+			case String:
+				addVariable(new Variable(tok.getTarget(),tok.getTypeTarget(),tok.getOp1()));
+				
+				System.out.println("\tAction: add variable " 	+ tok.getTarget() + "\n\t\t"
+															+ tok.getTypeTarget() + "\n\t\t"
+															+ tok.getOp1());
+				System.out.println("\t\tto variabletable: " + actTable);
+				break;
+							
+		}
 	}
 	
 }

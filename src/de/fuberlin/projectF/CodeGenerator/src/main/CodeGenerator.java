@@ -45,6 +45,7 @@ public class CodeGenerator {
 		}
 		
 		
+		
 		// Start der Übersetzung
 		for(int i = 0; i < inputFile.size(); i++) {
 			
@@ -53,6 +54,7 @@ public class CodeGenerator {
 			//Eingabe Datei parsen
 			lex.open(inputFile.get((Integer)i));
 			
+			VariableTableContainer varCon = new VariableTableContainer();
 			Translator trans = new Translator();
 			
 			Token tok  = new Token();
@@ -63,6 +65,10 @@ public class CodeGenerator {
 				System.out.println("File #" + i + " Token #" + linecount++);
 				
 				printToken(tok);
+				
+				varCon.updateVarAdministration(tok);
+				System.out.println();
+				
 				trans.translate(tok);
 			}
 			
@@ -73,13 +79,13 @@ public class CodeGenerator {
 			lex.close();
 			
 			//Test ob die Variablen-Tabellen funktionieren
-			Variable testVar1 = new Variable("Variable1", "i32", "8");
+			/*Variable testVar1 = new Variable("Variable1", "i32", "8");
 			Variable testVar2 = new Variable("Variable2", "double", "0.5");
 			
 			Variable globalVar1 = new Variable("Variable1", "i32", "20");
 			Variable globalVar2 = new Variable("Variable2", "double", "4.4");
 			
-			VariableTableContainer varCon = new VariableTableContainer();
+			
 			
 			varCon.addVariableTable("test");
 			varCon.changeVariableTable("test");
@@ -108,7 +114,7 @@ public class CodeGenerator {
 			}
 //			System.out.println("Variable 1: " + varCon.getVariable("Variable1").value());
 //			System.out.println("Variable 2: " + varCon.getVariable("Variable2").value());
-			
+		*/	
 		}
 		
 	}

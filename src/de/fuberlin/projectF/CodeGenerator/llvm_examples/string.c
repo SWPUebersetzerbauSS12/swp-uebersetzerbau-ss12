@@ -4,7 +4,7 @@ int main()
 {
 	int a = 5;
 	
-	printf("H#a#l#l#o Welt\n");
+	printf("Hallo Welt\n");
 	
 	printf("Hello World\n");
 	

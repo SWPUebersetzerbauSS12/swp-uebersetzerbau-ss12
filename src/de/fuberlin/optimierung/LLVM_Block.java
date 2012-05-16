@@ -12,7 +12,8 @@ class LLVM_Block implements ILLVM_Block {
 
 	// Ursprüngliches Label des Blockes
 	private String label = "";
-
+	private String label_line = "";
+	
 	// Vorgaenger- und Nachfolgerbloecke
 	// Hieraus entsteht der Flussgraph zwischen den Bloecken
 	private LinkedList<ILLVM_Block> nextBlocks = new LinkedList<ILLVM_Block>();
@@ -46,12 +47,43 @@ class LLVM_Block implements ILLVM_Block {
 
 	}
 
+	private boolean labelCheck(String label) {
+		if(label.charAt(0) == ';') {
+			String[] splitedLabel = label.split("[:;]");
+			this.label = splitedLabel[2].trim();
+			this.label_line = label;
+			return true;
+		}else{
+			String[] splitedLabel = label.split("[:]");
+			
+			if(splitedLabel.length >= 2){
+				this.label = splitedLabel[0];
+				this.label_line = label;
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	private void createCommands() {
 		String commandsArray[] = this.blockCode.split("\n");
-		this.firstCommand = mapCommands(commandsArray[1], null);
+		
+		int i = 0;
+		
+		if(commandsArray[0].length() == 0){
+			i++;
+		}
+		
+		// Checking for label
+		if(labelCheck(commandsArray[i])){
+			i++;
+		}
+		
+		this.firstCommand = mapCommands(commandsArray[i], null);
 		
 		ILLVM_Command predecessor = firstCommand;
-		for(int i=2; i<commandsArray.length; i++) {
+		for(; i<commandsArray.length; i++) {
 			ILLVM_Command c = mapCommands(commandsArray[i], predecessor);
 			if(firstCommand == null){
 				firstCommand = c;
@@ -190,8 +222,8 @@ class LLVM_Block implements ILLVM_Block {
 		
 		String code = "";
 		
-		if(!label.equals("")){
-			code = label+":\n";
+		if(!label_line.equals("")){
+			code = label_line+":\n";
 		}
 		
 		ILLVM_Command tmp = firstCommand;
@@ -199,7 +231,7 @@ class LLVM_Block implements ILLVM_Block {
 			code += "\t"+tmp.toString();
 			tmp = tmp.getSuccessor();
 		}
-		//code += "\n";
+		code += "\n";
 		
 		return code;
 	}

@@ -18,8 +18,9 @@ public class LLVM_Function {
 	
 	public LLVM_Function(String code) {
 		
-		func_define = "define"+code.split("\n")[0];
 		String[] firstSplit = code.split("[{}]");
+		
+		func_define = "define"+firstSplit[0];
 		
 		String codeBlocks[] = firstSplit[1].split("\n\n");
 		this.numberBlocks = codeBlocks.length;
@@ -237,7 +238,7 @@ public class LLVM_Function {
 	}
 	
 	public String toString() {
-		String output = func_define + "\n";
+		String output = func_define + "{\n";
 		for (int i = 0; i < blocks.length; i++) {
 			output += blocks[i].toString();
 		}

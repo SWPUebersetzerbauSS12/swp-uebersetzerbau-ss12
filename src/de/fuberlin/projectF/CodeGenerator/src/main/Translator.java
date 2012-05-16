@@ -19,7 +19,7 @@ public class Translator {
 	public void translate(Token t){
 		switch (t.getType()) {
 		case Definition:
-			String name = t.getTarget();
+			String name = t.getTarget().substring(1);
 			sectionText.append("type ").append(name).append(", @function\n").append(name).append(":\n");
 			sectionText.append("\tenter $0, $0\n"); //Durch spätere Optimierung oder durch lookahead auf die nächsten Token könnte hier bereits Stackspeicher reserviert werden, 
 			/* TODO: Variablenkontext wechseln, Sonderbehandlung main */
@@ -28,6 +28,10 @@ public class Translator {
 		case DefinitionEnd:
 			sectionText.append("\tleave\n");
 			sectionText.append("\tret\n");
+			break;
+			
+		case Label:
+			sectionText.append("_" + t.getTarget() + ":\n");
 			break;
 
 		default:

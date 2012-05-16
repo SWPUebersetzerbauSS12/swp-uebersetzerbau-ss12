@@ -85,8 +85,6 @@ public class CodeGenerator {
 			Variable globalVar1 = new Variable("Variable1", "i32", "20");
 			Variable globalVar2 = new Variable("Variable2", "double", "4.4");
 			
-			
-			
 			varCon.addVariableTable("test");
 			varCon.changeVariableTable("test");
 			varCon.addVariable(testVar1);

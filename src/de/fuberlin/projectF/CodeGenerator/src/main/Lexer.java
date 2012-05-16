@@ -62,8 +62,7 @@ public class Lexer {
 			//Einlesen der nächsten Zeile
 			while((strLine = br.readLine()) != null) {
 				
-				 splitLine = splitInformation(strLine);
-				
+				splitLine = splitInformation(strLine);
 				if(splitLine.length == 0)
 					continue;
 				
@@ -92,6 +91,7 @@ public class Lexer {
 		line = line.replace("{", " {");
 		line = line.replace("}", "} ");
 		line = line.replace(",", " , ");
+		line = line.replace(":", " : ");
 		
 		int p1 = line.lastIndexOf('(');
 		int p2 = line.indexOf(')', p1);
@@ -109,7 +109,7 @@ public class Lexer {
 		p2 = line.indexOf('"', p1 + 1);
 		line = replaceBetween(line,p1,p2,' ',(char)1);
 		
-		//System.out.println(line);
+		System.out.println(line);
 		
 		tmpSplitLine = line.split(" ");
 		
@@ -184,6 +184,11 @@ public class Lexer {
 			fillParameter(newToken, line[3].replace((char)1, ' '));
 		}
 		
+		else if(line[0].contentEquals("br")) {
+			newToken.setType(TokenType.Branch);
+			newToken.setTarget(line[2]);
+		}
+		
 		//Return anweisungen
 		else if(line[0].contentEquals("ret")) {
 			newToken.setType(TokenType.Return);
@@ -196,6 +201,11 @@ public class Lexer {
 		//Ende einer Definition
 		else if(line[0].contentEquals("}")) {
 			newToken.setType(TokenType.DefinitionEnd);
+		}
+		
+		else if(line[1].contentEquals("<label>")) {
+			newToken.setType(TokenType.Label);
+			newToken.setTarget(line[3]);
 		}
 		
 		else if(line[1].contentEquals("=")) {
@@ -251,6 +261,29 @@ public class Lexer {
 				newToken.setTypeTarget(line[3]);
 				newToken.setOp1(line[4]);
 				fillParameter(newToken, line[5].replace((char)1, ' '));
+			}
+			
+			else if(line[2].contentEquals("icmp")) {
+				if(line[3].contentEquals("slt"))
+					newToken.setType(TokenType.CompareLower);
+				else if(line[3].contentEquals("sgt"))
+					newToken.setType(TokenType.CompareGreater);
+				else if(line[3].contentEquals("sle"))
+					newToken.setType(TokenType.CompareLowerEqual);
+				else if(line[3].contentEquals("sge"))	
+					newToken.setType(TokenType.CompareGreaterEqual);
+				else if(line[3].contentEquals("eq"))	
+					newToken.setType(TokenType.CompareEqual);
+				else if(line[3].contentEquals("ne"))	
+					newToken.setType(TokenType.CompareNotEqual);
+				else
+					newToken.setType(TokenType.Undefined);
+				
+				newToken.setTarget(line[0]);
+				newToken.setOp1(line[5]);
+				newToken.setTypeOp1(line[4]);
+				newToken.setOp2(line[6]);
+				
 			}
 			else
 				newToken.setType(TokenType.Undefined);

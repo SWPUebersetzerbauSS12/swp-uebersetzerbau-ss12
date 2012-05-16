@@ -13,7 +13,7 @@ import de.fuberlin.optimierung.LLVM_Parameter;
   store atomic [volatile] <ty> <value>, <ty>* <pointer> [singlethread] <ordering>, align <alignment>  ; yields {void}
 */
 
-class LLVM_StoreCommand extends LLVM_GenericCommand{
+public class LLVM_StoreCommand extends LLVM_GenericCommand{
 	
 	public LLVM_StoreCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
 		super(operation, predecessor, block, comment);

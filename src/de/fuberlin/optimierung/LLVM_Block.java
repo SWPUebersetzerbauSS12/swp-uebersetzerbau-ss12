@@ -95,6 +95,8 @@ class LLVM_Block implements ILLVM_Block {
 				}else{
 					return new LLVM_ReturnCommand(cmd, LLVM_Operation.RET_CODE, predecessor, this, comment);
 				}
+			} else if (cmd[0].compareTo("store") == 0){
+				return new LLVM_StoreCommand(cmd, LLVM_Operation.STORE, predecessor, this, comment);
 			}
 			if (cmd.length > 3 && cmd[1].equals("=")){
 				
@@ -118,6 +120,8 @@ class LLVM_Block implements ILLVM_Block {
 					return new LLVM_Alloca(cmd, LLVM_Operation.OR, predecessor, this, comment);
 				}else if (cmd[2].compareTo("xor") == 0){
 					return new LLVM_Alloca(cmd, LLVM_Operation.XOR, predecessor, this, comment);
+				}else if (cmd[2].compareTo("load") == 0){
+					return new LLVM_Alloca(cmd, LLVM_Operation.LOAD, predecessor, this, comment);
 				}else if (cmd[2].compareTo("icmp") == 0){
 					if (cmd[3].compareTo("eq") == 0){
 						return new LLVM_IcmpCommand(cmd, LLVM_Operation.ICMP_EQ, predecessor, this, comment);

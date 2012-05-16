@@ -145,7 +145,7 @@ class LLVM_Block implements ILLVM_Block {
 				}else if(cmd[2].compareTo("srem") == 0){
 					return new LLVM_ArithmeticCommand(cmd, LLVM_Operation.SREM, predecessor, this, comment);
 				}else if (cmd[2].compareTo("alloca") == 0){
-					return new LLVM_Alloca(cmd, LLVM_Operation.ALLOCA, predecessor, this, comment);
+					return new LLVM_AllocaCommand(cmd, LLVM_Operation.ALLOCA, predecessor, this, comment);
 				}else if (cmd[2].compareTo("and") == 0){
 					return new LLVM_LogicCommand(cmd, LLVM_Operation.AND, predecessor, this, comment);
 				}else if (cmd[2].compareTo("or") == 0){

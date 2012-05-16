@@ -12,9 +12,9 @@ import de.fuberlin.optimierung.LLVM_Parameter;
   <result> = alloca <type>[, <ty> <NumElements>][, align <alignment>]     ; yields {type*}:result
  */
 
-public class LLVM_Alloca extends LLVM_GenericCommand{
+public class LLVM_AllocaCommand extends LLVM_GenericCommand{
 	
-	public LLVM_Alloca(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
+	public LLVM_AllocaCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
 		super(operation, predecessor, block, comment);
 		// Init operands
 		operands = new LinkedList<LLVM_Parameter>();

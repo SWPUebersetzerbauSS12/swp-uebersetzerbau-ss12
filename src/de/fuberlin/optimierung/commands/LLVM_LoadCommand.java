@@ -14,7 +14,7 @@ import de.fuberlin.optimierung.LLVM_Parameter;
   !<index> = !{ i32 1 }
 */
 
-class LLVM_LoadCommand extends LLVM_GenericCommand{
+public class LLVM_LoadCommand extends LLVM_GenericCommand{
 	
 	public LLVM_LoadCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
 		super(operation, predecessor, block, comment);

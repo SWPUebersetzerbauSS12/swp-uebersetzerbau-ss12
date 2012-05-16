@@ -204,6 +204,8 @@ public class LLVM_Function {
 		for(String registerName : this.registerMap.getDefinedRegisterNames()) {
 			
 			// Teste fuer jedes Register r, ob Verwendungen existieren
+			// c ist geloeschter Befehl (Definition) oder null, falls
+			// es nich geloescht werden kann
 			ILLVM_Command c = this.eliminateDeadRegister(registerName);
 			if(c!=null)
 				deletedCommands.addFirst(c);
@@ -219,6 +221,19 @@ public class LLVM_Function {
 			
 		}
 		
+	}
+	
+	/**
+	 * Entferne tote Bloecke (Bloecke, die nicht erreicht werden koennen)
+	 */
+	public void eliminateDeadBlocks() {
+		
+		// Gehe alle Bloecke durch
+		
+		// Falls Block b existiert ohne Voraengerbloecke (der nicht der
+		// erste Block ist), so entferne ihn
+		
+		// Nachfolgebloecke koennen eventuell nun entfernt werden		
 	}
 	
 	public String toString() {

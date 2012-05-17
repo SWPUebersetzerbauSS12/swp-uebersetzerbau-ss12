@@ -36,7 +36,7 @@ class LLVM_Block implements ILLVM_Block {
 	}
 	
 	public boolean hasPreviousBlocks() {
-		return !this.previousBlocks.isEmpty();
+		return !(this.previousBlocks.isEmpty());
 	}
 
 	public void optimizeBlock() {
@@ -46,7 +46,7 @@ class LLVM_Block implements ILLVM_Block {
 	public void deleteBlock() {
 
 		for(ILLVM_Block nextBlock : this.nextBlocks) {
-			nextBlock.removeFromPreviousBlocks(nextBlock);
+			nextBlock.removeFromPreviousBlocks(this);
 		}
 		
 	}

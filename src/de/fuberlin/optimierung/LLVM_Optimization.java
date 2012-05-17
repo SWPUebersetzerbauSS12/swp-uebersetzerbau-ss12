@@ -37,11 +37,12 @@ class LLVM_Optimization implements ILLVM_Optimization {
 			tmp = functions.get(i);
 			
 			// Erstelle Flussgraph
-			//tmp.createFlowGraph();
+			tmp.createFlowGraph();
 			
 			// Optimierungsfunktionen
 			tmp.createRegisterMaps();
 			tmp.eliminateDeadRegisters();
+			//tmp.eliminateDeadBlocks();
 			
 			// Optimierte Ausgabe
 			outputLLVM += tmp.toString();

@@ -53,7 +53,7 @@ public class LLVM_Function {
 			if(i==3)
 				label = "%10";
 			if(i==4)
-				label = "%13";*/
+				label = "%label13";*/
 			
 			
 			this.labelToBlock.put(label, i);
@@ -156,9 +156,10 @@ public class LLVM_Function {
 	 */
 	private ILLVM_Command eliminateDeadRegister(String registerName) {
 		// Teste, ob Verwendungen existieren
-		if(!this.registerMap.existsUses(registerName)) {
+		if(!this.registerMap.existsUses(registerName) &&
+				this.registerMap.existsDefintion(registerName)) {
 			
-			// Wenn nein, loesche Befehl (Definition)
+			// keine Verwendungen, aber eine Definition
 			ILLVM_Command c = this.registerMap.getDefinition(registerName);
 			this.registerMap.deleteCommand(c);
 			c.deleteCommand();
@@ -258,7 +259,7 @@ public class LLVM_Function {
 		LinkedList<ILLVM_Command> deletedCommands = new LinkedList<ILLVM_Command>();
 		LinkedList<Integer> deletedBlocks = new LinkedList<Integer>();
 		
-		for(int i=0; i<this.numberBlocks; i++) {
+		for(int i=1; i<this.numberBlocks; i++) {
 			ILLVM_Block block = this.blocks.get(i);
 			if(!block.hasPreviousBlocks()) {
 				block.deleteBlock();
@@ -286,6 +287,7 @@ public class LLVM_Function {
 		for(Integer i : deletedBlocks) {
 			this.blocks.remove(i-numberOfAlreadyDeletedBlocks);
 			numberOfAlreadyDeletedBlocks++;
+			this.numberBlocks--;
 		}
 		
 		// Entferne geloeschte Befehle aus Register-Hashmaps

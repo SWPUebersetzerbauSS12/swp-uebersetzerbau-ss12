@@ -167,7 +167,8 @@ public class LLVM_Function {
 	
 	/**
 	 * Register in Operanden der uebergebenen Befehle werden auf spaetere Verwendung getestet
-	 * Werden sie nich verwendet, so wird die Definition geloescht
+	 * Diese Befehle wurden bereits geloescht
+	 * Werden sie nich verwendet, so wird die Definition des Registers geloescht
 	 * @param list zu testende Befehle
 	 * @return geloeschte Definitionen (um Operanden nochmals testen zu koennen)
 	 */
@@ -194,10 +195,12 @@ public class LLVM_Function {
 	
 	/**
 	 * Tote Register werden aus Programm entfernt, d.h. ihre Definitionen werden geloescht
+	 * Funktion wird einmal komplett durchgegangen, Abhaengigkeiten werden nicht aufgeloest
+	 * Geloeschte Befehle werden zurueckgegeben, um spaeter die Operanden testen zu koennen
 	 * Die Register-Maps (Definition und Verwendung) muessen aktuell sein
-	 * Abhängigkeiten von toten Registern werden abgearbeitet
+	 * @return Geloeschte Befehle
 	 */
-	public void eliminateDeadRegistersGlobal() {
+	private LinkedList<ILLVM_Command> eliminateDeadRegistersGlobal() {
 		
 		LinkedList<ILLVM_Command> deletedCommands = new LinkedList<ILLVM_Command>();
 		
@@ -216,6 +219,21 @@ public class LLVM_Function {
 			
 		}
 		
+		return deletedCommands;
+		
+	}
+	
+	/**
+	 * Tote Register werden aus Programm entfernt, d.h. ihre Definitionen werden geloescht
+	 * Abhaengigkeiten von toten Registern werden abgearbeitet
+	 * eliminateDeadRegistersGlobal und eliminateDeadRegistersFromList werden als
+	 * Unterfunktionen verwendet
+	 */
+	public void eliminateDeadRegisters() {
+		
+		LinkedList<ILLVM_Command> deletedCommands;
+		deletedCommands = this.eliminateDeadRegistersGlobal();
+	
 		// Bisher geloeschte Befehle koennen Operanden enthalten, die nun keine Verwendung mehr haben
 		// Dann koennen diese ebenfalls geloescht werden
 		// Teste also geloeschte Befehle durch, bis nichts mehr geloescht werden kann

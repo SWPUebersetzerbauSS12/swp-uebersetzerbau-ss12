@@ -201,8 +201,11 @@ public class LLVM_Function {
 		
 		LinkedList<ILLVM_Command> deletedCommands = new LinkedList<ILLVM_Command>();
 		
+		String registerNames[] = this.registerMap.getDefinedRegisterNames().
+				toArray(new String[0]);
+		
 		// Iteriere ueber alle definierten Register
-		for(String registerName : this.registerMap.getDefinedRegisterNames()) {
+		for(String registerName : registerNames) {
 			
 			// Teste fuer jedes Register r, ob Verwendungen existieren
 			// c ist geloeschter Befehl (Definition) oder null, falls

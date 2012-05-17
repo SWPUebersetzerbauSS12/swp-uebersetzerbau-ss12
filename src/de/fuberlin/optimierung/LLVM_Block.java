@@ -48,13 +48,14 @@ class LLVM_Block implements ILLVM_Block {
 	}
 
 	private boolean labelCheck(String label) {
+		
 		if(label.charAt(0) == ';') {
 			String[] splitedLabel = label.split("[:;]");
 			this.label = splitedLabel[2].trim();
 			this.label_line = label;
 			return true;
 		}else{
-			String[] splitedLabel = label.split("[:]");
+			String[] splitedLabel = label.split(":");
 			
 			if(splitedLabel.length >= 2){
 				this.label = splitedLabel[0];
@@ -83,7 +84,7 @@ class LLVM_Block implements ILLVM_Block {
 		this.firstCommand = mapCommands(commandsArray[i], null);
 		
 		ILLVM_Command predecessor = firstCommand;
-		for(; i<commandsArray.length; i++) {
+		for(i++; i<commandsArray.length; i++) {
 			ILLVM_Command c = mapCommands(commandsArray[i], predecessor);
 			if(firstCommand == null){
 				firstCommand = c;
@@ -223,7 +224,7 @@ class LLVM_Block implements ILLVM_Block {
 		String code = "";
 		
 		if(!label_line.equals("")){
-			code = label_line+":\n";
+			code = label_line+"\n";
 		}
 		
 		ILLVM_Command tmp = firstCommand;

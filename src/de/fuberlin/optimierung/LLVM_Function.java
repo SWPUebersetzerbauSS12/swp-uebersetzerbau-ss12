@@ -39,6 +39,8 @@ public class LLVM_Function {
 	 */
 	private void mapLabelsToBlocks() {
 		
+		this.labelToBlock.clear();
+		
 		// Durchlaufe alle Bloecke
 		for(int i=0; i<this.numberBlocks; i++) {
 			String label = this.blocks.get(i).getLabel();
@@ -248,15 +250,71 @@ public class LLVM_Function {
 	
 	/**
 	 * Entferne tote Bloecke (Bloecke, die nicht erreicht werden koennen)
+	 * Diese haben keine Vorgaenger im Flussgraphen (und sind ungleich dem ersten Block)
+	 * Geloeschte Befehle werden zurueckgegebens
+	 */
+	private LinkedList<ILLVM_Command> eliminateDeadBlocksGlobal() {
+		
+		LinkedList<ILLVM_Command> deletedCommands = new LinkedList<ILLVM_Command>();
+		LinkedList<Integer> deletedBlocks = new LinkedList<Integer>();
+		
+		for(int i=0; i<this.numberBlocks; i++) {
+			ILLVM_Block block = this.blocks.get(i);
+			if(!block.hasPreviousBlocks()) {
+				block.deleteBlock();
+				deletedBlocks.add(i);
+				
+				// Ist Block leer?
+				if(!block.isEmpty()) {
+					
+					// Gehe Befehle des Blockes durch
+					ILLVM_Command c = block.getFirstCommand();
+					while(c!=null) {
+						
+						// Fuege c in deletedCommands ein
+						deletedCommands.add(c);
+						c = c.getSuccessor();
+						
+					}
+					
+				}
+			}
+		}
+		
+		// Entferne geloeschte Bloecke aus this.blocks
+		int numberOfAlreadyDeletedBlocks = 0;
+		for(Integer i : deletedBlocks) {
+			this.blocks.remove(i-numberOfAlreadyDeletedBlocks);
+			numberOfAlreadyDeletedBlocks++;
+		}
+		
+		// Entferne geloeschte Befehle aus Register-Hashmaps
+		for(ILLVM_Command c : deletedCommands) {
+			this.registerMap.deleteCommand(c);
+		}
+		
+		return deletedCommands;
+		
+	}
+	
+	/**
+	 * Tote Bloecke werden aus dem Programm entfernt
+	 * Operanden der geloeschten Befehle werden auf weitere Verwendungen getestet
+	 * und gegebenenfalls ebenfalls geloescht
+	 * Abhaengigkeiten zwischen Bloecken werden nicht aufgeloest
 	 */
 	public void eliminateDeadBlocks() {
+		LinkedList<ILLVM_Command> deletedCommands;
+		deletedCommands = this.eliminateDeadBlocksGlobal();
+	
+		// Bisher geloeschte Befehle koennen Operanden enthalten, die nun keine Verwendung mehr haben
+		// Dann koennen diese ebenfalls geloescht werden
+		// Teste also geloeschte Befehle durch, bis nichts mehr geloescht werden kann
+		while(!deletedCommands.isEmpty()) {
 		
-		// Gehe alle Bloecke durch
-		
-		// Falls Block b existiert ohne Voraengerbloecke (der nicht der
-		// erste Block ist), so entferne ihn
-		
-		// Nachfolgebloecke koennen eventuell nun entfernt werden		
+			deletedCommands = this.eliminateDeadRegistersFromList(deletedCommands);
+			
+		}
 	}
 	
 	public String toString() {

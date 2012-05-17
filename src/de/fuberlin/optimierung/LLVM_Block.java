@@ -34,6 +34,10 @@ class LLVM_Block implements ILLVM_Block {
 	public boolean isEmpty() {
 		return (this.firstCommand==null);
 	}
+	
+	public boolean hasPreviousBlocks() {
+		return !this.previousBlocks.isEmpty();
+	}
 
 	public void optimizeBlock() {
 
@@ -41,6 +45,10 @@ class LLVM_Block implements ILLVM_Block {
 
 	public void deleteBlock() {
 
+		for(ILLVM_Block nextBlock : this.nextBlocks) {
+			nextBlock.removeFromPreviousBlocks(nextBlock);
+		}
+		
 	}
 
 	private void createDAG() {
@@ -206,6 +214,10 @@ class LLVM_Block implements ILLVM_Block {
 	public void appendToNextBlocks(ILLVM_Block block) {
 		this.nextBlocks.add(block);
 	}
+	
+	public void removeFromNextBlocks(ILLVM_Block block) {
+		this.nextBlocks.remove(block);
+	}
 
 	public LinkedList<ILLVM_Block> getPreviousBlocks() {
 		return previousBlocks;
@@ -213,6 +225,10 @@ class LLVM_Block implements ILLVM_Block {
 
 	public void appendToPreviousBlocks(ILLVM_Block block) {
 		this.previousBlocks.add(block);
+	}
+	
+	public void removeFromPreviousBlocks(ILLVM_Block block) {
+		this.previousBlocks.remove(block);
 	}
 	
 	public String getLabel() {

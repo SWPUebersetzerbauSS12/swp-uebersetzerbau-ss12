@@ -15,6 +15,9 @@ public interface ILLVM_Block {
 	
 	public void appendToPreviousBlocks(ILLVM_Block block);
 	public void appendToNextBlocks(ILLVM_Block block);
+	public void removeFromPreviousBlocks(ILLVM_Block block);
+	public void removeFromNextBlocks(ILLVM_Block block);
 	
 	public boolean isEmpty();
+	public boolean hasPreviousBlocks();
 }

@@ -1,5 +1,6 @@
 package de.fuberlin.optimierung;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -9,7 +10,7 @@ public class LLVM_Function {
 	
 	private ILLVM_Block startBlock;
 	private ILLVM_Block endBlock;
-	private ILLVM_Block blocks[];
+	private ArrayList<ILLVM_Block> blocks;
 	private int numberBlocks;
 	
 	private HashMap<String,Integer> labelToBlock = new HashMap<String,Integer>();
@@ -24,12 +25,12 @@ public class LLVM_Function {
 		
 		String codeBlocks[] = firstSplit[1].split("\n\n");
 		this.numberBlocks = codeBlocks.length;
-		this.blocks = new LLVM_Block[this.numberBlocks];
+		this.blocks = new ArrayList<ILLVM_Block>(this.numberBlocks);
 		for(int i = 0; i < this.numberBlocks; i++) {
-			this.blocks[i] = new LLVM_Block(codeBlocks[i]);
+			this.blocks.add(new LLVM_Block(codeBlocks[i]));
 		}
-		this.startBlock = this.blocks[0];
-		this.endBlock = this.blocks[this.numberBlocks-1];
+		this.startBlock = this.blocks.get(0);
+		this.endBlock = this.blocks.get(this.numberBlocks-1);
 	}
 	
 	/**
@@ -40,7 +41,7 @@ public class LLVM_Function {
 		
 		// Durchlaufe alle Bloecke
 		for(int i=0; i<this.numberBlocks; i++) {
-			String label = this.blocks[i].getLabel();
+			String label = this.blocks.get(i).getLabel();
 			
 			// Zum Testen
 			/*if(i==1)
@@ -89,8 +90,8 @@ public class LLVM_Function {
 				String label = operands.getFirst().getName();
 				Integer blockPosition = this.labelToBlock.get(label);
 				if(blockPosition!=null) {
-					block.appendToNextBlocks(this.blocks[blockPosition]);
-					this.blocks[blockPosition].appendToPreviousBlocks(block);
+					block.appendToNextBlocks(this.blocks.get(blockPosition));
+					this.blocks.get(blockPosition).appendToPreviousBlocks(block);
 				}
 				
 			}
@@ -101,12 +102,12 @@ public class LLVM_Function {
 				Integer blockPosition1 = this.labelToBlock.get(label1);
 				Integer blockPosition2 = this.labelToBlock.get(label2);
 				if(blockPosition1!=null) {
-					block.appendToNextBlocks(this.blocks[blockPosition1]);
-					this.blocks[blockPosition1].appendToPreviousBlocks(block);
+					block.appendToNextBlocks(this.blocks.get(blockPosition1));
+					this.blocks.get(blockPosition1).appendToPreviousBlocks(block);
 				}
 				if(blockPosition2!=null) {
-					block.appendToNextBlocks(this.blocks[blockPosition2]);
-					this.blocks[blockPosition2].appendToPreviousBlocks(block);
+					block.appendToNextBlocks(this.blocks.get(blockPosition2));
+					this.blocks.get(blockPosition2).appendToPreviousBlocks(block);
 				}
 				
 			}
@@ -260,8 +261,8 @@ public class LLVM_Function {
 	
 	public String toString() {
 		String output = func_define + "{\n";
-		for (int i = 0; i < blocks.length; i++) {
-			output += blocks[i].toString();
+		for (int i = 0; i < this.numberBlocks; i++) {
+			output += blocks.get(i).toString();
 		}
 		output += "}";
 		return output;

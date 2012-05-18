@@ -98,7 +98,7 @@ public class MinimalDfaProvider {
 	 *            Definitionsdatei, einen minimalen DFA erzeugt
 	 * @param skipDeserialization
 	 *            Angabe, ob das Laden des minimalen DFA übersprungen werden
-	 *            soll oder nicht (Standard = false)
+	 *            soll oder nicht
 	 * @return minimaler DFA der auf Basis der regulären Definitionsdatei und
 	 *         des minimalen DFA-Builders erzeugt und gegebenenfalls
 	 *         deserialisiert und/oder abgespeichert wurde
@@ -123,10 +123,10 @@ public class MinimalDfaProvider {
 	 *            Definitionsdatei, einen minimalen DFA erzeugt
 	 * @param skipDeserialization
 	 *            Angabe, ob das Laden des minimalen DFA übersprungen werden
-	 *            soll oder nicht (Standard = false)
+	 *            soll oder nicht
 	 * @param skipSerialization
 	 *            Angabe, ob das Speichern des minimalen DFA übersprungen werden
-	 *            soll oder nicht (Standard = false)
+	 *            soll oder nicht
 	 * @return minimaler DFA der auf Basis der regulären Definitionsdatei und
 	 *         des minimalen DFA-Builders erzeugt und gegebenenfalls
 	 *         deserialisiert und/oder abgespeichert wurde
@@ -155,14 +155,13 @@ public class MinimalDfaProvider {
 	 *            Definitionsdatei, einen minimalen DFA erzeugt
 	 * @param skipDeserialization
 	 *            Angabe, ob das Laden des minimalen DFA übersprungen werden
-	 *            soll oder nicht (Standard = false)
+	 *            soll oder nicht
 	 * @param skipSerialization
 	 *            Angabe, ob das Speichern des minimalen DFA übersprungen werden
-	 *            soll oder nicht (Standard = false)
+	 *            soll oder nicht
 	 * @param dfaFile
 	 *            Pfad zum Ort, an dem der minimale DFA
-	 *            abgespeichert/serialisiert werden soll (Standard =
-	 *            rdFile+".dfa")
+	 *            abgespeichert/serialisiert werden soll
 	 * @return minimaler DFA der auf Basis der regulären Definitionsdatei und
 	 *         des minimalen DFA-Builders erzeugt und gegebenenfalls
 	 *         deserialisiert und/oder abgespeichert wurde
@@ -183,7 +182,15 @@ public class MinimalDfaProvider {
 			throw new MinimalDfaProviderException("Die angegebene Datei '"
 					+ rdFile.getAbsolutePath() + "' existiert nicht!");
 		}
-
+		if (!rdFile.isFile()) {
+			throw new MinimalDfaProviderException("Der angegebene Pfad '" + rdFile.getAbsolutePath()
+					+ "' verweist nicht auf eine Datei (mit regulären Definitionen)!");
+		}
+		if (!dfaFile.isFile()) {
+			throw new MinimalDfaProviderException("Der angegebene Pfad '" + dfaFile.getAbsolutePath()
+					+ "' verweist nicht auf eine Datei (mit serialisiertem DFA)!");
+		}
+		
 		/** Logik */
 		String version = getVersion();
 		String rdFileHash;
@@ -198,31 +205,16 @@ public class MinimalDfaProvider {
 
 		if (!skipDeserialization) {
 			MinimalDfaCharacterStatePayloadWrapper wrapper;
-			if (dfaFile.exists()) {
-				try {
-					wrapper = MinimalDfaCharacterStatePayloadWrapper
-							.load(dfaFile);
+			try {
+				wrapper = MinimalDfaCharacterStatePayloadWrapper.load(dfaFile);
 
-					if (version.equals(wrapper.getVersion())) {
-						if (rdFileHash.equals(wrapper.getRdFileHash())) {
-							mDfa = wrapper.getMDfa();
-						} else {
-							Notification
-									.printInfoMessage("Der Filehash in der serialisierten dfa-Datei stimmt nicht mit dem Filehash der aktuellen Definitionsdatei überein. Ein neuen DFA wird jetzt erstellt.");
-						}
-					} else {
-						Notification
-								.printInfoMessage("Die Versionsnummer in der serialisierten dfa-Datei stimmt nicht mit der aktuellen Version überein. Ein neuen DFA wird jetzt erstellt.");
-					}
-
-				} catch (Exception e) {
-					Notification
-							.printErrorMessage("Error: Fehler beim Deserialisieren des minimalen DFA: "
-									+ e.getMessage());
+				if ((version.equals(wrapper.getVersion()))
+						&& (rdFileHash.equals(wrapper.getRdFileHash()))) {
+					mDfa = wrapper.getMDfa();
 				}
-			} else {
-				Notification
-						.printInfoMessage("Keine dfa-Datei zum deserialisieren gefunden. Ein neuen DFA wird jetzt erstellt.");
+			} catch (Exception e) {
+				Notification.printErrorMessage("Error: Fehler beim Deserialisieren des minimalen DFA: "
+					+ e.getMessage());
 			}
 		}
 		if (mDfa == null) {
@@ -240,9 +232,8 @@ public class MinimalDfaProvider {
 			try {
 				wrapper.save(dfaFile);
 			} catch (IOException e) {
-				Notification
-						.printErrorMessage("Error: Fehler beim Serialisieren des minimalen DFA: "
-								+ e.getMessage());
+				Notification.printErrorMessage("Error: Fehler beim Serialisieren des minimalen DFA: "
+					+ e.getMessage());
 			}
 		}
 
@@ -288,7 +279,7 @@ public class MinimalDfaProvider {
 
 		return (sb.toString());
 	}
-	
+
 	/**
 	 * Liest die aktuelle Version aus und gibt diese zurück.
 	 * @return Die aktuelle Version.
@@ -316,5 +307,5 @@ public class MinimalDfaProvider {
 	    
 	    return nl.item(0).getFirstChild().getNodeValue();
 	}
-
+	
 }

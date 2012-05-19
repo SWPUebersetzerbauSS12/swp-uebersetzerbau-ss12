@@ -59,14 +59,14 @@ class LLVM_Block implements ILLVM_Block {
 		
 		if(label.charAt(0) == ';') {
 			String[] splitedLabel = label.split("[:;]");
-			this.label = splitedLabel[2].trim();
+			this.label = "%"+splitedLabel[2].trim();
 			this.label_line = label;
 			return true;
 		}else{
 			String[] splitedLabel = label.split(":");
 			
 			if(splitedLabel.length >= 2){
-				this.label = splitedLabel[0];
+				this.label = "%"+splitedLabel[0];
 				this.label_line = label;
 				return true;
 			}

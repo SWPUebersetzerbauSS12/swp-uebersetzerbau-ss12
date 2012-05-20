@@ -57,7 +57,7 @@ public class CodeGenerator {
 			VariableTableContainer varCon = new VariableTableContainer();
 			Translator trans = new Translator();
 			
-			Token tok  = new Token();
+			Token tok;
 			int linecount = 0;
 			
 			//hole immer neuen Token bis Token mit dem Type EOF kommt

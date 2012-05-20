@@ -12,6 +12,7 @@ public interface ILLVM_Block {
 	public ILLVM_Command getFirstCommand();
 	public ILLVM_Command getLastCommand();
 	public String getLabel();
+	public void setLabel(String label);
 	
 	public void appendToPreviousBlocks(ILLVM_Block block);
 	public void appendToNextBlocks(ILLVM_Block block);

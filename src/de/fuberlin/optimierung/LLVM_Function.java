@@ -43,19 +43,7 @@ public class LLVM_Function {
 		
 		// Durchlaufe alle Bloecke
 		for(int i=0; i<this.numberBlocks; i++) {
-			String label = this.blocks.get(i).getLabel();
-			
-			// Zum Testen
-			/*if(i==1)
-				label = "%4";
-			if(i==2)
-				label = "%7";
-			if(i==3)
-				label = "%10";
-			if(i==4)
-				label = "%label13";*/
-			
-			
+			String label = this.blocks.get(i).getLabel();		
 			this.labelToBlock.put(label, i);
 		}
 		
@@ -116,6 +104,31 @@ public class LLVM_Function {
 				
 		}
 		
+	}
+	
+	/**
+	 * Setze Labels, falls in urspruenglicher Eingabe weder konkrete Labelnamen
+	 * noch unbezeichnete Labels in Kommentaren angegeben waren
+	 */
+	private void createNewLabels() {
+		String nextUnnamed = "%1";
+		int nextNumber = 1;
+		for(int i=1; i<this.numberBlocks; i++) {
+			ILLVM_Block block = this.blocks.get(i);
+			ILLVM_Command c = block.getFirstCommand();
+			while(c!=null) {
+				LLVM_Parameter p = c.getTarget();
+				if(p!=null) {
+					String name = p.getName();
+					if(name!=null && name.equals("nextUnnamed")) {
+						nextNumber++;
+						nextUnnamed = "%" + nextNumber;
+					}
+				}
+				c = c.getSuccessor();
+			}
+			block.setLabel(nextUnnamed);
+		}
 	}
 	
 	/**

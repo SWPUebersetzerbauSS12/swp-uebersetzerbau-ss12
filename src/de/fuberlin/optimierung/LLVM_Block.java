@@ -235,6 +235,10 @@ class LLVM_Block implements ILLVM_Block {
 		return label;
 	}
 	
+	public void setLabel(String label) {
+		this.label = label;
+	}
+	
 	public String toString() {
 		
 		String code = "";

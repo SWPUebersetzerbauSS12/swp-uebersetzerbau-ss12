@@ -1,11 +1,9 @@
 package main;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import main.model.Token;
 import main.model.TokenType;
-import main.model.Variable;
 
 
 public class CodeGenerator {

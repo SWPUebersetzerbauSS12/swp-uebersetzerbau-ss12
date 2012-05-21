@@ -13,6 +13,10 @@ public class Grammar {
 	// Die Liste enthält alle Produktion in der Reihenfolge, wie sie zur Grammatik hinzugefügt worden
 	private List<Production> productions = new ArrayList<Production>();
 	
+	// speichert alle Symbole in der Reihenfolge ihres ersten Auftretens 
+	// erleichtert die Kontrolle beim Aufbau der LR(0)-Automaten, da die Nummerierung der Zustände von der Reihenfolge der Symbole abhängt
+	private List<Symbol> allSymbols= new ArrayList<Symbol>();
+	
 	// Speichern der Terminal Symbole
 	private Map<String, TerminalSymbol> name2Terminal = new HashMap<String, TerminalSymbol>();
 	
@@ -107,6 +111,9 @@ public class Grammar {
 			name2NonTerminal.put(name, result);
 		}
 		
+		if (!allSymbols.contains(result)){
+			allSymbols.add(result);
+		}
 		
 		return result;
 		
@@ -135,7 +142,9 @@ public class Grammar {
 			name2Terminal.put(name,result);
 		}
 		
-		
+		if (!allSymbols.contains(result)){
+			allSymbols.add(result);
+		}
 		terminalSymbols.add(result);
 		return result;
 	}
@@ -174,6 +183,13 @@ public class Grammar {
 		return terminalSymbols;
 	}
 
+	/**
+	 * Liefert eine Liste aller Grammatiksymbole in der Reihenfolge ihres ersten Auftretens
+	 */
+	public List<Symbol> getAllSymbols() {		
+		return allSymbols;
+	}
+	
 	/**
 	 * Gibt eine menschenlesbare Textdarstellung der Grammatik zurück.
 	 */

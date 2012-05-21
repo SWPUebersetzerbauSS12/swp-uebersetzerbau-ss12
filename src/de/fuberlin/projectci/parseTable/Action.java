@@ -1,6 +1,8 @@
 package de.fuberlin.projectci.parseTable;
 
-public abstract class Action {
+import de.fuberlin.commons.util.EasyComparableObject;
+
+public abstract class Action extends EasyComparableObject{
  
 }
  

@@ -10,6 +10,10 @@ public class ReduceAction extends Action {
 		this.production = production;
 	}
 
+	@Override
+	protected Object[] getSignificantFields() {
+		return new Object[]{production, getClass()};
+	}
 
 	public Production getProduction() {
 		return production;

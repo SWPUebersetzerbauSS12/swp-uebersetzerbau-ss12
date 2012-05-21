@@ -1,6 +1,8 @@
 package de.fuberlin.projectci.parseTable;
 
-public class Goto {
+import de.fuberlin.commons.util.EasyComparableObject;
+
+public class Goto extends EasyComparableObject{
 
 	private State targetState;
 
@@ -8,6 +10,11 @@ public class Goto {
 		this.targetState = targetState;
 	}
 
+	@Override
+	protected Object[] getSignificantFields() {
+		return new Object[]{targetState, getClass()};
+	}
+	
 	public State getTargetState() {
 		return targetState;
 	}

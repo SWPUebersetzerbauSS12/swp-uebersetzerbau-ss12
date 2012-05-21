@@ -1,5 +1,7 @@
 package de.fuberlin.projectci.extern;
 
+import de.fuberlin.projectci.grammar.Grammar;
+
 public interface IToken {
 
 	/**
@@ -13,7 +15,7 @@ public interface IToken {
 		ID ("id"),
 		LPAREN("("),
 		RPAREN(")"),
-		EOF("$");
+		EOF(Grammar.INPUT_ENDMARKER.getName());
 		
 		private final String terminalSymbol;
 		

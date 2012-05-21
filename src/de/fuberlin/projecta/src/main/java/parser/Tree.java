@@ -3,6 +3,10 @@ package parser;
 import semantic.analysis.SymbolTableStack;
 
 public class Tree extends ITree {
+	
+	public Tree(){
+		super(null);
+	}
 
 	public Tree(Symbol symbol) {
 		super(symbol);

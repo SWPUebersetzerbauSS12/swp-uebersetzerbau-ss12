@@ -110,7 +110,7 @@ public class DriverTestDataProvider1 implements DriverTestDataProvider{
 		TerminalSymbol ts2=new TerminalSymbol("*");		
 		TerminalSymbol ts3=new TerminalSymbol("(");
 		TerminalSymbol ts4=new TerminalSymbol(")");
-		TerminalSymbol ts5=new TerminalSymbol("$");
+		TerminalSymbol ts5=Grammar.INPUT_ENDMARKER;
 
 		NonTerminalSymbol nts0=new NonTerminalSymbol("E");
 		NonTerminalSymbol nts1=new NonTerminalSymbol("T");

@@ -50,7 +50,7 @@ public class GrammarTest {
 		TerminalSymbol ts_mul=new TerminalSymbol("*");		
 		TerminalSymbol ts_leftp=new TerminalSymbol("(");
 		TerminalSymbol ts_rightp=new TerminalSymbol(")");
-		TerminalSymbol ts_eof=new TerminalSymbol("$");
+		TerminalSymbol ts_eof=Grammar.INPUT_ENDMARKER;
 		TerminalSymbol ts_eps=Grammar.EPSILON;
 		
 		NonTerminalSymbol nts_e=new NonTerminalSymbol("E");

@@ -6,7 +6,7 @@ import parser.Tree;
 import semantic.analysis.SymbolTableStack;
 
 @AllArgsConstructor
-public class BasicType extends Tree {
+public class BasicType extends Type {
 		
 	TokenType type;
 	

@@ -109,13 +109,17 @@ public abstract class ITree implements ISyntaxTree {
 
 	protected void printTree(int depth) {
 		System.out.println(StringUtils.repeat(' ', depth) + "Name: "
-				+ getSymbol());
+				+ getSymbol() + this.getClass().getName());
 
 		for (int i = 0; i < getChildrenCount(); ++i) {
 			ITree tree = (ITree) getChild(i);
 			if (tree != null)
 				tree.printTree(depth + 2);
 		}
+	}
+	
+	public List<ISyntaxTree> getChildren(){
+		return children;
 	}
 
 	public abstract void run(SymbolTableStack tables);

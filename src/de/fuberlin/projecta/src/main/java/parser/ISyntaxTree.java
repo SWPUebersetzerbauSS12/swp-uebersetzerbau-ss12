@@ -60,9 +60,19 @@ public interface ISyntaxTree {
 	 * @return True if add was successful, False otherwise.
 	 */
 	public boolean addAttribute(String name);
+	
+	
+	/**
+	 * 
+	 * @return a list of all children to this node (might be empty)
+	 * 
+	 */
+	public List<ISyntaxTree> getChildren();
 
 	/**
 	 * Semantic rules !
 	 */
 	public void run(SymbolTableStack tables);
+
+	public void printTree();
 }

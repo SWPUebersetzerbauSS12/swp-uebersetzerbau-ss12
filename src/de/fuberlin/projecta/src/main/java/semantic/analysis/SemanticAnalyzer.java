@@ -19,6 +19,7 @@ import semantic.analysis.AstNodes.IntLiteral;
 import semantic.analysis.AstNodes.Params;
 import semantic.analysis.AstNodes.Print;
 import semantic.analysis.AstNodes.Program;
+import semantic.analysis.AstNodes.Record;
 import semantic.analysis.AstNodes.Return;
 import semantic.analysis.AstNodes.Statement;
 import semantic.analysis.AstNodes.Type;
@@ -40,6 +41,7 @@ public class SemanticAnalyzer {
 		toAST(parseTree);
 		parseTreeForRemoval();
 		parseTreeForSemanticActions(AST);
+		AST.printTree();
 	}
 
 	public void toAST(ISyntaxTree tree) {
@@ -81,14 +83,12 @@ public class SemanticAnalyzer {
 				insertNode.addChild(func);
 				return;
 			case type:
-				Type type = new Type();
-
 				if (tree.getChild(0).getSymbol().asNonTerminal() == NonTerminal.basic) {
 					if (tree.getChild(1).getChildrenCount() != 0) { // this is
 																	// type_ and
 																	// it must
 																	// exist!
-						Array array = new Array();
+						Type array = new Array();
 
 						// the basic node gets added to this temporary node
 						// and is passed to the new array
@@ -103,22 +103,47 @@ public class SemanticAnalyzer {
 								tmp.getChild(0)); // this is already the
 													// BasicType node
 						assert (success);
-						for (int i = 0; i < tree.getChild(1).getChildrenCount(); i++) {
 
+						insertNode.addChild(array);
+
+						for (int i = 0; i < tree.getChild(1).getChildrenCount(); i++) {// this
+																						// is
+																						// type_
+							toAST(tree.getChild(1).getChild(i), array);
 						}
-					} else { // type_ is empty so only add basic type to type
+					} else {
 						for (int i = 0; i < tree.getChildrenCount(); i++) {
-							toAST(tree.getChild(i), type);
+							toAST(tree.getChild(i), insertNode);
 						}
-						insertNode.addChild(type);
 					}
 
+				} else { // we have a record! *CONGRATS*
+					// test if we have an array of this record
+					if (tree.getChild(4).getChildrenCount() != 0) {
+						Type array = new Array();
+						/*
+						 * record{int a;}[4] b;
+						 */
+						ISyntaxTree tmp = new Program(); // it doesn't matter
+						// which node to
+						// take as long as
+						// it is a treenode.
+						toAST(tree.getChild(2), tmp); // <-- decls!!!
+						
+						array.addAttribute("decls"); //TODO: find BETTER name!!!
+						array.setAttribute("decls", tmp.getChildren()); // This is not right!
+						
+						insertNode.addChild(array);
+						
+					}
+					toAST(tree.getChild(2), type);
 				}
 
-				for (int i = 0; i < tree.getChildrenCount(); i++) {
-					toAST(tree.getChild(i), type);
-				}
 				insertNode.addChild(type);
+				return;
+			case type_:
+				//TODO: Width of array!!!
+				insertNode.addChild((ISyntaxTree)tree.getAttribute("type"));
 				return;
 			case optparams:
 				Params params = new Params();
@@ -227,7 +252,7 @@ public class SemanticAnalyzer {
 				}
 			case SP:
 				// this should never occur
-				throw new SemanticException("Stack pointer in parsetree?");
+				// throw new SemanticException("Stack pointer in parsetree?");
 			}
 		}
 	}

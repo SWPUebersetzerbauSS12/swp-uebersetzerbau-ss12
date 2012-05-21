@@ -9,7 +9,7 @@ import semantic.analysis.SymbolTableStack;
  * 
  * @author sh4ke
  */
-public class Array extends Tree {
+public class Array extends Type {
 	public void run(SymbolTableStack tables) {
 
 	}

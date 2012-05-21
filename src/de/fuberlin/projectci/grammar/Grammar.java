@@ -63,15 +63,8 @@ public class Grammar {
 	/**
 	 * Gibt alle Produktionen zurück, die das übergebene NonTerminalSymbol auf der linken Seite haben.
 	 */
-	// TODO gibts schon: nonTerminal2Productions
 	public List<Production> getProductionsByLhs(NonTerminalSymbol lhs) {
-		List<Production> result = new ArrayList<Production>();
-		for (Production aProduction : productions) {
-			if (aProduction.getLhs().equals(lhs)){
-				result.add(aProduction);
-			}
-		}		
-		return result;
+		return nonTerminal2Productions.get(lhs);
 	}
 	
 	void setProductions(List<Production> productions) {

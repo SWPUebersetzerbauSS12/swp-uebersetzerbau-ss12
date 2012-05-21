@@ -70,13 +70,39 @@ public class SLRParseTableBuilder extends ParseTableBuilder {
 		while(added);
 		return new HashSet<LR0Item>(result);
 	}
-	 
+	 	
 	/**
-	 *Vgl. Drachembuch: S.296/ Beispiel 4.27
+	 * Berechnet die Hülle von Items, die unmittelbar nach dem Lesen eines gegebenen 
+	 * Symbols aus einer gegebenen Item-Menge folgen.
+	 * Vgl. Drachembuch: S.296/ Beispiel 4.27
+	 * 
+	 * @param items Item-Menge, für welche die "Folge"-Item-Menge berechnet wird.
+	 * @param s oberstes Stack-Symbol
+	 * @return Hülle der gefundenen "Folge"-Item-Menge
 	 */
 	public Set<LR0Item> gotoSet(Set<LR0Item> items, Symbol s) {
 		// TODO Implementiere mich
-		return null;
+		// Algorithmus aus Drachenbuch (eng): Abbildung 4.40
+		// --> eigentlich für LR(1), sollte aber für LR(0) identisch sein
+		//	SetOfItems GOTO(I,X) {
+		//		J=leere Menge;
+		// 		for ( jedes Item [A → α.Xβ,a] in I )
+		// 			füge Item [A → αX.β,a] zu J hinzu;
+		// 		return CLOSURE(J);
+		//	}
+		
+		Set<LR0Item> J = new HashSet<LR0Item>();
+		for(LR0Item item : items) {
+			if(s.equals(item.getNextSymbol())){ // nach Punkt soll Symbol s folgen
+				LR0Item newItem = new LR0Item(item.getProduction(), (item.getIndex()+1));
+				
+				// da nur aus geg. Set (items) neue Items mit verschobenem Punkt erstellt werden,
+				// können keine doppelten Elemente in Set J auftreten
+				J.add(newItem); 
+			}
+		}
+		
+		return closure(J);
 	}
 	 
 	/**

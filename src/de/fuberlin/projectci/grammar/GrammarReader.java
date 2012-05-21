@@ -115,7 +115,7 @@ public class GrammarReader {
 	private static List<Production> parseProduction(String string, Grammar grammar) throws BNFParsingErrorException{
 		// alle Whitespaces entfernen
 		string = string.replaceAll("\\s", "");
-		System.out.println(string); // TODO DEBUG
+//		System.out.println(string); // TODO DEBUG
 		
 		// Reguläre Ausdrücke
 		String regexNonterminal = "(<[^>]+>)";

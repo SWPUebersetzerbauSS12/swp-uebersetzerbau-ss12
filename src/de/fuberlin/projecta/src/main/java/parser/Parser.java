@@ -1,7 +1,5 @@
 package parser;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Stack;
 
 import lexer.ILexer;
@@ -11,7 +9,6 @@ import lexer.SyntaxErrorException;
 import lombok.Getter;
 import lombok.Setter;
 import parser.ITree.DefaultAttribute;
-import parser.AstNodes.Type;
 
 public class Parser {
 
@@ -24,7 +21,7 @@ public class Parser {
 	private boolean debugEnabled = false;
 
 	@Getter
-	private ISyntaxTree parseTree, ast;
+	private ISyntaxTree parseTree;
 
 	public Parser(ILexer lexer) {
 		this.lexer = lexer;
@@ -137,51 +134,6 @@ public class Parser {
 
 		assert (currentNode != null);
 		parseTree = currentNode;
-
-		ast = generateAst(parseTree);
-	}
-
-	public ISyntaxTree generateAst(ISyntaxTree parseTree) {
-
-		List<ISyntaxTree> children = new ArrayList<ISyntaxTree>();
-
-		for (int i = 0; i < parseTree.getChildrenCount(); i++) {
-			children.add(generateAst(parseTree.getChild(i)));
-		}
-
-		if (parseTree.getSymbol().equals(new Symbol(TokenType.DEF))) {
-			return null;
-		} else if (parseTree.getSymbol().equals(new Symbol(TokenType.INT_TYPE))) {
-			ISyntaxTree node = new Type(new Symbol(TokenType.INT_TYPE));
-			insertToken(node);
-			return node;
-		} else if (parseTree.getSymbol()
-				.equals(new Symbol(TokenType.REAL_TYPE))) {
-			ISyntaxTree node = new Type(new Symbol(TokenType.REAL_TYPE));
-			insertToken(node);
-			return node;
-		} else if (parseTree.getSymbol()
-				.equals(new Symbol(TokenType.BOOL_TYPE))) {
-			ISyntaxTree node = new Type(new Symbol(TokenType.BOOL_TYPE));
-			insertToken(node);
-			return node;
-		} else if (parseTree.getSymbol().equals(
-				new Symbol(TokenType.STRING_TYPE))) {
-			ISyntaxTree node = new Type(new Symbol(TokenType.STRING_TYPE));
-			insertToken(node);
-			return node;
-		}  else if (parseTree.getSymbol().equals(
-				new Symbol(TokenType.RECORD))) {
-			ISyntaxTree node = new Type(new Symbol(TokenType.RECORD));
-			insertToken(node);
-			return node;
-		}
-
-		return null;
-	}
-
-	private void insertToken(ISyntaxTree node) {
-		// TODO !
 	}
 
 	/**

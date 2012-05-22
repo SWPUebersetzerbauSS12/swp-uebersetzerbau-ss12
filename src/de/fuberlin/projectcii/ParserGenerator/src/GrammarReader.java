@@ -63,13 +63,8 @@ public class GrammarReader {
 			rekursive[0] = false;
 			grammar=eliminateIndirectLeftRekursion(grammar,rekursive);
 			grammar=eliminateDirectLeftRekursion(grammar);
-			this.grammar = grammar;
-			printGrammar();
 			iteration++;
 		}
-		if (rekursive[0])System.out.println("fehler");
-		this.grammar = grammar;
-		printGrammar();
 		// definie first Element in Vector as startsymbol
 		startSymbol = grammar.elementAt(0).getHead();
 		return buildGrammarMap(grammar);

@@ -18,13 +18,8 @@ public class GrammarReader {
 	private Vector<Productions> grammar;
 	// the Startsymbol
 	private String startSymbol;
-	/*
-	 
-	 * 
-	 * Input:()
-	 * Returnvalue: Vector<Nonterminals> containing the read grammar
-	 */
 	
+	private Vector<String> heads;
 	
 	/**
 	 * Getter for the Startsymbol
@@ -56,6 +51,11 @@ public class GrammarReader {
 		// Perform Leftfactorisation
 		grammar=combineLeftFactorization(grammar);
 		// Eliminate indirect and direct leftrekursions
+		
+		heads = new Vector<String>(); 
+		for (Productions nonterminal:grammar){
+			heads.add(nonterminal.getHead());
+		}
 		Boolean[] rekursive = {true};
 		int iteration = 0;
 		// stop at 4 Iterations, the fifth checks is the grammar is deemed unparsable
@@ -63,9 +63,13 @@ public class GrammarReader {
 			rekursive[0] = false;
 			grammar=eliminateIndirectLeftRekursion(grammar,rekursive);
 			grammar=eliminateDirectLeftRekursion(grammar);
+			this.grammar = grammar;
+			printGrammar();
 			iteration++;
 		}
+		if (rekursive[0])System.out.println("fehler");
 		this.grammar = grammar;
+		printGrammar();
 		// definie first Element in Vector as startsymbol
 		startSymbol = grammar.elementAt(0).getHead();
 		return buildGrammarMap(grammar);
@@ -381,8 +385,21 @@ public class GrammarReader {
 			if (lRekursiv){
 				//initialise new nonterminal <"N">
 				Productions nonTerminalMod = new Productions(head);
-				//initialise new nonterminal <"N"1>
-				String head1 = head.substring(0, head.length()-1)+"$>";
+				//initialise new nonterminal <"N"1>		
+				String head1 = head.substring(0, head.length()-1)+"$";
+				
+				// prevent duplicate Productions
+				boolean alreadyExists = true;
+				while (alreadyExists){
+					if (heads.contains(head1+">")){
+						head1+="$";
+					}
+					else{
+						alreadyExists = false;
+					}
+				}
+				head1+=">";
+				heads.add(head1);
 				Productions nonTerminalNew = new Productions(head1);
 				i=0;
 				for (Vector<String> production:nonterminal.productions){

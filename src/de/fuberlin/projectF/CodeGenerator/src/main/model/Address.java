@@ -1,6 +1,6 @@
 package main.model;
 
 
-public class Address {
+public abstract class Address {
 
 }

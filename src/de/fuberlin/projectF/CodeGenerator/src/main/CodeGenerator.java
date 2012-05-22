@@ -1,9 +1,11 @@
 package main;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import main.model.Token;
 import main.model.TokenType;
+import main.model.Variable;
 
 
 public class CodeGenerator {
@@ -55,7 +57,7 @@ public class CodeGenerator {
 			VariableTableContainer varCon = new VariableTableContainer();
 			Translator trans = new Translator();
 			
-			Token tok;
+			Token tok  = new Token();
 			int linecount = 0;
 			
 			//hole immer neuen Token bis Token mit dem Type EOF kommt

@@ -7,29 +7,39 @@ import java.util.List;
 
 import main.model.Address;
 import main.model.RegisterAddress;
+import main.model.StackAddress;
 import main.model.Variable;
 
 public class VarAdministration {
 	
-	Hashtable<Variable, List<Address>> addressDescriptor;
-	List<Variable>[] regDescriptor;
-	int numRegister;
+	private static int stackPointer = 0;
+	private Hashtable<Variable, List<Address>> addressDescriptor;
+	private List<Variable>[] regDescriptor;
+	private int numRegister;
+	private Hashtable<Variable, Address> homeAddress;
 	
 	@SuppressWarnings("unchecked")
 	public VarAdministration(int numRegister) {
 		this.numRegister = numRegister;
 		addressDescriptor = new Hashtable<Variable, List<Address>>();
+		homeAddress = new Hashtable<Variable,Address>();
 		regDescriptor = new List[numRegister];
 		for (int i = 0; i < numRegister; i++) {
 			regDescriptor[i] = new LinkedList<Variable>();
 		}
 	}
 	
+	public Address getNewAddress(Variable var) {
+		Address addr = new StackAddress(stackPointer);
+		stackPointer += var.size();
+		return addr;
+	}
+	
 	/*
-	 * Add Variable without Address
+	 * Add Variable and Generate a new Address for it
 	 */
 	public void addVariable (Variable var) {
-		addressDescriptor.put(var, new LinkedList<Address>());
+		addVariable(var, getNewAddress(var));
 	}
 	
 	/*
@@ -38,15 +48,24 @@ public class VarAdministration {
 	public void addVariable (Variable var, Address addr) {
 		List<Address> addrList = new LinkedList<Address>();
 		addrList.add(addr);
+		homeAddress.put(var, addr);
 		addressDescriptor.put(var, addrList);
+	}
+	
+	/*
+	 * moves the stackpointer back
+	 */
+	public void freeAddress(Variable var) {
+		stackPointer -= var.size();
+		homeAddress.remove(var);
 	}
 	
 	/*
 	 * Add Variable with several Addresses
 	 */
-	public void addVariable (Variable var, List<Address> addrList) {
-		addressDescriptor.put(var, addrList);
-	}
+//	public void addVariable (Variable var, List<Address> addrList) {
+//		addressDescriptor.put(var, addrList);
+//	}
 	
 	/*
 	 * 
@@ -122,6 +141,10 @@ public class VarAdministration {
 
 	public List<Address> getAddresses(Variable var) {
 		return addressDescriptor.get(var);
+	}
+	
+	public Address getHomeAddress(Variable var) {
+		return homeAddress.get(var);
 	}
 
 }

@@ -18,7 +18,7 @@ import java.util.Map.Entry;
  * 
  */
 
-
+//comment
 public class ParserGenerator {
 	
 	//Contains the Grammar the Parsetable is created from

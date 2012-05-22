@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-import java.util.Map.Entry;
 
 /* 
  * The ParserGenerator reads a Grammar and tries to convert the 
@@ -49,7 +48,7 @@ public class ParserGenerator {
 	public void initialize(String file){
 		//Read the Grammar from file
 		readGrammar(file);
-		
+		Printer.printGrammar(grammarMap);
 		fillTerminalNonterminal();
 		
 		/*
@@ -66,45 +65,7 @@ public class ParserGenerator {
 		 */
 		
 		parserTable = createParserTable();
-		printParserTable();
-	}
-	
-
-	private void printParserTable() {
-		System.out.print("\t"+"|");
-		for (String terminal:Terminals){
-			System.out.print(terminal+"\t"+"|");
-		}
-		
-		for (String nonTerminal:Nonterminal){
-			System.out.println("");
-			for (int i = 0; i<Terminals.size();i++){
-				System.out.print("_________");
-			}
-			System.out.println("");
-			System.out.print(nonTerminal+"\t"+"|");
-			for (String terminal:Terminals){
-				Vector<Integer> productions = (parserTable.get(nonTerminal)).get(terminal);
-				if (productions.size() == 0){
-					System.out.print(""+"\t"+"|");
-				}
-				else if (productions.size() == 1){
-					System.out.print(productions.elementAt(0)+"\t"+"|");
-				}
-				else{
-					for (int i=0;i<productions.size();i++){
-						if (i == productions.size()-1){
-							System.out.print(productions.elementAt(i));
-						}
-						else{
-							System.out.print(productions.elementAt(i)+",");
-						}
-					}
-					System.out.print(""+"\t"+"|");
-				}
-			}
-		}
-		
+		Printer.printParserTable(Terminals,Nonterminal,parserTable);
 	}
 
 	/*
@@ -147,8 +108,7 @@ public class ParserGenerator {
 			// String head = p.getHead();
 			firstSets.put(head, evalFirstSet(head, grammarMap,true));
 		}
-		showFirstSets();
-		showFirstSetsProductions();
+		Printer.printFirstSetsProductions(firstSetsProductions);
 		
 	}
 	
@@ -243,7 +203,7 @@ public class ParserGenerator {
 			// String head = p.getHead();
 			followSets.put(head, evalFollowSet(head));
 		}
-		showFollowSets(); 
+		Printer.printFollowSets(followSets);
 	}
 	
 	private Set<String> evalFollowSet(String head) {
@@ -289,33 +249,6 @@ public class ParserGenerator {
 			}
 		}
 		return fs;
-	}
-	
-	
-	/**
-	 * print out all the First Set of nonterminal symbols
-	 * 
-	 * @author Ying Wei
-	 */
-	private void showFirstSets() {
-		System.out.println("the First Set as follow: ");
-		for (Entry<String, Set<String>> fs : firstSets.entrySet()) {
-			System.out.println("First(" + fs.getKey() + ") = " + fs.getValue());
-		}
-	}
-	
-	private void showFirstSetsProductions() {
-		System.out.println("the First Sets of productions as follows: ");
-		for (Entry<String, HashMap<String,Integer>> fs : firstSetsProductions.entrySet()) {
-			System.out.println("First(" + fs.getKey() + ") = " + fs.getValue().keySet());
-		}
-	}
-
-	private void showFollowSets() {
-		System.out.println("the Follow Set as follow: ");
-		for (Entry<String, Set<String>> fs : followSets.entrySet()) {
-			System.out.println("Follow(" + fs.getKey() + ") = " + fs.getValue());
-		}
 	}
 	
 	private HashMap<String, HashMap<String,Vector<Integer>>> createParserTable(){

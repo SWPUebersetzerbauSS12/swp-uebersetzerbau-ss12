@@ -14,8 +14,6 @@ import java.util.*;
 
 public class GrammarReader {
 	
-	// intern representation of Grammar
-	private Vector<Productions> grammar;
 	// the Startsymbol
 	private String startSymbol;
 	
@@ -58,6 +56,7 @@ public class GrammarReader {
 		}
 		Boolean[] rekursive = {true};
 		int iteration = 0;
+		grammar=eliminateDirectLeftRekursion(grammar);
 		// stop at 4 Iterations, the fifth checks is the grammar is deemed unparsable
 		while (rekursive[0] && iteration < 5){
 			rekursive[0] = false;
@@ -420,6 +419,13 @@ public class GrammarReader {
 				//Add eplison-production to <"N"1>
 				Vector<String> production = new Vector<String>();
 				production.add("@");
+				// Add new nonTerminal to old production if no productions are left
+				if (nonTerminalMod.productions.size() == 0){
+				
+					Vector<String> finalProduction = new Vector<String>();
+					finalProduction.add(head1);
+					nonTerminalMod.productions.add(finalProduction);
+				}
 				nonTerminalNew.InsertProduction(production);
 				grammarMod.add(nonTerminalMod);
 				grammarMod.add(nonTerminalNew);
@@ -448,41 +454,6 @@ public class GrammarReader {
 			gMap.put(p.getHead(), p.productions);
 		}
 		return gMap;
-	}
-	
-	/**
-	 * Visual debugging Function printing the global Grammar.
-	 * 
-	 * @author Patrick Schlott
-	 */
-	@SuppressWarnings("unused")
-	private void printGrammar(){
-		
-		
-		/* To use this function in the main methode use:
-		 * this.grammar = grammar;
-		 * System.out.print(<Text>);
-		 * printGrammar();
-		*/
-		
-		
-		
-		for (int i = 0; i< grammar.size() ; i++){
-			Productions nonterminal = grammar.elementAt(i);
-			System.out.print("Head = "+nonterminal.getHead()+" ; ");
-			System.out.print("Rump = ");
-			int productionNr = nonterminal.productions.size();
-			for (int j = 0; j < productionNr; j++){
-				Vector<String> production = nonterminal.productions.elementAt(j);
-				int symbolNr = production.size();
-				for (int k = 0; k < symbolNr; k++){
-					String symbol = production.elementAt(k);
-					System.out.print(symbol+".");
-				}
-				System.out.print("|");
-			}
-			System.out.println();
-		}
 	}
 	
 }

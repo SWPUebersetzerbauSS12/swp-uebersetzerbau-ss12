@@ -19,6 +19,10 @@ class LLVM_Block implements ILLVM_Block {
 	private LinkedList<ILLVM_Block> nextBlocks = new LinkedList<ILLVM_Block>();
 	private LinkedList<ILLVM_Block> previousBlocks = new LinkedList<ILLVM_Block>();
 	
+	// def- und usemenge an Speicheradressen fuer globale Lebendigkeitsanalyse
+	private LinkedList<String> def = new LinkedList<String>();
+	private LinkedList<String> use = new LinkedList<String>();
+	
 	// Kompletter Code des Blocks als String
 	private String blockCode;
 
@@ -53,6 +57,42 @@ class LLVM_Block implements ILLVM_Block {
 
 	private void createDAG() {
 
+	}
+	
+	/**
+	 * Erstelle def und use Mengen dieses Blockes fuer globale Lebendigkeitsanalyse
+	 * TODO: noch nicht getestet
+	 */
+	private void createDefUseSets() {
+		if(!this.isEmpty()) {
+			ILLVM_Command c = this.firstCommand;
+			while(c!=null) {
+				if(LLVM_Operation.STORE==c.getOperation()) {
+					// Register mit Speicheradresse steht in zweitem Operanden
+					LLVM_Parameter p = c.getOperands().getLast();
+					String registerName = p.getName();
+					
+					// registerName muss in this.def, falls es keine vorherige Verwendung
+					// gab, also falls registerName nicht in this.use enthalten ist
+					if(!this.use.contains(registerName)) {
+						this.def.add(registerName);
+					}
+				}
+				else if(LLVM_Operation.LOAD==c.getOperation()) {
+					// Register mit Speicheradresse steht in erstem Operanden
+					LLVM_Parameter p = c.getOperands().getFirst();
+					String registerName = p.getName();
+					
+					// registerName muss in this.use, falls es keine vorherige Definition
+					// gab, also falls registerName nicht in this.def enthalten ist
+					if(!this.def.contains(registerName)) {
+						this.use.add(registerName);
+					}
+				}
+				c = c.getSuccessor();
+			}
+		}
+		
 	}
 
 	private boolean labelCheck(String label) {

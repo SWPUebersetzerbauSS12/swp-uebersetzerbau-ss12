@@ -109,6 +109,7 @@ public class LLVM_Function {
 	/**
 	 * Setze Labels, falls in urspruenglicher Eingabe weder konkrete Labelnamen
 	 * noch unbezeichnete Labels in Kommentaren angegeben waren
+	 * TODO: ungetestet
 	 */
 	private void createNewLabels() {
 		String nextUnnamed = "%1";

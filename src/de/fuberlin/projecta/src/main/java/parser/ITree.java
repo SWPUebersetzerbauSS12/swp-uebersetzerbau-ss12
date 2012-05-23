@@ -26,7 +26,7 @@ public abstract class ITree implements ISyntaxTree {
 
 	/**
 	 * Creates a new empty node for non-terminals.
-	 *
+	 * 
 	 * @param name
 	 */
 	public ITree(Symbol symbol) {
@@ -42,16 +42,13 @@ public abstract class ITree implements ISyntaxTree {
 		tree.setParent(this);
 	}
 
-
 	public int getChildrenCount() {
 		return children.size();
 	}
 
-
 	public ISyntaxTree getChild(int i) {
 		return children.get(i);
 	}
-
 
 	public Object getAttribute(String name) {
 
@@ -63,12 +60,10 @@ public abstract class ITree implements ISyntaxTree {
 		return null;
 	}
 
-
 	public List<ISyntaxTree> getChildrenByName(String name) {
 		return null; // To change body of implemented methods use File |
 						// Settings | File Templates.
 	}
-
 
 	public boolean setAttribute(String name, Object value) {
 		for (Entry<String, Object> attr : attributes.entrySet()) {
@@ -79,7 +74,6 @@ public abstract class ITree implements ISyntaxTree {
 		}
 		return false;
 	}
-
 
 	public boolean addAttribute(String name) {
 		if (getAttribute(name) == null) {
@@ -108,8 +102,11 @@ public abstract class ITree implements ISyntaxTree {
 	}
 
 	protected void printTree(int depth) {
-		System.out.println(StringUtils.repeat(' ', depth) + "Name: "
-				+ getSymbol() + this.getClass().getName());
+		if (getSymbol() != null)
+			System.out.println(StringUtils.repeat(' ', depth) + "Name: "
+					+ getSymbol() + this.getClass().getName());
+		else
+			System.out.println(StringUtils.repeat(' ', depth) + this.getClass().getName());
 
 		for (int i = 0; i < getChildrenCount(); ++i) {
 			ITree tree = (ITree) getChild(i);
@@ -117,8 +114,8 @@ public abstract class ITree implements ISyntaxTree {
 				tree.printTree(depth + 2);
 		}
 	}
-	
-	public List<ISyntaxTree> getChildren(){
+
+	public List<ISyntaxTree> getChildren() {
 		return children;
 	}
 

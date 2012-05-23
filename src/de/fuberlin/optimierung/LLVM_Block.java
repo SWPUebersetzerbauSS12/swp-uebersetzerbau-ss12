@@ -32,6 +32,9 @@ class LLVM_Block implements ILLVM_Block {
 		System.out.println(blockCode + "\n*****************\n");
 		
 		this.createCommands();
+		
+		this.createDefUseSets();
+		System.out.println("H");
 
 	}
 	
@@ -61,7 +64,6 @@ class LLVM_Block implements ILLVM_Block {
 	
 	/**
 	 * Erstelle def und use Mengen dieses Blockes fuer globale Lebendigkeitsanalyse
-	 * TODO: noch nicht getestet
 	 */
 	private void createDefUseSets() {
 		if(!this.isEmpty()) {

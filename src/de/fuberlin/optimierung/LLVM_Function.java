@@ -56,6 +56,7 @@ public class LLVM_Function {
 	public void createFlowGraph() {
 		
 		// falls Labels gesetzt sind:
+		this.createNewLabels();
 		
 		// Erstelle Label zu Block Mapping
 		this.mapLabelsToBlocks();
@@ -114,22 +115,32 @@ public class LLVM_Function {
 	private void createNewLabels() {
 		String nextUnnamed = "%1";
 		int nextNumber = 1;
-		for(int i=1; i<this.numberBlocks; i++) {
+		// Erster Block muss nicht betrachtet werden
+		for(int i=0; i<this.numberBlocks; i++) {
 			ILLVM_Block block = this.blocks.get(i);
-			ILLVM_Command c = block.getFirstCommand();
-			while(c!=null) {
-				LLVM_Parameter p = c.getTarget();
-				if(p!=null) {
-					String name = p.getName();
-					if(name!=null && name.equals("nextUnnamed")) {
-						nextNumber++;
-						nextUnnamed = "%" + nextNumber;
-					}
-				}
-				c = c.getSuccessor();
+			// Setze ab zweitem Block das Label
+			if(i>0) {
+				block.setLabel(nextUnnamed);
+				nextNumber++;
+				nextUnnamed = "%" + nextNumber;
 			}
-			block.setLabel(nextUnnamed);
-		}
+			
+			if(!block.isEmpty()) {
+				ILLVM_Command c = block.getFirstCommand();
+				while(c!=null) {
+					LLVM_Parameter p = c.getTarget();
+					if(p!=null) {
+						String name = p.getName();
+						if(name!=null && name.equals(nextUnnamed)) {
+							nextNumber++;
+							nextUnnamed = "%" + nextNumber;
+						}
+					}
+					c = c.getSuccessor();
+				}
+				
+			}	// if block not empty
+		}	// for
 	}
 	
 	/**

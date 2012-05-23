@@ -39,6 +39,8 @@ class LLVM_Optimization implements ILLVM_Optimization {
 			// Erstelle Flussgraph
 			tmp.createFlowGraph();
 			
+			
+			
 			// Optimierungsfunktionen
 			tmp.createRegisterMaps();
 			tmp.eliminateDeadRegisters();
@@ -83,7 +85,7 @@ class LLVM_Optimization implements ILLVM_Optimization {
 	public static void main(String args[]) {
 
 		ILLVM_Optimization optimization = new LLVM_Optimization();        
-		String optimizedCode = optimization.optimizeCodeFromFile("input/llvm_test.llvm");
+		String optimizedCode = optimization.optimizeCodeFromFile("input/llvm_test_without_labels.llvm");
 		System.out.println(optimizedCode);
 	}
 

@@ -1,6 +1,5 @@
 package semantic.analysis.AstNodes;
 
-import parser.Tree;
 import semantic.analysis.SymbolTableStack;
 
 /**

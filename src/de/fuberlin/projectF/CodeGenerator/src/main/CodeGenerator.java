@@ -70,6 +70,13 @@ public class CodeGenerator {
 				System.out.println();
 				
 				trans.translate(tok);
+				
+//				List<Variable> varList = varCon.getAllVariables();
+//				System.out.println("Variables : ");
+//				for (Variable v : varList) {
+//					System.out.println(v.name());
+//				}
+//				System.out.println();
 			}
 			
 			System.out.println("\nGenerated Code:");

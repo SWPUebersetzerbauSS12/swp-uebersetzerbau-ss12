@@ -17,6 +17,7 @@ public class VarAdministration {
 	private List<Variable>[] regDescriptor;
 	private int numRegister;
 	private Hashtable<Variable, Address> homeAddress;
+	private Hashtable<String, Variable> variableNames;
 	
 	@SuppressWarnings("unchecked")
 	public VarAdministration(int numRegister) {
@@ -24,6 +25,7 @@ public class VarAdministration {
 		addressDescriptor = new Hashtable<Variable, List<Address>>();
 		homeAddress = new Hashtable<Variable,Address>();
 		regDescriptor = new List[numRegister];
+		variableNames = new Hashtable<String, Variable>();
 		for (int i = 0; i < numRegister; i++) {
 			regDescriptor[i] = new LinkedList<Variable>();
 		}
@@ -50,6 +52,7 @@ public class VarAdministration {
 		addrList.add(addr);
 		homeAddress.put(var, addr);
 		addressDescriptor.put(var, addrList);
+		variableNames.put(var.name(), var);
 	}
 	
 	/*
@@ -58,6 +61,7 @@ public class VarAdministration {
 	public void freeAddress(Variable var) {
 		stackPointer -= var.size();
 		homeAddress.remove(var);
+		variableNames.remove(var.name());
 	}
 	
 	/*
@@ -145,6 +149,18 @@ public class VarAdministration {
 	
 	public Address getHomeAddress(Variable var) {
 		return homeAddress.get(var);
+	}
+	
+	public Variable getVariable(String name) {
+		return variableNames.get(name);
+	}
+
+	public boolean hasVariableWithName(String varName) {
+		return variableNames.containsKey(varName);
+	}
+	
+	public Variable getVariableByName(String varName) {
+		return variableNames.get(varName);
 	}
 
 }

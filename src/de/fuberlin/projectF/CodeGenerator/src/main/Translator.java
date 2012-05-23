@@ -19,6 +19,7 @@ public class Translator {
 	public void translate(Token t){
 		switch (t.getType()) {
 		case Definition:
+			// an dieser Stelle wechseln wir auch den Variablenkontext?
 			String name = t.getTarget().substring(1);
 			sectionText.append("type ").append(name).append(", @function\n").append(name).append(":\n");
 			sectionText.append("\tenter $0, $0\n"); //Durch spätere Optimierung oder durch lookahead auf die nächsten Token könnte hier bereits Stackspeicher reserviert werden, 
@@ -26,6 +27,7 @@ public class Translator {
 			break;
 			
 		case DefinitionEnd:
+			// hier sollten wir den Varibalenkontext zur�ckgeben
 			sectionText.append("\tleave\n");
 			sectionText.append("\tret\n");
 			break;

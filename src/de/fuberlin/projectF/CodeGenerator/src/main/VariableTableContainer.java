@@ -67,8 +67,27 @@ public class VariableTableContainer {
 															+ tok.getOp1());
 				System.out.println("\t\tto variabletable: " + actTable);
 				break;
+			
+			case Assignment:
+			case Allocation:
+			case Load:
+				// If the Target of an Assignment is not yet in the
+				// Table we add a new variable
+				if (!hasVariable(tok.getTarget())) {
+					System.out.println("\tCould not find : " + tok.getTarget());
+					addVariable(new Variable(tok.getTarget(),tok.getTypeTarget(),null));
+					System.out.println("\tAction: add variable " 	+ tok.getTarget() + "\n\t\t"
+							+ tok.getTypeTarget());
+					System.out.println("\t\tto variabletable: " + actTable);
+				}
+				break;
 							
 		}
+	}
+
+	private boolean hasVariable(String varName) {
+		
+		return getVariableTable(this.actTable).hasVariableWithName(varName);
 	}
 	
 }

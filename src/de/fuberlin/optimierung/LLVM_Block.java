@@ -22,6 +22,9 @@ class LLVM_Block implements ILLVM_Block {
 	// def- und usemenge an Speicheradressen fuer globale Lebendigkeitsanalyse
 	private LinkedList<String> def = new LinkedList<String>();
 	private LinkedList<String> use = new LinkedList<String>();
+	// IN und OUT Mengen fuer globale Lebendigkeitsanalyse auf Speicherzellen
+	private LinkedList<String> in_live = new LinkedList<String>();
+	private LinkedList<String> out_live = new LinkedList<String>();
 	
 	// Kompletter Code des Blocks als String
 	private String blockCode;
@@ -95,6 +98,17 @@ class LLVM_Block implements ILLVM_Block {
 			}
 		}
 		
+	}
+	
+	/**
+	 * Aktualisiere IN und OUT Mengen fuer globale Lebendigkeitsanalyse
+	 * @return true, falls IN veraendert wurde
+	 * TODO
+	 */
+	public boolean createInOutLive() {
+		// this.out = in-Mengen aller Nachfolger zusammenfuegen
+		// this.in = this.use + (this.out - this.def)
+		return false;
 	}
 
 	private boolean labelCheck(String label) {

@@ -6,6 +6,8 @@ public interface ILLVM_Block {
 	// Parameter/Art der Rueckgabe noch zu ueberdenken
 	public void optimizeBlock();
 	public void deleteBlock();
+	
+	public boolean createInOutLive();
 
 	public void setFirstCommand(ILLVM_Command first);
 	public void setLastCommand(ILLVM_Command last);

@@ -43,8 +43,15 @@ class LLVM_Optimization implements ILLVM_Optimization {
 			
 			// Optimierungsfunktionen
 			tmp.createRegisterMaps();
+			
+			//Constant Folding
+			tmp.constantFolding();
+			
+			// Dead register elimination
 			tmp.eliminateDeadRegisters();
 			//tmp.eliminateDeadBlocks();
+			
+			
 			
 			// Optimierte Ausgabe
 			outputLLVM += tmp.toString();
@@ -85,7 +92,7 @@ class LLVM_Optimization implements ILLVM_Optimization {
 	public static void main(String args[]) {
 
 		ILLVM_Optimization optimization = new LLVM_Optimization();        
-		String optimizedCode = optimization.optimizeCodeFromFile("input/llvm_test.llvm");
+		String optimizedCode = optimization.optimizeCodeFromFile("input/llvm_constant_folding1");
 		System.out.println(optimizedCode);
 	}
 

@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import de.fuberlin.optimierung.commands.LLVM_ArithmeticCommand;
+import de.fuberlin.optimierung.commands.LLVM_IcmpCommand;
+import de.fuberlin.optimierung.commands.LLVM_LogicCommand;
+
 public class LLVM_Function {
 
 	String func_define = "";
@@ -198,6 +202,174 @@ public class LLVM_Function {
 	
 		}
 	}
+	
+	
+	public void constantFolding() {
+		
+		LinkedList<ILLVM_Command> changed_cmds = new LinkedList<ILLVM_Command>();
+		
+		
+		for(ILLVM_Block block : blocks){
+			ILLVM_Command cmd = block.getFirstCommand();
+			
+			while(!cmd.isLastCommand()){
+				
+				if(cmd.getClass().equals(LLVM_ArithmeticCommand.class)){
+					LinkedList<LLVM_Parameter> operands = cmd.getOperands();
+					LLVM_Parameter op1 = operands.get(0);
+					LLVM_Parameter op2 = operands.get(1);
+					
+					try{
+						int iOP1 = Integer.parseInt(op1.getName());
+						int iOP2 = Integer.parseInt(op2.getName());
+						int result = 0;
+						
+						if(iOP2 != 0){
+						
+							switch(cmd.getOperation()){
+							case ADD :
+								result = iOP1 + iOP2;
+								break;
+							case SUB :
+								result = iOP1 - iOP2;
+								break;
+							case MUL :
+								result = iOP1 * iOP2;
+								break;
+							case DIV :
+								result = iOP1 / iOP2;
+								break;
+							}
+							
+							op1.setName(""+result);
+							op2.setName("0");
+							
+							changed_cmds.add(cmd);
+						}
+					}catch(NumberFormatException e){
+						// no numbers
+					}
+				}else if(cmd.getClass().equals(LLVM_IcmpCommand.class)){
+					LinkedList<LLVM_Parameter> operands = cmd.getOperands();
+					LLVM_Parameter op1 = operands.get(0);
+					LLVM_Parameter op2 = operands.get(1);
+					
+					try{
+						int iOP1 = Integer.parseInt(op1.getName());
+						int iOP2 = Integer.parseInt(op2.getName());
+						boolean result = false;
+						
+						if(iOP2 != 0){
+						
+							switch(cmd.getOperation()){
+							case ICMP_EQ :
+								result = iOP1 == iOP2;
+								break;
+							case ICMP_NE :
+								result = iOP1 != iOP2;
+								break;
+							case ICMP_UGT :
+								result = iOP1 > iOP2;
+								break;
+							case ICMP_UGE :
+								result = iOP1 >= iOP2;
+								break;
+							case ICMP_ULT :
+								result = iOP1 < iOP2;
+								break;
+							case ICMP_ULE :
+								result = iOP1 <= iOP2;
+								break;
+							case ICMP_SGT :
+								result = iOP1 > iOP2;
+								break;
+							case ICMP_SGE :
+								result = iOP1 >= iOP2;
+								break;
+							case ICMP_SLT :
+								result = iOP1 < iOP2;
+								break;
+							case ICMP_SLE :
+								result = iOP1 <= iOP2;
+								break;	
+							}
+							
+							op1.setName(""+result);
+							op2.setName("0");
+							
+							changed_cmds.add(cmd);
+						}
+					}catch(NumberFormatException e){
+						// no numbers
+					}
+				}else if(cmd.getClass().equals(LLVM_LogicCommand.class)){
+					LinkedList<LLVM_Parameter> operands = cmd.getOperands();
+					LLVM_Parameter op1 = operands.get(0);
+					LLVM_Parameter op2 = operands.get(1);
+					
+					try{
+						int iOP1 = Integer.parseInt(op1.getName());
+						int iOP2 = Integer.parseInt(op2.getName());
+						boolean result = false;
+						
+						if(iOP2 != 0){
+							
+							switch(cmd.getOperation()){
+							case AND :
+								result = iOP1 == iOP2;
+								break;
+							case OR :
+								result = ((iOP1 != iOP2) || (iOP1 == iOP2));
+								break;
+							case XOR :
+								result = iOP1 != iOP2;
+								break;
+							}
+							
+							op1.setName(result?"1":"0");
+							op2.setName("0");
+							
+							changed_cmds.add(cmd);
+						}
+					}catch(NumberFormatException e){
+						// no numbers
+					}
+				}
+				
+				// next cmd
+				cmd = cmd.getSuccessor();
+			}
+		}
+		
+		if(changed_cmds.size() > 0){
+			constantPropagation(changed_cmds);
+		}
+	}
+	
+	
+	private void constantPropagation(LinkedList<ILLVM_Command> cmds) {
+		
+		for(int i = 0; i < cmds.size(); i++){
+			
+			// aktueller Befehl
+			ILLVM_Command cmd = cmds.get(i);
+			
+			LinkedList<ILLVM_Command> _cmds = registerMap.getUses(cmd.getTarget().getName());
+			
+			for(int j = 0; j < _cmds.size(); j++){
+				LinkedList<LLVM_Parameter> operands = _cmds.get(j).getOperands();
+				for(int k = 0;  k < operands.size(); k++){
+					if(cmd.getTarget().getName().equals(operands.get(k).getName())){
+						operands.set(k, cmd.getOperands().get(0));
+						registerMap.deleteCommand(_cmds.get(j));
+					}
+				}
+			}
+		}
+		
+		constantFolding();
+	}
+	
 	
 	/**
 	 * Teste, ob gegebenes Register nicht verwendet wird

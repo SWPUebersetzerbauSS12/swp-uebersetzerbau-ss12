@@ -20,6 +20,9 @@ public interface ILLVM_Command {
 	public void setTarget(LLVM_Parameter target);
 	public LLVM_Parameter getTarget();
 	
+	public void setBlock(ILLVM_Block block);
+	public ILLVM_Block getBlock();
+	
 	public boolean isFirstCommand();
 	public boolean isLastCommand();
 	public boolean isSingleCommand();

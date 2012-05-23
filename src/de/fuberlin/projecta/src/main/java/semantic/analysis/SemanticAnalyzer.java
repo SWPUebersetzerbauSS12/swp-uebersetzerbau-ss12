@@ -27,6 +27,8 @@ import semantic.analysis.AstNodes.While;
 
 public class SemanticAnalyzer {
 
+	private static final String lattribute = "lattribute";
+
 	private ISyntaxTree parseTree;
 	private SymbolTableStack tables;
 	@Getter
@@ -83,67 +85,85 @@ public class SemanticAnalyzer {
 				insertNode.addChild(func);
 				return;
 			case type:
-				if (tree.getChild(0).getSymbol().asNonTerminal() == NonTerminal.basic) {
-					if (tree.getChild(1).getChildrenCount() != 0) { // this is
-																	// type_ and
-																	// it must
-																	// exist!
-						Type array = new Array();
+				if (tree.getChild(0).getSymbol().isNonTerminal()) {
+					if (tree.getChild(0).getSymbol().asNonTerminal() == NonTerminal.basic) {
+						
+						if (tree.getChild(1).getChildrenCount() != 0) { // this
+																		// is
+																		// type_
+																		// and
+																		// it
+																		// must
+																		// exist!
+							Type array = new Array();
 
-						// the basic node gets added to this temporary node
-						// and is passed to the new array
-						ISyntaxTree tmp = new Program(); // it doesn't matter
-															// which node to
-															// take as long as
-															// it is a treenode.
-						toAST(tree.getChild(0), tmp);
+							// the basic node gets added to this temporary node
+							// and is passed to the new array
+							ISyntaxTree tmp = new Program(); // it doesn't
+																// matter
+																// which node to
+																// take as long
+																// as
+																// it is a
+																// treenode.
+							toAST(tree.getChild(0), tmp);
 
-						array.addAttribute("type");
-						boolean success = array.setAttribute("type",
-								tmp.getChild(0)); // this is already the
-													// BasicType node
-						assert (success);
+							array.addAttribute(lattribute);
+							boolean success = array.setAttribute(lattribute,
+									tmp.getChild(0)); // this is already the
+														// BasicType node
+							assert (success);
 
-						insertNode.addChild(array);
+							insertNode.addChild(array);
+							
+							toAST(tree.getChild(1), array);
 
-						for (int i = 0; i < tree.getChild(1).getChildrenCount(); i++) {// this
-																						// is
-																						// type_
-							toAST(tree.getChild(1).getChild(i), array);
-						}
-					} else {
-						for (int i = 0; i < tree.getChildrenCount(); i++) {
-							toAST(tree.getChild(i), insertNode);
-						}
+						} else
+							// type_ is empty, hook the basic node in the parent
+							toAST(tree.getChild(0), insertNode);
+
 					}
-
 				} else { // we have a record! *CONGRATS*
+					Record record = new Record();
+
 					// test if we have an array of this record
 					if (tree.getChild(4).getChildrenCount() != 0) {
 						Type array = new Array();
-						/*
-						 * record{int a;}[4] b;
-						 */
-						ISyntaxTree tmp = new Program(); // it doesn't matter
-						// which node to
-						// take as long as
-						// it is a treenode.
-						toAST(tree.getChild(2), tmp); // <-- decls!!!
-						
-						array.addAttribute("decls"); //TODO: find BETTER name!!!
-						array.setAttribute("decls", tmp.getChildren()); // This is not right!
-						
-						insertNode.addChild(array);
-						
-					}
-					toAST(tree.getChild(2), type);
-				}
+						toAST(tree.getChild(2), record); // <-- decls!!!
 
-				insertNode.addChild(type);
+						array.addAttribute(lattribute);
+						array.setAttribute(lattribute, record);
+						
+						toAST(tree.getChild(4), array);
+
+						insertNode.addChild(array);
+
+					} else // this is simply one record
+					{
+
+						toAST(tree.getChild(2), record); // <-- decls!!!
+						insertNode.addChild(record);
+					}
+				}
 				return;
 			case type_:
-				//TODO: Width of array!!!
-				insertNode.addChild((ISyntaxTree)tree.getAttribute("type"));
+				// TODO: Width of array!!!
+
+				toAST(tree.getChild(1), insertNode);
+
+				if (tree.getChild(3).getChildrenCount() != 0) {
+					Array array = new Array();
+					array.addAttribute(lattribute);
+					array.setAttribute(lattribute,
+							insertNode.getAttribute(lattribute));
+					toAST(tree.getChild(3), array);
+					insertNode.addChild(array);
+				} else // array declaration stopped here...
+				{
+					insertNode.addChild((ISyntaxTree) insertNode
+							.getAttribute(lattribute));
+				}
+
 				return;
 			case optparams:
 				Params params = new Params();
@@ -171,24 +191,26 @@ public class SemanticAnalyzer {
 			case stmt:
 				Statement stmt = null;
 				ISyntaxTree firstChild = tree.getChild(0);
-				if (firstChild.getSymbol().asTerminal() == TokenType.IF) {
-					ISyntaxTree stmt_ = tree.getChild(5); //
-					if (stmt_.getChildrenCount() == 0)
-						stmt = new If();
-					else
-						stmt = new IfElse();
-				} else if (firstChild.getSymbol().asTerminal() == TokenType.WHILE) {
-					stmt = new While();
-				} else if (firstChild.getSymbol().asTerminal() == TokenType.DO) {
-					stmt = new Do();
-				} else if (firstChild.getSymbol().asTerminal() == TokenType.BREAK) {
-					stmt = new Break();
-				} else if (firstChild.getSymbol().asTerminal() == TokenType.RETURN) {
-					stmt = new Return();
-				} else if (firstChild.getSymbol().asTerminal() == TokenType.PRINT) {
-					stmt = new Print();
-				} else if (firstChild.getSymbol().asNonTerminal() == NonTerminal.block) {
-					stmt = new Block();
+				if (firstChild.getSymbol().isTerminal()) {
+					if (firstChild.getSymbol().asTerminal() == TokenType.IF) {
+						ISyntaxTree stmt_ = tree.getChild(5); //
+						if (stmt_.getChildrenCount() == 0)
+							stmt = new If();
+						else
+							stmt = new IfElse();
+					} else if (firstChild.getSymbol().asTerminal() == TokenType.WHILE) {
+						stmt = new While();
+					} else if (firstChild.getSymbol().asTerminal() == TokenType.DO) {
+						stmt = new Do();
+					} else if (firstChild.getSymbol().asTerminal() == TokenType.BREAK) {
+						stmt = new Break();
+					} else if (firstChild.getSymbol().asTerminal() == TokenType.RETURN) {
+						stmt = new Return();
+					} else if (firstChild.getSymbol().asTerminal() == TokenType.PRINT) {
+						stmt = new Print();
+					} else if (firstChild.getSymbol().asNonTerminal() == NonTerminal.block) {
+						stmt = new Block();
+					}
 				}
 
 				if (stmt != null) {
@@ -197,8 +219,8 @@ public class SemanticAnalyzer {
 					}
 					insertNode.addChild(stmt);
 				} else {
-					throw new SemanticException(
-							"stmt could'nt be set to any node in semantic analyzer");
+					// throw new SemanticException(
+					// "stmt could'nt be set to any node in semantic analyzer");
 				}
 				return;
 			case loc:
@@ -238,6 +260,8 @@ public class SemanticAnalyzer {
 				insertNode.addChild(new IntLiteral((Integer) tree
 						.getAttribute(DefaultAttribute.TokenValue.name())));
 				return;
+			case ID:
+				insertNode.addChild(new IntLiteral(1));
 			}
 		} else if (tree.getSymbol().isReservedTerminal()) {
 			Reserved res = tree.getSymbol().asReservedTerminal();

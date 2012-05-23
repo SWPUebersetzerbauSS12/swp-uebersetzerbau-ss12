@@ -106,6 +106,60 @@ public class Printer {
 		System.out.println("-----------");
 	}
 	
+	/**
+	 * Use this Function to view the Parsetable inside the ParserGenerator.
+	 * 
+	 * @author Patrick Schlott
+	 */
+	
+	static public void printParserTable(Vector<String> Terminals,
+										Vector<String> Nonterminal,
+										Map<String, HashMap<String,Vector<Integer>>> parserTable,
+										Map<String, Vector<Vector<String>>> grammar) {
+		System.out.print("\t"+"|");
+		for (String terminal:Terminals){
+			System.out.print(terminal+"\t"+"|");
+		}
+		
+		for (String nonTerminal:Nonterminal){
+			System.out.println("");
+			for (int i = 0; i<Terminals.size();i++){
+				System.out.print("_________");
+			}
+			System.out.println("");
+			System.out.print(nonTerminal+"\t"+"|");
+			for (String terminal:Terminals){
+				Vector<Integer> productions = (parserTable.get(nonTerminal)).get(terminal);
+				if (productions.size() == 0){
+					System.out.print(""+"\t"+"|");
+				}
+				else if (productions.size() == 1){
+					Vector<Vector<String>> x = grammar.get(nonTerminal);
+					Vector<String> y = x.elementAt(productions.elementAt(0));
+					System.out.print(nonTerminal+" -> ");
+					
+					for (String z:y){
+						System.out.print(z+" ");
+					}
+					System.out.print("\t"+"|");
+				}
+				else{
+					for (int i=0;i<productions.size();i++){
+						if (i == productions.size()-1){
+							System.out.print(productions.elementAt(i));
+						}
+						else{
+							System.out.print(productions.elementAt(i)+",");
+						}
+					}
+					System.out.print(""+"\t"+"|");
+				}
+			}
+		}
+		System.out.println();
+		System.out.println("-----------");
+	}
+	
 	
 	/**
 	 * Use this Function to view the FirstSet inside the ParserGenerator.

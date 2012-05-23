@@ -97,6 +97,7 @@ public class ParserGenerator {
 				}
 			}
 		}
+		Terminals.add("$");
 		
 	}
 	

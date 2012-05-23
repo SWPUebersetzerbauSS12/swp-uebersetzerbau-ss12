@@ -105,7 +105,7 @@ class LLVM_Block implements ILLVM_Block {
 	 * @return true, falls IN veraendert wurde
 	 * TODO
 	 */
-	public boolean createInOutLive() {
+	public boolean updateInOutLiveVariables() {
 		// this.out = in-Mengen aller Nachfolger zusammenfuegen
 		// this.in = this.use + (this.out - this.def)
 		return false;

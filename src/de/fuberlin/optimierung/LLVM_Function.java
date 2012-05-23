@@ -34,8 +34,30 @@ public class LLVM_Function {
 	}
 	
 	/**
+	 * Erstelle IN und OUT Mengen fuer globale Lebendigkeitsanalyse
+	 * Arbeitet nicht auf Registern, sondern auf Speicheradressen
+	 * Dannach ist zwischen den Bloecken bekannt, ob eine Speicheradresse lebendig ist
+	 * Dient dazu, spaeter ueberfluessige stores und loads entfernen zu koennen
+	 * TODO: funktioniert noch nicht
+	 */
+	private void createInOutLiveVariables() {
+		// Algorithmus siehe Seite 610 Drachenbuch
+		boolean changes = true;
+		while(changes) {
+			changes = false;
+			for(ILLVM_Block b : this.blocks) {
+				if(b.updateInOutLiveVariables()) {
+					changes = true;
+				}
+			}
+		}
+		
+	}
+	
+	/**
 	 * Initialisiert die Hashmap labelToBlock, die Labelnamen dem jeweiligen Block zuordnet
 	 * (als Index in this.blocks)
+	 * Wird bei Erstellung des Flussgraphen zwischen den Bloecken benoetigt
 	 */
 	private void mapLabelsToBlocks() {
 		

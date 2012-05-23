@@ -7,7 +7,7 @@ public interface ILLVM_Block {
 	public void optimizeBlock();
 	public void deleteBlock();
 	
-	public boolean createInOutLive();
+	public boolean updateInOutLiveVariables();
 
 	public void setFirstCommand(ILLVM_Command first);
 	public void setLastCommand(ILLVM_Command last);

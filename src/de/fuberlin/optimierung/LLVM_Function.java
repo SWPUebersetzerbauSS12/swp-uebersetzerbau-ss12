@@ -55,9 +55,14 @@ public class LLVM_Function {
 	 */
 	public void createFlowGraph() {
 		
-		// falls Labels gesetzt sind:
-		this.createNewLabels();
-		
+		// Teste, ob Labels gesetzt sind
+		// Wenn nein, dann erstelle die Labels
+		if(this.numberBlocks>1) {
+			if(this.blocks.get(1).getLabel().equals("")) {
+				this.createNewLabels();
+			}
+		}
+			
 		// Erstelle Label zu Block Mapping
 		this.mapLabelsToBlocks();
 		
@@ -110,7 +115,6 @@ public class LLVM_Function {
 	/**
 	 * Setze Labels, falls in urspruenglicher Eingabe weder konkrete Labelnamen
 	 * noch unbezeichnete Labels in Kommentaren angegeben waren
-	 * TODO: ungetestet
 	 */
 	private void createNewLabels() {
 		String nextUnnamed = "%1";

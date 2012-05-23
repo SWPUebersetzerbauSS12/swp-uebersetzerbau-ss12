@@ -85,7 +85,7 @@ class LLVM_Optimization implements ILLVM_Optimization {
 	public static void main(String args[]) {
 
 		ILLVM_Optimization optimization = new LLVM_Optimization();        
-		String optimizedCode = optimization.optimizeCodeFromFile("input/llvm_test_without_labels.llvm");
+		String optimizedCode = optimization.optimizeCodeFromFile("input/llvm_test.llvm");
 		System.out.println(optimizedCode);
 	}
 

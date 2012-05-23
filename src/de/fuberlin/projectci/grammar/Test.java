@@ -15,7 +15,8 @@ public class Test {
 		
 		try {
 			//g = GrammarReader.readGrammar("./doc/testFirst");
-			g = GrammarReader.readGrammar("./doc/praefixGrammatik4.28.txt");
+			//g = GrammarReader.readGrammar("./doc/praefixGrammatik4.28.txt");
+			g = GrammarReader.readGrammar("./doc/quellsprache_bnf.txt");
 			
 		} catch (BNFParsingErrorException e) {
 			// TODO Auto-generated catch block

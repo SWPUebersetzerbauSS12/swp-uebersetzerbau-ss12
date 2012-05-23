@@ -8,7 +8,7 @@ public class Lexer implements ILexer {
 	private int line;
 
 	// TODO: replace delimiterRegexp with real delimiters
-	private String delimiterRegexp = "[\\s(=)+-/;\\*]";
+	private String delimiterRegexp = "[\\s(=)+-/;\\*{}]";
 
 	ICharStream is;
 

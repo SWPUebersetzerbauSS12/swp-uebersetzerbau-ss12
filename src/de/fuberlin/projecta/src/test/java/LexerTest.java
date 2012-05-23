@@ -1,6 +1,8 @@
 //import static org.junit.Assert.assertEquals;
 //import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -121,6 +123,32 @@ public class LexerTest {
 		assertEquals(tokenList.get(3).getType(), TokenType.INT_TYPE);
 		assertEquals(tokenList.get(6).getType(), TokenType.REAL_TYPE);
 		assertEquals(tokenList.get(9).getType(), TokenType.STRING_TYPE);
+	}
+
+	@Test
+	public void testNoSpacesBetweenTokens() {
+		{
+			final String code = "record{int i;}";
+			ArrayList<Token> tokenList = tokenize(code);
+			assertEquals(tokenList.get(0).getType(), TokenType.RECORD);
+			assertEquals(tokenList.get(1).getType(), TokenType.LBRACE);
+			assertEquals(tokenList.get(2).getType(), TokenType.INT_TYPE);
+		}
+
+		{
+			final String code = "a[1];";
+			ArrayList<Token> tokenList = tokenize(code);
+			assertEquals(tokenList.get(0).getType(), TokenType.ID);
+			assertEquals(tokenList.get(1).getType(), TokenType.LBRACKET);
+			assertEquals(tokenList.get(2).getType(), TokenType.INT_LITERAL);
+		}
+
+		{
+			final String code = "def int foo(int i);";
+			ArrayList<Token> tokenList = tokenize(code);
+			assertEquals(tokenList.get(2).getType(), TokenType.ID);
+			assertEquals(tokenList.get(3).getType(), TokenType.LPAREN);
+		}
 	}
 
 	@Test

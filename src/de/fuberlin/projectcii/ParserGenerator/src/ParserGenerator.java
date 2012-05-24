@@ -13,8 +13,6 @@ import java.util.Vector;
  * Additional the ParserGenerator creates a Parsetable from the modified
  * Grammar.
  * 
- * Author: Patrick Schlott
- * 
  */
 
 public class ParserGenerator {
@@ -22,19 +20,22 @@ public class ParserGenerator {
 	//Contains the Grammar the Parsetable is created from
 	private Map<String, Vector<Vector<String>>> grammarMap;
 	
-	public Map<String, HashMap<String,Vector<Integer>>> parserTable = 
+	private Map<String, HashMap<String,Vector<Integer>>> parserTable = 
 		new HashMap<String, HashMap<String,Vector<Integer>>>();
+	
+	private final String EPSILON = "@";
+	private final String EOF = "eof";
 	
 	private String start;
 	private Vector<String> Terminals;
 	private Vector<String> Nonterminal;
 	
 	//FollowSets of each NonTerminal
-	public Map<String, Set<String>> followSets = new HashMap<String, Set<String>>();
+	private Map<String, Set<String>> followSets = new HashMap<String, Set<String>>();
 	//FirstSets of each NonTerminal
-	public Map<String, Set<String>> firstSets = new HashMap<String, Set<String>>();
+	private Map<String, Set<String>> firstSets = new HashMap<String, Set<String>>();
 	//FirstSets of each Production of each NonTerminal
-	public Map<String, HashMap<String,Integer>> firstSetsProductions = new HashMap<String, HashMap<String,Integer>>();
+	private Map<String, HashMap<String,Integer>> firstSetsProductions = new HashMap<String, HashMap<String,Integer>>();
 	
 	public ParserGenerator(){
 		Terminals = new Vector<String>();
@@ -44,7 +45,7 @@ public class ParserGenerator {
 	/*
 	 * initializes the grammar so a Parsetable can be created from it
 	 */
-	public void initialize(String file){
+	public Map<String, HashMap<String,Vector<Integer>>> createParserTable(String file){
 		//Read the Grammar from file
 		readGrammar(file);
 		Printer.printGrammar(grammarMap);
@@ -65,7 +66,19 @@ public class ParserGenerator {
 		
 		parserTable = createParserTable();
 		Printer.printParserTable(Terminals,Nonterminal,parserTable);
+		return parserTable;
 	}
+	
+	/**
+	 * Returns the parsertable created by "createParserTable"
+	 * 
+	 * @author Patrick Schlott
+	 */
+	
+	public Map<String, HashMap<String,Vector<Integer>>> getParseTable(){
+		return this.parserTable;
+	}
+	
 
 	/*
 	 * Reads the Grammar from a given file
@@ -96,7 +109,7 @@ public class ParserGenerator {
 				}
 			}
 		}
-		Terminals.add("$");
+		Terminals.add(EOF);
 		
 	}
 	
@@ -140,7 +153,7 @@ public class ParserGenerator {
 			}
 			
 			//FirstSet Evaluation Rule 2 and 3
-			if(currentFS.contains("@"))
+			if(currentFS.contains(EPSILON))
 			{
 				for(int j = 1; j < production.size();j++)
 				{
@@ -162,12 +175,12 @@ public class ParserGenerator {
 					//add temporary FS to FS of current production
 					currentFS.addAll(tempFS);
 					//break if next char is not a nonterminal with epsilon production
-					if(!tempFS.contains("@") || Terminals.contains(nextTerm))
+					if(!tempFS.contains(EPSILON) || Terminals.contains(nextTerm))
 					{
 						//remove epsilon if there are following terminals
 						//example: <A> ::= <B> a b and <B> ::= c | epsilon
 						//epsilon have to be in FS(<B>) but not in FS(<A>)
-						currentFS.remove("@");
+						currentFS.remove(EPSILON);
 						break;
 					}
 				}
@@ -212,7 +225,7 @@ public class ParserGenerator {
 		}
 		Set<String> fs = new HashSet<String>();
 		if (start.equals(head)) {
-			fs.add("$");
+			fs.add(EOF);
 		}
 		
 		for (String currentHead : grammarMap.keySet()) {
@@ -228,9 +241,9 @@ public class ParserGenerator {
 							else{
 								HashSet<String> first = new HashSet<String>(firstSets.get(follow));
 
-								if (first.contains("@")){
+								if (first.contains(EPSILON)){
 									if (!currentHead.equals(head)) { fs.addAll(evalFollowSet(currentHead));}
-									first.remove("@");
+									first.remove(EPSILON);
 									fs.addAll(first);
 								} else {
 									fs.addAll(first);
@@ -268,7 +281,7 @@ public class ParserGenerator {
 				
 				if(currentFirstSet.contains(terminal))
 				{
-					if(!terminal.equals("@"))
+					if(!terminal.equals(EPSILON))
 					{
 						//System.out.println("Nonterminal: "+head+" Terminal: "+terminal);
 						
@@ -278,10 +291,10 @@ public class ParserGenerator {
 					
 				}
 				
-				if(currentFirstSet.contains("@") && currentFollowSet.contains(terminal))
+				if(currentFirstSet.contains(EPSILON) && currentFollowSet.contains(terminal))
 				{
 					//Get index of production for current FirstSet item
-					parseTableEntry.add(firstSetsProductions.get(head).get("@"));
+					parseTableEntry.add(firstSetsProductions.get(head).get(EPSILON));
 				}
 				parseTableColumn.put(terminal, parseTableEntry);				
 			}			

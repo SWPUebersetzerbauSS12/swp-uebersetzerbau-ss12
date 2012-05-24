@@ -8,9 +8,7 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		
-		ParserGenerator pg = new ParserGenerator();
-		pg.initialize("language.txt");
+		LL1Parser ll1 = new LL1Parser("language.txt");
 	}
 
 }

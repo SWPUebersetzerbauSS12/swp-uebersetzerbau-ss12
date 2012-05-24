@@ -9,7 +9,6 @@ import java.util.*;
  * Elimination of left-rekursions is fixed at 4 Runs after which the Grammar
  * is deemed not LL(1)-parsable.
  * 
- * @author Patrick Schlott
  */
 
 public class GrammarReader {
@@ -18,6 +17,8 @@ public class GrammarReader {
 	private String startSymbol;
 	
 	private Vector<String> heads;
+	
+	private final String EPSILON = "@";
 	
 	/**
 	 * Getter for the Startsymbol
@@ -182,7 +183,7 @@ public class GrammarReader {
 							else if (i==longest){
 								if (longest == production.size()){
 									Vector<String> epsilon = new Vector<String>();
-									epsilon.add("@");
+									epsilon.add(EPSILON);
 									nonTerminalNew.InsertProduction(epsilon);
 								}
 								else{
@@ -418,7 +419,7 @@ public class GrammarReader {
 				}
 				//Add eplison-production to <"N"1>
 				Vector<String> production = new Vector<String>();
-				production.add("@");
+				production.add(EPSILON);
 				// Add new nonTerminal to old production if no productions are left
 				if (nonTerminalMod.productions.size() == 0){
 				

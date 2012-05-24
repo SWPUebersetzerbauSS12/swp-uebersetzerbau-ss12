@@ -55,6 +55,30 @@ class LLVM_Block implements ILLVM_Block {
 	 */
 	
 	/**
+	 * Entferne ueberfluessige Stores
+	 * Vorraussetzung: IN und OUT mengen der globalen lebendigkeitsanalyse sind gesetzt
+	 * TODO: noch nicht fertig
+	 */
+	private void deleteDeadStores() {
+		LinkedList<String> active = (LinkedList<String>) this.outLive.clone();
+		
+		// Gehe Befehle von hinten durch
+		ILLVM_Command c = this.lastCommand;
+		for(;c!=null; c = c.getPredecessor()) {
+			if(c.getOperation()==LLVM_Operation.STORE) {
+				if(!active.contains(c.getOperands().get(1).getName())) {
+					// c kann geloescht werden
+					// aus registermap entfernen
+					// aus verketteten befehlen entfernen
+				}
+			}
+			if(c.getOperation()==LLVM_Operation.LOAD) {
+				active.add(c.getOperands().getFirst().getName());
+			}
+		}
+	}
+	
+	/**
 	 * Erstelle def und use Mengen dieses Blockes fuer globale Lebendigkeitsanalyse
 	 */
 	private void createDefUseSets() {
@@ -91,6 +115,7 @@ class LLVM_Block implements ILLVM_Block {
 	
 	/**
 	 * Aktualisiere IN und OUT Mengen fuer globale Lebendigkeitsanalyse
+	 * Voraussetzung: def und use sind gesetzt
 	 * @return true, falls IN veraendert wurde
 	 */
 	public boolean updateInOutLiveVariables() {

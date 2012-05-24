@@ -4,7 +4,6 @@ import java.util.List;
 
 import analysis.SymbolTableStack;
 
-
 /**
  * Using composite pattern as tree data-structure. Leafs are indicated by a
  * childCount of 0.
@@ -61,8 +60,7 @@ public interface ISyntaxTree {
 	 * @return True if add was successful, False otherwise.
 	 */
 	public boolean addAttribute(String name);
-	
-	
+
 	/**
 	 * 
 	 * @return a list of all children to this node (might be empty)

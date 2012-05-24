@@ -1,56 +1,61 @@
 package lexer.io;
 
-import lombok.Getter;
-
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
+
+import lombok.Getter;
+import utils.IOUtils;
 
 public class FileCharStream implements ICharStream {
 
-	ArrayList<Character> text = new ArrayList<Character>();
-
 	@Getter
-	private int offset;
+	private String path;
+	private StringCharStream stream = null;
 
-	public FileCharStream(String file) {
+	/**
+	 * Read the contents of a file
+	 * 
+	 * Currently reads the entire file into memory and internally uses
+	 * StringCharStream
+	 * 
+	 * @param path
+	 *            Path to file
+	 */
+	public FileCharStream(String path) {
+		this.path = path;
+
+		String data;
 		try {
-			this.offset = 0;
-			FileReader fr = new FileReader(file);
-			char[] peek = new char[1];
-			while (fr.read(peek) > -1) {
-				text.add(peek[0]);
-			}
+			data = IOUtils.readFile(path);
 		} catch (IOException e) {
-			System.out.println("WRONG");
+			// do nothing, data stays empty
+			data = "";
 		}
+		stream = new StringCharStream(data);
 	}
 
-	public String getNextChars(int numberOfChars) {
-		String result = "";
-		final int count = Math.min(numberOfChars, text.size());
-		for (int i = 0; i < count; i++) {
-			result += text.get(i).toString();
-		}
-		return result;
-	}
-
+	@Override
 	public int consumeChars(int numberOfChars) {
-		int result = 0;
-		this.offset += numberOfChars;
-		while (!text.isEmpty() && result < numberOfChars) {
-			text.remove(0);
-			result++;
-		}
-		return result;
+		return stream.consumeChars(numberOfChars);
 	}
 
+	@Override
+	public String getNextChars(int numberOfChars) {
+		return stream.getNextChars(numberOfChars);
+	}
+
+	@Override
+	public int getOffset() {
+		return stream.getOffset();
+	}
+
+	@Override
 	public boolean isEmpty() {
-		return text.isEmpty();
+		return stream.isEmpty();
 	}
 
+	@Override
 	public void resetOffset() {
-		this.offset = -1;
+		stream.resetOffset();
 	}
 
 }

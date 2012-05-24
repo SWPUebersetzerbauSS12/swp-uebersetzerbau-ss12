@@ -4,6 +4,7 @@ import lombok.Getter;
 
 public class StringCharStream implements ICharStream {
 
+	@Getter
 	private String data;
 
 	@Getter
@@ -13,7 +14,6 @@ public class StringCharStream implements ICharStream {
 		this.data = data;
 		this.offset = 0;
 	}
-
 
 	public String getNextChars(int numberOfChars) {
 		final int count = Math.min(numberOfChars, data.length());

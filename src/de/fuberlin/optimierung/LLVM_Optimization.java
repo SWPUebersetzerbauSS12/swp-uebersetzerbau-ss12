@@ -51,7 +51,8 @@ class LLVM_Optimization implements ILLVM_Optimization {
 			tmp.eliminateDeadRegisters();
 			tmp.eliminateDeadBlocks();
 			
-			
+			// in arbeit, nicht einbinden
+			//tmp.globalLiveVariableAnalysis();
 			
 			// Optimierte Ausgabe
 			outputLLVM += tmp.toString();
@@ -93,7 +94,7 @@ class LLVM_Optimization implements ILLVM_Optimization {
 
 		ILLVM_Optimization optimization = new LLVM_Optimization();        
 		//String optimizedCode = optimization.optimizeCodeFromFile("input/llvm_constant_folding1");
-		String optimizedCode = optimization.optimizeCodeFromFile("input/llvm_dead_block");
+		String optimizedCode = optimization.optimizeCodeFromFile("input/llvm_test.llvm");
 		System.out.println(optimizedCode);
 	}
 

@@ -1,5 +1,7 @@
 package de.fuberlin.optimierung;
 
+import java.util.LinkedList;
+
 public interface ILLVM_Block {
 	
 	// Fuer lokale Optimierung des Blockes
@@ -15,6 +17,7 @@ public interface ILLVM_Block {
 	public ILLVM_Command getLastCommand();
 	public String getLabel();
 	public void setLabel(String label);
+	public LinkedList<String> getInLive();
 	
 	public void appendToPreviousBlocks(ILLVM_Block block);
 	public void appendToNextBlocks(ILLVM_Block block);

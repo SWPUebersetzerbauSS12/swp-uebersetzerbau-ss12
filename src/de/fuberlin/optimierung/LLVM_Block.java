@@ -23,8 +23,8 @@ class LLVM_Block implements ILLVM_Block {
 	private LinkedList<String> def = new LinkedList<String>();
 	private LinkedList<String> use = new LinkedList<String>();
 	// IN und OUT Mengen fuer globale Lebendigkeitsanalyse auf Speicherzellen
-	private LinkedList<String> in_live = new LinkedList<String>();
-	private LinkedList<String> out_live = new LinkedList<String>();
+	private LinkedList<String> inLive = new LinkedList<String>();
+	private LinkedList<String> outLive = new LinkedList<String>();
 	
 	// Kompletter Code des Blocks als String
 	private String blockCode;
@@ -37,7 +37,6 @@ class LLVM_Block implements ILLVM_Block {
 		this.createCommands();
 		
 		this.createDefUseSets();
-		System.out.println("H");
 
 	}
 	
@@ -106,9 +105,26 @@ class LLVM_Block implements ILLVM_Block {
 	 * TODO
 	 */
 	public boolean updateInOutLiveVariables() {
+		
 		// this.out = in-Mengen aller Nachfolger zusammenfuegen
+		this.outLive.clear();
+		for(ILLVM_Block b : this.nextBlocks) {
+			LinkedList<String> inNextBlock = b.getInLive();
+			this.outLive.addAll(inNextBlock);
+		}
+		
 		// this.in = this.use + (this.out - this.def)
-		return false;
+		//this.inLive.clear();
+		LinkedList<String> inLiveOld = this.inLive;
+		this.inLive = (LinkedList<String>) this.outLive.clone();	// gibt doch neues obj zurueck?
+		for(String s : this.def) {
+			this.inLive.remove(s);
+		}
+		for(String s : this.use) {
+			this.inLive.add(s);
+		}
+		
+		return !(inLiveOld.equals(this.inLive));
 	}
 
 	private boolean labelCheck(String label) {
@@ -295,6 +311,10 @@ class LLVM_Block implements ILLVM_Block {
 		this.label = label;
 	}
 	
+	public LinkedList<String> getInLive() {
+		return inLive;
+	}
+
 	public String toString() {
 		
 		String code = "";

@@ -58,6 +58,11 @@ public class LLVM_Function {
 		
 	}
 	
+	// in arbeit
+	public void globalLiveVariableAnalysis() {
+		this.createInOutLiveVariables();
+	}
+	
 	/**
 	 * Initialisiert die Hashmap labelToBlock, die Labelnamen dem jeweiligen Block zuordnet
 	 * (als Index in this.blocks)

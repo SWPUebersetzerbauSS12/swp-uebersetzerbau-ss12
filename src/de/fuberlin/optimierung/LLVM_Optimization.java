@@ -49,7 +49,7 @@ class LLVM_Optimization implements ILLVM_Optimization {
 			
 			// Dead register elimination
 			tmp.eliminateDeadRegisters();
-			//tmp.eliminateDeadBlocks();
+			tmp.eliminateDeadBlocks();
 			
 			
 			
@@ -92,7 +92,8 @@ class LLVM_Optimization implements ILLVM_Optimization {
 	public static void main(String args[]) {
 
 		ILLVM_Optimization optimization = new LLVM_Optimization();        
-		String optimizedCode = optimization.optimizeCodeFromFile("input/llvm_constant_folding1");
+		//String optimizedCode = optimization.optimizeCodeFromFile("input/llvm_constant_folding1");
+		String optimizedCode = optimization.optimizeCodeFromFile("input/llvm_dead_block");
 		System.out.println(optimizedCode);
 	}
 

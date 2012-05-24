@@ -356,12 +356,15 @@ public class LLVM_Function {
 			
 			LinkedList<ILLVM_Command> _cmds = registerMap.getUses(cmd.getTarget().getName());
 			
-			for(int j = 0; j < _cmds.size(); j++){
-				LinkedList<LLVM_Parameter> operands = _cmds.get(j).getOperands();
-				for(int k = 0;  k < operands.size(); k++){
-					if(cmd.getTarget().getName().equals(operands.get(k).getName())){
-						operands.set(k, cmd.getOperands().get(0));
-						registerMap.deleteCommand(_cmds.get(j));
+			if(_cmds != null){
+				for(int j = 0; j < _cmds.size(); j++){
+					LinkedList<LLVM_Parameter> operands = _cmds.get(j).getOperands();
+					for(int k = 0;  k < operands.size(); k++){
+						if(cmd.getTarget().getName().equals(operands.get(k).getName())){
+							registerMap.deleteCommand(_cmds.get(j));
+							operands.set(k, cmd.getOperands().get(0));
+							
+						}
 					}
 				}
 			}

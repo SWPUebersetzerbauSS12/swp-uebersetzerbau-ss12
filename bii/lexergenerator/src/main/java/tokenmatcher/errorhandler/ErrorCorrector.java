@@ -113,7 +113,7 @@ public class ErrorCorrector {
 	private void handleMismatchOnPhraseLevel( Character currentChar,
 			LexemeReader lexemeReader,
 			DeterministicFiniteAutomata<Character, StatePayload> dfa, int lineNumber,
-			int positionInLine) {
+			int positionInLine) throws LexemeReaderException {
 		
 		// reset, if a new error occur
 		if ( lastLineNumber != lineNumber
@@ -121,6 +121,11 @@ public class ErrorCorrector {
 			reset();
 		
 		Notification.printErrorMessage( "Mismatch: " + currentChar);
+		
+
+		
+
+		
 		switch ( currentHeuristic) {
 			case REMOVE_CHAR:
 					Notification.printMismatchMessage( String.format(
@@ -132,20 +137,73 @@ public class ErrorCorrector {
 					break;
 			case ADD_CHAR:
 			    Collection<Character> possiblesChars = dfa.getElementsOfOutgoingTransitionsFromState( dfa.getCurrentState());
+			    boolean IfAddChar = false;
 			    for ( Character character : possiblesChars) {
 			    	// TODO Heuristic add a char
+			    	dfa.changeStateByElement(character);
+			    	if(dfa.canChangeStateByElement(currentChar)){
+			    		Notification.printMismatchMessage( String.format(
+								"Mismatch: character %s added at line %d at position %d.",
+								currentChar, lineNumber, positionInLine));
+			    		IfAddChar = true;
+			    		break;
+			    	}
+			    	dfa.changeToPreviousState();
 					}
+			    lexemeReader.stepBackward( 1);
+			    if(!IfAddChar){
+			    	currentHeuristic = Heuristic.REPLACE_CHAR;
+			    }
 			    break;
 		case REPLACE_CHAR:
 		      // TODO Heuristic replace a char
+			Collection<Character> possiblesChars2 = dfa.getElementsOfOutgoingTransitionsFromState( dfa.getCurrentState());
+			boolean IfReplaceChar = false;
+		    for ( Character character : possiblesChars2) {
+		    	// TODO Heuristic add a char
+		    	dfa.changeStateByElement(character);
+		    	currentChar = lexemeReader.getNextChar();
+		    	if(dfa.canChangeStateByElement(currentChar)){
+		    		Notification.printMismatchMessage( String.format(
+							"Mismatch: character %s replaced at line %d at position %d.",
+							currentChar, lineNumber, positionInLine));
+		    		IfReplaceChar = true;
+		    		break;
+		    	}
+		    	dfa.changeToPreviousState();
+				}
+		    if(!IfReplaceChar)if(!IfAddChar){
+		    	lexemeReader.stepBackward( 1);
+		    	currentHeuristic = Heuristic.TOGGLE_TWO_CHARS;
+		    }
 			break;
 		case TOGGLE_TWO_CHARS:
 		      // TODO Heuristic toggle two chars
+			Character tempChar;
+			tempChar = currentChar;
+			currentChar = lexemeReader.getNextChar();
+			if(!dfa.canChangeStateByElement(currentChar)) {
+				correctionMode = CorrectionMode.PANIC_MODE;
+				lexemeReader.stepBackward( 2);
+				break;
+			}
+			dfa.changeStateByElement(currentChar);
+			if(!dfa.canChangeStateByElement(tempChar)){
+				correctionMode = CorrectionMode.PANIC_MODE;
+				lexemeReader.stepBackward( 2);
+				dfa.changeToPreviousState();
+				break;
+			}
+			dfa.changeStateByElement(tempChar);
+			Notification.printMismatchMessage( String.format(
+					"Mismatch: character %s and character %s switched at line %d at position %d.",
+					tempChar,currentChar, lineNumber, positionInLine));
 			break;
 
 		default:
 			break;
 	}
+	
 	}
 
 

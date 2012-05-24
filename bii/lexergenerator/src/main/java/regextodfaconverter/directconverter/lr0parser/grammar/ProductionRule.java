@@ -24,14 +24,20 @@ public class ProductionRule implements Iterable<RuleElement> {
 				&& rightRuleSide.size() > 0) {
    		this.rightRuleSide = filterEmptyStrings( rightRuleSide);
 		} else {
-			this.rightRuleSide = (RuleElementSequenz) new ArrayList<RuleElement>();
+			this.rightRuleSide = new RuleElementArray();
 		  this.rightRuleSide.add( new EmptyString());
 		}
 	}
 	
 	public ProductionRule( Nonterminal leftRuleSide,
-			RuleElement ... rightRuleSideElements) {
-		this( leftRuleSide, (RuleElementSequenz) Arrays.asList( rightRuleSideElements));
+			final RuleElement ... rightRuleSideElements) {
+		this( leftRuleSide, new RuleElementArray(){
+			RuleElementArray getFilledArray(){
+				RuleElementArray ruleElementArray = new RuleElementArray();
+				ruleElementArray.addAll( Arrays.asList( rightRuleSideElements));		
+			    return ruleElementArray;
+			}
+		 }.getFilledArray());
 	}
 	
 	private RuleElementSequenz filterEmptyStrings( RuleElementSequenz elementSequenz) {

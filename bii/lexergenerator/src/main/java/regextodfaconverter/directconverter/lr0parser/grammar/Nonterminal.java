@@ -27,10 +27,12 @@ public class Nonterminal extends RuleElement {
 		if ( !( theOtherObject instanceof Nonterminal))
 			return false;
 		
-    // Kein Vergleich auf name, da name optional. 
-		// Dient der Ausgabe der toString() Methode. -> debugging
+		Nonterminal theOtherNonterminal = (Nonterminal) theOtherObject;
+		// Wenn über Namen gearbeitet wird, dann gleich, wenn Bezeichner gleich sind
+		if ( Test.isAssigned( this.name) && this.name.equals( theOtherNonterminal.name))
+			return true;
 		
-		return true;
+		return super.equals(theOtherNonterminal);
 	}
 	
 	@Override

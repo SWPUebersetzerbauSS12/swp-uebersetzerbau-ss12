@@ -55,7 +55,7 @@ public class CodeGenerator {
 			lex.open(inputFile.get((Integer)i));
 			
 			VariableTableContainer varCon = new VariableTableContainer();
-			Translator trans = new Translator();
+			Translator trans = new Translator(varCon);
 			
 			Token tok  = new Token();
 			int linecount = 0;

@@ -13,6 +13,8 @@ public class Variable {
 		this.name = name;
 		this.type = type;
 		this.value = value;
+		if(this.type != null && this.type.equals("i32"))
+			size = 4;
 	}
 	
 	public String value() {

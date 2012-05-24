@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import main.model.Address;
+import main.model.StackAddress;
 import main.model.Token;
 import main.model.Variable;
 
@@ -39,6 +40,16 @@ public class VariableTableContainer {
 	
 	public List<Variable> getAllVariables() {
 		return getVariableTable(this.actTable).getAllVariables();
+	}
+	
+	public Variable getVariable(String name) {
+		List<Variable> varList;
+		varList = getAllVariables();
+		for (Variable v : varList) {
+			if(name.equals(v.name()))
+				return v;
+		}
+		return null;
 	}
 	
 	public List<Address> getAddresses(Variable var) {

@@ -1,6 +1,9 @@
 package de.fuberlin.projectci.lrparser;
 
 import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -10,6 +13,9 @@ import de.fuberlin.projectci.extern.ISyntaxTree;
 import de.fuberlin.projectci.grammar.BNFParsingErrorException;
 import de.fuberlin.projectci.grammar.Grammar;
 import de.fuberlin.projectci.grammar.GrammarReader;
+import de.fuberlin.projectci.grammar.NonTerminalSymbol;
+import de.fuberlin.projectci.grammar.Production;
+import de.fuberlin.projectci.grammar.Symbol;
 import de.fuberlin.projectci.parseTable.InvalidGrammarException;
 import de.fuberlin.projectci.parseTable.ParseTable;
 import de.fuberlin.projectci.parseTable.ParseTableBuilder;
@@ -33,6 +39,7 @@ public class LRParser {
 		}
 		// Grammatik erweitern
 		extendGrammar(this.grammar);
+		
 		// ParseTable erstellen
 		ParseTableBuilder parseTableBuilder=ParseTableBuilder.createParseTableBuilder(grammar);
 		try {
@@ -52,10 +59,42 @@ public class LRParser {
 	/**
 	 * Erweitert die übergebene Grammatik mit einem neuen Startsymbol 
 	 * und einer neuen Produktion vom neuen Startsymbol auf das alte Startsymbol.
+	 * XXX Grammatik als Argument evtl weglassen, weil man im Konstruktor sowieso eine Grammatik übergeben muss, oder vllt Methode statisch?
 	 * @param grammar eine Grammatik, die erweitert werden soll
 	 */
 	public void extendGrammar(Grammar grammar){
-		// TODO Implementiere mich.
+		// alle Namen der Nichtterminale aus der Grammatik holen
+		Set<String> nonTerminalsNames = grammar.getAllNonterminalNames();
+		
+		NonTerminalSymbol oldStartSymbol = grammar.getStartSymbol();
+		
+		String freeName = null;
+		
+		// zuerst folgende Namen für neues Startsymbol probieren
+		String[] firstChoiceStartSymbols = new String[]{"S0","S'","Start","Startsymbol","start"};
+		for(String s : firstChoiceStartSymbols){
+			if(!nonTerminalsNames.contains(s)){
+				freeName = s;
+				break;
+			}
+		}
+		
+		// ansonsten Zufallsname "S"+TIMESTAMP probieren
+		while(freeName == null){
+			String s = "S"+System.currentTimeMillis();
+			if(!nonTerminalsNames.contains(s))
+				freeName = s;
+		}
+		
+		// neues Nichtterminal erzeugen und als Startsymbol festlegen
+		NonTerminalSymbol startSymbol = grammar.createNonTerminalSymbol(freeName);
+		grammar.setStartSymbol(startSymbol);
+		
+		// neue Produktion vom neuen zum alten Startsymbol anlegen
+		List<Symbol> rhs = new LinkedList<Symbol>();
+		rhs.add(oldStartSymbol);
+		Production production = new Production(startSymbol, rhs);
+		grammar.addProduction(production);
 	}
 }
  

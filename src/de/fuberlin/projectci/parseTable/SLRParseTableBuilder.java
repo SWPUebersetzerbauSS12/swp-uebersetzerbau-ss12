@@ -198,20 +198,19 @@ public class SLRParseTableBuilder extends ParseTableBuilder {
 	 * Symbols aus einer gegebenen Item-Menge folgen.
 	 * Vgl. Drachembuch: S.296/ Beispiel 4.27
 	 * 
-	 * @param items Item-Menge, für welche die "Folge"-Item-Menge berechnet wird.
+	 * @param items Item-Menge, zu der für jedes Element ein "Folge-Item" gesucht wird.
 	 * @param s oberstes Stack-Symbol
 	 * @return Hülle der gefundenen "Folge"-Item-Menge
 	 */
 	public Set<LR0Item> gotoSet(Set<LR0Item> items, Symbol s) {
-		// TODO Implementiere mich
-		// Algorithmus aus Drachenbuch (eng): Abbildung 4.40
-		// --> eigentlich für LR(1), sollte aber für LR(0) identisch sein
+		// Algorithmus für LR(1) aus Drachenbuch (eng): Abbildung 4.40
 		//	SetOfItems GOTO(I,X) {
 		//		J=leere Menge;
 		// 		for ( jedes Item [A → α.Xβ,a] in I )
 		// 			füge Item [A → αX.β,a] zu J hinzu;
 		// 		return CLOSURE(J);
 		//	}
+		// --> funktioniert analog für LR(0) Items
 		
 		Set<LR0Item> J = new HashSet<LR0Item>();
 		for(LR0Item item : items) {

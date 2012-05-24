@@ -26,12 +26,14 @@ public class GrammarReader {
 	public static Grammar readGrammar(Reader r) throws BNFParsingErrorException {
 		Grammar grammar = new Grammar();
 		int foundProductions = 0;
+		int lineNumber = 0;
 		try {
 			// Textdatei zeilenweise einlesen
 			BufferedReader reader = new BufferedReader(r);
 			String line = null;
 			
 			while((line = reader.readLine()) != null) {
+				++lineNumber;
 				if(line.length() > 0) { // Leerzeilen ignorieren
 					// pro Zeile genau eine Produktion parsen
 					List<Production> productions = parseProduction(line, grammar);
@@ -50,6 +52,9 @@ public class GrammarReader {
 		} catch (IOException e) {
 			// Lesefehler z.B. durch Interrupt
 			throw new BNFParsingErrorException(e);
+		} catch (BNFParsingErrorException e) {
+			// falls beim Parsen einer Zeile ein Fehler auftritt, wird Zeilennummer mit angegeben
+			throw new BNFParsingErrorException(e.getMessage()+" (Line "+lineNumber+")");
 		}
 		
 		if(foundProductions == 0)
@@ -115,13 +120,12 @@ public class GrammarReader {
 	private static List<Production> parseProduction(String string, Grammar grammar) throws BNFParsingErrorException{
 		// alle Whitespaces entfernen
 		string = string.replaceAll("\\s", "");
-//		System.out.println(string); // TODO DEBUG
 		
 		// Reguläre Ausdrücke
-		String regexNonterminal = "(<[^>]+>)";
-		String regexSymbol = "("+regexNonterminal+"|(\"[^\"]+\"))";
+		String regexNonterminal = "(<[^<>]+>)"; // mind. 1 Zeichen außer "< und >" muss innerhalb <...> liegen
+		String regexSymbol = "("+regexNonterminal+"|(\"[^\"]+\"))"; // Nichterminale und Terminale
 		String regexRightHandSite = "("+regexSymbol+"+\\|)*"+regexSymbol+"+";
-		Pattern patternNonterminal = Pattern.compile(regexNonterminal); // mind. 1 Zeichen außer ">" muss innerhalb <...> liegen
+		Pattern patternNonterminal = Pattern.compile(regexNonterminal);
 		Pattern patternSymbol = Pattern.compile(regexSymbol+"|\\|"); // Nichterminale, Terminale und "|"
 		Pattern patternProduction = Pattern.compile(regexNonterminal+"::="+regexRightHandSite); // auf generelles Schema prüfen
 		
@@ -172,7 +176,7 @@ public class GrammarReader {
 				//System.out.print("\n"); // TODO DEBUG
 				
 				productions.add(new Production(leftHandSite, rightHandSite));
-			}
+			} 
 		} else {
 			throw new BNFParsingErrorException("Illegal production!");
 		}

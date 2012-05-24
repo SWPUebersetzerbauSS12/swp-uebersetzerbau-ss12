@@ -13,13 +13,13 @@ public class Production {
 	private List<Symbol> rhs;
 	
 	public Production(NonTerminalSymbol lhs, List<?extends Symbol> rhs) {
-		super(); // TODO hier kein Super
+		super(); 
 		this.lhs = lhs;
-		this.rhs = (List<Symbol>) rhs;	// TODO ist das so sinnvoll?
+		this.rhs = (List<Symbol>) rhs;	
 	}
 
 	public Production(NonTerminalSymbol lhs, Symbol[] rhs) {
-		super(); // TODO hier kein Super
+		super(); 
 		this.lhs = lhs;
 		this.rhs = new ArrayList<Symbol>();
 		for (int i = 0; i < rhs.length; i++) {

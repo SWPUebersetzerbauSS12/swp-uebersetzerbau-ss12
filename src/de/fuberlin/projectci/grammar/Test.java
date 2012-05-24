@@ -1,8 +1,12 @@
 package de.fuberlin.projectci.grammar;
 
 
+import java.io.File;
 import java.util.Map;
 import java.util.Set;
+
+import de.fuberlin.projectci.lrparser.LRParser;
+import de.fuberlin.projectci.parseTable.InvalidGrammarException;
 
 public class Test {
 
@@ -12,7 +16,7 @@ public class Test {
 	public static void main(String[] args) {
 		
 		Grammar g = new Grammar();
-		
+
 		try {
 			//g = GrammarReader.readGrammar("./doc/testFirst");
 			//g = GrammarReader.readGrammar("./doc/praefixGrammatik4.28.txt");
@@ -22,7 +26,15 @@ public class Test {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
+		
+		System.out.println("=== Grammatik ===");
 		System.out.println(g);
+		System.out.println();
+		
+//		System.out.println("=== Grammatik erweitert ===");
+//		LRParser.extendGrammar(g);
+//		System.out.println(g);
+//		System.out.println();
 
 		System.out.println("=== FIRST ===");
 		
@@ -49,6 +61,9 @@ public class Test {
 			}
 			System.out.println("}");
 		}
+		
+		
+		
 	}
 
 }

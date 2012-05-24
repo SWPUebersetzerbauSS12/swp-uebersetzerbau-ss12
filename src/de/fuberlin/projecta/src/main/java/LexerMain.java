@@ -3,7 +3,6 @@ import java.io.IOException;
 
 import lexer.ILexer;
 import lexer.IToken;
-import lexer.IToken.TokenType;
 import lexer.Lexer;
 import lexer.SyntaxErrorException;
 import lexer.io.FileCharStream;
@@ -38,7 +37,7 @@ public class LexerMain {
 			do {
 				t = lexer.getNextToken();
 				System.out.println(t);
-			} while (t.getType() != TokenType.EOF);
+			} while (!t.getType().equals("EOF"));
 		} catch (SyntaxErrorException e) {
 			System.out.println(e.getMessage());
 		}

@@ -1,6 +1,6 @@
 package semantic.analysis.AstNodes;
 
-import lexer.IToken.TokenType;
+import lexer.TokenType;
 import lombok.AllArgsConstructor;
 import semantic.analysis.SymbolTableStack;
 

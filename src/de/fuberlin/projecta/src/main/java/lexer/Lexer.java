@@ -1,6 +1,5 @@
 package lexer;
 
-import lexer.IToken.TokenType;
 import lexer.io.ICharStream;
 
 public class Lexer implements ILexer {

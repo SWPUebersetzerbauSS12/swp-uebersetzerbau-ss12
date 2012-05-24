@@ -4,13 +4,13 @@ import java.util.Stack;
 
 import lexer.ILexer;
 import lexer.IToken;
-import lexer.IToken.TokenType;
 import lexer.SyntaxErrorException;
+import lexer.TokenType;
 import lombok.Getter;
 import lombok.Setter;
 import parser.ITree.DefaultAttribute;
 
-public class Parser {
+public class Parser implements IParser {
 
 	private ILexer lexer;
 	private ParseTable table;
@@ -40,6 +40,12 @@ public class Parser {
 		stack.push(new Symbol(NonTerminal.program));
 	}
 
+	/**
+	 * TODO: Error handling
+	 * 
+	 * @see parser.IParser#parse()
+	 */
+	@Override
 	public void parse() throws ParserException {
 		if (table.isAmbigous()) {
 			throw new ParserException(
@@ -52,11 +58,11 @@ public class Parser {
 		try {
 			token = lexer.getNextToken();
 		} catch (SyntaxErrorException e) {
+			// TODO: Error handling?
 			e.printStackTrace();
 		}
 
 		ISyntaxTree currentNode = new Tree(new Symbol(Symbol.Reserved.EPSILON));
-
 		do {
 			if (debugEnabled)
 				printStack();
@@ -75,7 +81,7 @@ public class Parser {
 				}
 			} else if (peek.isTerminal()) {
 				TokenType terminal = peek.asTerminal();
-				if (terminal == token.getType()) {
+				if (terminal == TokenType.valueOf(token.getType())) {
 					ISyntaxTree node = new Tree(new Symbol(terminal));
 					node.addAttribute(DefaultAttribute.TokenValue.name());
 					final boolean success = node.setAttribute(
@@ -95,7 +101,7 @@ public class Parser {
 			} else /** stack symbol is non-terminal */
 			{
 				NonTerminal nonT = peek.asNonTerminal();
-				String prod = table.getEntry(nonT, token.getType());
+				String prod = table.getEntry(nonT, TokenType.valueOf(token.getType()));
 
 				ISyntaxTree node = new Tree(new Symbol(nonT));
 				currentNode.addChild(node);

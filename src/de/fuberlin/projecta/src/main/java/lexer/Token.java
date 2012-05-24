@@ -16,6 +16,11 @@ class Token implements IToken {
 	private int offset;
 
 	@Override
+	public String getType() {
+		return type.toString();
+	}
+
+	@Override
 	public String toString() {
 		return "<" + type + ", " + attribute + ", " + lineNumber + ", "
 				+ offset + ">";

@@ -7,10 +7,10 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.ArrayList;
 
-import lexer.IToken.TokenType;
 import lexer.Lexer;
 import lexer.SyntaxErrorException;
 import lexer.Token;
+import lexer.TokenType;
 import lexer.io.FileCharStream;
 import lexer.io.StringCharStream;
 
@@ -217,7 +217,7 @@ public class LexerTest {
 		do {
 			t = lexer.getNextToken();
 			tokenList.add(t);
-		} while (t.getType() != TokenType.EOF);
+		} while (!t.getType().equals("EOF"));
 		return tokenList;
 	}
 

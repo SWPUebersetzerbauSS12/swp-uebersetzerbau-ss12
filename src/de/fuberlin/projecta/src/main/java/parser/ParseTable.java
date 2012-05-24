@@ -1,6 +1,6 @@
 package parser;
 
-import lexer.IToken.TokenType;
+import lexer.TokenType;
 import lombok.Getter;
 
 public class ParseTable {

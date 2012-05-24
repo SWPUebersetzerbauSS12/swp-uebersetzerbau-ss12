@@ -1,6 +1,6 @@
 package semantic.analysis;
 
-import lexer.IToken.TokenType;
+import lexer.TokenType;
 import lombok.Getter;
 import parser.ISyntaxTree;
 import parser.ITree.DefaultAttribute;

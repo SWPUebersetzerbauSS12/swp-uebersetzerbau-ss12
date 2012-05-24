@@ -1,6 +1,6 @@
 package ast;
 
-import lexer.IToken.TokenType;
+import lexer.TokenType;
 
 public class TypeChecker {
 

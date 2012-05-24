@@ -37,47 +37,11 @@ public class LLVM_Function {
 		this.endBlock = this.blocks.get(this.numberBlocks-1);
 	}
 	
-	/**
-	 * Erstelle IN und OUT Mengen fuer globale Lebendigkeitsanalyse
-	 * Arbeitet nicht auf Registern, sondern auf Speicheradressen
-	 * Dannach ist zwischen den Bloecken bekannt, ob eine Speicheradresse lebendig ist
-	 * Dient dazu, spaeter ueberfluessige stores und loads entfernen zu koennen
+	/*
+	 * *********************************************************
+	 * *********** Flussgraph - Erstellung *********************
+	 * *********************************************************
 	 */
-	private void createInOutLiveVariables() {
-		// Algorithmus siehe Seite 610 Drachenbuch
-		boolean changes = true;
-		while(changes) {
-			changes = false;
-			for(ILLVM_Block b : this.blocks) {
-				if(b.updateInOutLiveVariables()) {
-					changes = true;
-				}
-			}
-		}
-		
-	}
-	
-	// in arbeit
-	public void globalLiveVariableAnalysis() {
-		this.createInOutLiveVariables();
-	}
-	
-	/**
-	 * Initialisiert die Hashmap labelToBlock, die Labelnamen dem jeweiligen Block zuordnet
-	 * (als Index in this.blocks)
-	 * Wird bei Erstellung des Flussgraphen zwischen den Bloecken benoetigt
-	 */
-	private void mapLabelsToBlocks() {
-		
-		this.labelToBlock.clear();
-		
-		// Durchlaufe alle Bloecke
-		for(int i=0; i<this.numberBlocks; i++) {
-			String label = this.blocks.get(i).getLabel();		
-			this.labelToBlock.put(label, i);
-		}
-		
-	}
 	
 	/**
 	 * Erstellt den Flussgraphen zwischen den Bloecken, d.h. die Attribute
@@ -178,6 +142,29 @@ public class LLVM_Function {
 	}
 	
 	/**
+	 * Initialisiert die Hashmap labelToBlock, die Labelnamen dem jeweiligen Block zuordnet
+	 * (als Index in this.blocks)
+	 * Wird bei Erstellung des Flussgraphen zwischen den Bloecken benoetigt
+	 */
+	private void mapLabelsToBlocks() {
+		
+		this.labelToBlock.clear();
+		
+		// Durchlaufe alle Bloecke
+		for(int i=0; i<this.numberBlocks; i++) {
+			String label = this.blocks.get(i).getLabel();		
+			this.labelToBlock.put(label, i);
+		}
+		
+	}
+	
+	/*
+	 * *********************************************************
+	 * *********** Registermaps initialisieren *****************
+	 * *********************************************************
+	 */
+	
+	/**
 	 * Definition und Verwendungen der Register werden in registerMap abgelegt
 	 * Alte Informationen werden entfernt, aktuelle gesetzt
 	 */
@@ -207,6 +194,43 @@ public class LLVM_Function {
 		}
 	}
 	
+	/*
+	 * *********************************************************
+	 * *********** Globale Lebendigkeit ************************
+	 * *********************************************************
+	 */
+	
+	/**
+	 * Erstelle IN und OUT Mengen fuer globale Lebendigkeitsanalyse
+	 * Arbeitet nicht auf Registern, sondern auf Speicheradressen
+	 * Dannach ist zwischen den Bloecken bekannt, ob eine Speicheradresse lebendig ist
+	 * Dient dazu, spaeter ueberfluessige stores und loads entfernen zu koennen
+	 */
+	private void createInOutLiveVariables() {
+		// Algorithmus siehe Seite 610 Drachenbuch
+		boolean changes = true;
+		while(changes) {
+			changes = false;
+			for(ILLVM_Block b : this.blocks) {
+				if(b.updateInOutLiveVariables()) {
+					changes = true;
+				}
+			}
+		}
+		
+	}
+	
+	// in arbeit
+	public void globalLiveVariableAnalysis() {
+		this.createInOutLiveVariables();
+	}
+	
+
+	/*
+	 * *********************************************************
+	 * *********** Folding / Propagation ***********************
+	 * *********************************************************
+	 */
 	
 	public void constantFolding() {
 		
@@ -377,6 +401,11 @@ public class LLVM_Function {
 		constantFolding();
 	}
 	
+	/*
+	 * *********************************************************
+	 * *********** Tote Register entfernen *********************
+	 * *********************************************************
+	 */
 	
 	/**
 	 * Teste, ob gegebenes Register nicht verwendet wird
@@ -479,6 +508,13 @@ public class LLVM_Function {
 		
 	}
 	
+	
+	/*
+	 * *********************************************************
+	 * *********** Tote Bloecke entfernen **********************
+	 * *********************************************************
+	 */
+	
 	/**
 	 * Entferne tote Bloecke (Bloecke, die nicht erreicht werden koennen)
 	 * Diese haben keine Vorgaenger im Flussgraphen (und sind ungleich dem ersten Block)
@@ -548,6 +584,12 @@ public class LLVM_Function {
 			
 		}
 	}
+	
+	/*
+	 * *********************************************************
+	 * *********** Hilfsfunktionen *****************************
+	 * *********************************************************
+	 */
 	
 	public String toString() {
 		String output = func_define + "{\n";

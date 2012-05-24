@@ -9,6 +9,7 @@ public class LL1Parser {
 	}
 
 	public void getSyntaxTree(){
-		
+		TokenParser tP = new TokenParser();
+		tP.ParseTokenStream(pG.getParseTable());
 	}
 }

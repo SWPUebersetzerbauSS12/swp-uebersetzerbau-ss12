@@ -39,30 +39,20 @@ class LLVM_Block implements ILLVM_Block {
 		this.createDefUseSets();
 
 	}
-	
-	public boolean isEmpty() {
-		return (this.firstCommand==null);
-	}
-	
-	public boolean hasPreviousBlocks() {
-		return !(this.previousBlocks.isEmpty());
-	}
 
 	public void optimizeBlock() {
 
 	}
 
-	public void deleteBlock() {
-
-		for(ILLVM_Block nextBlock : this.nextBlocks) {
-			nextBlock.removeFromPreviousBlocks(this);
-		}
-		
-	}
-
 	private void createDAG() {
 
 	}
+	
+	/*
+	 * *********************************************************
+	 * *********** Live Variable Analysis **********************
+	 * *********************************************************
+	 */
 	
 	/**
 	 * Erstelle def und use Mengen dieses Blockes fuer globale Lebendigkeitsanalyse
@@ -100,29 +90,8 @@ class LLVM_Block implements ILLVM_Block {
 	}
 	
 	/**
-	 * Hilfsfunktion, um zwei String-Listen zu vergleichen
-	 * Gibt true zurueck, wenn sie die gleichen Strings enthalten (Reihenfolge egal),
-	 * sonst false
-	 * @param l1 Liste 1
-	 * @param l2 Liste 2
-	 * @return
-	 */
-	private boolean compareLists(LinkedList<String> l1, LinkedList<String> l2) {
-		if(l1.size()!=l2.size()) {
-			return false;
-		}
-		for(String s : l1) {
-			if(!l2.contains(s)) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	/**
 	 * Aktualisiere IN und OUT Mengen fuer globale Lebendigkeitsanalyse
 	 * @return true, falls IN veraendert wurde
-	 * TODO
 	 */
 	public boolean updateInOutLiveVariables() {
 		
@@ -135,7 +104,6 @@ class LLVM_Block implements ILLVM_Block {
 					this.outLive.add(s);
 				}
 			}
-			//this.outLive.addAll(inNextBlock);
 		}
 		
 		// this.in = this.use + (this.out - this.def)
@@ -154,6 +122,12 @@ class LLVM_Block implements ILLVM_Block {
 		return !(this.compareLists(inLiveOld, this.inLive));
 				
 	}
+	
+	/*
+	 * *********************************************************
+	 * *********** Umgang mit Befehlen *************************
+	 * *********************************************************
+	 */
 
 	private boolean labelCheck(String label) {
 		
@@ -290,7 +264,55 @@ class LLVM_Block implements ILLVM_Block {
 		}
 		return null;
 	}
+	
+	/*
+	 * *********************************************************
+	 * *********** Hilfsfunktionen *****************************
+	 * *********************************************************
+	 */
 
+	/**
+	 * Hilfsfunktion, um zwei String-Listen zu vergleichen
+	 * Gibt true zurueck, wenn sie die gleichen Strings enthalten (Reihenfolge egal),
+	 * sonst false
+	 * @param l1 Liste 1
+	 * @param l2 Liste 2
+	 * @return
+	 */
+	private boolean compareLists(LinkedList<String> l1, LinkedList<String> l2) {
+		if(l1.size()!=l2.size()) {
+			return false;
+		}
+		for(String s : l1) {
+			if(!l2.contains(s)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public void deleteBlock() {
+
+		for(ILLVM_Block nextBlock : this.nextBlocks) {
+			nextBlock.removeFromPreviousBlocks(this);
+		}
+		
+	}
+	
+	public boolean isEmpty() {
+		return (this.firstCommand==null);
+	}
+	
+	public boolean hasPreviousBlocks() {
+		return !(this.previousBlocks.isEmpty());
+	}
+	
+	/*
+	 * *********************************************************
+	 * *********** Setter / Getter / toString ******************
+	 * *********************************************************
+	 */
+	
 	public void setFirstCommand(ILLVM_Command first) {
 		this.firstCommand = first;
 	}

@@ -42,7 +42,6 @@ public class LLVM_Function {
 	 * Arbeitet nicht auf Registern, sondern auf Speicheradressen
 	 * Dannach ist zwischen den Bloecken bekannt, ob eine Speicheradresse lebendig ist
 	 * Dient dazu, spaeter ueberfluessige stores und loads entfernen zu koennen
-	 * TODO: funktioniert noch nicht
 	 */
 	private void createInOutLiveVariables() {
 		// Algorithmus siehe Seite 610 Drachenbuch

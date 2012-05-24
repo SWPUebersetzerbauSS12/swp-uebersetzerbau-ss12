@@ -100,6 +100,26 @@ class LLVM_Block implements ILLVM_Block {
 	}
 	
 	/**
+	 * Hilfsfunktion, um zwei String-Listen zu vergleichen
+	 * Gibt true zurueck, wenn sie die gleichen Strings enthalten (Reihenfolge egal),
+	 * sonst false
+	 * @param l1 Liste 1
+	 * @param l2 Liste 2
+	 * @return
+	 */
+	private boolean compareLists(LinkedList<String> l1, LinkedList<String> l2) {
+		if(l1.size()!=l2.size()) {
+			return false;
+		}
+		for(String s : l1) {
+			if(!l2.contains(s)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
 	 * Aktualisiere IN und OUT Mengen fuer globale Lebendigkeitsanalyse
 	 * @return true, falls IN veraendert wurde
 	 * TODO
@@ -110,7 +130,12 @@ class LLVM_Block implements ILLVM_Block {
 		this.outLive.clear();
 		for(ILLVM_Block b : this.nextBlocks) {
 			LinkedList<String> inNextBlock = b.getInLive();
-			this.outLive.addAll(inNextBlock);
+			for(String s : inNextBlock) {
+				if(!this.outLive.contains(s)) {
+					this.outLive.add(s);
+				}
+			}
+			//this.outLive.addAll(inNextBlock);
 		}
 		
 		// this.in = this.use + (this.out - this.def)
@@ -121,10 +146,13 @@ class LLVM_Block implements ILLVM_Block {
 			this.inLive.remove(s);
 		}
 		for(String s : this.use) {
-			this.inLive.add(s);
+			if(!this.inLive.contains(s)) {
+				this.inLive.add(s);
+			}
 		}
 		
-		return !(inLiveOld.equals(this.inLive));
+		return !(this.compareLists(inLiveOld, this.inLive));
+				
 	}
 
 	private boolean labelCheck(String label) {

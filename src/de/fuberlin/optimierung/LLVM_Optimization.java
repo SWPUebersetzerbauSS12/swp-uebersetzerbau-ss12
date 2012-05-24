@@ -51,8 +51,8 @@ class LLVM_Optimization implements ILLVM_Optimization {
 			tmp.eliminateDeadRegisters();
 			tmp.eliminateDeadBlocks();
 			
-			// in arbeit, nicht einbinden
-			//tmp.globalLiveVariableAnalysis();
+			// Globale Lebendigkeitsanalyse fuer Store, Load
+			tmp.globalLiveVariableAnalysis();
 			
 			// Optimierte Ausgabe
 			outputLLVM += tmp.toString();

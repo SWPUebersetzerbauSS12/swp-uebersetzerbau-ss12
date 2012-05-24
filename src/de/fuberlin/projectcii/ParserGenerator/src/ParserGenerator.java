@@ -17,7 +17,6 @@ import java.util.Vector;
  * 
  */
 
-//comment
 public class ParserGenerator {
 	
 	//Contains the Grammar the Parsetable is created from

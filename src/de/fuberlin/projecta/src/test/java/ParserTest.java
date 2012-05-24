@@ -9,7 +9,7 @@ import lexer.io.FileCharStream;
 import org.junit.Test;
 
 import parser.Parser;
-import parser.ParserException;
+import parser.ParseException;
 
 
 public class ParserTest {
@@ -26,7 +26,7 @@ public class ParserTest {
 		Parser parser = new Parser(lexer);
 		try {
 			parser.parse();
-		} catch (ParserException e) {
+		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 		parser.printParseTree();

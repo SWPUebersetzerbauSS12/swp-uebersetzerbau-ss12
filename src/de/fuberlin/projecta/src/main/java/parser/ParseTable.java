@@ -36,10 +36,10 @@ public class ParseTable {
 	 * @param nonT
 	 * @param t
 	 * @param entry
-	 * @throws ParserException
+	 * @throws IllegalStateException
 	 */
 	public void setEntry(NonTerminal nonT, TokenType t, String entry)
-			throws ParserException {
+			throws IllegalStateException {
 		boolean found = false;
 		for (int i = 0; i < nonTerminals.length; i++) {
 			if (nonTerminals[i].equals(nonT)) {
@@ -51,7 +51,7 @@ public class ParseTable {
 						} else {
 							table[i][j] += DELIM + entry;
 							isAmbigous = true;
-							throw new ParserException(
+							throw new IllegalStateException(
 									"parsing table is ambigous in cell ["
 											+ nonT + "," + t + "]");
 						}
@@ -60,7 +60,7 @@ public class ParseTable {
 			}
 		}
 		if (!found)
-			throw new ParserException("Missing parsing table field [" + nonT
+			throw new IllegalStateException("Missing parsing table field [" + nonT
 					+ "," + t + "]");
 	}
 
@@ -74,9 +74,9 @@ public class ParseTable {
 	 * @return All entries of the parsing table cell with the given arguments
 	 *         nonT and t. Entries are separated by one delimiter. If no entry
 	 *         is found null is returned.
-	 * @throws ParserException 
+	 * @throws ParseException 
 	 */
-	public String getEntry(NonTerminal nonT, TokenType t) throws ParserException {
+	public String getEntry(NonTerminal nonT, TokenType t) throws ParseException {
 		for (int i = 0; i < nonTerminals.length; i++) {
 			if (nonTerminals[i].equals(nonT)) {
 				for (int j = 0; j < terminals.length; j++) {

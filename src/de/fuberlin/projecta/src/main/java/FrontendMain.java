@@ -9,7 +9,7 @@ import lexer.io.ICharStream;
 import lexer.io.StringCharStream;
 import parser.ISyntaxTree;
 import parser.Parser;
-import parser.ParserException;
+import parser.ParseException;
 import utils.IOUtils;
 
 public class FrontendMain {
@@ -41,7 +41,7 @@ public class FrontendMain {
 		Parser parser = new Parser(lexer);
 		try {
 			parser.parse();
-		} catch (ParserException e) {
+		} catch (ParseException e) {
 			e.printStackTrace();
 			System.err.println("Parser failed.");
 			return;

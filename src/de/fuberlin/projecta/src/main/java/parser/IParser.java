@@ -3,6 +3,6 @@ package parser;
 
 public interface IParser {
 
-	public void parse() throws ParserException;
+	public void parse() throws ParseException;
 
 }

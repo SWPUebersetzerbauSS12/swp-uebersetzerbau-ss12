@@ -8,7 +8,7 @@ import analysis.SemanticAnalyzer;
 import analysis.SemanticException;
 
 import parser.Parser;
-import parser.ParserException;
+import parser.ParseException;
 
 public class SemanticAnalysisTest {
 
@@ -17,7 +17,7 @@ public class SemanticAnalysisTest {
 		Parser parser = new Parser(lexer);
 		try {
 			parser.parse();
-		} catch (ParserException e) {
+		} catch (ParseException e) {
 			e.printStackTrace();
 			assertTrue(false);
 		}

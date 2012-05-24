@@ -29,7 +29,7 @@ public class Parser implements IParser {
 		table = new ParseTable(NonTerminal.values(), TokenType.values());
 		try {
 			fillParseTable();
-		} catch (ParserException e) {
+		} catch (IllegalStateException e) {
 			e.printStackTrace();
 		}
 	}
@@ -46,10 +46,10 @@ public class Parser implements IParser {
 	 * @see parser.IParser#parse()
 	 */
 	@Override
-	public void parse() throws ParserException {
+	public void parse() throws ParseException {
 		if (table.isAmbigous()) {
-			throw new ParserException(
-					"Parsing table is ambigous! Won't start syntax analysis");
+			throw new ParseException(
+					"Parsing table is ambigous! Won't start syntax analysis", null);
 		}
 
 		initStack();
@@ -95,8 +95,8 @@ public class Parser implements IParser {
 						e.printStackTrace();
 					}
 				} else {
-					throw new ParserException("Wrong token " + token
-							+ " in input");
+					throw new ParseException("Wrong token " + token
+							+ " in input", token);
 				}
 			} else /** stack symbol is non-terminal */
 			{
@@ -123,15 +123,16 @@ public class Parser implements IParser {
 						}
 					}
 				} else if (prod.trim().equals("")) {
-					throw new ParserException(
+					throw new ParseException("Didn't expect token: " + token.getType(), 
 							"Syntax error: No rule in parsing table (Stack: "
-									+ peek + ", token: " + token + ")");
+									+ peek + ", token: " + token + ")", token);
 				} else {
-					throw new ParserException(
-							"Wrong structur in parsing table! Productions should "
+					throw new ParseException(
+							"Internal error",
+							"Wrong structure in parsing table! Productions should "
 									+ "be of the form: X ::= Y1 Y2 ... Yk! Problem with: "
 									+ prod + "(Stack: " + peek + ", token: "
-									+ token + ")");
+									+ token + ")", token);
 				}
 			}
 
@@ -175,9 +176,9 @@ public class Parser implements IParser {
 	 * Cells should be filled by Productions of the form: X ::= Y1 Y2 ... Yk
 	 * Treats basic as { INT_TYPE, REAL_TYPE, STRING_TYPE, BOOL_TYPE }!
 	 * 
-	 * @throws ParserException
+	 * @throws IllegalStateException
 	 */
-	private void fillParseTable() throws ParserException {
+	private void fillParseTable() throws IllegalStateException {
 		// program
 		table.setEntry(NonTerminal.program, TokenType.DEF, "program ::= funcs");
 

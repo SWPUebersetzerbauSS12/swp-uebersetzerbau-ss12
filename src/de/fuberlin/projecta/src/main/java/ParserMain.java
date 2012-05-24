@@ -1,13 +1,13 @@
+import java.io.File;
+
 import lexer.ILexer;
 import lexer.Lexer;
 import lexer.io.FileCharStream;
 import lexer.io.ICharStream;
 import lexer.io.StringCharStream;
 import parser.Parser;
-import parser.ParserException;
+import parser.ParseException;
 import utils.IOUtils;
-
-import java.io.File;
 
 public class ParserMain {
 
@@ -38,9 +38,14 @@ public class ParserMain {
 		Parser parser = new Parser(lexer);
 		try {
 			parser.parse();
-		} catch (ParserException e) {
+		} catch (ParseException e) {
+			System.out.println(e.getMessage() + " (error at line: " + e.getLineNumber() + ", column: " + e.getOffset() + ")");
+			System.out.println("Details:\n" + e.getDetails());
+			System.out.println("Trace:");
 			e.printStackTrace();
+			return;
 		}
+
 		parser.printParseTree();
 	}
 

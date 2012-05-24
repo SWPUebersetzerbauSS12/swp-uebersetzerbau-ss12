@@ -4,10 +4,11 @@ import lexer.io.StringCharStream;
 
 import org.junit.Test;
 
+import analysis.SemanticAnalyzer;
+import analysis.SemanticException;
+
 import parser.Parser;
 import parser.ParserException;
-import semantic.analysis.SemanticAnalyzer;
-import semantic.analysis.SemanticException;
 
 public class SemanticAnalysisTest {
 

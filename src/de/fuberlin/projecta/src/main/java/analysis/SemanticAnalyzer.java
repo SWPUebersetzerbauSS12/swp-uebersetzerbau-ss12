@@ -1,29 +1,29 @@
-package semantic.analysis;
+package analysis;
 
+import analysis.ast.nodes.Array;
+import analysis.ast.nodes.BasicType;
+import analysis.ast.nodes.Block;
+import analysis.ast.nodes.Break;
+import analysis.ast.nodes.Declaration;
+import analysis.ast.nodes.Do;
+import analysis.ast.nodes.FuncDef;
+import analysis.ast.nodes.If;
+import analysis.ast.nodes.IfElse;
+import analysis.ast.nodes.IntLiteral;
+import analysis.ast.nodes.Params;
+import analysis.ast.nodes.Print;
+import analysis.ast.nodes.Program;
+import analysis.ast.nodes.Record;
+import analysis.ast.nodes.Return;
+import analysis.ast.nodes.Statement;
+import analysis.ast.nodes.Type;
+import analysis.ast.nodes.While;
 import lexer.TokenType;
 import lombok.Getter;
 import parser.ISyntaxTree;
 import parser.ITree.DefaultAttribute;
 import parser.NonTerminal;
 import parser.Symbol.Reserved;
-import semantic.analysis.AstNodes.Array;
-import semantic.analysis.AstNodes.BasicType;
-import semantic.analysis.AstNodes.Block;
-import semantic.analysis.AstNodes.Break;
-import semantic.analysis.AstNodes.Declaration;
-import semantic.analysis.AstNodes.Do;
-import semantic.analysis.AstNodes.FuncDef;
-import semantic.analysis.AstNodes.If;
-import semantic.analysis.AstNodes.IfElse;
-import semantic.analysis.AstNodes.IntLiteral;
-import semantic.analysis.AstNodes.Params;
-import semantic.analysis.AstNodes.Print;
-import semantic.analysis.AstNodes.Program;
-import semantic.analysis.AstNodes.Record;
-import semantic.analysis.AstNodes.Return;
-import semantic.analysis.AstNodes.Statement;
-import semantic.analysis.AstNodes.Type;
-import semantic.analysis.AstNodes.While;
 
 public class SemanticAnalyzer {
 

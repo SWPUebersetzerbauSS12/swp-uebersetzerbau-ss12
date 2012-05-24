@@ -1,6 +1,6 @@
 package parser;
 
-import semantic.analysis.SymbolTableStack;
+import analysis.SymbolTableStack;
 
 public class Tree extends ITree {
 	

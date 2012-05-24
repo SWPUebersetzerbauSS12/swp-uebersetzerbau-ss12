@@ -3,8 +3,9 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import semantic.analysis.SymbolTable;
-import semantic.analysis.SymbolTableStack;
+import analysis.SymbolTable;
+import analysis.SymbolTableStack;
+
 
 public class SymbolTableStackTest {
 

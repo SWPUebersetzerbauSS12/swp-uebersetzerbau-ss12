@@ -1,8 +1,8 @@
-package semantic.analysis.AstNodes;
+package analysis.ast.nodes;
 
+import analysis.SymbolTableStack;
 import lexer.TokenType;
 import lombok.AllArgsConstructor;
-import semantic.analysis.SymbolTableStack;
 
 @AllArgsConstructor
 public class BasicType extends Type {

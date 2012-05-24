@@ -1,4 +1,4 @@
-package ast;
+package analysis;
 
 import lexer.TokenType;
 

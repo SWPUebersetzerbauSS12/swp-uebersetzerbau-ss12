@@ -1,4 +1,4 @@
-package semantic.analysis;
+package analysis;
 
 import lombok.Getter;
 import lombok.Setter;

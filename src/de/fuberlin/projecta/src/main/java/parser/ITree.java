@@ -5,8 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import analysis.SymbolTableStack;
+
 import lombok.Getter;
-import semantic.analysis.SymbolTableStack;
 import utils.StringUtils;
 
 public abstract class ITree implements ISyntaxTree {

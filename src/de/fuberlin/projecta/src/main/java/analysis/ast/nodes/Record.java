@@ -1,6 +1,6 @@
-package semantic.analysis.AstNodes;
+package analysis.ast.nodes;
 
-import semantic.analysis.SymbolTableStack;
+import analysis.SymbolTableStack;
 
 /**
  * unknown count of declaration children !

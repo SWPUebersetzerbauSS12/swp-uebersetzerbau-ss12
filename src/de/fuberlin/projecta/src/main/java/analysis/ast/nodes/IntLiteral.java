@@ -1,8 +1,8 @@
-package semantic.analysis.AstNodes;
+package analysis.ast.nodes;
 
+import analysis.SymbolTableStack;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import semantic.analysis.SymbolTableStack;
 
 @AllArgsConstructor
 public class IntLiteral extends Statement {

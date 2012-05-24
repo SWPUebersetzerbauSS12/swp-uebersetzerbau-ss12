@@ -1,4 +1,4 @@
-package semantic.analysis;
+package analysis;
 
 public class SemanticException extends IllegalStateException {
 

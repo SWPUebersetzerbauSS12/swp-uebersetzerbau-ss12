@@ -1,4 +1,4 @@
-package semantic.analysis;
+package analysis;
 
 import java.util.HashMap;
 

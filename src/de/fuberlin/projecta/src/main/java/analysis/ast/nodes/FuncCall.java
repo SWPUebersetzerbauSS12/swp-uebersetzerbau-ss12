@@ -1,7 +1,7 @@
-package semantic.analysis.AstNodes;
+package analysis.ast.nodes;
 
+import analysis.SymbolTableStack;
 import parser.Tree;
-import semantic.analysis.SymbolTableStack;
 
 
 public class FuncCall extends Tree {

@@ -1,5 +1,7 @@
 import java.io.File;
 
+import analysis.SemanticAnalyzer;
+
 import lexer.ILexer;
 import lexer.Lexer;
 import lexer.io.FileCharStream;
@@ -8,7 +10,6 @@ import lexer.io.StringCharStream;
 import parser.ISyntaxTree;
 import parser.Parser;
 import parser.ParserException;
-import semantic.analysis.SemanticAnalyzer;
 import utils.IOUtils;
 
 public class FrontendMain {

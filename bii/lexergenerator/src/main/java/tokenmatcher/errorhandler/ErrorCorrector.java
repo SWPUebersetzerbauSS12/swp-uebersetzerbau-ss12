@@ -36,6 +36,9 @@ import java.util.Collection;
 
 import lexergen.Settings;
 
+import tokenmatcher.State;
+import tokenmatcher.fsm.*;
+
 import tokenmatcher.DeterministicFiniteAutomata;
 import tokenmatcher.LexemIdentificationException;
 import tokenmatcher.StatePayload;
@@ -138,6 +141,8 @@ public class ErrorCorrector {
 			case ADD_CHAR:
 			    Collection<Character> possiblesChars = dfa.getElementsOfOutgoingTransitionsFromState( dfa.getCurrentState());
 			    boolean IfAddChar = false;
+			    State oldState = dfa.getCurrentState();
+			    
 			    for ( Character character : possiblesChars) {
 			    	// TODO Heuristic add a char
 			    	dfa.changeStateByElement(character);
@@ -148,7 +153,7 @@ public class ErrorCorrector {
 			    		IfAddChar = true;
 			    		break;
 			    	}
-			    	dfa.changeToPreviousState();
+			    	dfa.changeState(oldState);
 					}
 			    lexemeReader.stepBackward( 1);
 			    if(!IfAddChar){
@@ -159,6 +164,8 @@ public class ErrorCorrector {
 		      // TODO Heuristic replace a char
 			Collection<Character> possiblesChars2 = dfa.getElementsOfOutgoingTransitionsFromState( dfa.getCurrentState());
 			boolean IfReplaceChar = false;
+			oldState = dfa.getCurrentState();
+			
 		    for ( Character character : possiblesChars2) {
 		    	// TODO Heuristic add a char
 		    	dfa.changeStateByElement(character);
@@ -170,7 +177,7 @@ public class ErrorCorrector {
 		    		IfReplaceChar = true;
 		    		break;
 		    	}
-		    	dfa.changeToPreviousState();
+		    	dfa.changeState(oldState);
 				}
 		    if(!IfReplaceChar)if(!IfAddChar){
 		    	lexemeReader.stepBackward( 1);
@@ -182,6 +189,7 @@ public class ErrorCorrector {
 			Character tempChar;
 			tempChar = currentChar;
 			currentChar = lexemeReader.getNextChar();
+			oldState = dfa.getCurrentState();
 			if(!dfa.canChangeStateByElement(currentChar)) {
 				correctionMode = CorrectionMode.PANIC_MODE;
 				lexemeReader.stepBackward( 2);
@@ -191,7 +199,7 @@ public class ErrorCorrector {
 			if(!dfa.canChangeStateByElement(tempChar)){
 				correctionMode = CorrectionMode.PANIC_MODE;
 				lexemeReader.stepBackward( 2);
-				dfa.changeToPreviousState();
+				dfa.changeState(oldState);
 				break;
 			}
 			dfa.changeStateByElement(tempChar);

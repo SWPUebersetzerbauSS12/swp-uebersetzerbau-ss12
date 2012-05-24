@@ -2,13 +2,18 @@ package lexer;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 
 @AllArgsConstructor
 public
 @Data
 class Token implements IToken {
 
-	private TokenType type;
+	/**
+	 * Get the real type of this token (used internally only)
+	 */
+	@Getter
+	private TokenType internalType;
 
 	private Object attribute;
 
@@ -17,12 +22,12 @@ class Token implements IToken {
 
 	@Override
 	public String getType() {
-		return type.toString();
+		return internalType.toString();
 	}
 
 	@Override
 	public String toString() {
-		return "<" + type + ", " + attribute + ", " + lineNumber + ", "
+		return "<" + internalType + ", " + attribute + ", " + lineNumber + ", "
 				+ offset + ">";
 	}
 

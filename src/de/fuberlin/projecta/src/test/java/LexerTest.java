@@ -1,5 +1,3 @@
-//import static org.junit.Assert.assertEquals;
-//import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -29,10 +27,10 @@ public class LexerTest {
 		Lexer lexer = new Lexer(new FileCharStream(path));
 		ArrayList<Token> tokenList = tokenize(lexer);
 		assertEquals(tokenList.size(), 12);
-		assertEquals(tokenList.get(0).getType(), TokenType.DEF);
-		assertEquals(tokenList.get(tokenList.size() - 2).getType(),
+		assertEquals(tokenList.get(0).getInternalType(), TokenType.DEF);
+		assertEquals(tokenList.get(tokenList.size() - 2).getInternalType(),
 				TokenType.OP_SEMIC);
-		assertEquals(tokenList.get(tokenList.size() - 1).getType(),
+		assertEquals(tokenList.get(tokenList.size() - 1).getInternalType(),
 				TokenType.EOF);
 	}
 
@@ -42,19 +40,19 @@ public class LexerTest {
 
 		ArrayList<Token> tokenList = tokenize(source);
 
-		assertEquals(tokenList.get(0).getType(), TokenType.INT_LITERAL);
+		assertEquals(tokenList.get(0).getInternalType(), TokenType.INT_LITERAL);
 		assertEquals((Integer) (tokenList.get(0).getAttribute()), (Integer) 23);
 
-		assertEquals(tokenList.get(1).getType(), TokenType.REAL_LITERAL);
+		assertEquals(tokenList.get(1).getInternalType(), TokenType.REAL_LITERAL);
 		assertEquals((Float) (tokenList.get(1).getAttribute()), (Float) 3.14f);
-		assertEquals(tokenList.get(2).getType(), TokenType.OP_ADD);
-		assertEquals(tokenList.get(3).getType(), TokenType.REAL_LITERAL);
+		assertEquals(tokenList.get(2).getInternalType(), TokenType.OP_ADD);
+		assertEquals(tokenList.get(3).getInternalType(), TokenType.REAL_LITERAL);
 		assertEquals((Float) (tokenList.get(3).getAttribute()), (Float) 2.f);
 
-		assertEquals(tokenList.get(4).getType(), TokenType.REAL_LITERAL);
+		assertEquals(tokenList.get(4).getInternalType(), TokenType.REAL_LITERAL);
 		assertEquals((Float) (tokenList.get(4).getAttribute()), (Float) 22e4f);
 
-		assertEquals(tokenList.get(5).getType(), TokenType.REAL_LITERAL);
+		assertEquals(tokenList.get(5).getInternalType(), TokenType.REAL_LITERAL);
 		assertEquals((Float) (tokenList.get(5).getAttribute()),
 				(Float) 31.4e-1f);
 	}
@@ -65,11 +63,11 @@ public class LexerTest {
 
 		ArrayList<Token> tokenList = tokenize(source);
 
-		assertEquals(tokenList.get(0).getType(), TokenType.BOOL_LITERAL);
+		assertEquals(tokenList.get(0).getInternalType(), TokenType.BOOL_LITERAL);
 		assertEquals((Boolean) (tokenList.get(0).getAttribute()),
 				(Boolean) true);
 
-		assertEquals(tokenList.get(2).getType(), TokenType.BOOL_LITERAL);
+		assertEquals(tokenList.get(2).getInternalType(), TokenType.BOOL_LITERAL);
 		assertEquals((Boolean) (tokenList.get(2).getAttribute()),
 				(Boolean) false);
 	}
@@ -119,10 +117,10 @@ public class LexerTest {
 		final String code = "bool b; int i; real r; string s;";
 
 		ArrayList<Token> tokenList = tokenize(code);
-		assertEquals(tokenList.get(0).getType(), TokenType.BOOL_TYPE);
-		assertEquals(tokenList.get(3).getType(), TokenType.INT_TYPE);
-		assertEquals(tokenList.get(6).getType(), TokenType.REAL_TYPE);
-		assertEquals(tokenList.get(9).getType(), TokenType.STRING_TYPE);
+		assertEquals(tokenList.get(0).getInternalType(), TokenType.BOOL_TYPE);
+		assertEquals(tokenList.get(3).getInternalType(), TokenType.INT_TYPE);
+		assertEquals(tokenList.get(6).getInternalType(), TokenType.REAL_TYPE);
+		assertEquals(tokenList.get(9).getInternalType(), TokenType.STRING_TYPE);
 	}
 
 	@Test
@@ -130,24 +128,24 @@ public class LexerTest {
 		{
 			final String code = "record{int i;}";
 			ArrayList<Token> tokenList = tokenize(code);
-			assertEquals(tokenList.get(0).getType(), TokenType.RECORD);
-			assertEquals(tokenList.get(1).getType(), TokenType.LBRACE);
-			assertEquals(tokenList.get(2).getType(), TokenType.INT_TYPE);
+			assertEquals(tokenList.get(0).getInternalType(), TokenType.RECORD);
+			assertEquals(tokenList.get(1).getInternalType(), TokenType.LBRACE);
+			assertEquals(tokenList.get(2).getInternalType(), TokenType.INT_TYPE);
 		}
 
 		{
 			final String code = "a[1];";
 			ArrayList<Token> tokenList = tokenize(code);
-			assertEquals(tokenList.get(0).getType(), TokenType.ID);
-			assertEquals(tokenList.get(1).getType(), TokenType.LBRACKET);
-			assertEquals(tokenList.get(2).getType(), TokenType.INT_LITERAL);
+			assertEquals(tokenList.get(0).getInternalType(), TokenType.ID);
+			assertEquals(tokenList.get(1).getInternalType(), TokenType.LBRACKET);
+			assertEquals(tokenList.get(2).getInternalType(), TokenType.INT_LITERAL);
 		}
 
 		{
 			final String code = "def int foo(int i);";
 			ArrayList<Token> tokenList = tokenize(code);
-			assertEquals(tokenList.get(2).getType(), TokenType.ID);
-			assertEquals(tokenList.get(3).getType(), TokenType.LPAREN);
+			assertEquals(tokenList.get(2).getInternalType(), TokenType.ID);
+			assertEquals(tokenList.get(3).getInternalType(), TokenType.LPAREN);
 		}
 	}
 

@@ -42,7 +42,7 @@ public class LLVM_Function {
 	 * *********** Flussgraph - Erstellung *********************
 	 * *********************************************************
 	 */
-	
+
 	/**
 	 * Erstellt den Flussgraphen zwischen den Bloecken, d.h. die Attribute
 	 * nextBlocks und previousBlocks der Bloecke werden gesetzt.
@@ -590,6 +590,10 @@ public class LLVM_Function {
 	 * *********** Setter / Getter / toString ******************
 	 * *********************************************************
 	 */
+	
+	public LLVM_RegisterMap getRegisterMap() {
+		return registerMap;
+	}
 	
 	public String toString() {
 		String output = func_define + "{\n";

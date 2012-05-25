@@ -11,5 +11,9 @@ public class StackAddress extends Address {
 	public int getAddress() {
 		return addr;
 	}
+	
+	public String getName() {
+		return String.valueOf(addr);
+	}
 
 }

@@ -22,8 +22,11 @@ public class CodeGenerator {
 						+ linecount++);
 				tok.print();
 			}
-
-			varCon.updateVarAdministration(tok);
+			
+			String code = varCon.updateVarAdministration(tok);
+			if (code != null) {
+				trans.addCode(code);				
+			}
 			trans.translate(tok);
 		}
 		lex.close();

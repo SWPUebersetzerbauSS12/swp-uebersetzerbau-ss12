@@ -7,6 +7,7 @@ import java.util.List;
 
 import main.model.Address;
 import main.model.RegisterAddress;
+import main.model.RegisterInformation;
 import main.model.StackAddress;
 import main.model.Variable;
 
@@ -161,6 +162,26 @@ public class VarAdministration {
 	
 	public Variable getVariableByName(String varName) {
 		return variableNames.get(varName);
+	}
+
+	public RegisterInformation getReg(Variable var) {
+		//We look for var in Register
+		for (int i = 0; i < regDescriptor.length; i++) {
+			List<Variable> varList = regDescriptor[i];
+			if (varList.contains(var)) {
+				return new RegisterInformation(new RegisterAddress(i));
+			}
+		}
+		//We look for something empty
+		for (int i = 0; i < regDescriptor.length; i++) {
+			List<Variable> varList = regDescriptor[i];
+			if (varList.isEmpty()) {
+				return new RegisterInformation(new RegisterAddress(i));
+			}
+		}
+		//We have to free something
+		//TODO : schlauer machen
+		return new RegisterInformation(new RegisterAddress(0), regDescriptor[0].get(0));
 	}
 
 }

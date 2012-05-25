@@ -3,6 +3,8 @@ package main;
 import java.util.List;
 
 import main.model.Address;
+import main.model.RegisterAddress;
+import main.model.RegisterInformation;
 import main.model.StackAddress;
 import main.model.Token;
 import main.model.Variable;
@@ -88,29 +90,50 @@ public class Translator {
 			break;
 
 		case Load:
+			
 			op1 = vars.getVariable(t.getOp1());
-			addr = vars.getAddresses(op1);
+			Address address = getRegister(op1);
 			if (op1 != null)
 				System.out.println("defined");
 			else
 				System.out.println("undefined");
 
-			for (Address a : addr) {
-				quelle = new String("-" + ((StackAddress) a).getAddress()
-						+ "(%bsp)");
-				break;
-			}
-
-			ziel = new String("%eax");
+			quelle = vars.getHomeAddress(op1) + "(%ebp)";
+			ziel = "%" + address.getName();
+			
 			sectionText.append("\tmovl " + quelle + ", " + ziel
 					+ " \t\t#load\n");
 			break;
 
 		case Addition:
-			sectionText.append("\tadd %eax, %ebx \t\t#load\n");
+			op1 = vars.getVariable(t.getOp1());
+			op2 = vars.getVariable(t.getOp2());
+			
+			System.out.println(op1);
+			System.out.println(t.getOp1());
+			Address addr1 = getRegister(op1);
+			Address addr2 = getRegister(op2);
+			sectionText.append("\tadd " + addr1.getName() + " , " + addr2.getName() + " \t\t#load\n");
+		    //TODO : varAdminstration abdaten
 		default:
 			break;
 		}
+	}
+
+	private Address getRegister(Variable var) {
+		List<Address> addrList = vars.getAddresses(var);
+		Address addr = null;
+		for (Address a : addrList) {
+			if (a instanceof RegisterAddress) {
+				addr = a;
+				break;
+			}
+		}
+		if (addr == null) {
+			System.out.println("Warning : no RegisterAddress found");
+			addr = addrList.get(0);
+		}
+		return addr;
 	}
 
 	public String getCode() {
@@ -122,6 +145,10 @@ public class Translator {
 		System.out.print(sectionData);
 		System.out.print(sectionText);
 		System.out.println();
+	}
+
+	public void addCode(String code) {
+		sectionText.append(code + "\n");
 	}
 
 }

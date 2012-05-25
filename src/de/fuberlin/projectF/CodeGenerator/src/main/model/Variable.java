@@ -34,7 +34,7 @@ public class Variable {
 	}
 	
 	public void name(String name) {
-		this.name = value;
+		this.name = name;
 	}
 	
 	public void type(String type) {

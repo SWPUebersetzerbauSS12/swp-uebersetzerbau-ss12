@@ -6,6 +6,9 @@ import de.fuberlin.optimierung.commands.*;
 
 class LLVM_Block implements ILLVM_Block {
 	
+	// Funktion, zu der der Block gehoert
+	private LLVM_Function function = null;
+	
 	// Erster und letzter Befehl des Blockes
 	private ILLVM_Command firstCommand = null;
 	private ILLVM_Command lastCommand = null;
@@ -29,8 +32,9 @@ class LLVM_Block implements ILLVM_Block {
 	// Kompletter Code des Blocks als String
 	private String blockCode;
 
-	public LLVM_Block(String blockCode) {
+	public LLVM_Block(String blockCode, LLVM_Function function) {
 		
+		this.function = function;
 		this.blockCode = blockCode;
 		System.out.println(blockCode + "\n*****************\n");
 		

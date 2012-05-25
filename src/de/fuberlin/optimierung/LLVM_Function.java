@@ -31,7 +31,7 @@ public class LLVM_Function {
 		this.numberBlocks = codeBlocks.length;
 		this.blocks = new ArrayList<ILLVM_Block>(this.numberBlocks);
 		for(int i = 0; i < this.numberBlocks; i++) {
-			this.blocks.add(new LLVM_Block(codeBlocks[i]));
+			this.blocks.add(new LLVM_Block(codeBlocks[i],this));
 		}
 		this.startBlock = this.blocks.get(0);
 		this.endBlock = this.blocks.get(this.numberBlocks-1);

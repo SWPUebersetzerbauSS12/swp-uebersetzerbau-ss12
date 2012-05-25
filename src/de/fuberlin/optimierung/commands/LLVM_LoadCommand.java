@@ -18,16 +18,13 @@ public class LLVM_LoadCommand extends LLVM_GenericCommand{
 	
 	public LLVM_LoadCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
 		super(operation, predecessor, block, comment);
-		// Init operands
-		operands = new LinkedList<LLVM_Parameter>();
 		
 		// Typ und Name wohin geladen wird
 		target = new LLVM_Parameter(cmd[0], cmd[3]);
 		// Name aus welcher Adresse geladen wird
 		operands.add(new LLVM_Parameter(cmd[4], cmd[3]));
 		
-		System.out.println("Operands generiert: ");
-		System.out.println(this.toString());
+		System.out.println("Operation generiert: " + this.toString());
 	}
 	
 	public String toString() {
@@ -37,7 +34,7 @@ public class LLVM_LoadCommand extends LLVM_GenericCommand{
 		cmd_out += operands.get(0).getTypeString()+" ";
 		cmd_out += operands.get(0).getName();
 		
-		cmd_out += getComment();
+		cmd_out += " " + getComment();
 		return cmd_out;
 	}
 }

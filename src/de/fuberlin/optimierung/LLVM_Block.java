@@ -184,9 +184,11 @@ class LLVM_Block implements ILLVM_Block {
 		}
 		
 		// Checking for label
-		if(labelCheck(commandsArray[i])){
-			i++;
+		/*if(labelCheck(commandsArray[i])){
+			//auskommentiert da sonst keine Kommentarbehandlung möglich
+			//i++;
 		}
+		*/
 		
 		this.firstCommand = mapCommands(commandsArray[i], null);
 		
@@ -208,6 +210,10 @@ class LLVM_Block implements ILLVM_Block {
 	private LLVM_GenericCommand mapCommands(String cmdLine, ILLVM_Command predecessor){
 		
 		// Kommentar Handling
+		if (cmdLine.trim().startsWith(";")){
+			return new LLVM_Comment(null, LLVM_Operation.COMMENT, predecessor, this, cmdLine.replaceFirst(";", "").trim());
+		}
+		
 		String[] com = cmdLine.trim().split(";");
 		String comment = "";
 		

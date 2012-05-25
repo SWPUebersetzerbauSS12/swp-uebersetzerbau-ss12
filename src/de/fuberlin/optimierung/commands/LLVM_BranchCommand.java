@@ -18,19 +18,22 @@ public class LLVM_BranchCommand extends LLVM_GenericCommand{
 	
 	public LLVM_BranchCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
 		super(operation, predecessor, block, comment);
-		// Init operands
-		operands = new LinkedList<LLVM_Parameter>();
 		
 		if (cmd.length == 3){
+			// unconditional Branch
+			// <dest> label
 			operands.add(new LLVM_Parameter(cmd[2], cmd[1]));
 		}else if (cmd.length > 3){
+			// conditional Branch
+			// <cond> i1
 			operands.add(new LLVM_Parameter(cmd[2], cmd[1]));
+			// <iftrue> label
 			operands.add(new LLVM_Parameter(cmd[4], cmd[3]));
+			// <iffalse> label
 			operands.add(new LLVM_Parameter(cmd[6], cmd[5]));
 		}
 		
-		System.out.println("Operation generiert: ");
-		System.out.println(this.toString());
+		System.out.println("Operation generiert: " + this.toString());
 	}
 	
 	public String toString() {
@@ -53,7 +56,7 @@ public class LLVM_BranchCommand extends LLVM_GenericCommand{
 				return "";
 		}
 		
-		cmd_output += getComment();
+		cmd_output += " " + getComment();
 		
 		return cmd_output;
 	}

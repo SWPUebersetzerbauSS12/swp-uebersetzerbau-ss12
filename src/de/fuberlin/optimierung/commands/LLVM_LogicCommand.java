@@ -17,15 +17,15 @@ public class LLVM_LogicCommand extends LLVM_GenericCommand{
 	
 	public LLVM_LogicCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
 		super(operation, predecessor, block, comment);
-		// Init operands
-		operands = new LinkedList<LLVM_Parameter>();
 		
+		// <result> <ty>
 		target = new LLVM_Parameter(cmd[0], cmd[3]);
+		// <op1> <ty>
 		operands.add(new LLVM_Parameter(cmd[4], cmd[3]));
+		// <op2> <ty>
 		operands.add(new LLVM_Parameter(cmd[5], cmd[3]));
 		
-		System.out.println("Operation generiert: ");
-		System.out.println(this.toString());
+		System.out.println("Operation generiert: " + this.toString());
 	}
 	
 	public String toString() {
@@ -49,7 +49,7 @@ public class LLVM_LogicCommand extends LLVM_GenericCommand{
 		cmd_output += operands.get(0).getName()+", ";
 		cmd_output += operands.get(1).getName();
 		
-		cmd_output += getComment();
+		cmd_output += " " + getComment();
 		
 		return cmd_output;
 	}

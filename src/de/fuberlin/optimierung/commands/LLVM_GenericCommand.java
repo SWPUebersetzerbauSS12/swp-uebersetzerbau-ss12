@@ -13,9 +13,9 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 	protected ILLVM_Command predecessor = null;
 	protected ILLVM_Command successor = null;
 	
-	protected LLVM_Operation operation;
-	protected LLVM_Parameter target;
-	protected LinkedList<LLVM_Parameter> operands;
+	protected LLVM_Operation operation = null;
+	protected LLVM_Parameter target = null;
+	protected LinkedList<LLVM_Parameter> operands = new LinkedList<LLVM_Parameter>();;
 	
 	protected String comment = "";
 	
@@ -55,7 +55,7 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 		if (comment == ""){
 			return "\n";
 		}else{
-			return " ; " + comment + "\n";
+			return "; " + comment + "\n";
 		}
 	}
 	

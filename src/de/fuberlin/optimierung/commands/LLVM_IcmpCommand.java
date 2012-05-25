@@ -17,15 +17,15 @@ public class LLVM_IcmpCommand extends LLVM_GenericCommand{
 	
 	public LLVM_IcmpCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
 		super(operation, predecessor, block, comment);
-		// Init operands
-		operands = new LinkedList<LLVM_Parameter>();
 		
-		target = new LLVM_Parameter(cmd[0], cmd[4]);
+		// <result> i1
+		target = new LLVM_Parameter(cmd[0], "i1");
+		// <op1> <ty>
 		operands.add(new LLVM_Parameter(cmd[5], cmd[4]));
+		// <op2> <ty>
 		operands.add(new LLVM_Parameter(cmd[6], cmd[4]));
 		
-		System.out.println("Operation generiert: ");
-		System.out.println(this.toString());
+		System.out.println("Operation generiert: " +  this.toString());
 	}
 	
 	public String toString() {
@@ -71,7 +71,7 @@ public class LLVM_IcmpCommand extends LLVM_GenericCommand{
 		cmd_output += operands.get(0).getName()+", ";
 		cmd_output += operands.get(1).getName();
 		
-		cmd_output += getComment();
+		cmd_output += " " + getComment();
 		
 		return cmd_output;
 	}

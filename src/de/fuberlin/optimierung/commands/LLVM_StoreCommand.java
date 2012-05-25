@@ -17,17 +17,13 @@ public class LLVM_StoreCommand extends LLVM_GenericCommand{
 	
 	public LLVM_StoreCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
 		super(operation, predecessor, block, comment);
-		// init operands
-		operands = new LinkedList<LLVM_Parameter>();
 		
 		// speichert den Typ und den Wert den store speichert in ersten Operanden
 		// speichert den Typ und den Namen der Zieladresse in zweiten Operanden
 		operands.add(new LLVM_Parameter(cmd[2], cmd[1]));
 		operands.add(new LLVM_Parameter(cmd[4], cmd[3]));
 		
-		
-		System.out.println("Operands generiert: ");
-		System.out.println(this.toString());
+		System.out.println("Operation generiert: " + this.toString());
 	}
 	
 	public String toString() {
@@ -39,7 +35,7 @@ public class LLVM_StoreCommand extends LLVM_GenericCommand{
 		cmd_out += operands.get(1).getTypeString()+" ";
 		cmd_out += operands.get(1).getName();
 		
-		cmd_out += getComment();
+		cmd_out += " " + getComment();
 		
 		return cmd_out;
 	}

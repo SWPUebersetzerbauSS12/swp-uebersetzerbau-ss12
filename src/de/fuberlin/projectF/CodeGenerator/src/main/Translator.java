@@ -66,7 +66,7 @@ public class Translator {
 			String size = new String("$" + target.size());
 
 			sectionText.append("\tsubl " + size + ", %esp \t\t#"
-					+ t.getTarget() + "\n");
+					+ t.getTarget() + "\t#allocation\n");
 			break;
 		case Assignment:
 
@@ -74,18 +74,22 @@ public class Translator {
 			addr = vars.getAddresses(target);
 			for (Address a : addr) {
 				ziel = new String("-" + ((StackAddress) a).getAddress()
-						+ "(%bsp)");
+						+ "(%ebp)");
 				break;
 			}
 
-			if (t.getOp1().charAt(0) == '%')
-				System.out.println("Variable");
+			if (t.getOp1().charAt(0) == '%') {
+				op1 = vars.getVariable(t.getOp1());
+				Address addr1 = getRegister(op1);
+				quelle = addr1.getName();
+			}
 			else
 				quelle = new String("$" + t.getOp1());
+			
 			System.out.println(target.type());
 			System.out.println(ziel);
 
-			sectionText.append("\tmovl " + quelle + ", " + ziel + "\n");
+			sectionText.append("\tmovl " + quelle + ", " + ziel + "\t#assignement\n");
 
 			break;
 
@@ -98,8 +102,8 @@ public class Translator {
 			else
 				System.out.println("undefined");
 
-			quelle = vars.getHomeAddress(op1) + "(%ebp)";
-			ziel = "%" + address.getName();
+			quelle = "-" + vars.getHomeAddress(op1).getName() + "(%ebp)";
+			ziel = address.getName();
 			
 			sectionText.append("\tmovl " + quelle + ", " + ziel
 					+ " \t\t#load\n");
@@ -113,8 +117,9 @@ public class Translator {
 			System.out.println(t.getOp1());
 			Address addr1 = getRegister(op1);
 			Address addr2 = getRegister(op2);
-			sectionText.append("\tadd " + addr1.getName() + " , " + addr2.getName() + " \t\t#load\n");
+			sectionText.append("\taddl " + addr1.getName() + ", " + addr2.getName() + " \t\t#addition\n");
 		    //TODO : varAdminstration abdaten
+			vars.addVariable(new Variable(t.getTarget(),t.getTypeTarget(),null));
 		default:
 			break;
 		}
@@ -148,7 +153,7 @@ public class Translator {
 	}
 
 	public void addCode(String code) {
-		sectionText.append(code + "\n");
+		sectionText.append(code + "\t#added extra\n");
 	}
 
 }

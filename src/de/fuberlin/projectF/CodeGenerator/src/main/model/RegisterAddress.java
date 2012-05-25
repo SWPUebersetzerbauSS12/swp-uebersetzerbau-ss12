@@ -12,17 +12,17 @@ public class RegisterAddress extends Address {
 	public String getName() {
 		switch (regNumber) {
 		case 0:
-			return "eax";
+			return "%eax";
 		case 1:
-			return "ebx";
+			return "%ebx";
 		case 2:
-			return "ecx";
+			return "%ecx";
 		case 3:
-			return "edx";
+			return "%edx";
 		case 4:
-			return "edi";
+			return "%edi";
 		default:
-			return "esi";
+			return "%esi";
 			
 		}
 	}

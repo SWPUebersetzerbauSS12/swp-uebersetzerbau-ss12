@@ -113,7 +113,7 @@ public class VariableTableContainer {
 				RegisterInformation info = getVariableTable(this.actTable).getReg(var);
 				RegisterAddress reg = info.registerAddress; 
 				if (!info.free) {
-					code = "mov %" + reg + " , " + getVariableTable(this.actTable).getHomeAddress(var) + "(%ebp)";
+					code = "mov %" + reg + " , " + getVariableTable(this.actTable).getHomeAddress(var) + "(%ebp) #Temp-Variable added";
 				}
 				getVariableTable(this.actTable).loadVarInReg(var, reg);
 				getVariableTable(this.actTable).addVariable(target, reg);

@@ -61,6 +61,23 @@ public class Printer {
 	}
 	
 	/**
+	 * Use this Function to view the global Grammar inside the ParserGenerator.
+	 * 
+	 * @author Patrick Schlott
+	 */
+	
+	static public void printProduction(Map<String, Vector<Vector<String>>> grammar,String key, int productionNr){	
+		
+		System.out.print(key+" -> ");
+		
+		for (String symbol : grammar.get(key).elementAt(productionNr)){
+			System.out.print(symbol+" ");
+		}
+		System.out.println();
+		System.out.println("-----------");
+	}
+	
+	/**
 	 * Use this Function to view the Parsetable inside the ParserGenerator.
 	 * 
 	 * @author Patrick Schlott

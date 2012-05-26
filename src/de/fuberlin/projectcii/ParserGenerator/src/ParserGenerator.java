@@ -79,6 +79,16 @@ public class ParserGenerator {
 		return this.parserTable;
 	}
 	
+	/**
+	 * Returns the Startsymbol of the grammar
+	 * 
+	 * @author Patrick Schlott
+	 */
+	
+	public String getStartSymbol(){
+		return this.start;
+	}
+	
 
 	/*
 	 * Reads the Grammar from a given file
@@ -301,6 +311,11 @@ public class ParserGenerator {
 			ret.put(head, parseTableColumn);		
 		}		
 		return ret;		
+	}
+
+	public Map<String, Vector<Vector<String>>> getGrammar() {
+
+		return grammarMap;
 	}
 
 }

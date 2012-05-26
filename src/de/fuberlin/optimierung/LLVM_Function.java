@@ -420,6 +420,8 @@ public class LLVM_Function {
 					}
 				}
 			}
+			
+			cmd.deleteCommand();
 		}
 		
 		if(changed_cmds.size() > 0){

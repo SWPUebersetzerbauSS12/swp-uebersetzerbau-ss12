@@ -188,11 +188,11 @@ class LLVM_Block implements ILLVM_Block {
 		}
 		
 		// Checking for label
-		/*if(labelCheck(commandsArray[i])){
+		if(labelCheck(commandsArray[i])){
 			//auskommentiert da sonst keine Kommentarbehandlung möglich
-			//i++;
+			i++;
 		}
-		*/
+		
 		
 		this.firstCommand = mapCommands(commandsArray[i], null);
 		

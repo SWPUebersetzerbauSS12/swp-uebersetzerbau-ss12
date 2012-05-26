@@ -10,13 +10,13 @@ import java.util.LinkedList;
  */
 
 public class Token {
-	protected TokenType type; // Typ des Tokens
-	protected String target; // Ziel aus der 3Adress-Code Zeile
-	protected String typeTarget;// Variablentyp des Ziels
-	protected String op1; // Operand1 aus der 3Adress-Code Zeile
-	protected String typeOp1; // Variablentyp des Operand1
-	protected String op2; // Operand2 aus der 3Adress-Code Zeile
-	protected String typeOp2; // Variablentyp des Operand2
+	protected TokenType type = TokenType.Undefined; // Typ des Tokens
+	protected String target = ""; // Ziel aus der 3Adress-Code Zeile
+	protected String typeTarget = "";// Variablentyp des Ziels
+	protected String op1 = ""; // Operand1 aus der 3Adress-Code Zeile
+	protected String typeOp1 = ""; // Variablentyp des Operand1
+	protected String op2 = ""; // Operand2 aus der 3Adress-Code Zeile
+	protected String typeOp2 = ""; // Variablentyp des Operand2
 	protected LinkedList<Parameter> parameterList;
 	//protected Map<Integer, Parameter> parameterList; // Argumentenliste bei
 														// Methodendefinitionen.

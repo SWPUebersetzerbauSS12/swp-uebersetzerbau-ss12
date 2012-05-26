@@ -6,7 +6,7 @@ import main.model.TokenType;
 
 public class CodeGenerator {
 
-	public static String generateCode(String filename, boolean debug) {
+	public static String generateCode(String filename, boolean debug, boolean gui) {
 		// Lexer, Variablenverwaltung und Übersetzter erstellen
 		Lexer lex = new Lexer(filename);
 		VariableTableContainer varCon = new VariableTableContainer();
@@ -14,6 +14,7 @@ public class CodeGenerator {
 		
 		// Token durchgehen und übersetzten bis EOF
 		Token tok;
+		GUI Gui = new GUI();
 		int linecount = 0;
 		while ((tok = lex.getNextToken()).getType() != TokenType.EOF) {
 			if (debug) {
@@ -22,6 +23,8 @@ public class CodeGenerator {
 						+ linecount++);
 				tok.print();
 			}
+			if(gui)
+				Gui.updateTokenStream(tok);
 			
 			String code = varCon.updateVarAdministration(tok);
 			if (code != null) {
@@ -38,6 +41,7 @@ public class CodeGenerator {
 
 	public static void main(String[] args) {
 		boolean debug = true;
+		boolean gui = true;
 
 		LinkedList<String> inputFile = new LinkedList<String>();
 		String outputFile = null;
@@ -63,7 +67,7 @@ public class CodeGenerator {
 		}
 
 		for (String file : inputFile) {
-			String code = generateCode(file, debug);
+			String code = generateCode(file, debug, gui);
 			if (outputFile != null) {
 				// TODO: Ausgabe in Datei
 			}

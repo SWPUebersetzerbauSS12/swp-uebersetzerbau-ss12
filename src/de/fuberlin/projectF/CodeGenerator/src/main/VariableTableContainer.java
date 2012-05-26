@@ -28,6 +28,8 @@ public class VariableTableContainer {
 	}
 	
 	public VarAdministration getVariableTable(String name) {
+		if(name == null)
+			return variableTableList.get(this.actTable);
 		return variableTableList.get(name);
 	}
 	
@@ -60,6 +62,11 @@ public class VariableTableContainer {
 	
 	public List<Address> getAddresses(Variable var) {
 		return getVariableTable(this.actTable).getAddresses(var);
+	}
+	
+	public Address getBestAddress(Variable var) {
+		//TODO
+		return null;
 	}
 	
 	public RegisterInformation getReg(Variable var) {

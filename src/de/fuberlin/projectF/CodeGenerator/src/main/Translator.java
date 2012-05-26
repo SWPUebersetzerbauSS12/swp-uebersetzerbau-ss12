@@ -115,11 +115,13 @@ public class Translator {
 			
 			System.out.println(op1);
 			System.out.println(t.getOp1());
-			Address addr1 = getRegister(op1);
-			Address addr2 = getRegister(op2);
+			RegisterAddress addr1 = (RegisterAddress)getRegister(op1);
+			RegisterAddress addr2 = (RegisterAddress)getRegister(op2);
 			sectionText.append("\taddl " + addr1.getName() + ", " + addr2.getName() + " \t\t#addition\n");
 		    //TODO : varAdminstration abdaten
-			vars.addVariable(new Variable(t.getTarget(),t.getTypeTarget(),null));
+			Variable tmpVar = new Variable(t.getTarget(),t.getTypeTarget(),null);
+			vars.addVariable(tmpVar);
+			vars.getVariableTable(null).loadVarInReg(tmpVar, addr1);
 		default:
 			break;
 		}

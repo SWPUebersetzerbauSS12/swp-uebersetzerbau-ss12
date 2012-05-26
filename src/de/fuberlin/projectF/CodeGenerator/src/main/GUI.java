@@ -1,12 +1,15 @@
 package main;
 
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.util.Vector;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import main.model.Token;
@@ -15,17 +18,30 @@ public class GUI {
 	
 	Vector<String> tableColl;
 	Vector<Vector<String>> tableRow;
+	JTextArea codeArea;
 	
 	public GUI() {
 		JFrame window = new JFrame("CodeGenerator Debugger");
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		window.setLayout(new GridLayout(0,2));
 		
 		window.getContentPane().add(createTokenStreamTable());
+		window.getContentPane().add(createCodeTextField());
 		
 		window.pack();
 		window.setVisible(true);
 	}
 	
+	private JPanel createCodeTextField() {
+		JPanel codePanel = new JPanel();
+		
+		codeArea = new JTextArea(21,40);
+		
+		JScrollPane scrollPane = new JScrollPane(codeArea);
+		codePanel.add(scrollPane);
+		return codePanel;
+	}
+
 	private JPanel createTokenStreamTable() {
 		JPanel tablePanel = new JPanel();
 		
@@ -65,6 +81,10 @@ public class GUI {
 		data.addElement(new String("" + tok.getParameterCount()));
 		
 		tableRow.addElement(data);
+	}
+	
+	public void updateCodeArea(String code) {
+		codeArea.setText(code);
 	}
 }
 

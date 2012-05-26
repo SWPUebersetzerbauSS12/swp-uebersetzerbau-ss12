@@ -36,6 +36,8 @@ public class CodeGenerator {
 		if (debug) {
 			trans.print();
 		}
+		if(gui)
+			Gui.updateCodeArea(trans.getCode());
 		return trans.getCode();
 	}
 

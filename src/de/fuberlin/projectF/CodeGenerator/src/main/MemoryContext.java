@@ -80,7 +80,11 @@ public class MemoryContext {
 	}
 
 	public RegisterAddress getFreeRegister() {
-		return registers.remove(0);
+		try {
+			return registers.remove(0);
+		} catch(IndexOutOfBoundsException e) {
+			return null;
+		}
 	}
 
 	public void freeRegister(RegisterAddress tmp) {

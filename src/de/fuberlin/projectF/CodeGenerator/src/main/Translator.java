@@ -131,6 +131,9 @@ public class Translator {
 
 			case Addition:
 				res = mem.getFreeRegister();
+				if(res == null) {
+					System.out.println("No free Register found");
+				}
 				
 				if (tok.getOp1().startsWith("%"))
 					op1 = mem.getAddress(tok.getOp1());

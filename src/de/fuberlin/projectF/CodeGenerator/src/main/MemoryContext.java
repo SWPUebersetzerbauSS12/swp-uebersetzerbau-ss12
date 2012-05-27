@@ -32,6 +32,7 @@ public class MemoryContext {
 		return variables.get(name);
 	}
 
+	// Neue Variable auf dem Stack angeben
 	public Variable newStackVar(String name, String type) {
 		int size;
 		if (type.equals("i32"))
@@ -46,15 +47,18 @@ public class MemoryContext {
 		return newVar;
 	}
 
+	// Verweis auf Variable speichern
 	public void newVirtualVar(String name, String var) {
 		variables.put(name, variables.get(var));
 	}
 
-	public void newRegVar(String name, String type, RegisterAddress reg) {
+	// Vorhandene Registervariable hinzufügen, z. B. um Rückgabewert zu speichern
+	public void addRegVar(String name, String type, RegisterAddress reg) {
 		variables.put(name, new Variable(type, reg));
 		registers.remove(reg);
 	}
 
+	// Vorhandene Stackvariable hinzufügen, z. B. Funktionsparameter, nach Aufruf
 	public void addStackVar(String name, String type, int stackAddress) {
 		int size;
 		if (type.equals("i32"))
@@ -66,17 +70,13 @@ public class MemoryContext {
 		variables.put(name, newVar);
 	}
 
+	// Legt fest, welches Register den Rückgabewert dieses Kontexts enthält
 	public void setReturnRegister(RegisterAddress ret) {
 		returnRegister = ret;
 	}
 
 	public RegisterAddress getReturnRegister() {
 		return returnRegister;
-	}
-
-	public void addRegister(RegisterAddress reg) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public RegisterAddress getFreeRegister() {

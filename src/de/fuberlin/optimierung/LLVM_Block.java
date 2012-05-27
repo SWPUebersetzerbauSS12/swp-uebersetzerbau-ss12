@@ -63,7 +63,7 @@ class LLVM_Block implements ILLVM_Block {
 	 * Vorraussetzung: IN und OUT mengen der globalen lebendigkeitsanalyse sind gesetzt
 	 * TODO: noch nicht getestet
 	 */
-	private void deleteDeadStores() {
+	public void deleteDeadStores() {
 		LinkedList<String> active = (LinkedList<String>) this.outLive.clone();
 		
 		// Gehe Befehle von hinten durch

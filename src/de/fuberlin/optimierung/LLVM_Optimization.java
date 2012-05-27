@@ -94,7 +94,7 @@ class LLVM_Optimization implements ILLVM_Optimization {
 
 		ILLVM_Optimization optimization = new LLVM_Optimization();        
 		//String optimizedCode = optimization.optimizeCodeFromFile("input/llvm_constant_folding1");
-		String optimizedCode = optimization.optimizeCodeFromFile("input/llvm_test.llvm");
+		String optimizedCode = optimization.optimizeCodeFromFile("input/llvm_cf_prop_deadb");	
 		System.out.println(optimizedCode);
 	}
 

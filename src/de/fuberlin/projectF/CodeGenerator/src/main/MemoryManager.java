@@ -65,4 +65,8 @@ public class MemoryManager {
 	public void freeRegister(RegisterAddress tmp) {
 		current.freeRegister(tmp);
 	}
+	
+	public Variable getVarFromReg(int regNumber) {
+		return current.getVarFromReg(regNumber);
+	}
 }

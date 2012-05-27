@@ -22,6 +22,7 @@ public class Translator {
 
 	public void translate(ArrayList<Token> code) {
 		this.code = code;
+		int tokenNumber = 0;
 		for (Token tok : code) {
 			String op1, op2;
 			RegisterAddress res;
@@ -132,7 +133,10 @@ public class Translator {
 			case Addition:
 				res = mem.getFreeRegister();
 				if(res == null) {
-					System.out.println("No free Register found");
+					if(!freeUnusedRegister(tokenNumber)) {
+						System.out.println("Could'nt free register");
+					}
+					res = mem.getFreeRegister();
 				}
 				
 				if (tok.getOp1().startsWith("%"))
@@ -181,6 +185,7 @@ public class Translator {
 			default:
 				break;
 			}
+			tokenNumber++;
 		}
 
 		sectionText.append(".globl _start\n_start:\n\tcall main\n" + "\tpushl "
@@ -216,6 +221,37 @@ public class Translator {
 	private void addl(String source, String target, String comment) {
 		sectionText.append("\taddl ").append(source).append(", ")
 				.append(target).append("\t#").append(comment).append("\n");
+	}
+	
+	private boolean freeUnusedRegister(int tokenNumber) {
+		boolean result = false;
+		for(int i = 0; i < 6; i++) {
+			Variable tmp = mem.getVarFromReg(i);
+			if(findToken(tokenNumber, false ,null, tmp.name, tmp.name) == 0) {
+				mem.freeRegister(new RegisterAddress(i));
+				result = true;
+			}
+		}
+		return result;
+	}
+	
+	private int findToken(int tokenNum, boolean backwards, String target, String op1, String op2) {
+		for(int i = tokenNum; i < code.size();) {
+			if(target != null)
+				if(code.get(i).getTarget().equals(target))
+					return i;
+			if(op1 != null)
+				if(code.get(i).getOp1().equals(op1))
+					return i;
+			if(op2 != null)
+				if(code.get(i).getOp2().equals(op2))
+					return i;
+			if(backwards)
+				i--;
+			else
+				i++;
+		}
+		return 0;
 	}
 
 	public String getCode() {

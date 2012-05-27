@@ -13,6 +13,7 @@ public class MemoryContext {
 	private HashMap<String, Variable> variables;
 	private RegisterAddress returnRegister;
 	ArrayList<RegisterAddress> registers;
+	Variable[] registerInfo;
 
 	public MemoryContext() {
 		int stackVars = 0;
@@ -22,6 +23,7 @@ public class MemoryContext {
 		for (int i = 0; i < 6; i++) {
 			registers.add(new RegisterAddress(i));
 		}
+		registerInfo = new Variable[6];	
 	}
 
 	public boolean containsKey(String name) {
@@ -42,7 +44,7 @@ public class MemoryContext {
 
 		stackVars++;
 		stackPointer -= size;
-		Variable newVar = new Variable(type, size, stackPointer);
+		Variable newVar = new Variable(type, size, stackPointer, name);
 		variables.put(name, newVar);
 		return newVar;
 	}
@@ -54,8 +56,10 @@ public class MemoryContext {
 
 	// Vorhandene Registervariable hinzufügen, z. B. um Rückgabewert zu speichern
 	public void addRegVar(String name, String type, RegisterAddress reg) {
-		variables.put(name, new Variable(type, reg));
+		variables.put(name, new Variable(type, reg, name));
 		registers.remove(reg);
+		registerInfo[reg.regNumber] = variables.get(name);
+		System.out.println("Add Var " + registerInfo[reg.regNumber].name);
 	}
 
 	// Vorhandene Stackvariable hinzufügen, z. B. Funktionsparameter, nach Aufruf
@@ -66,7 +70,7 @@ public class MemoryContext {
 		else
 			size = 4;
 
-		Variable newVar = new Variable(type, size, stackAddress);
+		Variable newVar = new Variable(type, size, stackAddress, name);
 		variables.put(name, newVar);
 	}
 
@@ -87,6 +91,10 @@ public class MemoryContext {
 		}
 	}
 
+	public Variable getVarFromReg(int regNumber) {
+		return registerInfo[regNumber];
+	}
+	
 	public void freeRegister(RegisterAddress tmp) {
 		registers.add(0, tmp);
 	}

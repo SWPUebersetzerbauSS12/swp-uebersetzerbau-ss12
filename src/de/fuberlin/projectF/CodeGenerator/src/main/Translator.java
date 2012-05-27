@@ -171,6 +171,12 @@ public class Translator {
 				mem.addRegVar(tok.getTarget(), tok.getTypeTarget(), res);
 
 				break;
+				
+			case Label:
+				label(tok.getTarget());
+				break;
+			case CompareLower:
+				
 
 			default:
 				break;
@@ -182,6 +188,11 @@ public class Translator {
 				+ "\n\tcall exit\n\n");
 	}
 
+	private void label(String name) {
+		sectionText.append("label_").append(name).append(":\t\t\t#Label ")
+				.append(name).append("\n");
+	}
+	
 	private void call(String name) {
 		sectionText.append("\tcall ").append(name).append("\t#Call ")
 				.append(name).append("\n");

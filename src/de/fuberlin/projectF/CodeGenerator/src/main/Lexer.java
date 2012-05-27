@@ -196,7 +196,23 @@ public class Lexer {
 
 		else if (line[0].contentEquals("br")) {
 			newToken.setType(TokenType.Branch);
+			if(line[1].equals("label")) {
+				newToken.setOp2(line[2]);
+				newToken.setTypeOp2(line[1]);
+			}
+			else if(line[3].equals("label")) {
+				newToken.setTarget(line[2]);
+				
+				newToken.setOp1(line[4]);
+				newToken.setTypeOp1(line[3]);
+				
+				newToken.setOp2(line[6]);
+				newToken.setTypeOp2(line[5]);
+				
+			}
+			
 			newToken.setTarget(line[2]);
+			
 		}
 
 		// Return anweisungen
@@ -257,7 +273,7 @@ public class Lexer {
 				newToken.setType(TokenType.Load);
 				newToken.setTarget(line[0]);
 				newToken.setOp1(line[4]);
-				newToken.setTypeOp1(line[3]);
+				newToken.setTypeTarget(line[3]);
 			}
 
 			// Speicher Allocierungen

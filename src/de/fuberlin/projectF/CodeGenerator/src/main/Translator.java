@@ -86,7 +86,7 @@ public class Translator {
 				call(function);
 
 				// Rückgabe speichern
-				mem.newRegVar(tok.getTarget(), tok.getTypeTarget(),
+				mem.addRegVar(tok.getTarget(), tok.getTypeTarget(),
 						mem.getReturnRegister(function));
 				// Parameter löschen
 				for (int i = 0; i < tok.getParameterCount(); i++) {
@@ -145,7 +145,7 @@ public class Translator {
 				addl(op2, res.getFullName(),
 						tok.getOp1() + " + " + tok.getOp2());
 
-				mem.newRegVar(tok.getTarget(), tok.getTypeTarget(), res);
+				mem.addRegVar(tok.getTarget(), tok.getTypeTarget(), res);
 
 				break;
 				
@@ -165,7 +165,7 @@ public class Translator {
 				subl(op2, res.getFullName(),
 						tok.getOp1() + " + " + tok.getOp2());
 
-				mem.newRegVar(tok.getTarget(), tok.getTypeTarget(), res);
+				mem.addRegVar(tok.getTarget(), tok.getTypeTarget(), res);
 
 				break;
 

@@ -37,8 +37,8 @@ public class MemoryManager {
 		return current.getFreeRegister();
 	}
 
-	public void newRegVar(String name, String type, RegisterAddress sum) {
-		current.newRegVar(name, type, sum);
+	public void addRegVar(String name, String type, RegisterAddress sum) {
+		current.addRegVar(name, type, sum);
 
 	}
 

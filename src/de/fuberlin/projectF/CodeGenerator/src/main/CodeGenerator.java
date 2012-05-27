@@ -1,43 +1,67 @@
 package main;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+
 import main.model.Token;
 import main.model.TokenType;
 
 public class CodeGenerator {
 
-	public static String generateCode(String filename, boolean debug, boolean gui) {
+	public static String generateCode(String filename, boolean debug,
+			boolean guiFlag) {
 		// Lexer, Variablenverwaltung und Übersetzter erstellen
+		ArrayList<Token> code = new ArrayList<Token>();
 		Lexer lex = new Lexer(filename);
-		VariableTableContainer varCon = new VariableTableContainer();
-		Translator trans = new Translator(varCon);
-		
+		Translator trans = new Translator();
+
 		// Token durchgehen und übersetzten bis EOF
-		Token tok;
-		GUI Gui = new GUI();
+		GUI gui = new GUI();
 		int linecount = 0;
+		Token tok;
+		// Token einlesen
 		while ((tok = lex.getNextToken()).getType() != TokenType.EOF) {
-			if (debug) {
+			code.add(tok);
+		}
+		lex.close();
+
+		// Token informationen ausgeben
+		if (debug) {
+			for (Token t : code) {
 				System.out.println("Input file: " + filename);
 				System.out.println("File " + filename + " Token #"
 						+ linecount++);
-				tok.print();
+				t.print();
 			}
-			if(gui)
-				Gui.updateTokenStream(tok);
-			
-			String code = varCon.updateVarAdministration(tok);
-			if (code != null) {
-				trans.addCode(code);				
-			}
-			trans.translate(tok);
 		}
-		lex.close();
+
+		// Token Tabelle in der gui füllen
+		if (guiFlag)
+			gui.updateTokenStreamTable(code);
+
+		// Token übersetzen
+		try {
+			trans.translate(code);
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (guiFlag) {
+				gui.updateCodeArea(trans.getCode());
+				gui.appendCodeArea("\nError:\n");
+				for (StackTraceElement errStack : e.getStackTrace())
+					gui.appendCodeArea("at " + errStack.getMethodName() + "("
+							+ errStack.getFileName() + ":"
+							+ errStack.getLineNumber() + ")");
+			}
+		}
+		// Ausgabe des erzeugten Code's
 		if (debug) {
 			trans.print();
 		}
-		if(gui)
-			Gui.updateCodeArea(trans.getCode());
+
+		// Ausgabe des erzeugten Code's in die GUI
+		if (guiFlag)
+			gui.updateCodeArea(trans.getCode());
+
+		// Rückgabe des erzeugten Code's
 		return trans.getCode();
 	}
 
@@ -45,7 +69,7 @@ public class CodeGenerator {
 		boolean debug = true;
 		boolean gui = true;
 
-		LinkedList<String> inputFile = new LinkedList<String>();
+		ArrayList<String> inputFile = new ArrayList<String>();
 		String outputFile = null;
 
 		// Argumente parsen
@@ -69,7 +93,7 @@ public class CodeGenerator {
 		}
 
 		for (String file : inputFile) {
-			String code = generateCode(file, debug, gui);
+			String output = generateCode(file, debug, gui);
 			if (outputFile != null) {
 				// TODO: Ausgabe in Datei
 			}

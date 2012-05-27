@@ -1,14 +1,13 @@
 package main.model;
 
-
 public class RegisterAddress extends Address {
-	
+
 	public int regNumber;
-	
+
 	public RegisterAddress(int register) {
 		this.regNumber = register;
 	}
-	
+
 	public String getName() {
 		switch (regNumber) {
 		case 0:
@@ -23,8 +22,16 @@ public class RegisterAddress extends Address {
 			return "%edi";
 		default:
 			return "%esi";
-			
+
 		}
+	}
+
+	public String getFullName() {
+		return this.getName();
+	}
+
+	public String getType() {
+		return "Register";
 	}
 
 }

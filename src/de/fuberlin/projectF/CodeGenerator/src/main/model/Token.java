@@ -18,10 +18,11 @@ public class Token {
 	protected String op2 = ""; // Operand2 aus der 3Adress-Code Zeile
 	protected String typeOp2 = ""; // Variablentyp des Operand2
 	protected LinkedList<Parameter> parameterList;
-	//protected Map<Integer, Parameter> parameterList; // Argumentenliste bei
-														// Methodendefinitionen.
-														// Da kann es viel in
-														// einer Zeile geben
+
+	// protected Map<Integer, Parameter> parameterList; // Argumentenliste bei
+	// Methodendefinitionen.
+	// Da kann es viel in
+	// einer Zeile geben
 
 	public TokenType getType() {
 		return type;
@@ -96,6 +97,10 @@ public class Token {
 			return null;
 
 		return parameterList.get(count);
+	}
+
+	public LinkedList<Parameter> getParameters() {
+		return parameterList;
 	}
 
 	public int getParameterCount() {

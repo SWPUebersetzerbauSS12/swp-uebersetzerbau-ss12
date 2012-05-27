@@ -1,5 +1,5 @@
 package main.model;
 
-public class Array extends Variable{
-	
+public class Array extends Variable {
+
 }

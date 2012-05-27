@@ -1,47 +1,41 @@
 package main.model;
 
+import java.util.LinkedList;
+
 public class Variable {
-	
-	String value;
 	String type;
-	String name;
+	LinkedList<Address> addresses;
 	int size;
 
-	public Variable() {}
-	
-	public Variable(String name, String type, String value) {
-		this.name = name;
+	public Variable() {
+		this("undefined");
+	}
+
+	public Variable(String type, int size, int stackAddress) {
+		this(type);
+		this.size = size;
+		addresses.add(new StackAddress(stackAddress));
+	}
+
+	public Variable(String type, RegisterAddress sum) {
+		this(type);
+		if (this.type.equals("i32"))
+			this.size = 4;
+		else
+			this.size = 4;
+		addresses.add(sum);
+	}
+
+	public Variable(String type) {
 		this.type = type;
-		this.value = value;
-		if(this.type != null && this.type.equals("i32"))
-			size = 4;
+		addresses = new LinkedList<Address>();
 	}
-	
-	public String value() {
-		return this.value;
+
+	public int getSize() {
+		return size;
 	}
-	
-	public String name() {
-		return this.name;
-	}
-	
-	public String type() {
-		return this.type;
-	}
-	
-	public void value(String value) {
-		this.value = value;
-	}
-	
-	public void name(String name) {
-		this.name = name;
-	}
-	
-	public void type(String type) {
-		this.type = type;
-	}
-	
-	public int size() {
-		return this.size;
+
+	public String getAddress() {
+		return addresses.getFirst().getFullName();
 	}
 }

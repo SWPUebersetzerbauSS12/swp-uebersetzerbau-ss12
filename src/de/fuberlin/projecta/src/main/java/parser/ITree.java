@@ -5,10 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import analysis.SymbolTableStack;
-
 import lombok.Getter;
 import utils.StringUtils;
+import analysis.SymbolTableStack;
+import analysis.ast.nodes.BinaryOp;
+import analysis.ast.nodes.Id;
+import analysis.ast.nodes.IntLiteral;
+import analysis.ast.nodes.UnaryOp;
 
 public abstract class ITree implements ISyntaxTree {
 
@@ -106,8 +109,28 @@ public abstract class ITree implements ISyntaxTree {
 		if (getSymbol() != null)
 			System.out.println(StringUtils.repeat(' ', depth) + "Name: "
 					+ getSymbol() + this.getClass().getName());
-		else
-			System.out.println(StringUtils.repeat(' ', depth) + this.getClass().getName());
+		else {
+			if (this instanceof BinaryOp) {
+				System.out.println(StringUtils.repeat(' ', depth)
+						+ this.getClass().getName() + ":"
+						+ ((BinaryOp) this).getOp());
+			} else if (this instanceof IntLiteral) {
+				System.out.println(StringUtils.repeat(' ', depth)
+						+ this.getClass().getName() + ":"
+						+ ((IntLiteral) this).getValue());
+			} else if (this instanceof Id) {
+				System.out.println(StringUtils.repeat(' ', depth)
+						+ this.getClass().getName() + ":"
+						+ ((Id) this).getValue());
+			} else if (this instanceof UnaryOp) {
+				System.out.println(StringUtils.repeat(' ', depth)
+						+ this.getClass().getName() + ":"
+						+ ((UnaryOp) this).getOp());
+			} else {
+				System.out.println(StringUtils.repeat(' ', depth)
+						+ this.getClass().getName());
+			}
+		}
 
 		for (int i = 0; i < getChildrenCount(); ++i) {
 			ITree tree = (ITree) getChild(i);

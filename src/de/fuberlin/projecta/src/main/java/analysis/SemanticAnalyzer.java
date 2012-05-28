@@ -1,12 +1,22 @@
 package analysis;
 
+import lexer.TokenType;
+import lombok.Getter;
+import parser.ISyntaxTree;
+import parser.ITree.DefaultAttribute;
+import parser.NonTerminal;
+import parser.Symbol.Reserved;
+import analysis.ast.nodes.Args;
 import analysis.ast.nodes.Array;
 import analysis.ast.nodes.BasicType;
+import analysis.ast.nodes.BinaryOp;
 import analysis.ast.nodes.Block;
 import analysis.ast.nodes.Break;
 import analysis.ast.nodes.Declaration;
 import analysis.ast.nodes.Do;
+import analysis.ast.nodes.FuncCall;
 import analysis.ast.nodes.FuncDef;
+import analysis.ast.nodes.Id;
 import analysis.ast.nodes.If;
 import analysis.ast.nodes.IfElse;
 import analysis.ast.nodes.IntLiteral;
@@ -17,13 +27,8 @@ import analysis.ast.nodes.Record;
 import analysis.ast.nodes.Return;
 import analysis.ast.nodes.Statement;
 import analysis.ast.nodes.Type;
+import analysis.ast.nodes.UnaryOp;
 import analysis.ast.nodes.While;
-import lexer.TokenType;
-import lombok.Getter;
-import parser.ISyntaxTree;
-import parser.ITree.DefaultAttribute;
-import parser.NonTerminal;
-import parser.Symbol.Reserved;
 
 public class SemanticAnalyzer {
 
@@ -87,7 +92,7 @@ public class SemanticAnalyzer {
 			case type:
 				if (tree.getChild(0).getSymbol().isNonTerminal()) {
 					if (tree.getChild(0).getSymbol().asNonTerminal() == NonTerminal.basic) {
-						
+
 						if (tree.getChild(1).getChildrenCount() != 0) { // this
 																		// is
 																		// type_
@@ -115,7 +120,7 @@ public class SemanticAnalyzer {
 							assert (success);
 
 							insertNode.addChild(array);
-							
+
 							toAST(tree.getChild(1), array);
 
 						} else
@@ -133,7 +138,7 @@ public class SemanticAnalyzer {
 
 						array.addAttribute(lattribute);
 						array.setAttribute(lattribute, record);
-						
+
 						toAST(tree.getChild(4), array);
 
 						insertNode.addChild(array);
@@ -208,8 +213,13 @@ public class SemanticAnalyzer {
 						stmt = new Return();
 					} else if (firstChild.getSymbol().asTerminal() == TokenType.PRINT) {
 						stmt = new Print();
-					} else if (firstChild.getSymbol().asNonTerminal() == NonTerminal.block) {
+					}
+				} else if (firstChild.getSymbol().isNonTerminal()) {
+					if (firstChild.getSymbol().asNonTerminal() == NonTerminal.block) {
 						stmt = new Block();
+					} else if (firstChild.getSymbol().asNonTerminal() == NonTerminal.assign) {
+						// use the default case
+						toAST(firstChild, insertNode);
 					}
 				}
 
@@ -223,19 +233,77 @@ public class SemanticAnalyzer {
 					// "stmt could'nt be set to any node in semantic analyzer");
 				}
 				return;
+			case assign:
+			case bool:
+			case join:
+			case equality:
+			case rel:
+			case expr:
+			case term:
+				if (tree.getChild(1).getChildrenCount() == 0) {
+					toAST(tree.getChild(0), insertNode);
+				} else {
+					BinaryOp bOp = new BinaryOp(tree.getChild(1).getChild(0)
+							.getSymbol().asTerminal());
+
+					if (bOp != null) {
+						// simply hang in both children trees
+						toAST(tree.getChild(0), bOp); // rel
+						toAST(tree.getChild(1), bOp); // equality'
+						insertNode.addChild(bOp);
+					}
+				}
+				return;
+			case unary:
+				if (tree.getChild(0).getSymbol().isNonTerminal()) {
+					toAST(tree.getChild(0), insertNode);
+				} else {
+					UnaryOp uOp = new UnaryOp(tree.getChild(0).getSymbol().asTerminal());
+
+					if (uOp != null) {
+						// simply hang in both children trees
+						toAST(tree.getChild(1), uOp); // unary
+						insertNode.addChild(uOp);
+					}
+				}
+				return;
+			case factor:
+				if(tree.getChild(0).getSymbol().isNonTerminal()){
+					if(tree.getChild(1).getChildrenCount() == 0){
+						toAST(tree.getChild(0), insertNode);
+					} else {
+						FuncCall call = new FuncCall();
+						for(ISyntaxTree tmp : tree.getChildren()){
+							toAST(tmp, call);
+						}
+						insertNode.addChild(call);
+					}
+				} else {
+					for(ISyntaxTree tmp : tree.getChildren()){
+						toAST(tmp, insertNode);
+					}
+				}
+				return;
+			case factor_:
+				Args args = new Args();
+				toAST(tree.getChild(1), args);
+				insertNode.addChild(args);
+				return;
 			case loc:
-				// basic uses default
-				// stmt_ uses default
-				// stmt__ uses default
-				// stmts uses the default
-				// decls uses the default
-				// params uses the default
-				// params_ uses the default
-				// func_ uses the default
+				if(tree.getChild(1).getChildrenCount() == 0){
+					toAST(tree.getChild(0), insertNode);
+				} else {
+					
+				}
+				return ; 
+
+				// list of nodes which use the default case:
+				// assign_, basic, bool_, decls, equality_, expr_, factor_, func_, join_,
+				// params, params_, rel_, stmt_, stmt__, stmts,
 			default:
 				// nothing to do here just pass it through
-				for (int i = 0; i < tree.getChildrenCount(); i++) {
-					toAST(tree.getChild(i), insertNode);
+				for(ISyntaxTree tmp : tree.getChildren()){
+					toAST(tmp, insertNode);
 				}
 				return;
 			}
@@ -261,7 +329,11 @@ public class SemanticAnalyzer {
 						.getAttribute(DefaultAttribute.TokenValue.name())));
 				return;
 			case ID:
-				insertNode.addChild(new IntLiteral(1));
+				insertNode.addChild(new Id((String) tree
+						.getAttribute(DefaultAttribute.TokenValue.name())));
+				return;
+			default:// all BINARY_OP's use default
+				return;
 			}
 		} else if (tree.getSymbol().isReservedTerminal()) {
 			Reserved res = tree.getSymbol().asReservedTerminal();
@@ -279,6 +351,10 @@ public class SemanticAnalyzer {
 				// throw new SemanticException("Stack pointer in parsetree?");
 			}
 		}
+	}
+
+	private boolean checkForValidity(ISyntaxTree tree) {
+		return true;
 	}
 
 	/**

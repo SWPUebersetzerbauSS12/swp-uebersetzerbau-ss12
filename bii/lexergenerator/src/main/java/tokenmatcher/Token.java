@@ -35,7 +35,9 @@ package tokenmatcher;
 import parser.IToken;
 
 
-public class Token { // implements IToken {
+
+
+public class Token implements IToken {
 // TODO: resolve conflict with given interface IToken
 
 	private String type;

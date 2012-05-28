@@ -68,8 +68,11 @@ public class Token implements IToken {
 	public String getType() {
 		return type;
 	}
-
-
+	
+	public <E extends Enum<E>> E tryGetTypeAsEnum( Class<E> enumClass) throws IllegalArgumentException, NullPointerException {
+    return Enum.valueOf( enumClass, type);
+	}
+	
 	public Object getAttribute() {
 		return attribute;
 	}

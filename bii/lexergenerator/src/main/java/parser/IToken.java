@@ -47,6 +47,14 @@ public interface IToken {
 	 */
 	String getType();
 
+	
+	/**
+	 * Get the type of this Token as an enum value
+	 * 
+	 * @return Token type
+	 */
+	<E extends Enum<E>> E tryGetTypeAsEnum( Class<E> enumClass) throws IllegalArgumentException, NullPointerException;
+	  
 
 	/**
 	 * Get the Token attribute value

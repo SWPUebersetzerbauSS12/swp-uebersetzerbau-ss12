@@ -55,7 +55,7 @@ public interface IToken {
 	 * 
 	 * @return Attribute value
 	 */
-	String getAttribute();
+	Object getAttribute();
 
 
 	/**

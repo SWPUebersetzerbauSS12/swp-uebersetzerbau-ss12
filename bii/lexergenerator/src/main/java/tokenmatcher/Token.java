@@ -43,14 +43,14 @@ public class Token implements IToken {
 // TODO: resolve conflict with given interface IToken
 
 	private String type;
-	private String attribute;
+	private Object attribute;
 	private int line;
 	private int offset;
 	
 	private static Token eofToken = new Token( "" + SpecialChars.CHAR_EOF, 0, 0);
 
 	
-	public Token( String type, String attribute, int  line, int offset) {
+	public Token( String type, Object attribute, int  line, int offset) {
 		super();
 		this.type = type;
 		this.attribute = attribute;
@@ -70,10 +70,14 @@ public class Token implements IToken {
 	}
 
 
-	public String getAttribute() {
+	public Object getAttribute() {
 		return attribute;
 	}
 
+	
+	public String getAttributeAsString() {
+		return (String) attribute;
+	}
 
 	public int getOffset() {
 		return offset;
@@ -87,17 +91,17 @@ public class Token implements IToken {
 	
 	public static boolean isTokenLineComment( Token token) {
 		return "COMMENT".equalsIgnoreCase( token.getType()) &&
-			   "LINE".equalsIgnoreCase( token.getAttribute());
+			   "LINE".equalsIgnoreCase( token.getAttributeAsString());
 	}
 	
 	public static boolean isTokenStartingBlockComment( Token token) {
 		return "COMMENT".equalsIgnoreCase( token.getType()) &&
-			   "BLOCK_BEGIN".equalsIgnoreCase( token.getAttribute());
+			   "BLOCK_BEGIN".equalsIgnoreCase( token.getAttributeAsString());
 	}
 	
 	public static boolean isTokenEndingBlockComment( Token token) {
 		return "COMMENT".equalsIgnoreCase( token.getType()) &&
-			   "BLOCK_END".equalsIgnoreCase( token.getAttribute());
+			   "BLOCK_END".equalsIgnoreCase( token.getAttributeAsString());
 	}
 	
 	

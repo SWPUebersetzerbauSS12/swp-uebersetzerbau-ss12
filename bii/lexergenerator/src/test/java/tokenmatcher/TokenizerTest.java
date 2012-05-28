@@ -41,7 +41,7 @@ public class TokenizerTest {
 		fsm = nfaToDfaConverter.convertToDfa(fsm);
 
 		LexemeReader lexemeReader = new BufferedLexemeReader(sourceFile);
-//		LexemeReader lexemeReader = new SimpleLexemeReader(sourceFile);
+		//LexemeReader lexemeReader = new SimpleLexemeReader(sourceFile);
 
 		Tokenizer tokenizer = new Tokenizer(lexemeReader, new MinimalDfa<Character, StatePayload>(fsm));
 
@@ -49,8 +49,7 @@ public class TokenizerTest {
 		String tokenString;
 		String[] tokensToFind = {"<OP, LE>", "<OP, LT>", "<OP, NE>", "<OP, LT>", "<OP, NE>", "<OP, LT>", "<OP, NE>", "<OP, LE>", "<OP, LT>", "<OP, LT>"};
 		int i = 0;
-		while (true) {
-			currentToken = tokenizer.getNextToken();
+		while ( !Token.isEofToken( currentToken = tokenizer.getNextToken())) {
 			tokenString = "<" + currentToken.getType() + ", " + currentToken.getAttribute() + ">";
 			Assert.assertEquals(tokensToFind[i], tokenString);
 			System.out.println(tokenString);

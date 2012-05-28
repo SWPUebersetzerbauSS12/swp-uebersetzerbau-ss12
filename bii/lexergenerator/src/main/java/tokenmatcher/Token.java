@@ -32,7 +32,9 @@
 
 package tokenmatcher;
 
+import bufferedreader.SpecialChars;
 import parser.IToken;
+import utils.Test;
 
 
 
@@ -45,6 +47,7 @@ public class Token implements IToken {
 	private int line;
 	private int offset;
 	
+	private static Token eofToken = new Token( "" + SpecialChars.CHAR_EOF, 0, 0);
 
 	
 	public Token( String type, String attribute, int  line, int offset) {
@@ -97,4 +100,16 @@ public class Token implements IToken {
 			   "BLOCK_END".equalsIgnoreCase( token.getAttribute());
 	}
 	
+	
+	public static Token getEofToken() {
+		return eofToken; 
+	}
+	
+	public static boolean isEofToken( Token token) {
+		return Test.isAssigned( token) && token.type.equals( ""+SpecialChars.CHAR_EOF); 
+	}
+	
+	public boolean isEofToken() {
+		return type.equals( ""+SpecialChars.CHAR_EOF); 
+	}	
 }

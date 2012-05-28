@@ -82,7 +82,7 @@ public class Tokenizer implements LexerToParserInterface {
 		dfa.resetToInitialState();
 
 		boolean eofReached = false;
-		while ( eofReached) {
+		while ( !eofReached) {
 			currentChar = lexemeReader.getNextChar();
       currentPositionInLine++;
 			
@@ -151,6 +151,10 @@ public class Tokenizer implements LexerToParserInterface {
 					while ( thisLine == currentLine){
 						// ignore remaining line
 						recognisedToken = getNextToken();
+						if ( recognisedToken.isEofToken()) {
+							eofReached = true;
+							break;
+						}
 					} 
 					readMode = ReadMode.READ_NORMAL;
 					return recognisedToken;
@@ -167,8 +171,7 @@ public class Tokenizer implements LexerToParserInterface {
 		  }
 		}
 		
-		Token eofToken = new Token( "" + SpecialChars.CHAR_EOF, currentLine, currentPositionInLine);
-		return eofToken;
+		return Token.getEofToken();
 	}
 
 }

@@ -179,8 +179,21 @@ public class Translator {
 			case Label:
 				label(tok.getTarget());
 				break;
-			case CompareLower:
+			case Compare:
+				if (tok.getOp1().startsWith("%"))
+					op1 = mem.getAddress(tok.getOp1());
+				else
+					op1 = "$" + tok.getOp1();
+				if (tok.getOp2().startsWith("%"))
+					op2 = mem.getAddress(tok.getOp2());
+				else
+					op2 = "$" + tok.getOp2();
+				cmp(op1,op2);
+				break;
+			
+			case Branch:
 				
+				break;
 
 			default:
 				break;
@@ -193,6 +206,10 @@ public class Translator {
 				+ "\n\tcall exit\n\n");
 	}
 
+	private void cmp(String source, String target) {
+		sectionText.append("\tcmp ").append(source).append(", ").append(target).append(":\t\t\t#Label ")
+				.append("\n");
+	}
 	private void label(String name) {
 		sectionText.append("label_").append(name).append(":\t\t\t#Label ")
 				.append(name).append("\n");

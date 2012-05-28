@@ -14,12 +14,7 @@ public enum TokenType {
 	Undefined,
 	Call,
 	String,
-	CompareLower,
-	CompareGreater,
-	CompareLowerEqual,
-	CompareGreaterEqual,
-	CompareEqual,
-	CompareNotEqual,
+	Compare,
 	Label,
 	Branch;
 }

@@ -290,22 +290,9 @@ public class Lexer {
 			}
 
 			else if (line[2].contentEquals("icmp")) {
-				if (line[3].contentEquals("slt"))
-					newToken.setType(TokenType.CompareLower);
-				else if (line[3].contentEquals("sgt"))
-					newToken.setType(TokenType.CompareGreater);
-				else if (line[3].contentEquals("sle"))
-					newToken.setType(TokenType.CompareLowerEqual);
-				else if (line[3].contentEquals("sge"))
-					newToken.setType(TokenType.CompareGreaterEqual);
-				else if (line[3].contentEquals("eq"))
-					newToken.setType(TokenType.CompareEqual);
-				else if (line[3].contentEquals("ne"))
-					newToken.setType(TokenType.CompareNotEqual);
-				else
-					newToken.setType(TokenType.Undefined);
-
+				newToken.setType(TokenType.Compare);
 				newToken.setTarget(line[0]);
+				newToken.setTypeTarget(line[3]);
 				newToken.setOp1(line[5]);
 				newToken.setTypeOp1(line[4]);
 				newToken.setOp2(line[6]);

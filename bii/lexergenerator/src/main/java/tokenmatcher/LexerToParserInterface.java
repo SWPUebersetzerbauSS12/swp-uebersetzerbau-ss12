@@ -32,7 +32,6 @@
 
 package tokenmatcher;
 
-import bufferedreader.EndOfFileException;
 import bufferedreader.LexemeReaderException;
 
 /**
@@ -48,10 +47,9 @@ public interface LexerToParserInterface {
 	 * 
 	 * @return der nächste Token.
 	 * 
-	 * @throws EndOfFileException wird geworfen,wenn das Ende der Datei mit dem Quellcode erreicht ist.
 	 * @throws LexemeReaderException wird geworfen, wenn der Lexer beim zugriff auf die Quelldatei probleme hat. 
 	 * @throws LexemIdentificationException wird geworfen, wenn der Lexer das gelesene Lexem keinem bekannten Tokentyp zuweisen kann.
 	 */
-	Token getNextToken() throws EndOfFileException, LexemeReaderException, LexemIdentificationException;
+	Token getNextToken() throws LexemeReaderException, LexemIdentificationException;
 
 }

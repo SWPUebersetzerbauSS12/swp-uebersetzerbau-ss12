@@ -3,7 +3,6 @@ package regextodfaconverter.directconverter;
 import org.junit.Test;
 
 import bufferedreader.BufferedLexemeReader;
-import bufferedreader.EndOfFileException;
 import bufferedreader.LexemeReader;
 
 import regextodfaconverter.MinimalDfa;
@@ -30,7 +29,7 @@ public class RegexToDfaTest {
 		
 		System.out.println(new MinimalDfa( fsm));
 		Tokenizer tokenizer = new Tokenizer( lexemeReader, new MinimalDfa( fsm));
-
+/*
 		try {
 		Token currentToken;
 		while ( true) {
@@ -41,6 +40,7 @@ public class RegexToDfaTest {
 		} catch( EndOfFileException e){
 			
 		}
+		*/
 	}
 
 }

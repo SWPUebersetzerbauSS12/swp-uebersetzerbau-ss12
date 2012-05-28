@@ -34,7 +34,6 @@ package tokenmatcher;
 
 import lexergen.Settings;
 import tokenmatcher.errorhandler.ErrorCorrector;
-import bufferedreader.EndOfFileException;
 import bufferedreader.LexemeReader;
 import bufferedreader.LexemeReaderException;
 import bufferedreader.SpecialChars;
@@ -75,14 +74,15 @@ public class Tokenizer implements LexerToParserInterface {
 	
 	
 
-	public Token getNextToken() throws EndOfFileException, LexemeReaderException,
+	public Token getNextToken() throws LexemeReaderException,
 			LexemIdentificationException {
 		Character currentChar;
 		String currentLexem = "";
 		
 		dfa.resetToInitialState();
 
-		while ( true) {
+		boolean eofReached = false;
+		while ( eofReached) {
 			currentChar = lexemeReader.getNextChar();
       currentPositionInLine++;
 			
@@ -157,8 +157,8 @@ public class Tokenizer implements LexerToParserInterface {
 				} else
 				  return recognisedToken;
 				
-			} else if ( currentChar == SpecialChars.CHAR_EOF) {
-				throw new EndOfFileException();
+			} else if ( SpecialChars.isEOF( currentChar)) {
+				eofReached = true;
 		  } else if ( readMode == ReadMode.READ_NORMAL){
 		  	//errorCorrector.handleMismatch( currentChar, lexemeReader, dfa, currentLine, currentPositionInLine);	
 		  System.err.println( currentChar);
@@ -166,7 +166,9 @@ public class Tokenizer implements LexerToParserInterface {
 		  	// ignore, cause we scan a comment at the moment
 		  }
 		}
-
+		
+		Token eofToken = new Token( "" + SpecialChars.CHAR_EOF, currentLine, currentPositionInLine);
+		return eofToken;
 	}
 
 }

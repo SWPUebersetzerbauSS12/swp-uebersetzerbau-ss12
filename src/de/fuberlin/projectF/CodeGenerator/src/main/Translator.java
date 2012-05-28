@@ -6,6 +6,7 @@ import main.model.Token.Parameter;
 
 import main.model.RegisterAddress;
 import main.model.Token;
+import main.model.TokenType;
 import main.model.Variable;
 
 public class Translator {
@@ -53,6 +54,12 @@ public class Translator {
 					break;
 				// Variable zurückgeben
 				res = mem.getFreeRegister();
+				if(res == null) {
+					if(!freeUnusedRegister(tokenNumber)) {
+						System.out.println("Could'nt free register");
+					}
+					res = mem.getFreeRegister();
+				}
 				mem.setReturnRegister(res);
 				if (tok.getOp1().startsWith("%")) {
 					
@@ -158,6 +165,12 @@ public class Translator {
 				
 			case Subtraction:
 				res = mem.getFreeRegister();
+				if(res == null) {
+					if(!freeUnusedRegister(tokenNumber)) {
+						System.out.println("Could'nt free register");
+					}
+					res = mem.getFreeRegister();
+				}
 
 				if (tok.getOp1().startsWith("%"))
 					op1 = mem.getAddress(tok.getOp1());
@@ -180,6 +193,14 @@ public class Translator {
 				label(tok.getTarget());
 				break;
 			case Compare:
+				res = mem.getFreeRegister();
+				if(res == null) {
+					if(!freeUnusedRegister(tokenNumber)) {
+						System.out.println("Could'nt free register");
+					}
+					res = mem.getFreeRegister();
+				}
+				
 				if (tok.getOp1().startsWith("%"))
 					op1 = mem.getAddress(tok.getOp1());
 				else
@@ -188,11 +209,45 @@ public class Translator {
 					op2 = mem.getAddress(tok.getOp2());
 				else
 					op2 = "$" + tok.getOp2();
-				cmp(op1,op2);
+				
+				movl(op1, res.getFullName(), "Compare");
+				cmpl(op2, res.getFullName());
+				
+				mem.addRegVar(tok.getOp1(), tok.getTypeOp1(), res);
 				break;
 			
 			case Branch:
-				
+				if(tok.getOp1().isEmpty()) 
+					jmp("label_" + tok.getOp2().substring(1));
+				else {
+					int result;
+					result = findToken(tokenNumber, true, TokenType.Compare, null, null, null);
+					System.out.println("last compare was in token #" + result + " -> " + code.get(result).getTypeTarget());
+					if(code.get(result).getTypeTarget().equals("eq")) {
+						je("label_" + tok.getOp1().substring(1));
+						jmp("label_" + tok.getOp2().substring(1));
+					}
+					if(code.get(result).getTypeTarget().equals("ne")) {
+						jne("label_" + tok.getOp1().substring(1));
+						jmp("label_" + tok.getOp2().substring(1));
+					}
+					if(code.get(result).getTypeTarget().equals("slt")) {
+						jl("label_" + tok.getOp1().substring(1));
+						jmp("label_" + tok.getOp2().substring(1));
+					}
+					if(code.get(result).getTypeTarget().equals("sgt")) {
+						jg("label_" + tok.getOp1().substring(1));
+						jmp("label_" + tok.getOp2().substring(1));
+					}
+					if(code.get(result).getTypeTarget().equals("sle")) {
+						jle("label_" + tok.getOp1().substring(1));
+						jmp("label_" + tok.getOp2().substring(1));
+					}
+					if(code.get(result).getTypeTarget().equals("sge")) {
+						jge("label_" + tok.getOp1().substring(1));
+						jmp("label_" + tok.getOp2().substring(1));
+					}
+				}
 				break;
 
 			default:
@@ -206,8 +261,36 @@ public class Translator {
 				+ "\n\tcall exit\n\n");
 	}
 
-	private void cmp(String source, String target) {
-		sectionText.append("\tcmp ").append(source).append(", ").append(target).append(":\t\t\t#Label ")
+	private void je(String label) {
+		sectionText.append("\tje ").append(label).append("\n");
+	}
+	
+	private void jne(String label) {
+		sectionText.append("\tjne ").append(label).append("\n");
+	}
+	
+	private void jl(String label) {
+		sectionText.append("\tjl ").append(label).append("\n");
+	}
+	
+	private void jg(String label) {
+		sectionText.append("\tjg ").append(label).append("\n");
+	}
+	
+	private void jle(String label) {
+		sectionText.append("\tjle ").append(label).append("\n");
+	}
+	
+	private void jge(String label) {
+		sectionText.append("\tjge ").append(label).append("\n");
+	}
+	
+	private void jmp(String label) {
+		sectionText.append("\tjmp ").append(label).append("\n");
+	}
+	
+	private void cmpl(String source, String target) {
+		sectionText.append("\tcmpl ").append(source).append(", ").append(target).append("\t\t\t#Label ")
 				.append("\n");
 	}
 	private void label(String name) {
@@ -244,7 +327,7 @@ public class Translator {
 		boolean result = false;
 		for(int i = 0; i < 6; i++) {
 			Variable tmp = mem.getVarFromReg(i);
-			if(findToken(tokenNumber, false ,null, tmp.name, tmp.name) == 0) {
+			if(findToken(tokenNumber, false, null, null, tmp.name, tmp.name) == 0) {
 				mem.freeRegister(new RegisterAddress(i));
 				result = true;
 			}
@@ -252,8 +335,11 @@ public class Translator {
 		return result;
 	}
 	
-	private int findToken(int tokenNum, boolean backwards, String target, String op1, String op2) {
-		for(int i = tokenNum; i < code.size();) {
+	private int findToken(int start, boolean backwards, TokenType type, String target, String op1, String op2) {
+		for(int i = start; i < code.size() && i >= 0;) {
+			if(type != null)
+				if(code.get(i).getType() == type)
+					return i;
 			if(target != null)
 				if(code.get(i).getTarget().equals(target))
 					return i;

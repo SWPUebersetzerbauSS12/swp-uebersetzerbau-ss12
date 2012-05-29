@@ -23,9 +23,6 @@ public class ParserGenerator {
 	private Map<String, HashMap<String,Vector<Integer>>> parserTable = 
 		new HashMap<String, HashMap<String,Vector<Integer>>>();
 	
-	private final String EPSILON = "@";
-	private final String EOF = "eof";
-	
 	private String start;
 	private Vector<String> Terminals;
 	private Vector<String> Nonterminal;
@@ -119,7 +116,7 @@ public class ParserGenerator {
 				}
 			}
 		}
-		Terminals.add(EOF);
+		Terminals.add(Settings.getEOF());
 		
 	}
 	
@@ -163,7 +160,7 @@ public class ParserGenerator {
 			}
 			
 			//FirstSet Evaluation Rule 2 and 3
-			if(currentFS.contains(EPSILON))
+			if(currentFS.contains(Settings.getEPSILON()))
 			{
 				for(int j = 1; j < production.size();j++)
 				{
@@ -185,12 +182,12 @@ public class ParserGenerator {
 					//add temporary FS to FS of current production
 					currentFS.addAll(tempFS);
 					//break if next char is not a nonterminal with epsilon production
-					if(!tempFS.contains(EPSILON) || Terminals.contains(nextTerm))
+					if(!tempFS.contains(Settings.getEPSILON()) || Terminals.contains(nextTerm))
 					{
 						//remove epsilon if there are following terminals
 						//example: <A> ::= <B> a b and <B> ::= c | epsilon
 						//epsilon have to be in FS(<B>) but not in FS(<A>)
-						currentFS.remove(EPSILON);
+						currentFS.remove(Settings.getEPSILON());
 						break;
 					}
 				}
@@ -235,7 +232,7 @@ public class ParserGenerator {
 		}
 		Set<String> fs = new HashSet<String>();
 		if (start.equals(head)) {
-			fs.add(EOF);
+			fs.add(Settings.getEOF());
 		}
 		
 		for (String currentHead : grammarMap.keySet()) {
@@ -251,9 +248,9 @@ public class ParserGenerator {
 							else{
 								HashSet<String> first = new HashSet<String>(firstSets.get(follow));
 
-								if (first.contains(EPSILON)){
+								if (first.contains(Settings.getEPSILON())){
 									if (!currentHead.equals(head)) { fs.addAll(evalFollowSet(currentHead));}
-									first.remove(EPSILON);
+									first.remove(Settings.getEPSILON());
 									fs.addAll(first);
 								} else {
 									fs.addAll(first);
@@ -291,7 +288,7 @@ public class ParserGenerator {
 				
 				if(currentFirstSet.contains(terminal))
 				{
-					if(!terminal.equals(EPSILON))
+					if(!terminal.equals(Settings.getEPSILON()))
 					{
 						//System.out.println("Nonterminal: "+head+" Terminal: "+terminal);
 						
@@ -301,10 +298,10 @@ public class ParserGenerator {
 					
 				}
 				
-				if(currentFirstSet.contains(EPSILON) && currentFollowSet.contains(terminal))
+				if(currentFirstSet.contains(Settings.getEPSILON()) && currentFollowSet.contains(terminal))
 				{
 					//Get index of production for current FirstSet item
-					parseTableEntry.add(firstSetsProductions.get(head).get(EPSILON));
+					parseTableEntry.add(firstSetsProductions.get(head).get(Settings.getEPSILON()));
 				}
 				parseTableColumn.put(terminal, parseTableEntry);				
 			}			

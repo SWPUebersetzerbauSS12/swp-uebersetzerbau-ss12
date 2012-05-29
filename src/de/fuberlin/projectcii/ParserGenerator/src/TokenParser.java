@@ -5,9 +5,6 @@ import java.util.Vector;
 
 
 public class TokenParser {
-	
-	private final String EPSILON = "@";
-	private final String EOF = "eof";
 
 	private TestLexer lexer;
 	
@@ -19,10 +16,10 @@ public class TokenParser {
 								 Map<String, Vector<Vector<String>>> grammar, String StartSymbol){
 	
 		Stack<String> stack = new Stack<String>();
-		stack.push(EOF);
+		stack.push(Settings.getEOF());
 		stack.push(StartSymbol);
 		String Token = lexer.getNextToken();
-		while (!Token.equals(EOF)){
+		while (!Token.equals(Settings.getEOF())){
 			if (stack.peek().equals(Token)){
 				stack.pop();
 				Token = lexer.getNextToken();
@@ -33,7 +30,7 @@ public class TokenParser {
 				int productionNr = parserTable.get(head).get(Token).firstElement();
 				Vector<String> Production = grammar.get(head).elementAt(productionNr);
 				for (int i=Production.size()-1;i >= 0;i--){
-					if (!Production.elementAt(i).equals(EPSILON)){
+					if (!Production.elementAt(i).equals(Settings.getEPSILON())){
 						stack.push(Production.elementAt(i));
 					}
 				}
@@ -44,7 +41,7 @@ public class TokenParser {
 				break;
 			}
 		}
-		if (Token.equals(EOF)){
+		if (Token.equals(Settings.getEOF())){
 			System.out.println("accepted");
 		}
 		else{

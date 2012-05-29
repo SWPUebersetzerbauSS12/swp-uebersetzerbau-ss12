@@ -18,8 +18,6 @@ public class GrammarReader {
 	
 	private Vector<String> heads;
 	
-	private final String EPSILON = "@";
-	
 	/**
 	 * Getter for the Startsymbol
 	 * 
@@ -183,7 +181,7 @@ public class GrammarReader {
 							else if (i==longest){
 								if (longest == production.size()){
 									Vector<String> epsilon = new Vector<String>();
-									epsilon.add(EPSILON);
+									epsilon.add(Settings.getEPSILON());
 									nonTerminalNew.InsertProduction(epsilon);
 								}
 								else{
@@ -419,7 +417,7 @@ public class GrammarReader {
 				}
 				//Add eplison-production to <"N"1>
 				Vector<String> production = new Vector<String>();
-				production.add(EPSILON);
+				production.add(Settings.getEPSILON());
 				// Add new nonTerminal to old production if no productions are left
 				if (nonTerminalMod.productions.size() == 0){
 				

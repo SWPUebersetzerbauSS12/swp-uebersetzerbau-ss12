@@ -249,6 +249,9 @@ public class Translator {
 					}
 				}
 				break;
+				
+			case String:
+				data(tok.getTarget(), "ascii", tok.getOp1());
 
 			default:
 				break;
@@ -261,6 +264,10 @@ public class Translator {
 				+ "\n\tcall exit\n\n");
 	}
 
+	private void data(String label, String type, String value) {
+		sectionData.append(label).append(":\t").append(type).append(" ").append(value).append("\n");
+	}
+	
 	private void je(String label) {
 		sectionText.append("\tje ").append(label).append("\n");
 	}

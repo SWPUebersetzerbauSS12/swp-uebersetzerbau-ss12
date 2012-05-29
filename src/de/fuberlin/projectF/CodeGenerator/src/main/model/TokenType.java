@@ -16,5 +16,6 @@ public enum TokenType {
 	String,
 	Compare,
 	Label,
-	Branch;
+	Branch,
+	C_Call;
 }

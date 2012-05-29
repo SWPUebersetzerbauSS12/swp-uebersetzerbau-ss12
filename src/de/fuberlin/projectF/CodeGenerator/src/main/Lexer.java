@@ -282,10 +282,16 @@ public class Lexer {
 				newToken.setTarget(line[0]);
 				newToken.setTypeTarget(line[3].replace((char) 1, ' '));
 			} else if (line[2].contentEquals("call")) {
-				newToken.setType(TokenType.Call);
 				newToken.setTarget(line[0]);
 				newToken.setTypeTarget(line[3]);
-				newToken.setOp1(line[4]);
+				if(line[4].charAt(0) == '@') {
+					newToken.setType(TokenType.Call);
+					newToken.setOp1(line[4]);
+				} else {
+					newToken.setType(TokenType.C_Call);
+					newToken.setOp1(line[7]);
+				}
+					
 				fillParameter(newToken, line[5].replace((char) 1, ' '));
 			}
 

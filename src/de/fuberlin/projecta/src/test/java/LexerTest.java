@@ -1,6 +1,4 @@
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -33,7 +31,8 @@ public class LexerTest {
 		assertEquals(tokenList.get(tokenList.size() - 1).getInternalType(),
 				TokenType.EOF);
 	}
-
+	
+	
 	@Test
 	public void testNumericalLiterals() throws SyntaxErrorException {
 		String source = "23 \n3.14+ \n2. \n22e+4 \n31.4e-1";
@@ -103,6 +102,43 @@ public class LexerTest {
 				new Token(TokenType.RPAREN, null, 1, 17),
 				new Token(TokenType.OP_SEMIC, null, 1, 18),
 				new Token(TokenType.EOF, null, 1, 19) };
+		assertArrayEquals(expected, tokenize(code).toArray());
+	}
+	
+	@Test
+	public void testArrayDeclaration() {
+		
+//		<DEF, null, 1, 0>
+//		<INT_TYPE, null, 1, 4>
+//		<ID, foobar, 1, 8>
+//		<LPAREN, null, 1, 14>
+//		<RPAREN, null, 1, 15>
+//		<LBRACE, null, 1, 16>
+//		<INT_TYPE, null, 1, 17>
+//		<LBRACKET, null, 1, 21>
+//		<INT_LITERAL, 3, 1, 23>
+//		<RBRACKET, null, 1, 23>
+//		<ID, myArray, 1, 25>
+//		<OP_SEMIC, null, 1, 32>
+//		<RBRACE, null, 1, 33>
+//		<EOF, null, 2, 0>
+		
+		final String code = "def int foobar(){int[3] myArray;}";
+
+		Token[] expected = new Token[] { new Token(TokenType.DEF, null, 1, 0),
+				new Token(TokenType.INT_TYPE, null, 1, 4),
+				new Token(TokenType.ID, "foobar", 1, 8),
+				new Token(TokenType.LPAREN, null, 1, 14),
+				new Token(TokenType.RPAREN, null, 1, 15),
+				new Token(TokenType.LBRACE, null, 1, 16),
+				new Token(TokenType.INT_TYPE, null,1,17),
+				new Token(TokenType.LBRACKET, null, 1, 20),
+				new Token(TokenType.INT_LITERAL, 3, 1, 22),
+				new Token(TokenType.RBRACKET, null, 1, 22),
+				new Token(TokenType.ID, "myArray", 1, 24),
+				new Token(TokenType.OP_SEMIC, null, 1, 31),
+				new Token(TokenType.RBRACE, null, 1, 32),
+				new Token(TokenType.EOF, null, 1, 33) };
 		assertArrayEquals(expected, tokenize(code).toArray());
 	}
 

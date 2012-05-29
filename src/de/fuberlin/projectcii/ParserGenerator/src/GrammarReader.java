@@ -10,7 +10,6 @@ import java.util.*;
  * is deemed not LL(1)-parsable.
  * 
  */
-
 public class GrammarReader {
 	
 	// the Startsymbol
@@ -237,7 +236,6 @@ public class GrammarReader {
 	 * @return An array containing [0]: size of the longest factor
 	 * 							   [1]: first production containing the factor
 	 */
-
 	private int[] calculateLongestFactor(Vector<Vector<String>> productions) {
 		int productionNr=0; // Returnvalue 1
 		int longest=0; // Returnvalue 0
@@ -341,7 +339,6 @@ public class GrammarReader {
 	 * @param grammar Grammar to be examined
 	 * @return The Modified grammar as a Vector of Productions	 
 	 */
-
 	private Vector <Productions> eliminateDirectLeftRekursion(Vector <Productions> grammar){
 		//Vector containing the modified grammar
 		Vector <Productions> grammarMod = new Vector <Productions>();

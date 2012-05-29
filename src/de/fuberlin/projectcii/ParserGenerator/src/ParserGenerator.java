@@ -71,7 +71,6 @@ public class ParserGenerator {
 	 * 
 	 * @author Patrick Schlott
 	 */
-	
 	public Map<String, HashMap<String,Vector<Integer>>> getParseTable(){
 		return this.parserTable;
 	}
@@ -81,7 +80,6 @@ public class ParserGenerator {
 	 * 
 	 * @author Patrick Schlott
 	 */
-	
 	public String getStartSymbol(){
 		return this.start;
 	}

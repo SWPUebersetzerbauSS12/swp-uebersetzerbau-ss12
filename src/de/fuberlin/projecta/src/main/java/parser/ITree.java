@@ -145,4 +145,38 @@ public abstract class ITree implements ISyntaxTree {
 
 	public abstract void run(SymbolTableStack tables);
 
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof ISyntaxTree) {
+			if (this.getSymbol().isNonTerminal()
+					&& ((ISyntaxTree) object).getSymbol().isNonTerminal()) {
+				if (this.getSymbol().asNonTerminal() == ((ISyntaxTree) object)
+						.getSymbol().asNonTerminal()) {
+					if (this.getChildren().equals(
+							((ISyntaxTree) object).getChildren())) {
+						return true;
+					}
+				}
+			} else if (this.getSymbol().isTerminal()
+					&& ((ISyntaxTree) object).getSymbol().isTerminal()) {
+				if (this.getSymbol().asNonTerminal() == ((ISyntaxTree) object)
+						.getSymbol().asNonTerminal()) {
+					if (this.getChildren().equals(
+							((ISyntaxTree) object).getChildren())) {
+						return true;
+					}
+				}
+			} else if (this.getSymbol().isReservedTerminal()
+					&& ((ISyntaxTree) object).getSymbol().isReservedTerminal()) {
+				if (this.getSymbol().asNonTerminal() == ((ISyntaxTree) object)
+						.getSymbol().asNonTerminal()) {
+					if (this.getChildren().equals(
+							((ISyntaxTree) object).getChildren())) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
 }

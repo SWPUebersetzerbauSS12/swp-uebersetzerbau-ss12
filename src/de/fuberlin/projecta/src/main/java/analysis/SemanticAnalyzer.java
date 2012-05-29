@@ -1,5 +1,7 @@
 package analysis;
 
+import java.util.List;
+
 import lexer.TokenType;
 import lombok.Getter;
 import parser.ISyntaxTree;
@@ -8,6 +10,7 @@ import parser.NonTerminal;
 import parser.Symbol.Reserved;
 import analysis.ast.nodes.Args;
 import analysis.ast.nodes.Array;
+import analysis.ast.nodes.ArrayCall;
 import analysis.ast.nodes.BasicType;
 import analysis.ast.nodes.BinaryOp;
 import analysis.ast.nodes.Block;
@@ -24,6 +27,7 @@ import analysis.ast.nodes.Params;
 import analysis.ast.nodes.Print;
 import analysis.ast.nodes.Program;
 import analysis.ast.nodes.Record;
+import analysis.ast.nodes.RecordVarCall;
 import analysis.ast.nodes.Return;
 import analysis.ast.nodes.Statement;
 import analysis.ast.nodes.Type;
@@ -49,6 +53,7 @@ public class SemanticAnalyzer {
 		parseTreeForRemoval();
 		parseTreeForSemanticActions(AST);
 		AST.printTree();
+		checkForValidity(AST);
 	}
 
 	public void toAST(ISyntaxTree tree) {
@@ -258,7 +263,8 @@ public class SemanticAnalyzer {
 				if (tree.getChild(0).getSymbol().isNonTerminal()) {
 					toAST(tree.getChild(0), insertNode);
 				} else {
-					UnaryOp uOp = new UnaryOp(tree.getChild(0).getSymbol().asTerminal());
+					UnaryOp uOp = new UnaryOp(tree.getChild(0).getSymbol()
+							.asTerminal());
 
 					if (uOp != null) {
 						// simply hang in both children trees
@@ -268,41 +274,90 @@ public class SemanticAnalyzer {
 				}
 				return;
 			case factor:
-				if(tree.getChild(0).getSymbol().isNonTerminal()){
-					if(tree.getChild(1).getChildrenCount() == 0){
+				if (tree.getChild(0).getSymbol().isNonTerminal()) {
+					if (tree.getChild(1).getChildrenCount() == 0) {
 						toAST(tree.getChild(0), insertNode);
 					} else {
 						FuncCall call = new FuncCall();
-						for(ISyntaxTree tmp : tree.getChildren()){
+						for (ISyntaxTree tmp : tree.getChildren()) {
 							toAST(tmp, call);
 						}
 						insertNode.addChild(call);
 					}
 				} else {
-					for(ISyntaxTree tmp : tree.getChildren()){
+					for (ISyntaxTree tmp : tree.getChildren()) {
 						toAST(tmp, insertNode);
 					}
 				}
 				return;
 			case factor_:
-				Args args = new Args();
-				toAST(tree.getChild(1), args);
-				insertNode.addChild(args);
+				if (tree.getChild(1).getChildrenCount() != 0) {
+					Args args = new Args();
+					toAST(tree.getChild(1), args);
+					insertNode.addChild(args);
+				}
 				return;
 			case loc:
-				if(tree.getChild(1).getChildrenCount() == 0){
+				if (tree.getChild(1).getChildrenCount() == 0) {
 					toAST(tree.getChild(0), insertNode);
 				} else {
-					
+					ISyntaxTree tmp = new Program();
+					toAST(tree.getChild(0), tmp);
+					tree.getChild(1).addAttribute(lattribute);
+					// there is only one child (the id itself)!
+					tree.getChild(1).setAttribute(lattribute,
+							tmp.getChild(0));
+					toAST(tree.getChild(1), insertNode);
 				}
-				return ; 
+				return;
+			case loc__:
+				tree.getChild(0).addAttribute(lattribute);
+				tree.getChild(0).setAttribute(lattribute, tree.getAttribute(lattribute));
+				if (tree.getChild(1).getChildrenCount() == 0) {
+					toAST(tree.getChild(0), insertNode);
+				} else {
+					ISyntaxTree tmp = new Program();
+					toAST(tree.getChild(0), tmp);
+					tmp.addAttribute(lattribute);
+					tmp.setAttribute(lattribute, tmp.getChildren());
+				}
+				return;
+			case loc_:
+				// TODO: not everything is well thought atm...
+				if (tree.getChild(0).getSymbol().asTerminal() == TokenType.OP_DOT) {
+					RecordVarCall varCall = new RecordVarCall();
+					if (tree.getAttribute(lattribute) instanceof ISyntaxTree) {
+						varCall.addChild((ISyntaxTree) tree
+								.getAttribute(lattribute));
+					} else if (tree.getAttribute(lattribute) instanceof List) {
+						throw new SemanticException("foobar1");
+					} else {
+						throw new SemanticException("foobar2");
+					}
+
+					toAST(tree.getChild(1), varCall);
+					insertNode.addChild(varCall);
+				} else {
+					ArrayCall array = new ArrayCall();
+					toAST(tree.getChild(1), array);
+					if (tree.getAttribute(lattribute) instanceof ISyntaxTree) {
+						array.addChild((ISyntaxTree) tree
+								.getAttribute(lattribute));
+						insertNode.addChild(array);
+					} else {
+						throw new SemanticException("foobar3");
+					}
+
+				}
+				return;
 
 				// list of nodes which use the default case:
-				// assign_, basic, bool_, decls, equality_, expr_, factor_, func_, join_,
+				// assign_, basic, bool_, decls, equality_, expr_, factor_,
+				// func_, join_,
 				// params, params_, rel_, stmt_, stmt__, stmts,
 			default:
 				// nothing to do here just pass it through
-				for(ISyntaxTree tmp : tree.getChildren()){
+				for (ISyntaxTree tmp : tree.getChildren()) {
 					toAST(tmp, insertNode);
 				}
 				return;
@@ -324,7 +379,6 @@ public class SemanticAnalyzer {
 				insertNode.addChild(new BasicType(TokenType.STRING_TYPE));
 				return;
 			case INT_LITERAL:
-				// TODO: this must be type-checked if it's working.
 				insertNode.addChild(new IntLiteral((Integer) tree
 						.getAttribute(DefaultAttribute.TokenValue.name())));
 				return;
@@ -332,7 +386,7 @@ public class SemanticAnalyzer {
 				insertNode.addChild(new Id((String) tree
 						.getAttribute(DefaultAttribute.TokenValue.name())));
 				return;
-			default:// all BINARY_OP's use default
+			default:// all BINARY_OP's and braces use default
 				return;
 			}
 		} else if (tree.getSymbol().isReservedTerminal()) {
@@ -353,6 +407,15 @@ public class SemanticAnalyzer {
 		}
 	}
 
+	/**
+	 * Should find productions which are semantically nonsense. Like double
+	 * assignment, funcCalls which aren't declared in this scope, assessing
+	 * record members which aren't existing or where the record does not exist,
+	 * ...
+	 * 
+	 * @param tree
+	 * @return
+	 */
 	private boolean checkForValidity(ISyntaxTree tree) {
 		return true;
 	}

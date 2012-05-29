@@ -10,7 +10,7 @@ public class LL1Parser {
 	}
 
 	public void getSyntaxTree(){
-		TokenParser tP = new TokenParser();
-		tP.ParseTokenStream(pG.getParseTable(),pG.getGrammar(),pG.getStartSymbol());
+		TokenParser tP = new TokenParser(pG.getParseTable(),pG.getGrammar(),pG.getStartSymbol());
+		tP.parseTokenStream();
 	}
 }

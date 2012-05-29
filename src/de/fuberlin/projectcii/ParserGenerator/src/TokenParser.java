@@ -3,7 +3,7 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.Vector;
 
-
+//Testkommentar
 public class TokenParser {
 
 	private TestLexer lexer;

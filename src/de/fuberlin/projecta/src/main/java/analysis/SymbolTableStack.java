@@ -4,11 +4,9 @@ import java.util.Stack;
 
 public class SymbolTableStack {
 
-	private static Stack<SymbolTable> stack;
+	private static Stack<SymbolTable> stack = new Stack<SymbolTable>();
 
 	public SymbolTableStack() {
-		// start with one empty symbolTable
-		stack = new Stack<SymbolTable>();
 		stack.push(new SymbolTable());
 	}
 

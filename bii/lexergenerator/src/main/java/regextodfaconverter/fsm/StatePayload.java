@@ -32,6 +32,8 @@
 
 package regextodfaconverter.fsm;
 
+import tokenmatcher.attributes.Attribute;
+
 /**
  * Implementiert Interface {@link tokenmatcher.StatePayload}
  * 
@@ -47,7 +49,7 @@ public class StatePayload implements tokenmatcher.StatePayload {
 
 	private String tokenType;
 
-	private String attribute;
+	private Attribute attribute;
 
 	/**
 	 * Die Priorität dieses Objekts (je größer die Zahl desto größer die
@@ -55,7 +57,7 @@ public class StatePayload implements tokenmatcher.StatePayload {
 	 */
 	private int priority = 0;
 
-	public StatePayload(String tokenType, String attribute, int priority) {
+	public StatePayload(String tokenType, Attribute attribute, int priority) {
 		super();
 		this.tokenType = tokenType;
 		this.attribute = attribute;
@@ -67,7 +69,7 @@ public class StatePayload implements tokenmatcher.StatePayload {
 	 * 
 	 * @param tokenType
 	 */
-	public StatePayload(String tokenType, String attribute) {
+	public StatePayload(String tokenType, Attribute attribute) {
 		super();
 		this.tokenType = tokenType;
 		this.attribute = attribute;
@@ -82,11 +84,11 @@ public class StatePayload implements tokenmatcher.StatePayload {
 		this.tokenType = tokenType;
 	}
 
-	public String getAttribute() {
+	public Attribute getAttribute() {
 		return attribute;
 	}
 
-	public void setAttribute(String attribute) {
+	public void setAttribute(Attribute attribute) {
 		this.attribute = attribute;
 	}
 

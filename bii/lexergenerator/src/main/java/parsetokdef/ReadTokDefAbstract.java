@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
+import tokenmatcher.attributes.Attribute;
+import tokenmatcher.attributes.StringAttribute;
 import utils.IRule;
 
 public abstract class ReadTokDefAbstract {
@@ -142,13 +144,14 @@ public abstract class ReadTokDefAbstract {
 			return null;
 	}
 
-	protected String getTokenValue(String action) {
+	protected Attribute getTokenValue(String action) {
 
 		String tokenAttributes[] = action.split("\"");
 
 		if (tokenAttributes.length > 3) {
-			return tokenAttributes[3];
+			return new StringAttribute( tokenAttributes[3]);
 		}
+		// todo: return new IntAttribute() if attrib = parseInt() etc. 
 		return null;
 	}
 }

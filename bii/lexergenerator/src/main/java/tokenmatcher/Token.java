@@ -79,7 +79,7 @@ public class Token implements IToken {
 
 	
 	public String getAttributeAsString() {
-		return (String) attribute;
+		return attribute.toString();
 	}
 
 	public int getOffset() {

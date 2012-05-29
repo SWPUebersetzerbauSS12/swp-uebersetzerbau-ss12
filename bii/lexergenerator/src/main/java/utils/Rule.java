@@ -32,12 +32,14 @@
 
 package utils;
 
+import tokenmatcher.attributes.Attribute;
+
 public class Rule implements IRule {
-	private String tokenValue;
+	private Attribute tokenValue;
 	private String tokenType;
 	private String regexp;
 
-	public Rule(String tokenType, String tokenValue, String regexp) {
+	public Rule(String tokenType, Attribute tokenValue, String regexp) {
 		this.tokenValue = tokenValue;
 		this.tokenType = tokenType;
 		this.regexp = regexp;
@@ -51,7 +53,7 @@ public class Rule implements IRule {
 		return tokenType;
 	}
 
-	public String getTokenValue() {
+	public Attribute getTokenValue() {
 		return tokenValue;
 	}
 

@@ -10,6 +10,7 @@ import regextodfaconverter.fsm.FiniteStateMachine;
 import tokenmatcher.StatePayload;
 import tokenmatcher.Token;
 import tokenmatcher.Tokenizer;
+import tokenmatcher.attributes.StringAttribute;
 
 
 public class RegexToDfaTest {
@@ -18,7 +19,7 @@ public class RegexToDfaTest {
 	public void testReduceAndBracketRegex() throws Exception {
 
 		FiniteStateMachine<Character, ? extends StatePayload> fsm = new RegexToDfaConverter()
-				.convert( "(a|b)*abb", new regextodfaconverter.fsm.StatePayload( "OP", "LE"));
+				.convert( "(a|b)*abb", new regextodfaconverter.fsm.StatePayload( "OP", new StringAttribute( "LE")));
 
 		LexemeReader lexemeReader = new BufferedLexemeReader( "src/test/resources/source/tokenmatcher.testrelop.fun");// new
 																																						// SimpleLexemeReader(

@@ -15,6 +15,8 @@ import tokenmatcher.StatePayload;
 import tokenmatcher.Token;
 import tokenmatcher.TokenType;
 import tokenmatcher.Tokenizer;
+import tokenmatcher.attributes.ParseStringAttribute;
+import tokenmatcher.attributes.StringAttribute;
 import tokenmatcher.errorhandler.ErrorCorrector.CorrectionMode;
 import bufferedreader.*;
 
@@ -50,7 +52,7 @@ public class TokenizerTest {
 		String[] tokensToFind = {"<OP, LE>", "<OP, LT>", "<OP, NE>", "<OP, LT>", "<OP, NE>", "<OP, LT>", "<OP, NE>", "<OP, LE>", "<OP, LT>", "<OP, LT>"};
 		int i = 0;
 		while ( !Token.isEofToken( currentToken = tokenizer.getNextToken())) {
-			tokenString = "<" + currentToken.getType() + ", " + currentToken.getAttribute() + ">";
+			tokenString = "<" + currentToken.getType() + ", " + currentToken.getAttribute().toString() + ">";
 			Assert.assertEquals(tokensToFind[i], tokenString);
 			System.out.println(tokenString);
 			i++;
@@ -123,7 +125,7 @@ public class TokenizerTest {
 			state1 = fsm.getCurrentState();
 			state2 = new State<Character, StatePayload>(
 					new regextodfaconverter.fsm.StatePayload("ID",
-							"parseString()"), true);
+							new ParseStringAttribute()), true);
 
 			ArrayList<Character> validChars = new ArrayList<Character>();
 			for (char c = 'a'; c <= 'z'; c++) {
@@ -163,11 +165,11 @@ public class TokenizerTest {
 
 			state2 = new State<Character, StatePayload>();
 			state3 = new State<Character, StatePayload>(
-					new regextodfaconverter.fsm.StatePayload("COMMENT", "LINE",
+					new regextodfaconverter.fsm.StatePayload("COMMENT", new StringAttribute( "LINE"),
 							0), true);
 			state4 = new State<Character, StatePayload>(
 					new regextodfaconverter.fsm.StatePayload("COMMENT",
-							"BLOCK_BEGIN", 0), true);
+							new StringAttribute( "BLOCK_BEGIN"), 0), true);
 
 			fsm.addTransition(state1, state2, '/');
 			fsm.addTransition(state2, state3, '/');
@@ -176,7 +178,7 @@ public class TokenizerTest {
 			state5 = new State<Character, StatePayload>();
 			state6 = new State<Character, StatePayload>(
 					new regextodfaconverter.fsm.StatePayload("COMMENT",
-							"BLOCK_END", 0), true);
+							new StringAttribute( "BLOCK_END"), 0), true);
 
 			fsm.addTransition(state1, state5, '*');
 			fsm.addTransition(state5, state6, '/');
@@ -184,7 +186,7 @@ public class TokenizerTest {
 			state7 = new State<Character, StatePayload>();
 			state8 = new State<Character, StatePayload>(
 					new regextodfaconverter.fsm.StatePayload("COMMENT",
-							"BLOCK_BEGIN", 0), true);
+							new StringAttribute ( "BLOCK_BEGIN"), 0), true);
 
 			fsm.addTransition(state1, state7, '{');
 			fsm.addTransition(state7, state8, '-');
@@ -192,14 +194,14 @@ public class TokenizerTest {
 			state9 = new State<Character, StatePayload>();
 			state10 = new State<Character, StatePayload>(
 					new regextodfaconverter.fsm.StatePayload("COMMENT",
-							"BLOCK_END", 0), true);
+							new StringAttribute( "BLOCK_END"), 0), true);
 
 			fsm.addTransition(state1, state9, '-');
 			fsm.addTransition(state9, state10, '}');
 
 			state11 = new State<Character, StatePayload>();
 			state12 = new State<Character, StatePayload>(
-					new regextodfaconverter.fsm.StatePayload("COMMENT", "LINE",
+					new regextodfaconverter.fsm.StatePayload("COMMENT", new StringAttribute( "LINE"),
 							0), true);
 
 			fsm.addTransition(state1, state11, '-');
@@ -225,13 +227,13 @@ public class TokenizerTest {
 
 			state1 = fsm.getCurrentState();
 			state2 = new State<Character, StatePayload>(
-					new regextodfaconverter.fsm.StatePayload("OP", "LT", 0),
+					new regextodfaconverter.fsm.StatePayload("OP", new StringAttribute( "LT"), 0),
 					true);
 			state3 = new State<Character, StatePayload>(
-					new regextodfaconverter.fsm.StatePayload("OP", "LE", 0),
+					new regextodfaconverter.fsm.StatePayload("OP", new StringAttribute( "LE"), 0),
 					true);
 			state4 = new State<Character, StatePayload>(
-					new regextodfaconverter.fsm.StatePayload("OP", "NE", 0),
+					new regextodfaconverter.fsm.StatePayload("OP", new StringAttribute( "NE"), 0),
 					true);
 
 			fsm.addTransition(state1, state2, '<');

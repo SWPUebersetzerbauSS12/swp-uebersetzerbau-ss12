@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import tokenmatcher.attributes.Attribute;
 import utils.IRule;
 
 /**
@@ -40,7 +41,7 @@ public class LexTokDefTest {
 		printRules(rules);
 
 		String tokenType = rules.get(0).getTokenType();
-		String tokenValue = rules.get(0).getTokenValue();
+		Attribute tokenValue = rules.get(0).getTokenValue();
 		String tokenRegex = rules.get(0).getRegexp();
 		Assert.assertEquals("BRACKET", tokenType);
 		Assert.assertEquals("(", tokenValue);

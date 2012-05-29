@@ -33,6 +33,7 @@
 package tokenmatcher;
 
 import lexergen.Settings;
+import tokenmatcher.attributes.Attribute;
 import tokenmatcher.errorhandler.ErrorCorrector;
 import bufferedreader.LexemeReader;
 import bufferedreader.LexemeReaderException;
@@ -120,7 +121,8 @@ public class Tokenizer implements LexerToParserInterface {
 
 				// Token erstellen
 				String tokenType = payload.getTokenType();
-				String attribute = payload.getAttribute();
+				Attribute attribute = payload.getAttribute();
+				Object attributeValue = attribute.lexemToValue( currentLexem);
 				// TODO: convert lexem to corresponding value
 				Token recognisedToken = new Token( tokenType, attribute, currentLine, currentPositionInLine);
 

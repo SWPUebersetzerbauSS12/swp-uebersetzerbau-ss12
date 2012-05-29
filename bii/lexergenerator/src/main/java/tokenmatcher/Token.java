@@ -47,7 +47,7 @@ public class Token implements IToken {
 	private int line;
 	private int offset;
 	
-	private static Token eofToken = new Token( "" + SpecialChars.CHAR_EOF, 0, 0);
+	private static Token eofToken = new Token( "EOF", 0, 0);
 
 	
 	public Token( String type, Object attribute, int  line, int offset) {
@@ -113,10 +113,10 @@ public class Token implements IToken {
 	}
 	
 	public static boolean isEofToken( Token token) {
-		return Test.isAssigned( token) && token.type.equals( ""+SpecialChars.CHAR_EOF); 
+		return Test.isAssigned( token) && token.type.equals( "EOF"); 
 	}
 	
 	public boolean isEofToken() {
-		return type.equals( ""+SpecialChars.CHAR_EOF); 
+		return type.equals( "EOF"); 
 	}	
 }

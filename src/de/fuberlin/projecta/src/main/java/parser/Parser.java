@@ -396,9 +396,9 @@ public class Parser implements IParser {
 
 		// loc__
 		table.setEntry(NonTerminal.loc__, TokenType.LBRACKET,
-				"loc__ ::= loc' loc__ ");
+				"loc__ ::= loc_ loc__ ");
 		table.setEntry(NonTerminal.loc__, TokenType.OP_DOT,
-				"loc__ ::= loc' loc__ ");
+				"loc__ ::= loc_ loc__ ");
 
 		table.setEntry(NonTerminal.loc__, TokenType.LPAREN, "loc__ ::= EPSILON");
 		table.setEntry(NonTerminal.loc__, TokenType.OP_SEMIC,

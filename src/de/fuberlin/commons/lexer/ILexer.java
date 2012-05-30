@@ -3,8 +3,11 @@ package lexer;
 public interface ILexer {
 
 	/**
-	 * @return the next Token
-	 * @throws SyntaxErrorException
+	 * Interface for accessing the token stream
+	 * 
+	 * @return The next Token
+	 * @throws RuntimeException
 	 */
 	IToken getNextToken();
+
 }

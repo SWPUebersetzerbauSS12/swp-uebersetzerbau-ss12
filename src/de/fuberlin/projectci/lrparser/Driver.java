@@ -6,6 +6,9 @@ import java.util.logging.Logger;
 import de.fuberlin.commons.util.LogFactory;
 import de.fuberlin.projectci.extern.ILexer;
 import de.fuberlin.projectci.extern.ISyntaxTree;
+import de.fuberlin.projectci.extern.IToken;
+import de.fuberlin.projectci.extern.IToken.TokenType;
+import de.fuberlin.projectci.extern.lexer.Token;
 import de.fuberlin.projectci.grammar.Grammar;
 import de.fuberlin.projectci.grammar.NonTerminalSymbol;
 import de.fuberlin.projectci.grammar.Production;
@@ -21,26 +24,33 @@ import de.fuberlin.projectci.parseTable.State;
 
 public class Driver {
 	private static Logger logger=LogFactory.getLogger(Driver.class);
+	// Speichert das aktuelle Eingabe-Token, wenn ein ε-Übergang durchgeführt wird
+	private IToken storedToken=null;
 	
 	public ISyntaxTree parse(ILexer lexer, Grammar grammar, ParseTable parseTable) {		
 		// LR-Parse-Algorithmus aus dem Drachenbuch (Algorithmus 4.30/ S. 302 in der 2. deutschen Auflage)
 		// TODO LR-Parse-Algorithmus zitieren
 		// erweitert um die Erzeugung des (vollständigen) Parsebaums und dessen Reduzierung auf den Abstrakten Syntaxbaum.
-		
+		// Speichert die gelesenen Token um sie mit den Terminalknoten zu verknüpfen
+		Stack<IToken> tokenStack= new Stack<IToken>();
 		Stack<SyntaxTreeNode> nodeStack=new Stack<SyntaxTreeNode>();
 		Stack<State> stateStack=new Stack<State>();
 		stateStack.push(parseTable.getInitialState());
-		TerminalSymbol currentTerminalSymbol=readNextTerminalSymbol(lexer);
+		IToken currentToken=readNextToken(lexer);
+//		tokenStack.push(currentToken);
+		TerminalSymbol currentTerminalSymbol=new TerminalSymbol(currentToken.getType().terminalSymbol());
 		
 		while(true){			
 			State currentState=stateStack.peek();
 			Action currentAction=parseTable.getAction(currentState, currentTerminalSymbol);
 			// TODO printConfiguration():String und logConfiguration:boolean
-			logger.info(stateStack+" : " +currentTerminalSymbol+" : "+currentAction);
+			logger.info(stateStack+" : " +currentToken+" : "+currentAction);
 			if (currentAction instanceof ShiftAction){
 				State targetState=((ShiftAction)currentAction).getTargetState();
 				stateStack.push(targetState);
-				currentTerminalSymbol=readNextTerminalSymbol(lexer);
+				tokenStack.push(currentToken);
+				currentToken=readNextToken(lexer);				
+				currentTerminalSymbol=new TerminalSymbol(currentToken.getType().terminalSymbol());
 				
 			}
 			else if (currentAction instanceof ReduceAction){
@@ -60,8 +70,8 @@ public class Driver {
 					// Zu jedem Symbol im Rumpf der reduzierten Produktion liegt der zugehörige Knoten (in umgedrehter Reihenfolge - s.o.) auf dem Stack 
 					SyntaxTreeNode aChildNode=null;
 					if (aSymbol instanceof TerminalSymbol){
-						// Für TerminalSymbol einen einfachen Knoten (Blatt) anlegen
-						aChildNode=new SyntaxTreeNode(aSymbol);
+						// Für TerminalSymbol einen einfachen Knoten (Blatt) mit dem zugehörigen Token anlegen
+						aChildNode=new SyntaxTreeNode(tokenStack.pop(), (TerminalSymbol) aSymbol);
 					}
 					else if (aSymbol instanceof NonTerminalSymbol){
 						// Knoten für NonTerminalSymbol vom Stack nehmen
@@ -81,6 +91,21 @@ public class Driver {
 				return syntaxTree;
 			}
 			else if (currentAction instanceof ErrorAction){
+				// Zum aktuellen Eingabe-Token konnte keine gültige Action ermittelt werden
+				// Daher wird jetzt erstmal versucht ob es eine Action für ε gibt.
+				if (!(parseTable.getAction(currentState, Grammar.EPSILON) instanceof ErrorAction)){
+					// Es gibt eine Action für ε --> Aktuelles Eingabetoken zurückstellen
+					// TODO Prüfen, ob dies die richtige Art und Weise ist um einen ε-Übergang herzustellen
+					// (Der Syntaxbaum für ein einfaches Programm sah jedenfalls richtig aus...)
+					storedToken=currentToken;
+					currentToken=new Token(TokenType.EPSILON, null, currentToken.getLineNumber(), currentToken.getOffset());
+					currentTerminalSymbol=Grammar.EPSILON;
+//					if (!tokenStack.isEmpty()){
+//						tokenStack.pop();
+//					}
+//					tokenStack.push(currentToken);
+					continue;
+				}
 				// TODO Fehlerbehandlung implementieren
 				logger.warning("Error");
 				break;
@@ -89,10 +114,17 @@ public class Driver {
 		logger.severe("Unexpected Error");
 		return null;
 	}
-	 
-	/** Bestimmt das TerminalSymbol für das nächste Token */
-	private TerminalSymbol readNextTerminalSymbol(ILexer lexer){		
-		return new TerminalSymbol(lexer.getNextToken().getType().terminalSymbol());
+	
+	
+	/** Liest das nächste Token */
+	private IToken readNextToken(ILexer lexer){	
+		if (storedToken!=null){
+			IToken result=storedToken;
+			storedToken=null;
+			return result;
+		}
+		IToken nextToken=lexer.getNextToken();
+		return nextToken;
 	}
 	
 	

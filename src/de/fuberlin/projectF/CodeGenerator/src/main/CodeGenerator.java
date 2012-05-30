@@ -1,5 +1,6 @@
 package main;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 import main.model.Token;
@@ -95,8 +96,16 @@ public class CodeGenerator {
 		for (String file : inputFile) {
 			String output = generateCode(file, debug, gui);
 			if (outputFile != null) {
-				// TODO: Ausgabe in Datei
+				try{
+				    FileOutputStream schreibeStrom = new FileOutputStream(outputFile);
+				    for (int i=0; i < output.length(); i++){
+				      schreibeStrom.write((byte)output.charAt(i));
+				    }
+				    schreibeStrom.close();
+				}catch(Exception e) {
+					
+				}
+				}
 			}
 		}
 	}
-}

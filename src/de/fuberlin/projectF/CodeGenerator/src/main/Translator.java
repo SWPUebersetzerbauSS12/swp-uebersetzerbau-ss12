@@ -76,6 +76,13 @@ public class Translator {
 				sectionText.append("\tret\n\n");
 				break;
 
+			case C_Call:
+				String c_function = tok.getOp1().substring(1);
+				pushl(new String("$" + tok.getOp2().substring(2)), "");
+				call(c_function);
+					
+				break;
+				
 			case Call:
 				String function = tok.getOp1().substring(1);
 				// Parameter auf den Stack legen
@@ -251,7 +258,11 @@ public class Translator {
 				break;
 				
 			case String:
-				data(tok.getTarget(), "ascii", tok.getOp1());
+				data(tok.getTarget().substring(2), ".ascii", tok.getOp1());
+				
+				System.out.println("Size: " + tok.getOp2());
+				
+				mem.addHeapVar(tok.getTarget(), 5);
 
 			default:
 				break;

@@ -18,6 +18,12 @@ public class Variable {
 		this.name = name;
 		addresses.add(new StackAddress(stackAddress));
 	}
+	
+	public Variable(String type, int size, String name) {
+		this(type, name);
+		this.size = size;
+		this.name = name;
+	}
 
 	public Variable(String type, RegisterAddress sum, String name) {
 		this(type, name);
@@ -37,6 +43,10 @@ public class Variable {
 
 	public int getSize() {
 		return size;
+	}
+	
+	public void setSize(int size) {
+		this.size = size;
 	}
 
 	public String getAddress() {

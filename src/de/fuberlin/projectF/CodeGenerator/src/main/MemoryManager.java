@@ -7,10 +7,12 @@ import main.model.Variable;
 
 public class MemoryManager {
 	HashMap<String, MemoryContext> contexts;
+	HashMap<String, Variable> heap;
 	MemoryContext current;
 
 	public MemoryManager() {
 		contexts = new HashMap<String, MemoryContext>();
+		heap = new HashMap<String, Variable>();
 	}
 
 	public void newContext(String name) {
@@ -21,6 +23,15 @@ public class MemoryManager {
 		current = contexts.get(name);
 	}
 
+	public void addHeapVar(String name, int size) {
+		Variable tmp = new Variable("ascii", size, name);
+		heap.put(name, tmp);
+	}
+	
+	public Variable getHeapVar(String name) {
+		return heap.get(name);
+	}
+	
 	public Variable newStackVar(String name, String type) {
 		return current.newStackVar(name, type);
 	}

@@ -73,6 +73,11 @@ public class MemoryContext {
 		Variable newVar = new Variable(type, size, stackAddress, name);
 		variables.put(name, newVar);
 	}
+	
+	public void addStringVar(String name, int size, String type) {
+		Variable newVar = new Variable(type, size, 0, name);
+		variables.put(name, newVar);
+	}
 
 	// Legt fest, welches Register den Rückgabewert dieses Kontexts enthält
 	public void setReturnRegister(RegisterAddress ret) {

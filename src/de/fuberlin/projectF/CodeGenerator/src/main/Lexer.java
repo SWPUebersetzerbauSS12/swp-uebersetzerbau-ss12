@@ -121,6 +121,8 @@ public class Lexer {
 			} else if (tmpSplitLine[i].contentEquals(",")) {
 			} else if (tmpSplitLine[i].contentEquals("nounwind")) {
 			} else if (tmpSplitLine[i].contentEquals("nsw")) {
+			} else if (tmpSplitLine[i].contentEquals("tail")) {
+			} else if (tmpSplitLine[i].contentEquals("noreturn")) {
 			} else if (tmpSplitLine[i].contentEquals("align")) {
 				break;
 			}
@@ -138,6 +140,8 @@ public class Lexer {
 			} else if (tmpSplitLine[i].contentEquals(",")) {
 			} else if (tmpSplitLine[i].contentEquals("nounwind")) {
 			} else if (tmpSplitLine[i].contentEquals("nsw")) {
+			} else if (tmpSplitLine[i].contentEquals("tail")) {
+			} else if (tmpSplitLine[i].contentEquals("noreturn")) {
 			} else if (tmpSplitLine[i].contentEquals("align")) {
 				break;
 			}
@@ -248,6 +252,8 @@ public class Lexer {
 				newToken.setTarget(line[0]);
 				newToken.setTypeTarget(line[5].replace((char) 1, ' '));
 				newToken.setOp1(line[6].substring(1).replace((char) 1, ' '));
+				
+				newToken.setOp2(new String("" + line[6].length()));
 			}
 
 			// Additionen
@@ -287,12 +293,18 @@ public class Lexer {
 				if(line[4].charAt(0) == '@') {
 					newToken.setType(TokenType.Call);
 					newToken.setOp1(line[4]);
+					fillParameter(newToken, line[5].replace((char) 1, ' '));
 				} else {
 					newToken.setType(TokenType.C_Call);
 					newToken.setOp1(line[7]);
+					String tmp = line[11].replace((char) 1, ' ');
+					int p1 = tmp.indexOf('@');
+					int p2 = tmp.indexOf(' ', p1);
+					String tmp2 = tmp.substring(p1, p2);
+					newToken.setOp2(new String(tmp2));
 				}
 					
-				fillParameter(newToken, line[5].replace((char) 1, ' '));
+				//fillParameter(newToken, line[5].replace((char) 1, ' '));
 			}
 
 			else if (line[2].contentEquals("icmp")) {

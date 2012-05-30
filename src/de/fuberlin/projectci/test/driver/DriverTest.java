@@ -35,6 +35,7 @@ public class DriverTest {
 	public void setUp() throws Exception {
 		testDataProviders= new ArrayList<DriverTest.DriverTestDataProvider>();
 		testDataProviders.add(new DriverTestDataProvider1());
+		testDataProviders.add(new DriverTestDataProvider2());
 	}
 	
 	@Test

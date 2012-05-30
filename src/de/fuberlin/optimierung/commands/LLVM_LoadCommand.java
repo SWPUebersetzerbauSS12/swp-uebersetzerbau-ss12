@@ -1,6 +1,5 @@
 package de.fuberlin.optimierung.commands;
 
-import java.util.LinkedList;
 import de.fuberlin.optimierung.ILLVM_Block;
 import de.fuberlin.optimierung.ILLVM_Command;
 import de.fuberlin.optimierung.LLVM_Operation;
@@ -19,9 +18,9 @@ public class LLVM_LoadCommand extends LLVM_GenericCommand{
 	public LLVM_LoadCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
 		super(operation, predecessor, block, comment);
 		
-		// Typ und Name wohin geladen wird
+		// <result> <ty>*
 		target = new LLVM_Parameter(cmd[0], cmd[3]);
-		// Name aus welcher Adresse geladen wird
+		// <pointer> <ty>*
 		operands.add(new LLVM_Parameter(cmd[4], cmd[3]));
 		
 		System.out.println("Operation generiert: " + this.toString());

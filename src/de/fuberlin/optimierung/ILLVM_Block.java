@@ -10,6 +10,7 @@ public interface ILLVM_Block {
 	public void deleteBlock();
 	
 	public boolean updateInOutLiveVariables();
+	public void deleteDeadStores();
 
 	public void setFirstCommand(ILLVM_Command first);
 	public void setLastCommand(ILLVM_Command last);

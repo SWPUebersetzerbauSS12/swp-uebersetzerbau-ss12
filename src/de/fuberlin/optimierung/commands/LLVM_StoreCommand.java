@@ -1,6 +1,5 @@
 package de.fuberlin.optimierung.commands;
 
-import java.util.LinkedList;
 import de.fuberlin.optimierung.ILLVM_Block;
 import de.fuberlin.optimierung.ILLVM_Command;
 import de.fuberlin.optimierung.LLVM_Operation;
@@ -18,10 +17,13 @@ public class LLVM_StoreCommand extends LLVM_GenericCommand{
 	public LLVM_StoreCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
 		super(operation, predecessor, block, comment);
 		
-		// speichert den Typ und den Wert den store speichert in ersten Operanden
-		// speichert den Typ und den Namen der Zieladresse in zweiten Operanden
+		// <value> <ty>
 		operands.add(new LLVM_Parameter(cmd[2], cmd[1]));
-		operands.add(new LLVM_Parameter(cmd[4], cmd[3]));
+		// optionale Parameter
+		for (int j = 3; (j + 1 < cmd.length); j = j + 2){
+			// <ty> <pointer>
+			operands.add(new LLVM_Parameter(cmd[j+1], cmd[j]));
+		}
 		
 		System.out.println("Operation generiert: " + this.toString());
 	}
@@ -30,10 +32,12 @@ public class LLVM_StoreCommand extends LLVM_GenericCommand{
 		String cmd_out = "store ";
 		
 		cmd_out += operands.get(0).getTypeString()+" ";
-		cmd_out += operands.get(0).getName()+" ";
+		cmd_out += operands.get(0).getName();
 		
-		cmd_out += operands.get(1).getTypeString()+" ";
-		cmd_out += operands.get(1).getName();
+		for (int i = 0; i < operands.size(); i++){
+			cmd_output += ", " + operands.get(i).getTypeString() + " ";
+			cmd_output += operands.get(i).getName();
+		}
 		
 		cmd_out += " " + getComment();
 		

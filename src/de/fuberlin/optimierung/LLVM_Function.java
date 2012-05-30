@@ -220,9 +220,15 @@ public class LLVM_Function {
 		
 	}
 	
-	// in arbeit
+	/**
+	 * Erstelle IN OUT Mengen pro Block fuer Lebendigkeitsanalyse
+	 * Entferne anschliessend ueberfluessige Stores
+	 */
 	public void globalLiveVariableAnalysis() {
 		this.createInOutLiveVariables();
+		for(ILLVM_Block b : this.blocks) {
+			b.deleteDeadStores();
+		}
 	}
 	
 

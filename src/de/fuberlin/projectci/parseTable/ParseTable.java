@@ -11,13 +11,15 @@ import de.fuberlin.commons.util.EasyComparableObject;
 import de.fuberlin.projectci.grammar.NonTerminalSymbol;
 import de.fuberlin.projectci.grammar.TerminalSymbol;
 
+//TODO [Dustin] ein paar Kommentare wäre cool =)
+
 /**
  * Repräsention der Action- und Goto-Tabellen.
  *
  */
 public class ParseTable extends EasyComparableObject{		
-	private Map<State, ActionTable> state2ActionTable = new HashMap<State, ParseTable.ActionTable>();
-	private Map<State, GotoTable> state2GotoTable = new HashMap<State, ParseTable.GotoTable>();
+	public Map<State, ActionTable> state2ActionTable = new HashMap<State, ParseTable.ActionTable>();
+	public Map<State, GotoTable> state2GotoTable = new HashMap<State, ParseTable.GotoTable>();
 	private State initialState;
 	
 	@Override

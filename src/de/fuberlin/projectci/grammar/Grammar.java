@@ -167,9 +167,16 @@ public class Grammar {
 		return nonTerminal2Productions.keySet();
 	}	
 	
+	/**
+	 * Gibt die Namen der Nichtterminale zurück.
+	 * @return Menge @see java.util.Set von Strings aller Nichtterminale.
+	 */
+	public Set<String> getAllNonterminalNames(){
+		return name2NonTerminal.keySet();
+	}
 	
 	/**
-	 * Gibt eine Menge @see java.util.Set aller Sets zurück
+	 * Gibt eine Menge @see java.util.Set aller Terminale zurück
 	 * @return
 	 */
 	public Set<TerminalSymbol> getAllTerminalSymols() {

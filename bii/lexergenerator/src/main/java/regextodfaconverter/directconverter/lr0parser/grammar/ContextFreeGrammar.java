@@ -13,6 +13,9 @@ public class ContextFreeGrammar extends ProductionMap {
 
 	private Nonterminal startSymbol = null;
 
+	private Set<Nonterminal> nonterminals = new HashSet<Nonterminal>();
+	private Set<Terminal> terminals = new HashSet<Terminal>();
+
 	public Nonterminal getStartSymbol() {
 		return startSymbol;
 	}
@@ -26,6 +29,9 @@ public class ContextFreeGrammar extends ProductionMap {
 		if (Test.isUnassigned(startSymbol))
 			startSymbol = leftRuleSide;
 
+		terminals.addAll(productionRule.getTerminalSet());
+		nonterminals.addAll(productionRule.getNonterminalSet());
+
 		RuleElementSequenz rightRuleSide = productionRule.getRightRuleSide();
 		if (this.containsKey(leftRuleSide)) {
 			this.get(leftRuleSide).add(rightRuleSide);
@@ -35,6 +41,16 @@ public class ContextFreeGrammar extends ProductionMap {
 			this.put(leftRuleSide, ruleSet);
 		}
 		return true;
+	}
+
+	public Set<ProductionRule> getProductions() {
+		Set<ProductionRule> result = new HashSet<ProductionRule>();
+		for (Nonterminal nonterminal : this.keySet()) {
+			for (RuleElementSequenz ruleElementSequenz : this.get(nonterminal)) {
+				result.add(new ProductionRule(nonterminal, ruleElementSequenz));
+			}
+		}
+		return result;
 	}
 
 	private Set<Terminal> getFirstSetOfRuleElement(RuleElement ruleElement, HashMap<Nonterminal, Set<Terminal>> growingFirstSetTable) {
@@ -106,13 +122,13 @@ public class ContextFreeGrammar extends ProductionMap {
 		return result;
 	}
 
-	HashMap<Nonterminal, Set<Terminal>> getFollowSets(Terminal terminatorTerminal) {
+	public HashMap<Nonterminal, Set<Terminal>> getFollowSets() {
 		boolean nothingAddedAnymore;
 		HashMap<Nonterminal, Set<Terminal>> result = new HashMap<Nonterminal, Set<Terminal>>();
 
 		// add $ in followset of start symbol
 		HashSet<Terminal> followSetOfStartSymbol = new HashSet<Terminal>();
-		followSetOfStartSymbol.add(terminatorTerminal);
+		followSetOfStartSymbol.add(new Terminator());
 		result.put(this.getStartSymbol(), followSetOfStartSymbol);
 
 		do {
@@ -120,7 +136,8 @@ public class ContextFreeGrammar extends ProductionMap {
 			for (Nonterminal nonterminal : this.keySet()) {
 				Set<Terminal> followSetOfCurrentNonterminal = getFollowSetOfRuleElement(nonterminal, result);
 				Set<Terminal> presentFollowSetOfCurrentNonterminal = result.get(nonterminal);
-				boolean elementsAdded = !followSetOfCurrentNonterminal.equals(presentFollowSetOfCurrentNonterminal);
+				boolean elementsAdded = !(Test.isAssigned(presentFollowSetOfCurrentNonterminal) 
+						&& presentFollowSetOfCurrentNonterminal.containsAll(followSetOfCurrentNonterminal));
 				if (elementsAdded) {
 					followSetOfCurrentNonterminal = Sets.unionCollections(followSetOfCurrentNonterminal, presentFollowSetOfCurrentNonterminal);
 					result.put(nonterminal, followSetOfCurrentNonterminal);
@@ -130,19 +147,20 @@ public class ContextFreeGrammar extends ProductionMap {
 		} while (!nothingAddedAnymore);
 		return result;
 	}
-
+/*
 	private Set<Terminal> getFollowSetOfRuleElement(Nonterminal thisNonterminal, HashMap<Nonterminal, Set<Terminal>> growingFollowSetTable) {
 		Set<Terminal> result = new HashSet<Terminal>();
 		EmptyString emptyString = new EmptyString();
 
 		for (Nonterminal nonterminal : this.keySet()) {
-			boolean isLastElementInSequenz = false;
 			for (RuleElementSequenz ruleElementSequenz : this.get(nonterminal)) {
+				boolean isLastElementInSequenz = false;
 				boolean startAccumulateFirstSet = false;
 				for (int i = 0; i < ruleElementSequenz.size(); i++) {
 					isLastElementInSequenz = !startAccumulateFirstSet;
 					RuleElement ruleElement = ruleElementSequenz.get(i);
-					if (ruleElement.equals(thisNonterminal)) {
+					if (!startAccumulateFirstSet 
+							&& ruleElement.equals(thisNonterminal)) {
 						startAccumulateFirstSet = true;
 					} else if (startAccumulateFirstSet) {
 						Set<Terminal> currentFirstSet = getFirstSetOfRuleElement(ruleElement, null);
@@ -170,7 +188,79 @@ public class ContextFreeGrammar extends ProductionMap {
 			}
 		}
 
+	*/	
+
+		private Set<Terminal> getFollowSetOfRuleElement(Nonterminal thisNonterminal, HashMap<Nonterminal, Set<Terminal>> growingFollowSetTable) {
+			Set<Terminal> result = new HashSet<Terminal>();
+			EmptyString emptyString = new EmptyString();
+			boolean isLastElementInSequenz = true;
+
+			// lookup in each rule for occurences of the given thisNonterminal
+			for (Nonterminal nonterminal : this.keySet()) {
+			    // lookup in each rule for nonterminal for occurences of the given thisNonterminal
+				for (RuleElementSequenz ruleElementSequenz : this.get(nonterminal)) {
+					boolean startAccumulateFirstSet = false;
+					// therefore scan each element of the right rule side
+					for (int i = 0; i < ruleElementSequenz.size(); i++) {
+						isLastElementInSequenz = false;
+						   
+						// we have to decide two cases
+						// 1. A -> aBb  =>  (FIRST(b) / {\epsilon}) \in FOLLOW(B)
+						// 2. A -> aB  or  A -> aBb mit b=\epsilon   =>  FOLLOW(A) \subset FOLLOW(B)
+						// In both cases, we move forward until we read B or reaches the end of rule
+						RuleElement ruleElement = ruleElementSequenz.get(i);
+						if ( !startAccumulateFirstSet) {
+							startAccumulateFirstSet |= ruleElement.equals(thisNonterminal);
+							isLastElementInSequenz = true; // forehanded set to true
+							continue;
+						}
+						
+
+						// we determine and accumulate the firstsets of the following elements until
+						// we read no more \epsilon
+						Set<Terminal> currentFirstSet = getFirstSetOfRuleElement(ruleElement, null);
+                        if (currentFirstSet.contains(emptyString)) {
+						   // we've read an \epsilon
+                        	if (ruleElementSequenz.size() > i + 1) {
+                        		// but there are more candidates to deliver a further \epsilon, so we remove it
+								currentFirstSet.remove(emptyString);
+							} else {
+								// otherwise we have case 2. So we add FOLLOW(A) 
+								currentFirstSet.addAll(growingFollowSetTable.get(thisNonterminal));
+							}
+							result = Sets.unionCollections(result, currentFirstSet);
+						} else {
+							// else there is no \epsilon in b so we simply add the set to result
+							result = Sets.unionCollections(result, currentFirstSet);
+							// and interrupt the accumulation of the firstsets. But continue with scanning. 
+							// There could be another occurence of thisNonerminal    
+							startAccumulateFirstSet = ruleElement.equals(thisNonterminal);
+							if ( startAccumulateFirstSet)
+								isLastElementInSequenz = true; // forehanded set to true
+							continue;
+						}
+
+					}
+					
+
+					// add Follow(A) to Follow(B) if A -> aB
+					if (isLastElementInSequenz 
+							&& startAccumulateFirstSet) {
+						result = Sets.unionCollections(result, growingFollowSetTable.get(nonterminal));
+					}
+
+				}
+			}
+
 		return result;
+	}
+
+	public Set<Terminal> getTerminals() {
+		return terminals;
+	}
+
+	public Set<Nonterminal> getNonterminals() {
+		return nonterminals;
 	}
 
 }

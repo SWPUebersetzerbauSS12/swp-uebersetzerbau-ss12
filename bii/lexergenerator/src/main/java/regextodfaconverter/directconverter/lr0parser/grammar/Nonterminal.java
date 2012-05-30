@@ -40,4 +40,20 @@ public class Nonterminal extends RuleElement {
 		return name != null ? name : super.toString();
 	}
 	
+	
+	public int compareTo(RuleElement o) {
+		if ( Test.isUnassigned(o))
+			return 1;
+		if ( o instanceof Terminal)
+			return 1;
+		if ( o instanceof Terminator)
+			return 1;
+		if ( o instanceof EmptyString)
+			return 1;
+		if ( o instanceof Nonterminal)
+			return ((Nonterminal)o).name.compareTo( this.name);
+		
+		return -1;
+	}
+	
 }

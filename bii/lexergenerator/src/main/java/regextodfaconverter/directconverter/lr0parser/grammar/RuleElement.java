@@ -1,6 +1,6 @@
 package regextodfaconverter.directconverter.lr0parser.grammar;
 
 
-public class RuleElement {
+public abstract class RuleElement implements Comparable<RuleElement> {
 
 }

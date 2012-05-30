@@ -1,8 +1,5 @@
 package regextodfaconverter.directconverter.lr0parser.itemset;
 
-import java.util.List;
-
-import regextodfaconverter.directconverter.lr0parser.grammar.EmptyString;
 import regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
 import regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
 import regextodfaconverter.directconverter.lr0parser.grammar.RuleElement;
@@ -15,7 +12,7 @@ public class Item extends ProductionRule {
 	
 	public Item( Nonterminal leftRuleSide, RuleElementSequenz rightRuleSide) {
 		super( leftRuleSide, rightRuleSide);
-  }
+    }
 	
 	public Item( Nonterminal leftRuleSide,
 			RuleElement ... rightRuleSideElements) {
@@ -24,9 +21,13 @@ public class Item extends ProductionRule {
 	
 	public Item( Nonterminal leftRuleSide, RuleElementSequenz rightRuleSide, int analysePosition) {
 		super( leftRuleSide, rightRuleSide);
-    this.analysePosition = analysePosition;
+        this.analysePosition = analysePosition;
 	}
 	
+	public Item( Item item, int analysePosition) {
+		super( item.getLeftRuleSide(), item.getRightRuleSide());
+		this.analysePosition = analysePosition;
+    }
 	
 	public int getAnalysePosition() {
 		return analysePosition;
@@ -75,9 +76,24 @@ public class Item extends ProductionRule {
 		
 		Item theOtherItem = (Item) theOtherObject;
 		
-		return super.equals( theOtherObject) 
-				&& theOtherItem.getAnalysePosition() == this.analysePosition;
+		return theOtherItem.getAnalysePosition() == this.analysePosition;
 	}
 
+	public ProductionRule toProduction() {
+		return new ProductionRule(getLeftRuleSide(), getRightRuleSide());
+	}
+
+	@Override
+	public String toString() {
+		String result = getLeftRuleSide().toString() + " -> ";
+		if ( analysePosition == 0)
+			result += ".";
+		for( int i = 0; i < getRightRuleSide().size(); i++) {
+			result += getRightRuleSide().get(i).toString();
+			if ( analysePosition == i+1)
+				result += ".";
+		}			
+		return result;
+	}
 	
 }

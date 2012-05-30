@@ -15,9 +15,7 @@ import tokenmatcher.Tokenizer;
 
 public class GrammarTest {
 
-	@Test
-	public void testGrammar() throws Exception {
-
+	public static ContextFreeGrammar getRegexGrammar() {
 		ContextFreeGrammar grammar = new ContextFreeGrammar();
 		// we define a simple regex grammar for testing
 		Nonterminal R = new Nonterminal( "R");
@@ -40,12 +38,20 @@ public class GrammarTest {
 		productions.add( new ProductionRule(S, T));
 		productions.add( new ProductionRule(T, U, opKleeneClosure));
 		productions.add( new ProductionRule(T, U));
-		productions.add( new ProductionRule(U, R));
+		//productions.add( new ProductionRule(U, R));
 		productions.add( new ProductionRule(U, V));
 		productions.add( new ProductionRule(U, leftBracket, R, rightBracket));
 		productions.add( new ProductionRule(V, a));
 		
 		grammar.addAll( productions);
+		
+		return grammar;
+	}
+	
+	@Test
+	public void testGrammar() throws Exception {
+
+		ContextFreeGrammar grammar = getRegexGrammar();
 		
 		Map<Nonterminal,Set<Terminal>> firstSets = grammar.getFirstSets();
 		for ( Nonterminal nonterminal : firstSets.keySet()) {
@@ -59,7 +65,7 @@ public class GrammarTest {
 		System.out.println();
 		
 		
-		Map<Nonterminal,Set<Terminal>> followSets = grammar.getFollowSets( new Terminal<Character>( '$'));
+		Map<Nonterminal,Set<Terminal>> followSets = grammar.getFollowSets();
 		for ( Nonterminal nonterminal : followSets.keySet()) {
 			
 			

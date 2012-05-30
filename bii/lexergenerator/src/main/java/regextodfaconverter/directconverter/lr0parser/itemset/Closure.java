@@ -17,6 +17,8 @@ import utils.Test;
  */
 public class Closure extends HashMap<Item, Boolean> {
 	
+	private String name = "";
+	
 	public boolean isKernelItem( Item item) {
 		return this.get( item);
 	}
@@ -43,11 +45,23 @@ public class Closure extends HashMap<Item, Boolean> {
 		return itemSet;
 	}
 	
-
+	@Override
+	public boolean containsKey(Object key) {
+		if ( key == null)
+			return false;
+		if ( !( key instanceof Item))
+			return false;
+		for (Item item : this.keySet()) {
+			if (item.equals( (Item) key))
+			  return true;
+		}
+		return false;
+	}
+	
 	public ProductionMap toProductionMap() {
 		ProductionMap result = new ProductionMap();
 		for ( Item item : this.keySet()) {
-			result.addProduction( item);
+			result.addProduction( item.toProduction());
 		}
 		return result;
 	}
@@ -64,11 +78,34 @@ public class Closure extends HashMap<Item, Boolean> {
 		
 		Closure theOtherClosure = (Closure) theOtherObject;
 		
-		if ( !theOtherClosure.entrySet().equals( this.entrySet()))
+		if ( theOtherClosure.size() != this.size())
 			return false;
-				
+		
+		if ( !theOtherClosure.keySet().equals( this.keySet()))
+			return false;
+		
+		for ( Item thisItem : this.keySet()) {
+			for ( Item theOtherItem : theOtherClosure.keySet()) {
+				if ( thisItem.equals(theOtherItem) && 
+					 !this.get( thisItem).equals( theOtherClosure.get( theOtherItem)))			
+				return false;
+		    }
+		}
+		
 		return true;
 	}
 	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	@Override
+	public String toString() {
+		return name.length()> 0 ? name + ": " + super.toString() : super.toString();
+	}
 
 }

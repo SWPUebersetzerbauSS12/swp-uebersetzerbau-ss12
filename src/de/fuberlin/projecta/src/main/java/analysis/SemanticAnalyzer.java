@@ -1,7 +1,5 @@
 package analysis;
 
-import java.util.List;
-
 import lexer.TokenType;
 import lombok.Getter;
 import parser.ISyntaxTree;
@@ -14,6 +12,7 @@ import analysis.ast.nodes.ArrayCall;
 import analysis.ast.nodes.BasicType;
 import analysis.ast.nodes.BinaryOp;
 import analysis.ast.nodes.Block;
+import analysis.ast.nodes.BoolLiteral;
 import analysis.ast.nodes.Break;
 import analysis.ast.nodes.Declaration;
 import analysis.ast.nodes.Do;
@@ -26,10 +25,12 @@ import analysis.ast.nodes.IntLiteral;
 import analysis.ast.nodes.Params;
 import analysis.ast.nodes.Print;
 import analysis.ast.nodes.Program;
+import analysis.ast.nodes.RealLiteral;
 import analysis.ast.nodes.Record;
 import analysis.ast.nodes.RecordVarCall;
 import analysis.ast.nodes.Return;
 import analysis.ast.nodes.Statement;
+import analysis.ast.nodes.StringLiteral;
 import analysis.ast.nodes.Type;
 import analysis.ast.nodes.UnaryOp;
 import analysis.ast.nodes.While;
@@ -305,49 +306,41 @@ public class SemanticAnalyzer {
 					toAST(tree.getChild(0), tmp);
 					tree.getChild(1).addAttribute(lattribute);
 					// there is only one child (the id itself)!
-					tree.getChild(1).setAttribute(lattribute,
-							tmp.getChild(0));
+					tree.getChild(1).setAttribute(lattribute, tmp.getChild(0));
 					toAST(tree.getChild(1), insertNode);
 				}
 				return;
 			case loc__:
 				tree.getChild(0).addAttribute(lattribute);
-				tree.getChild(0).setAttribute(lattribute, tree.getAttribute(lattribute));
+				tree.getChild(0).setAttribute(lattribute,
+						tree.getAttribute(lattribute));
 				if (tree.getChild(1).getChildrenCount() == 0) {
 					toAST(tree.getChild(0), insertNode);
 				} else {
 					ISyntaxTree tmp = new Program();
 					toAST(tree.getChild(0), tmp);
-					tmp.addAttribute(lattribute);
-					tmp.setAttribute(lattribute, tmp.getChildren());
+					if (tmp.getChildrenCount() == 1) {
+						tree.getChild(1).addAttribute(lattribute);
+						tree.getChild(1).setAttribute(lattribute,
+								tmp.getChild(0));
+						toAST(tree.getChild(1), insertNode);
+					}
 				}
 				return;
 			case loc_:
 				// TODO: not everything is well thought atm...
 				if (tree.getChild(0).getSymbol().asTerminal() == TokenType.OP_DOT) {
 					RecordVarCall varCall = new RecordVarCall();
-					if (tree.getAttribute(lattribute) instanceof ISyntaxTree) {
-						varCall.addChild((ISyntaxTree) tree
-								.getAttribute(lattribute));
-					} else if (tree.getAttribute(lattribute) instanceof List) {
-						throw new SemanticException("foobar1");
-					} else {
-						throw new SemanticException("foobar2");
-					}
+					varCall.addChild((ISyntaxTree) tree
+							.getAttribute(lattribute));
 
 					toAST(tree.getChild(1), varCall);
 					insertNode.addChild(varCall);
 				} else {
 					ArrayCall array = new ArrayCall();
 					toAST(tree.getChild(1), array);
-					if (tree.getAttribute(lattribute) instanceof ISyntaxTree) {
-						array.addChild((ISyntaxTree) tree
-								.getAttribute(lattribute));
-						insertNode.addChild(array);
-					} else {
-						throw new SemanticException("foobar3");
-					}
-
+					array.addChild((ISyntaxTree) tree.getAttribute(lattribute));
+					insertNode.addChild(array);
 				}
 				return;
 
@@ -382,11 +375,24 @@ public class SemanticAnalyzer {
 				insertNode.addChild(new IntLiteral((Integer) tree
 						.getAttribute(DefaultAttribute.TokenValue.name())));
 				return;
+			case STRING_LITERAL:
+				insertNode.addChild(new StringLiteral((String) tree
+						.getAttribute(DefaultAttribute.TokenValue.name())));
+				return;
+			case REAL_LITERAL:
+				insertNode.addChild(new RealLiteral((Double) tree
+						.getAttribute(DefaultAttribute.TokenValue.name())));
+				return;
+			case BOOL_LITERAL:
+				insertNode.addChild(new BoolLiteral((Boolean) tree
+						.getAttribute(DefaultAttribute.TokenValue.name())));
+				return;
 			case ID:
 				insertNode.addChild(new Id((String) tree
 						.getAttribute(DefaultAttribute.TokenValue.name())));
 				return;
-			default:// all BINARY_OP's and braces use default
+			default:// everything, which has no class member in its node uses
+					// the default.
 				return;
 			}
 		} else if (tree.getSymbol().isReservedTerminal()) {

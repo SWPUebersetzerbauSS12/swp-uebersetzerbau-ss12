@@ -3,7 +3,7 @@ package parser;
 import lexer.IToken;
 import lombok.Getter;
 
-public class ParseException extends Exception {
+public class ParseException extends RuntimeException {
 
 	@Getter
 	private IToken token;

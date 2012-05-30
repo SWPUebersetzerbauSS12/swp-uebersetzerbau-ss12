@@ -10,7 +10,10 @@ import java.util.logging.Logger;
 import de.fuberlin.commons.util.LogFactory;
 import de.fuberlin.projectci.extern.IAttribute;
 import de.fuberlin.projectci.extern.ISyntaxTree;
+import de.fuberlin.projectci.extern.IToken;
+import de.fuberlin.projectci.grammar.Grammar;
 import de.fuberlin.projectci.grammar.Symbol;
+import de.fuberlin.projectci.grammar.TerminalSymbol;
 
 /**
  * Repräsentiert einen 	Knoten eines Syntaxbaums 
@@ -20,6 +23,8 @@ public class SyntaxTreeNode implements ISyntaxTree{
 	private static Logger logger = LogFactory.getLogger(SyntaxTreeNode.class);
 	// Das [[Non]Terminal]Symbol
 	private Symbol symbol;
+	
+	private IToken token;
 	// Attribute 
 	private Map<String, String> attributeName2Value = new HashMap<String, String>();
 	// cildren als LinkedList, um insertTree effizient zu implementieren zu können
@@ -29,6 +34,10 @@ public class SyntaxTreeNode implements ISyntaxTree{
 		this.symbol = symbol;
 	}
 
+	public SyntaxTreeNode(IToken token, TerminalSymbol symbol) {
+		this.symbol = symbol;
+		this.token=token;
+	}
 	// **************************************************************************** 
 	// * Implementierung von ISyntaxTree
 	// ****************************************************************************
@@ -102,6 +111,9 @@ public class SyntaxTreeNode implements ISyntaxTree{
 		children.add(0, tree);		
 	}
 	
+	void removeChildNode(ISyntaxTree childNode){
+		children.remove(childNode);
+	}
 	/**
 	 * Gibt eine (einfache um 90 Grad gedrehte) menschenlesbare Konsolenausgabe des Teilbaums zurück.
 	 * TODO Zum Debuggen wäre eine Ausgabe als HTML, XML oder Bilddatei wünschenswert
@@ -126,6 +138,9 @@ public class SyntaxTreeNode implements ISyntaxTree{
 			strBuf.append("--> ");			
 		}
 		strBuf.append(symbol);
+		if (token!=null){
+			strBuf.append(token);
+		}
 		for (ISyntaxTree aChildNode : children) {
 			strBuf.append("\n");
 			((SyntaxTreeNode)aChildNode).toString(strBuf, level+1);			
@@ -163,6 +178,10 @@ public class SyntaxTreeNode implements ISyntaxTree{
 	 * Reduziert den Syntaxbaum auf einen Abstrakten Syntaxbaum durch rekursives Hochziehen aller Einzelkinder.
 	 */
 	void reduceToAbstractSyntaxTree(){
+		// Erstmal alle ε-Knoten entfernen
+		for (ISyntaxTree anEmptyChildNode : getChildrenByName(Grammar.EMPTY_STRING)) {
+			removeChildNode(anEmptyChildNode);
+		}
 		for (int i = 0; i < getChildrenCount(); i++) {
 			SyntaxTreeNode aChildTree=(SyntaxTreeNode) getChild(i);
 			aChildTree.reduceToAbstractSyntaxTree(); // Bottom-Up
@@ -171,6 +190,12 @@ public class SyntaxTreeNode implements ISyntaxTree{
 				aChildTree=(SyntaxTreeNode) aChildTree.getChild(0);
 				children.set(i, aChildTree);
 			}			
+//			TODO Der Parsebaum enthält noch Nichtterminal-Blätter, die entfernt werden können.
+//			Der erste Ansatz funktioniert aber nicht...
+//			if (aChildTree.getChildrenCount()==0 && aChildTree.symbol instanceof NonTerminalSymbol){
+//				removeChildNode(aChildTree);
+//				continue;
+//			}
 		}				
 	}
 }

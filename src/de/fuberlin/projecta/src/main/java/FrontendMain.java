@@ -48,7 +48,7 @@ public class FrontendMain {
 		}
 		
 		ISyntaxTree tree = parser.getParseTree();
-		parser.printParseTree();
+		//parser.printParseTree();
 		
 		SemanticAnalyzer analyzer = new SemanticAnalyzer(tree);
 		analyzer.analyze();

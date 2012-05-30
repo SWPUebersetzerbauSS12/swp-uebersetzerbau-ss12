@@ -56,11 +56,53 @@ class LLVM_Optimization implements ILLVM_Optimization {
 			
 			// Optimierte Ausgabe
 			outputLLVM += tmp.toString();
+			
+			createGraph("func"+i, tmp);
 		}
 		
 		return outputLLVM;
 	}
 
+	private void createGraph(String filename, LLVM_Function func) {
+		
+		try{
+			
+			FileWriter fstream = new FileWriter(System.getProperty("user.home")+"/"+filename+".dot");
+			
+			BufferedWriter out = new BufferedWriter(fstream);
+			
+			out.write(func.toGraph());
+			
+			out.close();
+			
+			Runtime r = Runtime.getRuntime();
+			
+			String[] cmds = {"/bin/sh", "-c", "/opt/local/bin/dot -Tjpg "+System.getProperty("user.home")+"/"+filename+".dot -o "+System.getProperty("user.home")+"/"+filename+".jpg"};
+			
+			Process proc = r.exec(cmds);
+			
+			InputStream stderr = proc.getErrorStream();
+            InputStreamReader isr = new InputStreamReader(stderr);
+            
+            BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            
+            String line = null;
+            while((line = br.readLine()) != null) {
+            	System.out.println(line);
+            }
+            
+            BufferedReader brerr = new BufferedReader(isr);
+            while((line = brerr.readLine()) != null) {
+                System.err.println(line);
+            }
+            
+		}catch(Exception e){
+			System.err.println(e.getMessage());
+		}
+		
+		
+	}
+	
 	private void readCodeFromFile(String fileName){
 		
 		try {

@@ -631,4 +631,28 @@ public class LLVM_Function {
 		output += "}";
 		return output;
 	}
+	
+	public String toGraph() {
+		
+		// Workaround
+		blocks.get(0).setLabel("%0");
+		
+		String graph = "digraph g { graph [fontsize=30 labelloc=\"t\" label=\"\" splines=true overlap=false rankdir = \"TD\"]; ratio = auto;";
+		
+		for (int i = 0; i < this.numberBlocks; i++) {
+			graph += blocks.get(i).toGraph();
+		}
+		
+		LinkedList<ILLVM_Block> nxt_Blocks;
+		
+		for (int i = 0; i < this.numberBlocks; i++) {
+			nxt_Blocks = blocks.get(i).getNextBlocks();
+			
+			for(ILLVM_Block b : nxt_Blocks){
+				graph += "\""+blocks.get(i).getLabel()+"\" -> \""+b.getLabel()+"\" [ penwidth = 1 fontsize = 14 fontcolor = \"grey28\" label = \"\" ];";
+			}
+		}
+		
+		return graph + "}";
+	}
 }

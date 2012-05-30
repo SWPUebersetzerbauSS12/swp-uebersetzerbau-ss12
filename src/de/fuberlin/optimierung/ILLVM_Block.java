@@ -19,6 +19,9 @@ public interface ILLVM_Block {
 	public void setLabel(String label);
 	public LinkedList<String> getInLive();
 	
+	public LinkedList<ILLVM_Block> getNextBlocks();
+	public LinkedList<ILLVM_Block> getPreviousBlocks();
+	
 	public void appendToPreviousBlocks(ILLVM_Block block);
 	public void appendToNextBlocks(ILLVM_Block block);
 	public void removeFromPreviousBlocks(ILLVM_Block block);
@@ -26,4 +29,6 @@ public interface ILLVM_Block {
 	
 	public boolean isEmpty();
 	public boolean hasPreviousBlocks();
+	
+	public String toGraph();
 }

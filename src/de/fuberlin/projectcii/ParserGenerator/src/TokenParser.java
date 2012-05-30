@@ -18,15 +18,21 @@ public class TokenParser {
 		this.StartSymbol = StartSymbol;
 	}
 	
-	public void parseTokenStream(){
+	public SyntaxTree parseTokenStream(){
 		Token = lexer.getNextToken();
-		parseToken(StartSymbol);
+		SyntaxTree tree = parseToken(StartSymbol,new SyntaxTree());
 		if (Token.equals(Settings.getEOF())){
 			System.out.println("accepted");
 		}
+		tree.printTree();
+		return tree;
 	}
 	
-	private void parseToken(String symbol){
+	private SyntaxTree parseToken(String symbol,SyntaxTree parent){
+		
+		SyntaxTree tree = new SyntaxTree();
+		tree.setSymbol(symbol);
+		tree.setParent(parent);
 		
 		if (symbol.equals(Token)){
 			Token = lexer.getNextToken();
@@ -39,13 +45,18 @@ public class TokenParser {
 			Printer.printProduction(grammar, head, productionNr);
 			for (int i=0;i < Production.size() ;i++){
 				if (!Production.elementAt(i).equals(Settings.getEPSILON())){
-					parseToken(Production.elementAt(i));
+					tree.addChild(parseToken(Production.elementAt(i),tree));
+				}
+				else{
+					SyntaxTree epsilonTree = new SyntaxTree();
+					epsilonTree.setSymbol(Settings.getEPSILON());
+					tree.addChild(epsilonTree);
 				}
 			}
 		}
 		else{
 			System.out.println("ERROR!");
 		}
-	return;
+	return tree;
 	}
 }

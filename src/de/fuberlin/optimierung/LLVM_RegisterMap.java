@@ -123,6 +123,39 @@ public class LLVM_RegisterMap {
 		
 	}
 	
+	public void deleteCommand(ILLVM_Command c, LLVM_Parameter _target) {
+
+		// Loesche Definition
+		LLVM_Parameter target = c.getTarget();
+		if(target!=null && target.getType()==LLVM_ParameterType.REGISTER) {
+			this.definitionMap.remove(target.getName());
+		}
+		
+		// Loesche Verwendungen
+		LinkedList<LLVM_Parameter> operands = c.getOperands();
+		
+		if(operands!=null) {	// Gibt es Verwendungen zum Loeschen?
+			
+			LinkedList<ILLVM_Command> uses;
+			
+			for(LLVM_Parameter op : operands){
+				
+				if(op.getName().equals(_target.getName())){
+					// Loesche Befehel aus useMap
+					uses = this.getUses(op.getName());
+					uses.remove(c);
+					
+					if(uses.isEmpty()) {
+						this.useMap.remove(op.getName());
+					}
+					else {
+						this.useMap.put(op.getName(), uses);
+					}
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Gibt an, ob zu gegebenem Register eine Definition existiert
 	 * @param registerName Name des Registers

@@ -245,12 +245,11 @@ public class LLVM_Function {
 			LLVM_Parameter op2 = operands.get(1);
 			
 			try{
-				int iOP1 = Integer.parseInt(op1.getName());
-				int iOP2 = Integer.parseInt(op2.getName());
-				int result = 0;
-				
-				if(iOP2 != 0){
-				
+				if(op1.getType() == LLVM_ParameterType.INTEGER && op2.getType() == LLVM_ParameterType.INTEGER){
+					int iOP1 = Integer.parseInt(op1.getName());
+					int iOP2 = Integer.parseInt(op2.getName());
+					int result = 0;
+					
 					switch(cmd.getOperation()){
 					case ADD :
 						result = iOP1 + iOP2;
@@ -268,7 +267,7 @@ public class LLVM_Function {
 					
 					op1.setName(""+result);
 					op2.setName("0");
-					
+						
 					return true;
 				}
 			}catch(NumberFormatException e){
@@ -284,7 +283,7 @@ public class LLVM_Function {
 				int iOP2 = Integer.parseInt(op2.getName());
 				boolean result = false;
 				
-				if(iOP2 != 0){
+				//if(iOP2 != 0){
 				
 					switch(cmd.getOperation()){
 					case ICMP_EQ :
@@ -323,7 +322,7 @@ public class LLVM_Function {
 					op2.setName("0");
 					
 					return true;
-				}
+				//}
 			}catch(NumberFormatException e){
 				// no numbers
 			}
@@ -337,7 +336,7 @@ public class LLVM_Function {
 				int iOP2 = Integer.parseInt(op2.getName());
 				boolean result = false;
 				
-				if(iOP2 != 0){
+				//if(iOP2 != 0){
 					
 					switch(cmd.getOperation()){
 					case AND :
@@ -355,7 +354,7 @@ public class LLVM_Function {
 					op2.setName("0");
 					
 					return true;
-				}
+				//}
 			}catch(NumberFormatException e){
 				// no numbers
 			}
@@ -407,23 +406,23 @@ public class LLVM_Function {
 		
 		LinkedList<ILLVM_Command> changed_cmds = new LinkedList<ILLVM_Command>();
 		
-		for(int i = 0; i < cmds.size(); i++){
-			
-			// aktueller Befehl
-			ILLVM_Command cmd = cmds.get(i);
+		for(ILLVM_Command cmd : cmds) {
 			
 			LinkedList<ILLVM_Command> _cmds = registerMap.getUses(cmd.getTarget().getName());
 			
 			if(_cmds != null){
 				for(int j = 0; j < _cmds.size(); j++){
+					
 					LinkedList<LLVM_Parameter> operands = _cmds.get(j).getOperands();
 					for(int k = 0;  k < operands.size(); k++){
 						if(cmd.getTarget().getName().equals(operands.get(k).getName())){
-							changed_cmds.add(_cmds.get(j));
-							registerMap.deleteCommand(_cmds.get(j));
-							operands.set(k, cmd.getOperands().get(0));
+							if(!changed_cmds.contains(_cmds.get(j)))
+								changed_cmds.add(_cmds.get(j));
+							LLVM_Parameter op = cmd.getOperands().get(0);
+							operands.set(k, new LLVM_Parameter(op.getName(), op.getType(), op.getTypeString()));
 						}
 					}
+					registerMap.deleteCommand(_cmds.get(j), cmd.getTarget());
 				}
 			}
 			

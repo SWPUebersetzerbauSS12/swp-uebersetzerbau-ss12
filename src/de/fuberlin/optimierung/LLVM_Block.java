@@ -424,4 +424,16 @@ class LLVM_Block implements ILLVM_Block {
 		
 		return code;
 	}
+	
+	public String toGraph() {
+		String graph = "\""+label+"\" [ style = \"filled, bold\" penwidth = 5 fillcolor = \"white\" fontname = \"Courier New\" shape = \"Mrecord\" label =<<table border=\"0\" cellborder=\"0\" cellpadding=\"3\" bgcolor=\"white\"><tr><td bgcolor=\"black\" align=\"center\" colspan=\"2\"><font color=\"white\">"+label+"</font></td></tr>";
+		
+		ILLVM_Command tmp = firstCommand;
+		while(tmp != null){
+			graph += "<tr><td align=\"left\">"+ tmp.toString() +"</td></tr>";
+			tmp = tmp.getSuccessor();
+		}
+		
+		return graph + "</table>> ];";
+	}
 }

@@ -5,8 +5,8 @@ public interface ILexer {
 	/**
 	 * Interface for accessing the token stream
 	 * 
-	 * @return the next Token
-	 * @throws SyntaxErrorException
+	 * @return The next Token
+	 * @throws RuntimeException
 	 */
 	IToken getNextToken();
 

@@ -3,23 +3,23 @@ package de.fuberlin.projectci.parseTable;
 import de.fuberlin.commons.util.EasyComparableObject;
 
 public class State extends EasyComparableObject{
-	private String name;
+	private int id;
 
-	public State(String name) {
-		this.name = name;
+	public State(int id) {
+		this.id = id;
 	}
 
 	@Override
 	protected Object[] getSignificantFields() {
-		return new Object[]{name, getClass()};
+		return new Object[]{id, getClass()};
 	}
 	
-	public String getName() {
-		return name;
+	public int getId() {
+		return id;
 	}
 
 	@Override
 	public String toString() {
-		return name;
+		return String.valueOf(id);
 	}
 }

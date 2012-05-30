@@ -1,8 +1,11 @@
 package de.fuberlin.projectci.parseTable;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import de.fuberlin.commons.util.EasyComparableObject;
 import de.fuberlin.projectci.grammar.NonTerminalSymbol;
@@ -121,7 +124,7 @@ public class ParseTable extends EasyComparableObject{
 				}
 				strBuf.append(aNonTerminalSymbol);
 				strBuf.append(" → ");
-				strBuf.append(getGoto(aNonTerminalSymbol).getTargetState().getName());
+				strBuf.append(getGoto(aNonTerminalSymbol).getTargetState().getId());
 				i++;
 			}
 			strBuf.append("]");
@@ -133,7 +136,7 @@ public class ParseTable extends EasyComparableObject{
 	public String toString() {		
 		StringBuffer strBuf=new StringBuffer();
 		// Annahme: Es gibt keinen State zu dem es ein Goto aber keine Action gibt
-		Set<State> states = state2ActionTable.keySet();
+		Set<State> states = sortedStates();
 		for (State aState : states) {
 			strBuf.append(aState);
 			strBuf.append(": ");
@@ -145,7 +148,18 @@ public class ParseTable extends EasyComparableObject{
 		
 		return strBuf.toString();
 	}
-
 	
+	private static Comparator<State> StateComparator=new Comparator<State>() {
+		@Override
+		public int compare(State s1, State s2) {
+			return s1.getId()-s2.getId();
+		}
+	};
+	
+	SortedSet<State> sortedStates(){
+		SortedSet<State> result=new TreeSet<State>(StateComparator);
+		result.addAll(state2ActionTable.keySet());
+		return result;
+	}
 }
  

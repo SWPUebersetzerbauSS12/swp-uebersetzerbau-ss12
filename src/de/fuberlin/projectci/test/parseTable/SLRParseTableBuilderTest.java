@@ -192,6 +192,7 @@ public class SLRParseTableBuilderTest {
 		try {
 			parseTable=ptb.buildParseTable();
 			logger.info("Valid source grammar.");
+//			System.out.println(parseTable.toString());
 		} catch (InvalidGrammarException e) {
 			logger.log(Level.INFO, "Invalid source grammar.",e);
 		}	
@@ -298,7 +299,7 @@ public class SLRParseTableBuilderTest {
 					logger.warning("Failed to parse a line: "+strLine);
 					return null;
 				}
-				states.add(new State(strLineArray[0]));
+				states.add(new State(Integer.parseInt(strLineArray[0])));
 				lines.add(strLineArray);
 				strLine=bufReader.readLine();
 			}

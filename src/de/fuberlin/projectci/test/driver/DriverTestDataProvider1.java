@@ -92,18 +92,18 @@ public class DriverTestDataProvider1 implements DriverTestDataProvider{
 	private void setUp(){
 		parseTable=new ParseTable();
 
-		State s0=new State("0");
-		State s1=new State("1");
-		State s2=new State("2");
-		State s3=new State("3");
-		State s4=new State("4");
-		State s5=new State("5");
-		State s6=new State("6");
-		State s7=new State("7");
-		State s8=new State("8");
-		State s9=new State("9");
-		State s10=new State("10");
-		State s11=new State("11");
+		State s0=new State(0);
+		State s1=new State(1);
+		State s2=new State(2);
+		State s3=new State(3);
+		State s4=new State(4);
+		State s5=new State(5);
+		State s6=new State(6);
+		State s7=new State(7);
+		State s8=new State(8);
+		State s9=new State(9);
+		State s10=new State(10);
+		State s11=new State(11);
 
 		TerminalSymbol ts0=new TerminalSymbol("id");
 		TerminalSymbol ts1=new TerminalSymbol("+");

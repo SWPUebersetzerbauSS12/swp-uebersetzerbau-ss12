@@ -59,7 +59,7 @@ public class SLRParseTableBuilder extends ParseTableBuilder {
 		// 2. Der Zustand i wird aus Ii erstellt. 
 		for (int i = 0; i < cannonicalCollectionOfLR0Items.size(); i++) {
 			Set<LR0Item> anItemSet = cannonicalCollectionOfLR0Items.get(i);
-			State aState=new State(String.valueOf(i));
+			State aState=new State(i);
 			itemSet2State.put(anItemSet, aState);
 			// 5. Der Ausgangszustand des Parsers ist derjenige, der aus der Item-Menge konstruiert wurde, die [S0 → .S] enthält.
 			if (anItemSet.contains(startItem)){

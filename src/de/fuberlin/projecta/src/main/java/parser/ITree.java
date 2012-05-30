@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import lombok.Getter;
 import utils.StringUtils;
 import analysis.SymbolTableStack;
+import analysis.ast.nodes.BasicType;
 import analysis.ast.nodes.BinaryOp;
 import analysis.ast.nodes.Id;
 import analysis.ast.nodes.IntLiteral;
@@ -126,6 +127,10 @@ public abstract class ITree implements ISyntaxTree {
 				System.out.println(StringUtils.repeat(' ', depth)
 						+ this.getClass().getName() + ":"
 						+ ((UnaryOp) this).getOp());
+			} else if (this instanceof BasicType) {
+				System.out.println(StringUtils.repeat(' ', depth)
+						+ this.getClass().getName() + ":"
+						+ ((BasicType) this).getType());
 			} else {
 				System.out.println(StringUtils.repeat(' ', depth)
 						+ this.getClass().getName());

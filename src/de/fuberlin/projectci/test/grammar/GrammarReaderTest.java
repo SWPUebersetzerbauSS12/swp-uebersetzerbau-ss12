@@ -11,14 +11,14 @@ public class GrammarReaderTest {
 	 */
 	public static void main(String[] args){
 		GrammarReader grammarReader= new GrammarReader();
-//		System.out.println("Ungültige Grammatik:");
-//		try {
-//			Grammar g = grammarReader.readGrammar("./doc/beispielgrammatik1_ungueltig.txt");
-//			System.out.println(g.toString());
-//		} catch (BNFParsingErrorException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		System.out.println("Ungültige Grammatik:");
+		try {
+			Grammar g = grammarReader.readGrammar("./doc/beispielgrammatik1_ungueltig.txt");
+			System.out.println(g.toString());
+		} catch (BNFParsingErrorException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		System.out.println("\nGültige Grammatik:");
 		try {
@@ -30,14 +30,14 @@ public class GrammarReaderTest {
 		}
 		
 		
-//		System.out.println("\nQuellsprachen-Grammatik:");
-//		try {
-//			Grammar g3 = grammarReader.readGrammar("./doc/quellsprache_bnf.txt");
-//			System.out.println(g3.toString());
-//		} catch (BNFParsingErrorException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		System.out.println("\nQuellsprachen-Grammatik:");
+		try {
+			Grammar g3 = grammarReader.readGrammar("./doc/quellsprache_bnf.txt");
+			System.out.println(g3.toString());
+		} catch (BNFParsingErrorException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -2,11 +2,10 @@ package analysis.ast.nodes;
 
 import lexer.TokenType;
 import lombok.Getter;
-import parser.Tree;
 import analysis.SymbolTableStack;
 
 
-public class UnaryOp extends Tree {
+public class UnaryOp extends AbstractSyntaxTree {
 	
 	@Getter
 	TokenType op;
@@ -17,5 +16,11 @@ public class UnaryOp extends Tree {
 	
 	public void run(SymbolTableStack tables) {
 
+	}
+
+	@Override
+	public boolean checkSemantics() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

@@ -1,10 +1,15 @@
 package analysis.ast.nodes;
 
 import analysis.SymbolTableStack;
-import parser.Tree;
 
-public class Type extends Tree {
+public class Type extends AbstractSyntaxTree {
 	public void run(SymbolTableStack tables) {
 
+	}
+
+	@Override
+	public boolean checkSemantics() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

@@ -1,10 +1,9 @@
 package analysis.ast.nodes;
 
 import analysis.SymbolTableStack;
-import parser.Tree;
 
 
-public abstract class Statement extends Tree {
+public abstract class Statement extends AbstractSyntaxTree {
 
 	public void run(SymbolTableStack tables) {
 

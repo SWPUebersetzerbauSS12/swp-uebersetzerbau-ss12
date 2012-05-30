@@ -1,7 +1,6 @@
 package analysis.ast.nodes;
 
 import analysis.SymbolTableStack;
-import parser.Tree;
 
 /**
  * This class represents one function call. It has one or two children. The
@@ -11,8 +10,14 @@ import parser.Tree;
  * @author micha
  * 
  */
-public class FuncCall extends Tree {
+public class FuncCall extends AbstractSyntaxTree {
 	public void run(SymbolTableStack tables) {
 
+	}
+
+	@Override
+	public boolean checkSemantics() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

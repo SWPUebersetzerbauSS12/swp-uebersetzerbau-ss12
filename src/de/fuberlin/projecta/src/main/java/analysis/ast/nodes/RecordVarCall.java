@@ -1,7 +1,6 @@
 package analysis.ast.nodes;
 
 import analysis.SymbolTableStack;
-import parser.Tree;
 
 /**
  * Must have exactly two children of the type Id! First id is the record id,
@@ -9,8 +8,14 @@ import parser.Tree;
  * 
  * @author sh4ke
  */
-public class RecordVarCall extends Tree {
+public class RecordVarCall extends AbstractSyntaxTree {
 	public void run(SymbolTableStack tables) {
 
+	}
+
+	@Override
+	public boolean checkSemantics() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

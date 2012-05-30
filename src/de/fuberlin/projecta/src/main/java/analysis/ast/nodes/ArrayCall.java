@@ -1,6 +1,5 @@
 package analysis.ast.nodes;
 
-import parser.Tree;
 import analysis.SymbolTableStack;
 
 /**
@@ -8,8 +7,14 @@ import analysis.SymbolTableStack;
  * second child Type
  * 
  */
-public class ArrayCall extends Tree {
+public class ArrayCall extends AbstractSyntaxTree {
 	public void run(SymbolTableStack tables) {
 
+	}
+
+	@Override
+	public boolean checkSemantics() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

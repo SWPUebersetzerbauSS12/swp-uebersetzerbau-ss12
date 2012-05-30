@@ -6,4 +6,5 @@ define i32 @init(i32 %i) nounwind uwtable {
   %5 = mul nsw i32 %2, %3
   %6 = add nsw i32 %2, %3
   %7 = add nsw i32 %5, %6
+  ret i32 %7
 }

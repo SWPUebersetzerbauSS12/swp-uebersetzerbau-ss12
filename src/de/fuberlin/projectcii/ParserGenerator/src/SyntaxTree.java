@@ -76,7 +76,7 @@ public class SyntaxTree implements ISyntaxTree {
 	@Override
 	public void printTree() {
 		System.out.println("-------");
-		printChild(this,0);
+		printChild2(this,0,true);
 	}
 
 	@Override
@@ -102,6 +102,28 @@ public class SyntaxTree implements ISyntaxTree {
 		for (ISyntaxTree child: node.getChildren()){
 			if (child.getChildren().size() > 0){
 				printChild(child,level);
+			}
+		}
+	}
+	
+	private void printChild2(ISyntaxTree node,int level,boolean first){
+		
+		if (!first){
+			for(int i=0;i<level;i++){
+				System.out.print("\t");
+			}
+		}
+		System.out.print(node.getSymbol()+"\t");
+		first = true;
+		for (ISyntaxTree child: node.getChildren()){
+			if (child.getChildren().size() > 0){
+				printChild2(child,level+1,first);
+				first = false;
+			}
+			else{
+				System.out.print(child.getSymbol());
+				System.out.println("");
+				first = false;
 			}
 		}
 	}

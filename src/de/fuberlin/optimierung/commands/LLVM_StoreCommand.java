@@ -35,8 +35,8 @@ public class LLVM_StoreCommand extends LLVM_GenericCommand{
 		cmd_out += operands.get(0).getName();
 		
 		for (int i = 0; i < operands.size(); i++){
-			cmd_output += ", " + operands.get(i).getTypeString() + " ";
-			cmd_output += operands.get(i).getName();
+			cmd_out += ", " + operands.get(i).getTypeString() + " ";
+			cmd_out += operands.get(i).getName();
 		}
 		
 		cmd_out += " " + getComment();

@@ -419,9 +419,9 @@ public class LLVM_Function {
 					LinkedList<LLVM_Parameter> operands = _cmds.get(j).getOperands();
 					for(int k = 0;  k < operands.size(); k++){
 						if(cmd.getTarget().getName().equals(operands.get(k).getName())){
+							changed_cmds.add(_cmds.get(j));
 							registerMap.deleteCommand(_cmds.get(j));
 							operands.set(k, cmd.getOperands().get(0));
-							changed_cmds.add(_cmds.get(j));
 						}
 					}
 				}

@@ -1,5 +1,6 @@
 package de.fuberlin.optimierung;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import de.fuberlin.optimierung.commands.*;
@@ -31,6 +32,9 @@ class LLVM_Block implements ILLVM_Block {
 	
 	// Kompletter Code des Blocks als String
 	private String blockCode;
+	
+	HashMap<String, ILLVM_Node> DAG_Hash = new HashMap<String, ILLVM_Node>();
+	LinkedList<ILLVM_Node> DAG = new LinkedList<ILLVM_Node>();
 
 	public LLVM_Block(String blockCode, LLVM_Function function) {
 		
@@ -41,6 +45,8 @@ class LLVM_Block implements ILLVM_Block {
 		this.createCommands();
 		
 		this.createDefUseSets();
+		
+		this.createDAG();
 
 	}
 
@@ -49,7 +55,9 @@ class LLVM_Block implements ILLVM_Block {
 	}
 
 	private void createDAG() {
-
+		for (ILLVM_Command i = firstCommand; i != null; i=i.getSuccessor()){
+			DAG.add(new LLVM_Node(i, DAG_Hash));
+		}
 	}
 	
 	/*

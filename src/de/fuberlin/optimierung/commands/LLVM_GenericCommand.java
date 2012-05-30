@@ -34,7 +34,7 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 	}
 	
 	public void deleteCommand() {
-		System.out.println("del " + this.toString());
+		System.out.println("del in block " + this.block.getLabel() + " command " + this.toString());
 
 		if (this.isSingleCommand()){
 			this.successor = null;

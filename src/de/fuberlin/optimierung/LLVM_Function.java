@@ -408,9 +408,10 @@ public class LLVM_Function {
 		
 		for(ILLVM_Command cmd : cmds) {
 			
-			LinkedList<ILLVM_Command> _cmds = registerMap.getUses(cmd.getTarget().getName());
+			LinkedList<ILLVM_Command> uses = registerMap.getUses(cmd.getTarget().getName());
 			
-			if(_cmds != null){
+			if(uses != null){
+				LinkedList<ILLVM_Command> _cmds = (LinkedList<ILLVM_Command>) uses.clone();
 				for(int j = 0; j < _cmds.size(); j++){
 					
 					LinkedList<LLVM_Parameter> operands = _cmds.get(j).getOperands();
@@ -419,14 +420,16 @@ public class LLVM_Function {
 							if(!changed_cmds.contains(_cmds.get(j)))
 								changed_cmds.add(_cmds.get(j));
 							LLVM_Parameter op = cmd.getOperands().get(0);
+							registerMap.deleteCommand(_cmds.get(j), cmd.getTarget());
 							operands.set(k, new LLVM_Parameter(op.getName(), op.getType(), op.getTypeString()));
 						}
 					}
-					registerMap.deleteCommand(_cmds.get(j), cmd.getTarget());
+					
 				}
 			}
 			
 			cmd.deleteCommand();
+			registerMap.deleteCommand(cmd);
 		}
 		
 		if(changed_cmds.size() > 0){

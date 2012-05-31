@@ -123,13 +123,18 @@ public class LLVM_RegisterMap {
 		
 	}
 	
+	/**
+	 * Loesche gegebenen Operanden aus gegebenem Befehl
+	 * @param c Befehl, aus dem geloescht werden soll
+	 * @param _target Operand, der geloescht werden soll
+	 */
 	public void deleteCommand(ILLVM_Command c, LLVM_Parameter _target) {
 
 		// Loesche Definition
-		LLVM_Parameter target = c.getTarget();
+		/*LLVM_Parameter target = c.getTarget();
 		if(target!=null && target.getType()==LLVM_ParameterType.REGISTER) {
 			this.definitionMap.remove(target.getName());
-		}
+		}*/
 		
 		// Loesche Verwendungen
 		LinkedList<LLVM_Parameter> operands = c.getOperands();

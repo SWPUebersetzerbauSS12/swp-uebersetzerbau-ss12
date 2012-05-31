@@ -18,11 +18,12 @@ define i32 @main(i32 %argc, i8** %argv) nounwind uwtable {
 ; <label>:4                                       ; preds = %10, %0
   %5 = load i32* %i, align 4
   %6 = icmp slt i32 %5, 10
+  %x = add nsw i32 %5, 1
   br label %label13
 
 ; <label>:7                                       ; preds = %4
   %8 = load i32* %a, align 4
-  %9 = add nsw i32 %8, 1						;Tail-Test
+  %9 = add nsw i32 %x, 1						;Tail-Test
   store i32 %9, i32* %a, align 4
   br label %10
 

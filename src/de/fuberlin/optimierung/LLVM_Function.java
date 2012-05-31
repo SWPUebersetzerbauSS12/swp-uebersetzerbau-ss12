@@ -633,7 +633,7 @@ public class LLVM_Function {
 			for(ILLVM_Block block : father.getNextBlocks()) {
 				
 				// block wird getestet
-				if(!block.hasPreviousBlocks()) {
+				if(!block.hasPreviousBlocks() && this.blocks.contains(block)) {
 					// Block hat keine Vorgaenger, kann entfernt werden
 					block.deleteBlock();	// aus Flussgraphen entfernen
 					deletedBlocks.add(block);
@@ -678,90 +678,18 @@ public class LLVM_Function {
 		return deletedBlocks;
 		
 	}
-	
-	/**
-	 * Entferne tote Bloecke (Bloecke, die nicht erreicht werden koennen)
-	 * Diese haben keine Vorgaenger im Flussgraphen (und sind ungleich dem ersten Block)
-	 * Geloeschte Befehle werden zurueckgegebens
-	 */
-	/*private LinkedList<ILLVM_Command> eliminateDeadBlocksGlobal() {
 		
-		LinkedList<ILLVM_Command> deletedCommands = new LinkedList<ILLVM_Command>();
-		LinkedList<Integer> deletedBlocks = new LinkedList<Integer>();
-		
-		for(int i=1; i<this.numberBlocks; i++) {
-			ILLVM_Block block = this.blocks.get(i);
-			if(!block.hasPreviousBlocks()) {
-				block.deleteBlock();
-				deletedBlocks.add(i);
-				
-				// Ist Block leer?
-				if(!block.isEmpty()) {
-					
-					// Gehe Befehle des Blockes durch
-					ILLVM_Command c = block.getFirstCommand();
-					while(c!=null) {
-						
-						// Fuege c in deletedCommands ein
-						deletedCommands.add(c);
-						c = c.getSuccessor();
-						
-					}
-					
-				}
-			}
-		}
-		
-		// Entferne geloeschte Bloecke aus this.blocks
-		int numberOfAlreadyDeletedBlocks = 0;
-		for(Integer i : deletedBlocks) {
-			this.blocks.remove(i-numberOfAlreadyDeletedBlocks);
-			numberOfAlreadyDeletedBlocks++;
-			this.numberBlocks--;
-		}
-		
-		// Entferne geloeschte Befehle aus Register-Hashmaps
-		for(ILLVM_Command c : deletedCommands) {
-			this.registerMap.deleteCommand(c);
-		}
-		
-		return deletedCommands;
-		
-	}*/
-	
 	/**
 	 * Tote Bloecke werden aus dem Programm entfernt
 	 * Operanden der geloeschten Befehle werden auf weitere Verwendungen getestet
 	 * und gegebenenfalls ebenfalls geloescht
-	 * Abhaengigkeiten zwischen Bloecken werden nicht aufgeloest
-	 */
-	/*public void eliminateDeadBlocks() {
-		LinkedList<ILLVM_Command> deletedCommands;
-		deletedCommands = this.eliminateDeadBlocksGlobal();
-	
-		// Bisher geloeschte Befehle koennen Operanden enthalten, die nun keine Verwendung mehr haben
-		// Dann koennen diese ebenfalls geloescht werden
-		// Teste also geloeschte Befehle durch, bis nichts mehr geloescht werden kann
-		while(!deletedCommands.isEmpty()) {
-		
-			deletedCommands = this.eliminateDeadRegistersFromList(deletedCommands);
-			
-		}
-	}*/
-	
-	/**
-	 * Tote Bloecke werden aus dem Programm entfernt
-	 * Operanden der geloeschten Befehle werden auf weitere Verwendungen getestet
-	 * und gegebenenfalls ebenfalls geloescht
-	 * Abhaengigkeiten zwischen Bloecken werden nicht aufgeloest
+	 * Abhaengigkeiten zwischen Bloecken werden aufgeloest
 	 */
 	public void eliminateDeadBlocks() {
 		LinkedList<ILLVM_Block> deletedBlocks;
 		deletedBlocks = this.eliminateDeadBlocksGlobal();
 	
-		// Bisher geloeschte Befehle koennen Operanden enthalten, die nun keine Verwendung mehr haben
-		// Dann koennen diese ebenfalls geloescht werden
-		// Teste also geloeschte Befehle durch, bis nichts mehr geloescht werden kann
+		// Loesche gegebenenfalls Nachfolgebloecke eines schon geloeschten Blocks
 		while(!deletedBlocks.isEmpty()) {
 		
 			deletedBlocks = this.eliminateDeadBlocksFromList(deletedBlocks);

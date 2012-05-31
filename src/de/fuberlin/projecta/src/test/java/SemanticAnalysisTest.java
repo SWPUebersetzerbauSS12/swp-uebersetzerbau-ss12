@@ -43,7 +43,7 @@ public class SemanticAnalysisTest {
 		analyze(code);
 	}
 
-	@Test
+	@Test(expected = ClassCastException.class)
 	public void testIncompatibleOperands() {
 		final String code = "def int foo() { int a; a = 0.0; }";
 		analyze(code);

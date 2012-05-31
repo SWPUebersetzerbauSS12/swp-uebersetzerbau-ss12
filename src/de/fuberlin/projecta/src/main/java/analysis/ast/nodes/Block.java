@@ -10,7 +10,10 @@ public class Block extends Statement {
 
 	@Override
 	public boolean checkSemantics() {
-		// TODO Auto-generated method stub
-		return false;
+		for(AbstractSyntaxTree a : ((AbstractSyntaxTree[])this.getChildren().toArray())){
+			if(!a.checkSemantics())
+				return false;
+		}
+		return true;
 	}
 }

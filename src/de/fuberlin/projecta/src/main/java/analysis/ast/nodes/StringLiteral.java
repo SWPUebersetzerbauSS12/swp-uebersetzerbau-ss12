@@ -16,7 +16,6 @@ public class StringLiteral extends Statement {
 
 	@Override
 	public boolean checkSemantics() {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 }

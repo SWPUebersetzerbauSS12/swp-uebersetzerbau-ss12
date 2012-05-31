@@ -16,7 +16,6 @@ public class IntLiteral extends Statement {
 
 	@Override
 	public boolean checkSemantics() {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 }

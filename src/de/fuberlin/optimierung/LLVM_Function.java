@@ -412,6 +412,7 @@ public class LLVM_Function {
 			
 			if(uses != null){
 				LinkedList<ILLVM_Command> _cmds = (LinkedList<ILLVM_Command>) uses.clone();
+				
 				for(int j = 0; j < _cmds.size(); j++){
 					
 					LinkedList<LLVM_Parameter> operands = _cmds.get(j).getOperands();

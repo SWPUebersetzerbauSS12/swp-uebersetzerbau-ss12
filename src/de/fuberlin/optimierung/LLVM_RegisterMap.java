@@ -7,6 +7,10 @@ import java.util.Set;
 /**
  * Ermöglicht die Zuordnung von Definition und Verwendungen (als ILLVMCommands) zu einem Register
  * Identifikation laeuft ueber den Namen des Registers als String
+ * 
+ * Doppelte Verwendungen, z.B. a = x+x, werden nur einmal in den Verwendungen (usemap)
+ * abgelegt.
+ * Loeschbefehle auf nicht vorhandenen Eintraegen machen nichts, stuerzen nicht ab.
  */
 public class LLVM_RegisterMap {
 
@@ -76,7 +80,10 @@ public class LLVM_RegisterMap {
 					if(uses==null) {
 						uses = new LinkedList<ILLVM_Command>();
 					}
-					uses.add(c);
+					// Fuege ein, falls der Befehl noch nicht enthalten ist
+					if(!uses.contains(c)) {
+						uses.add(c);
+					}
 					this.useMap.put(op.getName(), uses);
 					
 				}
@@ -109,14 +116,15 @@ public class LLVM_RegisterMap {
 					
 					// Loesche Befehel aus useMap
 					uses = this.getUses(op.getName());
-					uses.remove(c);
-					if(uses.isEmpty()) {
-						this.useMap.remove(op.getName());
+					if(!(uses==null)) {
+						uses.remove(c);
+						if(uses.isEmpty()) {
+							this.useMap.remove(op.getName());
+						}
+						else {
+							this.useMap.put(op.getName(), uses);
+						}
 					}
-					else {
-						this.useMap.put(op.getName(), uses);
-					}
-					
 				}
 			}
 		}
@@ -148,13 +156,14 @@ public class LLVM_RegisterMap {
 				if(op.getName().equals(_target.getName())){
 					// Loesche Befehel aus useMap
 					uses = this.getUses(op.getName());
-					uses.remove(c);
-					
-					if(uses.isEmpty()) {
-						this.useMap.remove(op.getName());
-					}
-					else {
-						this.useMap.put(op.getName(), uses);
+					if(!(uses==null)) {
+						uses.remove(c);
+						if(uses.isEmpty()) {
+							this.useMap.remove(op.getName());
+						}
+						else {
+							this.useMap.put(op.getName(), uses);
+						}
 					}
 				}
 			}

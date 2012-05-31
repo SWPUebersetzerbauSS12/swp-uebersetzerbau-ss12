@@ -475,7 +475,7 @@ public class LLVM_Function {
 	 * @param list zu testende Befehle
 	 * @return geloeschte Definitionen (um Operanden nochmals testen zu koennen)
 	 */
-	private LinkedList<ILLVM_Command> eliminateDeadRegistersFromList(LinkedList<ILLVM_Command> list) {
+	public LinkedList<ILLVM_Command> eliminateDeadRegistersFromList(LinkedList<ILLVM_Command> list) {
 		
 		LinkedList<ILLVM_Command> deletedCommands = new LinkedList<ILLVM_Command>();
 		

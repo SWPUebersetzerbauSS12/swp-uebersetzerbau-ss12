@@ -71,6 +71,7 @@ class LLVM_Block implements ILLVM_Block {
 	 */
 	public void deleteDeadStores() {
 		LinkedList<String> active = (LinkedList<String>) this.outLive.clone();
+		LinkedList<ILLVM_Command> deletedCommands = new LinkedList<ILLVM_Command>();
 		
 		// Gehe Befehle von hinten durch
 		ILLVM_Command c = this.lastCommand;
@@ -80,11 +81,24 @@ class LLVM_Block implements ILLVM_Block {
 					// c kann geloescht werden
 					this.function.getRegisterMap().deleteCommand(c);
 					c.deleteCommand();
+					deletedCommands.add(c);
+				}
+				else {
+					// jetzt ist es nicht mehr aktiv
+					active.remove(c.getOperands().get(1).getName());
 				}
 			}
 			if(c.getOperation()==LLVM_Operation.LOAD) {
 				active.add(c.getOperands().getFirst().getName());
 			}
+		}
+		
+		// Teste, ob geloeschter Befehl Operanden hatte, der nun keine Verwendung mehr hat
+		// Dann kann die Definition entfernt werden
+		while(!deletedCommands.isEmpty()) {
+			
+			deletedCommands = this.function.eliminateDeadRegistersFromList(deletedCommands);
+			
 		}
 	}
 	

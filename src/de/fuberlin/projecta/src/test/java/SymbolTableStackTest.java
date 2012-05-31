@@ -28,7 +28,7 @@ public class SymbolTableStackTest {
 	@Test
 	public void testSymbolTableStack() {
 		SymbolTableStack stack = new SymbolTableStack();
-		assertEquals(stack.size(), 1);
+		assertEquals(1, stack.size());
 
 		stack.top().insertEntry("a", true);
 

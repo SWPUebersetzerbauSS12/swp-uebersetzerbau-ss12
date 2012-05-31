@@ -44,8 +44,6 @@ class LLVM_Block implements ILLVM_Block {
 		
 		this.createCommands();
 		
-		this.createDefUseSets();
-		
 		this.createDAG();
 
 	}
@@ -93,7 +91,7 @@ class LLVM_Block implements ILLVM_Block {
 	/**
 	 * Erstelle def und use Mengen dieses Blockes fuer globale Lebendigkeitsanalyse
 	 */
-	private void createDefUseSets() {
+	public void createDefUseSets() {
 		if(!this.isEmpty()) {
 			ILLVM_Command c = this.firstCommand;
 			while(c!=null) {

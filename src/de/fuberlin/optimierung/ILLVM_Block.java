@@ -9,6 +9,7 @@ public interface ILLVM_Block {
 	public void optimizeBlock();
 	public void deleteBlock();
 	
+	public void createDefUseSets();
 	public boolean updateInOutLiveVariables();
 	public void deleteDeadStores();
 

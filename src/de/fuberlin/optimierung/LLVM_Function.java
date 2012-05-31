@@ -225,6 +225,9 @@ public class LLVM_Function {
 	 * Entferne anschliessend ueberfluessige Stores
 	 */
 	public void globalLiveVariableAnalysis() {
+		for(ILLVM_Block b : this.blocks) {
+			b.createDefUseSets();
+		}
 		this.createInOutLiveVariables();
 		for(ILLVM_Block b : this.blocks) {
 			b.deleteDeadStores();
@@ -553,11 +556,135 @@ public class LLVM_Function {
 	 */
 	
 	/**
+	 * Tote Bloecke, d.h. Bloecke, die im Flussgraph nicht erreichbar sind,
+	 * werden entfernt.
+	 * Definitionen von Registern, deren einzige Verwendung innerhalb eines geloeschten
+	 * Blocks waren, werden geloescht. Dead register elimination ist anschliessend
+	 * nicht extra noetig.
+	 * @return Bloecke, die geloescht wurden, um anschliessend die Kinder zu testen
+	 */
+	private LinkedList<ILLVM_Block> eliminateDeadBlocksGlobal() {
+		
+		LinkedList<ILLVM_Command> deletedCommands = new LinkedList<ILLVM_Command>();
+		LinkedList<ILLVM_Block> deletedBlocks = new LinkedList<ILLVM_Block>();
+		
+		for(int i=1; i<this.numberBlocks; i++) {
+			ILLVM_Block block = this.blocks.get(i);
+			if(!block.hasPreviousBlocks()) {
+				// Block hat keine Vorgaenger, kann entfernt werden
+				block.deleteBlock();	// aus Flussgraphen entfernen
+				deletedBlocks.add(block);
+				
+				// Befehle des Blocks zu deletedCommands hinzufuegen
+				if(!block.isEmpty()) {
+					
+					// Gehe Befehle des Blockes durch
+					ILLVM_Command c = block.getFirstCommand();
+					while(c!=null) {
+						
+						// Fuege c in deletedCommands ein
+						deletedCommands.add(c);
+						c = c.getSuccessor();
+						
+					}
+					
+				}
+			}
+		}
+		
+		// Entferne geloeschte Bloecke aus this.blocks
+		for(ILLVM_Block block : deletedBlocks) {
+			this.blocks.remove(block);
+			this.numberBlocks--;
+		}
+		
+		// Entferne geloeschte Befehle aus Register-Hashmaps
+		// und entferne Definitionen von Registern mit einziger Verwendung in
+		// einem geloeschten Block
+		for(ILLVM_Command c : deletedCommands) {
+			this.registerMap.deleteCommand(c);
+		}
+		while(!deletedCommands.isEmpty()) {
+			
+			deletedCommands = this.eliminateDeadRegistersFromList(deletedCommands);
+			
+		}
+		
+		return deletedBlocks;
+		
+	}
+	
+	/**
+	 * Tote Bloecke, d.h. Bloecke, die im Flussgraph nicht erreichbar sind,
+	 * werden entfernt.
+	 * Es werden nicht alle Bloecke getestet, sondern nur Kindbloecke der uebergebenen Liste.
+	 * Definitionen von Registern, deren einzige Verwendung innerhalb eines geloeschten
+	 * Blocks waren, werden geloescht. Dead register elimination ist anschliessend
+	 * nicht extra noetig.
+	 * @return Bloecke, die geloescht wurden, um anschliessend die Kinder zu testen
+	 */
+	private LinkedList<ILLVM_Block> eliminateDeadBlocksFromList(
+			LinkedList<ILLVM_Block> blocks) {
+		
+		LinkedList<ILLVM_Command> deletedCommands = new LinkedList<ILLVM_Command>();
+		LinkedList<ILLVM_Block> deletedBlocks = new LinkedList<ILLVM_Block>();
+		
+		for(ILLVM_Block father : blocks) {
+			for(ILLVM_Block block : father.getNextBlocks()) {
+				
+				// block wird getestet
+				if(!block.hasPreviousBlocks()) {
+					// Block hat keine Vorgaenger, kann entfernt werden
+					block.deleteBlock();	// aus Flussgraphen entfernen
+					deletedBlocks.add(block);
+					
+					// Befehle des Blocks zu deletedCommands hinzufuegen
+					if(!block.isEmpty()) {
+						
+						// Gehe Befehle des Blockes durch
+						ILLVM_Command c = block.getFirstCommand();
+						while(c!=null) {
+							
+							// Fuege c in deletedCommands ein
+							deletedCommands.add(c);
+							c = c.getSuccessor();
+							
+						}
+						
+					}
+				}
+				
+			}
+		}
+		
+		// Entferne geloeschte Bloecke aus this.blocks
+		for(ILLVM_Block block : deletedBlocks) {
+			this.blocks.remove(block);
+			this.numberBlocks--;
+		}
+		
+		// Entferne geloeschte Befehle aus Register-Hashmaps
+		// und entferne Definitionen von Registern mit einziger Verwendung in
+		// einem geloeschten Block
+		for(ILLVM_Command c : deletedCommands) {
+			this.registerMap.deleteCommand(c);
+		}
+		while(!deletedCommands.isEmpty()) {
+			
+			deletedCommands = this.eliminateDeadRegistersFromList(deletedCommands);
+			
+		}
+		
+		return deletedBlocks;
+		
+	}
+	
+	/**
 	 * Entferne tote Bloecke (Bloecke, die nicht erreicht werden koennen)
 	 * Diese haben keine Vorgaenger im Flussgraphen (und sind ungleich dem ersten Block)
 	 * Geloeschte Befehle werden zurueckgegebens
 	 */
-	private LinkedList<ILLVM_Command> eliminateDeadBlocksGlobal() {
+	/*private LinkedList<ILLVM_Command> eliminateDeadBlocksGlobal() {
 		
 		LinkedList<ILLVM_Command> deletedCommands = new LinkedList<ILLVM_Command>();
 		LinkedList<Integer> deletedBlocks = new LinkedList<Integer>();
@@ -600,7 +727,7 @@ public class LLVM_Function {
 		
 		return deletedCommands;
 		
-	}
+	}*/
 	
 	/**
 	 * Tote Bloecke werden aus dem Programm entfernt
@@ -608,7 +735,7 @@ public class LLVM_Function {
 	 * und gegebenenfalls ebenfalls geloescht
 	 * Abhaengigkeiten zwischen Bloecken werden nicht aufgeloest
 	 */
-	public void eliminateDeadBlocks() {
+	/*public void eliminateDeadBlocks() {
 		LinkedList<ILLVM_Command> deletedCommands;
 		deletedCommands = this.eliminateDeadBlocksGlobal();
 	
@@ -618,6 +745,26 @@ public class LLVM_Function {
 		while(!deletedCommands.isEmpty()) {
 		
 			deletedCommands = this.eliminateDeadRegistersFromList(deletedCommands);
+			
+		}
+	}*/
+	
+	/**
+	 * Tote Bloecke werden aus dem Programm entfernt
+	 * Operanden der geloeschten Befehle werden auf weitere Verwendungen getestet
+	 * und gegebenenfalls ebenfalls geloescht
+	 * Abhaengigkeiten zwischen Bloecken werden nicht aufgeloest
+	 */
+	public void eliminateDeadBlocks() {
+		LinkedList<ILLVM_Block> deletedBlocks;
+		deletedBlocks = this.eliminateDeadBlocksGlobal();
+	
+		// Bisher geloeschte Befehle koennen Operanden enthalten, die nun keine Verwendung mehr haben
+		// Dann koennen diese ebenfalls geloescht werden
+		// Teste also geloeschte Befehle durch, bis nichts mehr geloescht werden kann
+		while(!deletedBlocks.isEmpty()) {
+		
+			deletedBlocks = this.eliminateDeadBlocksFromList(deletedBlocks);
 			
 		}
 	}

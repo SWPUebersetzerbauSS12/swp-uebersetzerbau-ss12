@@ -1,5 +1,6 @@
 package analysis.ast.nodes;
 
+import parser.ISyntaxTree;
 import analysis.SymbolTableStack;
 
 
@@ -10,7 +11,12 @@ public class Program extends AbstractSyntaxTree {
 
 	@Override
 	public boolean checkSemantics() {
-		// TODO Auto-generated method stub
-		return false;
+		for(ISyntaxTree tree : this.getChildren()){
+			AbstractSyntaxTree child = (AbstractSyntaxTree) tree;
+			if (!child.checkSemantics()){
+				return false;
+			}
+		}
+		return true;
 	}
 }

@@ -251,9 +251,12 @@ public class Lexer {
 				newToken.setType(TokenType.String);
 				newToken.setTarget(line[0]);
 				newToken.setTypeTarget(line[5].replace((char) 1, ' '));
-				newToken.setOp1(line[6].substring(1).replace((char) 1, ' '));
 				
-				newToken.setOp2(new String("" + line[6].length()));
+				//requote(line[6].substring(1).replace((char) 1, ' '));
+				
+				newToken.setOp1(requote(line[6].substring(1).replace((char) 1, ' ')));
+				
+				newToken.setOp2("" + line[6].length());
 			}
 
 			// Additionen
@@ -321,6 +324,14 @@ public class Lexer {
 			newToken.setType(TokenType.Undefined);
 
 		return newToken;
+	}
+
+	private String requote(String string) {
+		
+		string = string.replace("\\0A", "\\n");
+		string = string.replace("\\00", "\\0");
+		
+		return string;
 	}
 
 	private void fillParameter(Token newToken, String strLine) {

@@ -1,8 +1,5 @@
 package analysis.ast.nodes;
 
-import java.util.List;
-
-import parser.ISyntaxTree;
 import lexer.TokenType;
 import lombok.Getter;
 import analysis.SemanticException;

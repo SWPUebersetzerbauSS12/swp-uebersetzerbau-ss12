@@ -6,9 +6,6 @@ import main.model.Token;
 import main.model.TokenType;
 
 /**
- * 
- * @author Peter Hirschfeld
- * 
  *         Dies ist ein Lexer für einen LLVM Code. Grobe Funktionsweise: Der
  *         LLVM Code wird zeilenweise durchgeparst und es wird pro geparste
  *         Zeile ein Token erzeugt und zurückgegeben.
@@ -97,7 +94,13 @@ public class Lexer {
 
 		int p1 = line.lastIndexOf('(');
 		int p2 = line.indexOf(')', p1);
+		if(line.indexOf(')',p2+1) != -1) {
+			p2 = line.indexOf(')', p2+1);
+			System.out.println("Found a second one");
+		}
+		System.out.println("P1: " + p1 + " P2: " + p2);
 		line = replaceBetween(line, p1, p2, ' ', (char) 1);
+		System.out.println(line);
 
 		p1 = line.lastIndexOf('[');
 		p2 = line.indexOf(']', p1);
@@ -119,6 +122,11 @@ public class Lexer {
 		for (int i = 0; i < tmpSplitLine.length; i++) {
 			if (tmpSplitLine[i].isEmpty()) {
 			} else if (tmpSplitLine[i].contentEquals(",")) {
+			} else if (tmpSplitLine[i].contentEquals("*")) {
+			} else if (tmpSplitLine[i].contentEquals("(i8*")) {
+			} else if (tmpSplitLine[i].contentEquals("...)")) {
+			} else if (tmpSplitLine[i].contentEquals("getelementptr")) {
+			} else if (tmpSplitLine[i].contentEquals("inbounds")) {
 			} else if (tmpSplitLine[i].contentEquals("nounwind")) {
 			} else if (tmpSplitLine[i].contentEquals("nsw")) {
 			} else if (tmpSplitLine[i].contentEquals("tail")) {
@@ -138,6 +146,11 @@ public class Lexer {
 		for (int i = 0; i < tmpSplitLine.length; i++) {
 			if (tmpSplitLine[i].isEmpty()) {
 			} else if (tmpSplitLine[i].contentEquals(",")) {
+			} else if (tmpSplitLine[i].contentEquals("*")) {
+			} else if (tmpSplitLine[i].contentEquals("(i8*")) {
+			} else if (tmpSplitLine[i].contentEquals("...)")) {
+			} else if (tmpSplitLine[i].contentEquals("getelementptr")) {
+			} else if (tmpSplitLine[i].contentEquals("inbounds")) {
 			} else if (tmpSplitLine[i].contentEquals("nounwind")) {
 			} else if (tmpSplitLine[i].contentEquals("nsw")) {
 			} else if (tmpSplitLine[i].contentEquals("tail")) {
@@ -251,11 +264,7 @@ public class Lexer {
 				newToken.setType(TokenType.String);
 				newToken.setTarget(line[0]);
 				newToken.setTypeTarget(line[5].replace((char) 1, ' '));
-				
-				//requote(line[6].substring(1).replace((char) 1, ' '));
-				
 				newToken.setOp1(requote(line[6].substring(1).replace((char) 1, ' ')));
-				
 				newToken.setOp2("" + line[6].length());
 			}
 
@@ -293,21 +302,14 @@ public class Lexer {
 			} else if (line[2].contentEquals("call")) {
 				newToken.setTarget(line[0]);
 				newToken.setTypeTarget(line[3]);
-				if(line[4].charAt(0) == '@') {
-					newToken.setType(TokenType.Call);
-					newToken.setOp1(line[4]);
-					fillParameter(newToken, line[5].replace((char) 1, ' '));
-				} else {
-					newToken.setType(TokenType.C_Call);
-					newToken.setOp1(line[7]);
-					String tmp = line[11].replace((char) 1, ' ');
-					int p1 = tmp.indexOf('@');
-					int p2 = tmp.indexOf(' ', p1);
-					String tmp2 = tmp.substring(p1, p2);
-					newToken.setOp2(new String(tmp2));
+				
+				newToken.setType(TokenType.Call);
+				newToken.setOp1(line[4]);
+				fillParameter(newToken, line[5].replace((char) 1, ' '));
+				if(line[4].equals("@printf")) {
+					newToken.removeParameters(1);
+					newToken.removeParameters(1);
 				}
-					
-				//fillParameter(newToken, line[5].replace((char) 1, ' '));
 			}
 
 			else if (line[2].contentEquals("icmp")) {
@@ -334,40 +336,36 @@ public class Lexer {
 		return string;
 	}
 
-	private void fillParameter(Token newToken, String strLine) {
-
-		int p1 = strLine.indexOf('(');
-		String pair;
-		String[] split;
-
-		if (p1 == -1)
-			p1 = strLine.indexOf('{');
-		int p2 = p1;
-
-		// TODO: unschön aber funktioniert erstmal
-		while (true) {
-			do {
-				p2++;
-			} while (strLine.charAt(p2) != ')' && strLine.charAt(p2) != ','
-					&& strLine.charAt(p2) != '}');
-			p1++;
-			pair = strLine.substring(p1, p2);
-			pair = pair.trim();
-			if (pair.isEmpty())
-				break;
-
-			split = pair.split(" ");
-
-			if (split.length > 1)
-				newToken.addParameter(split[1], split[0]);
+	private void fillParameter(Token newToken, String line) {
+		line = line.replace('(', ' ');
+		line = line.replace(')', ' ');
+		line = line.replace('{', ' ');
+		line = line.replace('}', ' ');
+		
+		line = line.trim();
+		if(line.isEmpty())
+			return;
+		
+		String[] pair = line.split(",");
+		for(int i = 0; i < pair.length; i++) {
+			pair[i] = pair[i].trim();
+			int p1 = pair[i].indexOf('[');
+			int p2 = pair[i].indexOf(']');
+			pair[i] = replaceBetween(pair[i], p1, p2, ' ', (char) 1);
+		}
+		
+		for(String p : pair)
+			System.out.println(p);
+		
+		for(String p : pair) {
+			String[] pairValue = p.split(" ");
+			pairValue[0] = pairValue[0].replace((char)1, ' ');
+			if(pairValue.length > 2)
+				newToken.addParameter(pairValue[2], pairValue[0]);
+			else if(pairValue.length > 1)
+				newToken.addParameter(pairValue[1], pairValue[0]);
 			else
-				newToken.addParameter("", split[0]);
-
-			p1 = p2;
-			if (strLine.charAt(p2) == ')' || strLine.charAt(p2) == '}')
-				break;
-			while (strLine.charAt(p1++) == ' ')
-				;
+				newToken.addParameter("", pairValue[0]);
 		}
 	}
 }

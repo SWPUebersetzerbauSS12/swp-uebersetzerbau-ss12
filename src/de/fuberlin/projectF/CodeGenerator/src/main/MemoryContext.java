@@ -23,6 +23,7 @@ public class MemoryContext {
 		for (int i = 0; i < 6; i++) {
 			registers.add(new RegisterAddress(i));
 		}
+		returnRegister = null;
 		registerInfo = new Variable[6];	
 	}
 

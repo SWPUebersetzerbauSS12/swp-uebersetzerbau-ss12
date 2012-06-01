@@ -102,6 +102,10 @@ public class Token {
 	public LinkedList<Parameter> getParameters() {
 		return parameterList;
 	}
+	
+	public void removeParameters(int num) {
+		parameterList.remove(num);
+	}
 
 	public int getParameterCount() {
 		if (parameterList == null)

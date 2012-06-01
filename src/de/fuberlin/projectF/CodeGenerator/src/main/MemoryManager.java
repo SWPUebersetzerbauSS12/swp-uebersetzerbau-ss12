@@ -37,6 +37,7 @@ public class MemoryManager {
 	}
 
 	public String getAddress(String name) {
+		System.out.println(current.get(name));
 		return current.get(name).getAddress();
 	}
 
@@ -63,6 +64,8 @@ public class MemoryManager {
 	}
 
 	public RegisterAddress getReturnRegister(String function) {
+		if(contexts.get(function) == null)
+			return null;
 		return contexts.get(function).getReturnRegister();
 	}
 

@@ -39,7 +39,7 @@ public class Translator {
 						.append(", @function\n").append(name).append(":\n");
 				// Parameterbehandlung
 				if (tok.getParameterCount() > 0) {
-					for (int i = 0; i < tok.getParameterCount(); i++) {
+					for (int i = tok.getParameterCount() - 1; i >= 0; i--) {
 						Parameter p = tok.getParameter(i);
 						mem.addStackVar(p.getOperand(), p.getType(), 8 + i
 								* getSize(p.getType()));
@@ -75,25 +75,21 @@ public class Translator {
 				sectionText.append("\tleave\n");
 				sectionText.append("\tret\n\n");
 				break;
-
-			case C_Call:
-				String c_function = tok.getOp1().substring(1);
-				pushl(new String("$" + tok.getOp2().substring(2)), "");
-				call(c_function);
-					
-				break;
 				
 			case Call:
 				String function = tok.getOp1().substring(1);
 				// Parameter auf den Stack legen
 				if (tok.getParameterCount() > 0) {
-					for (int i = 0; i < tok.getParameterCount(); i++) {
+					for (int i = tok.getParameterCount() - 1; i >= 0; i--) {
 						Parameter p = tok.getParameter(i);
 						String operand;
 						if (p.getOperand().startsWith("%"))
 							operand = mem.getAddress(p.getOperand());
 						else
 							operand = "$" + p.getOperand();
+						System.out.println(operand);
+						if(operand.charAt(1) == '@')
+							operand = "$" + operand.substring(3);
 						pushl(operand, "Parameter " + p.getOperand());
 					}
 				}
@@ -101,8 +97,9 @@ public class Translator {
 				call(function);
 
 				// Rückgabe speichern
-				mem.addRegVar(tok.getTarget(), tok.getTypeTarget(),
-						mem.getReturnRegister(function));
+				if(mem.getReturnRegister(function) != null)
+					mem.addRegVar(tok.getTarget(), tok.getTypeTarget(),
+									mem.getReturnRegister(function));
 				// Parameter löschen
 				for (int i = 0; i < tok.getParameterCount(); i++) {
 					Parameter p = tok.getParameter(i);

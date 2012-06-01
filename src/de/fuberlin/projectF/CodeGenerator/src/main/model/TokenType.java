@@ -17,5 +17,4 @@ public enum TokenType {
 	Compare,
 	Label,
 	Branch,
-	C_Call;
 }

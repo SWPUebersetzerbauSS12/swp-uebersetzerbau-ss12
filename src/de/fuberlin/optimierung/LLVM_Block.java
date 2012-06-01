@@ -423,8 +423,12 @@ class LLVM_Block implements ILLVM_Block {
 		
 		String code = "";
 		
-		if(!label_line.equals("")){
+		/*if(!label_line.equals("")){
 			code = label_line+"\n";
+		}*/
+		
+		if(!this.label.matches("%[1-9][0-9]*") && !this.label.equals("")) {
+			code = label.substring(1)+":\n";
 		}
 		
 		ILLVM_Command tmp = firstCommand;

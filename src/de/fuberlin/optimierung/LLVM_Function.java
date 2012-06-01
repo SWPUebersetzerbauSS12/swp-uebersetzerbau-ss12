@@ -58,7 +58,7 @@ public class LLVM_Function {
 	 * Achtung: nur direkt vor der Ausgabe des Codes nutzen, Hashmaps
 	 * werden nicht aktualisiert.
 	 */
-	private void updateUnnamedLabelNames() {
+	public void updateUnnamedLabelNames() {
 	
 		String nextUnnamed = "%1";
 		int nextNumber = 1;

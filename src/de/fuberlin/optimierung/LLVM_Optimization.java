@@ -52,6 +52,8 @@ class LLVM_Optimization implements ILLVM_Optimization {
 			// Globale Lebendigkeitsanalyse fuer Store, Load
 			tmp.globalLiveVariableAnalysis();
 			
+			tmp.updateUnnamedLabelNames();
+			
 			// Optimierte Ausgabe
 			outputLLVM += tmp.toString();
 			

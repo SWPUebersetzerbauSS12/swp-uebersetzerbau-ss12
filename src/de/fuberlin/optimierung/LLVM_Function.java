@@ -37,6 +37,16 @@ public class LLVM_Function {
 		this.endBlock = this.blocks.get(this.numberBlocks-1);
 	}
 	
+	/**
+	 * Durch das Loeschen von Befehlen kann nach %2=... ein %4=... folgen.
+	 * Dies ist nicht erlaubt, diese Funktion passt die Namen an.
+	 * Achtung: nur direkt vor der Ausgabe des Codes nutzen, Hashmaps
+	 * werden nicht aktualisiert.
+	 */
+	private void updateUnnamedLabelNames() {
+		
+	}
+	
 	/*
 	 * *********************************************************
 	 * *********** Flussgraph - Erstellung *********************
@@ -46,6 +56,7 @@ public class LLVM_Function {
 	/**
 	 * Erstellt den Flussgraphen zwischen den Bloecken, d.h. die Attribute
 	 * nextBlocks und previousBlocks der Bloecke werden gesetzt.
+	 * Labels werden gegebenenfalls erstellt.
 	 */
 	public void createFlowGraph() {
 		
@@ -205,6 +216,7 @@ public class LLVM_Function {
 	 * Arbeitet nicht auf Registern, sondern auf Speicheradressen
 	 * Dannach ist zwischen den Bloecken bekannt, ob eine Speicheradresse lebendig ist
 	 * Dient dazu, spaeter ueberfluessige stores und loads entfernen zu koennen
+	 * Vorraussetzung: def und use Mengen der Bloecke sind gesetzt
 	 */
 	private void createInOutLiveVariables() {
 		// Algorithmus siehe Seite 610 Drachenbuch

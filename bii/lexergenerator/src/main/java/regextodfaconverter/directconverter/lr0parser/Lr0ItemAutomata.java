@@ -1,7 +1,42 @@
+/*
+ * 
+ * Copyright 2012 lexergen.
+ * This file is part of lexergen.
+ * 
+ * lexergen is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * lexergen is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with lexergen.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ * lexergen:
+ * A tool to chunk source code into tokens for further processing in a compiler chain.
+ * 
+ * Projectgroup: bi, bii
+ * 
+ * Authors: Johannes Dahlke
+ * 
+ * Module:  Softwareprojekt Übersetzerbau 2012 
+ * 
+ * Created: Apr. 2012 
+ * Version: 1.0
+ *
+ */
+
+
 package regextodfaconverter.directconverter.lr0parser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,7 +59,8 @@ import regextodfaconverter.directconverter.lr0parser.itemset.Item;
 import regextodfaconverter.directconverter.lr0parser.itemset.ItemSet;
 import utils.Test;
 
-public class Lr0ItemAutomata<Element extends Comparable<Element>> implements ItemAutomata<Element> {
+
+public class Lr0ItemAutomata<Element extends Comparable<Element>> implements ItemAutomata<Element>, ItemAutomataInterior<Element> {
 
 	private HashSet<Closure> closures = new HashSet<Closure>();
 	private Closure currentClosure = null;
@@ -34,57 +70,69 @@ public class Lr0ItemAutomata<Element extends Comparable<Element>> implements Ite
 	private Stack<RuleElement> symbolStack;
 	private Stack<Closure> closureStack;
 	private Queue<Element> inputQueue;
+	
+	private NonterminalEventHandler nonterminalHandler;
+	private TerminalEventHandler terminalHandler;
+	
 
 	private Map<Closure, Map<RuleElement, EventHandler>> parserTable = new HashMap<Closure, Map<RuleElement, EventHandler>>() {
-		
+
 		@Override
-		public boolean containsKey(Object o) {
-			for (Closure closure : this.keySet()) {
+		public boolean containsKey( Object o) {
+			for ( Closure closure : this.keySet()) {
 				if ( closure.equals( (Closure) o))
 					return true;
 			}
 			return false;
 		};
-		
+
+
 		@Override
-		public Map<RuleElement, EventHandler> get(Object key) {
+		public Map<RuleElement, EventHandler> get( Object key) {
 			for ( Closure closure : this.keySet()) {
 				if ( closure.equals( key))
 					return super.get( closure);
 			}
 			return null;
 		}
-		
-	};
 
-	public Lr0ItemAutomata(ContextFreeGrammar grammar) {
+	};
+	
+	private boolean isSLR1 = true;
+
+
+	public Lr0ItemAutomata( ContextFreeGrammar grammar) {
 		super();
 		this.grammar = grammar;
 		InitializeAutomata();
 	}
 
+
 	private Closure calcStartClosure() {
 		Nonterminal startSymbol = grammar.getStartSymbol();
-		Item startItem = new Item(new Nonterminal(), startSymbol);
+		Item startItem = new Item( new Nonterminal( startSymbol.toString() + "'"), startSymbol);
 		startProduction = startItem.toProduction();
-		return calcClosureForStartItem(startItem, grammar);
+		return calcClosureForStartItem( startItem, grammar);
 	}
+
 
 	private void InitializeAutomata() {
 		Closure startClosure = calcStartClosure();
-		closures.add(startClosure);
+		closures.add( startClosure);
 		currentClosure = startClosure;
 
-		SetupParserTable(startClosure);
+		SetupParserTable( startClosure);
 
 		InitializeStacks();
 	}
 
-	private void SetupParserTable(Closure startClosure) {
+
+	private void SetupParserTable( Closure startClosure) {
 		HashSet<Closure> unhandledClosures = new HashSet<Closure>() {
+
 			@Override
-			public boolean contains(Object o) {
-				for (Closure closure : this) {
+			public boolean contains( Object o) {
+				for ( Closure closure : this) {
 					if ( closure.equals( (Closure) o))
 						return true;
 				}
@@ -92,178 +140,192 @@ public class Lr0ItemAutomata<Element extends Comparable<Element>> implements Ite
 			}
 		};
 		int closureCounter = 0;
-		
-		startClosure.setName( "I"+closureCounter++);
-		unhandledClosures.add(startClosure);
+
+		startClosure.setNumber( closureCounter++);
+		unhandledClosures.add( startClosure);
 
 		HashMap<Nonterminal, Set<Terminal>> followSets = grammar.getFollowSets();
 		RuleElement nextRuleElement;
 
-		while (unhandledClosures.size() > 0) {
+		while ( unhandledClosures.size() > 0) {
 			Closure currentClosure = unhandledClosures.iterator().next();
-			System.out.println( currentClosure);
 			Map<RuleElement, EventHandler> handlerMap = new HashMap<RuleElement, EventHandler>() {
-				
+
 				@Override
-				public boolean containsKey(Object key) {
-					for (RuleElement element : this.keySet()) {
+				public boolean containsKey( Object key) {
+					for ( RuleElement element : this.keySet()) {
 						if ( element.equals( key))
 							return true;
 					}
-                    return false;
+					return false;
 				}
-				
+
+
 				@Override
-				public EventHandler get(Object key) {
-					for (RuleElement element : this.keySet()) {
+				public EventHandler get( Object key) {
+					for ( RuleElement element : this.keySet()) {
 						if ( element.equals( key))
 							return super.get( element);
 					}
 					return null;
 				}
-				
+
 			};
-	        for (Item item : currentClosure.getItemSet()) {
+			for ( Item item : currentClosure.getItemSet()) {
 				nextRuleElement = item.peekNextRuleElement();
-				if (Test.isAssigned(nextRuleElement)) {
-					if (nextRuleElement instanceof Terminal) {
+				if ( Test.isAssigned( nextRuleElement)) {
+					if ( nextRuleElement instanceof Terminal) {
 						// add shift actions
-						Closure toClosure = gotoNextClosure(currentClosure, nextRuleElement, this.grammar);
-						if ( !parserTable.containsKey( toClosure)
-                             && !unhandledClosures.contains( toClosure)) {
-						   toClosure.setName( "I"+closureCounter++);
-						   unhandledClosures.add(toClosure);
+						Closure toClosure = gotoNextClosure( currentClosure, nextRuleElement, this.grammar);
+						if ( !parserTable.containsKey( toClosure) && !unhandledClosures.contains( toClosure)) {
+							toClosure.setNumber( closureCounter++);
+							unhandledClosures.add( toClosure);
 						}
-						ShiftAction<Element> shiftAction = new ShiftAction<Element>(this, toClosure, (Terminal<Element>) nextRuleElement);
-						handlerMap.put(nextRuleElement, shiftAction);
-					} else if (nextRuleElement instanceof Nonterminal) {
+						ShiftAction<Element> shiftAction = new ShiftAction<Element>( this, toClosure, (Terminal<Element>) nextRuleElement);
+						isSLR1 &= !handlerMap.containsKey( nextRuleElement);
+			  		handlerMap.put( nextRuleElement, shiftAction);
+					} else if ( nextRuleElement instanceof Nonterminal) {
 						// add goto's
-						Closure toClosure = gotoNextClosure(currentClosure, nextRuleElement, this.grammar);
-						if ( !parserTable.containsKey( toClosure) 
-							&& !unhandledClosures.contains( toClosure)) {
-						  toClosure.setName( "I"+closureCounter++);
-						  unhandledClosures.add(toClosure); 
+						Closure toClosure = gotoNextClosure( currentClosure, nextRuleElement, this.grammar);
+						if ( !parserTable.containsKey( toClosure) && !unhandledClosures.contains( toClosure)) {
+							toClosure.setNumber( closureCounter++);
+							unhandledClosures.add( toClosure);
 						}
-						Goto gotoHandler = new Goto(this, toClosure, (Nonterminal) nextRuleElement);
-						handlerMap.put(nextRuleElement, gotoHandler);
+						Goto gotoHandler = new Goto( this, toClosure, (Nonterminal) nextRuleElement);
+						// check for multiples with gotos not necessary  
+						handlerMap.put( nextRuleElement, gotoHandler);
 					}
 				} else {
-					if (item.toProduction().equals(startProduction))
+					if ( item.toProduction().equals( startProduction))
 						// add accept action
-						handlerMap.put(new Terminator(), new AcceptAction(this));
+						handlerMap.put( new Terminator(), new AcceptAction( this));
 					else {
 						// add reduce actions
 						ProductionRule reduceProduction = item.toProduction();
 						Nonterminal nonterminal = reduceProduction.getLeftRuleSide();
-						Set<Terminal> followSet = followSets.get(nonterminal);
-						for (Terminal<Element> terminal : followSet) {
-							ReduceAction<Element> reduceAction = new ReduceAction<Element>(this, reduceProduction);
-							handlerMap.put(terminal, reduceAction);
+						Set<Terminal> followSet = followSets.get( nonterminal);
+						for ( Terminal<Element> terminal : followSet) {
+							ReduceAction<Element> reduceAction = new ReduceAction<Element>( this, reduceProduction);
+							isSLR1 &= !handlerMap.containsKey( nextRuleElement);
+							handlerMap.put( terminal, reduceAction);
 						}
 					}
 				}
 			}
-			unhandledClosures.remove(currentClosure);
-			
-		
-			for (Terminal<Element> terminal : grammar.getTerminals()) {
-				if ( Test.isUnassigned( handlerMap.get( terminal)))
-					handlerMap.put( terminal, new ReadAction<Element>(this));
-			}
-			if ( Test.isUnassigned( handlerMap.get( new Terminator())))
-				handlerMap.put( new Terminator(), new ReadAction<Element>(this));
-			
+			unhandledClosures.remove( currentClosure);
+
 			parserTable.put( currentClosure, handlerMap);
 		}
 	}
+
 
 	private void InitializeStacks() {
 		symbolStack = new Stack<RuleElement>();
 		symbolStack.add( new Terminator());
 		closureStack = new Stack<Closure>();
-		closureStack.add(currentClosure);
+		closureStack.add( currentClosure); // assert currentClosure == startClosure;
 	}
 
-	private void LoadInputIntoQueue(List<Element> input) {
-		inputQueue = new ArrayBlockingQueue<Element>(input.size());
-		for (Element element : input) {
-			inputQueue.offer(element);
+
+	private void LoadInputIntoQueue( List<Element> input) {
+		inputQueue = new ArrayBlockingQueue<Element>( input.size());
+		for ( Element element : input) {
+			inputQueue.offer( element);
 		}
 	}
+
 
 	private void ResetAutomata() {
 		closures = new HashSet<Closure>();
 		currentClosure = null;
+		isSLR1 = true;
 		InitializeAutomata();
 	}
 
-	public boolean match(List<Element> input) {
-		ResetAutomata();
-		LoadInputIntoQueue(input);
 
+	public boolean match( List<Element> input) {
+		ResetAutomata();
+		LoadInputIntoQueue( input);
+
+		EventHandler handler;
 		boolean accepted = false;
 		try {
-			while ( !accepted) {
-				System.out.println("symbolStack: " +  symbolStack);
-				System.out.println("closureStack: " +  closureStack);
+		 do {	
+  			// get next to handle
 				currentClosure = closureStack.peek();
-				System.out.println( "CurrentClosure: " + currentClosure);
-				RuleElement currentElement = symbolStack.peek();
-				System.out.println( "CurrentElement: " + currentElement);
-				EventHandler handler = parserTable.get( currentClosure).get( currentElement);
+				
+				// we peek the next input element 
+				Terminal terminalToHandle = inputQueue.isEmpty() ? new Terminator() : new Terminal( inputQueue.peek());
+				
+				handler = parserTable.get( currentClosure).get( terminalToHandle);
 				handler.handle( this);
-				System.out.println( "Handler: " +handler.getClass().getName());
-				if ( handler instanceof ReduceAction)
-					System.out.println( "reduce with rule: " +((ReduceAction)handler).getReduceRule());
+			  if ( handler instanceof ReduceAction) {
+			  	// process the goto
+			  	currentClosure = closureStack.peek();
+			  	RuleElement nonterminalToHandle = symbolStack.peek();
+			  	assert nonterminalToHandle instanceof Nonterminal;
+			  	EventHandler gotoHandler = parserTable.get( currentClosure).get( nonterminalToHandle);
+			  	gotoHandler.handle( this);	
+			  	if ( Test.isAssigned( nonterminalHandler))
+			  		nonterminalHandler.handle( this, (Nonterminal) nonterminalToHandle);
+			  } else if ( handler instanceof ShiftAction) {			  	
+			  	if ( Test.isAssigned( terminalHandler))
+			  		terminalHandler.handle( this, (Terminal) terminalToHandle);
+			  }
+				
 				accepted = handler instanceof AcceptAction;
-			}
-		} catch (Exception e) {
+			} while ( !accepted);
+			
+		} catch ( Exception e) {
 			return false;
 		}
 		return true;
 	}
 
-	private static Closure calcClosureForStartItem(Item startItem, ContextFreeGrammar grammar) {
+
+	private static Closure calcClosureForStartItem( Item startItem, ContextFreeGrammar grammar) {
 		ItemSet itemSet = new ItemSet();
-		itemSet.add(startItem);
-		Closure closure = calcClosureOfItemSet(itemSet, grammar);
-		closure.putAsKernelItem(startItem);
+		itemSet.add( startItem);
+		Closure closure = calcClosureOfItemSet( itemSet, grammar);
+		closure.putAsKernelItem( startItem);
 		return closure;
 	}
 
-	private static Closure calcClosureOfItemSet(ItemSet itemSet, ContextFreeGrammar grammar) {
+
+	private static Closure calcClosureOfItemSet( ItemSet itemSet, ContextFreeGrammar grammar) {
 		Closure result = new Closure();
-		for (Item item : itemSet) {
-			if (item.getAnalysePosition() == 0)
-				result.addAsNonkernelItem(item);
+		for ( Item item : itemSet) {
+			if ( item.getAnalysePosition() == 0)
+				result.addAsNonkernelItem( item);
 			else
-				result.addAsKernelItem(item);
+				result.addAsKernelItem( item);
 		}
 
 		boolean hasClosureGrown;
 		do {
 			hasClosureGrown = false;
-			Set<Item> currentItemSet = new HashSet<Item>(result.keySet());
-			for (Item item : currentItemSet) {
+			Set<Item> currentItemSet = new HashSet<Item>( result.keySet());
+			for ( Item item : currentItemSet) {
 				RuleElement ruleElement = item.peekNextRuleElement();
-				if (Test.isAssigned(ruleElement) && ruleElement instanceof Nonterminal) {
+				if ( Test.isAssigned( ruleElement) && ruleElement instanceof Nonterminal) {
 					Nonterminal leftRuleSideCandidate = (Nonterminal) ruleElement;
-					HashSet<RuleElementSequenz> setOfRightRules = grammar.get(ruleElement);
-					if (Test.isAssigned(setOfRightRules)) {
-						for (RuleElementSequenz rightRuleSide : setOfRightRules) {
-							Item newItem = new Item(leftRuleSideCandidate, rightRuleSide);
+					HashSet<RuleElementSequenz> setOfRightRules = grammar.get( ruleElement);
+					if ( Test.isAssigned( setOfRightRules)) {
+						for ( RuleElementSequenz rightRuleSide : setOfRightRules) {
+							Item newItem = new Item( leftRuleSideCandidate, rightRuleSide);
 							if ( !result.containsKey( newItem)) {
-								result.addAsNonkernelItem(newItem);
+								result.addAsNonkernelItem( newItem);
 								hasClosureGrown = true;
 							}
 						}
 					}
 				}
 			}
-		} while (hasClosureGrown);
+		} while ( hasClosureGrown);
 
 		return result;
 	}
+
 
 	/**
 	 * Formal: GOTO( I,X) = CLOSURE( { [A -> aX.b] | [A -> a.Xb] \in I })
@@ -271,71 +333,79 @@ public class Lr0ItemAutomata<Element extends Comparable<Element>> implements Ite
 	 * @param itemSet
 	 * @return
 	 */
-	private static Closure gotoNextClosure(Closure fromClosure, RuleElement transitionElement, ContextFreeGrammar grammar) {
+	private static Closure gotoNextClosure( Closure fromClosure, RuleElement transitionElement, ContextFreeGrammar grammar) {
 		ItemSet fromItemSet = fromClosure.getItemSet();
 		ItemSet toItemSet = new ItemSet();
-		for (Item fromItem : fromItemSet) {
-			if (transitionElement.equals(fromItem.peekNextRuleElement()))
-				toItemSet.add( new Item( fromItem, fromItem.getAnalysePosition() +1));
+		for ( Item fromItem : fromItemSet) {
+			if ( transitionElement.equals( fromItem.peekNextRuleElement()))
+				toItemSet.add( new Item( fromItem, fromItem.getAnalysePosition() + 1));
 		}
-		return calcClosureOfItemSet(toItemSet, grammar);
+		return calcClosureOfItemSet( toItemSet, grammar);
 	}
+
 
 	public Stack<RuleElement> getSymbolStack() {
 		return symbolStack;
 	}
 
+
 	public Stack<Closure> getClosureStack() {
 		return closureStack;
 	}
+
 
 	public Queue getInputQueue() {
 		return inputQueue;
 	}
 
+
 	@Override
 	public String toString() {
 		String result = "";
-		List<Closure> closureList = new ArrayList<Closure>(parserTable.keySet());
-		List<ProductionRule> productionList = new ArrayList<ProductionRule>(grammar.getProductions());
+		List<Closure> closureList = new ArrayList<Closure>( parserTable.keySet());
+		List<ProductionRule> productionList = new ArrayList<ProductionRule>( grammar.getProductions());
 
-		RuleElement[] terminalElements = new RuleElement[grammar.getTerminals().size()+1]; 
+		RuleElement[] terminalElements = new RuleElement[grammar.getTerminals().size() + 1];
 		terminalElements = grammar.getTerminals().toArray( terminalElements);
 		terminalElements[grammar.getTerminals().size()] = new Terminator();
 		Arrays.sort( terminalElements);
-		
-		RuleElement[] nonterminalElements = new RuleElement[grammar.getNonterminals().size()]; 
+
+		RuleElement[] nonterminalElements = new RuleElement[grammar.getNonterminals().size()];
 		nonterminalElements = grammar.getNonterminals().toArray( nonterminalElements);
 		Arrays.sort( nonterminalElements);
-		
+
+		Collections.sort( closureList, new Comparator<Closure>() {
+
+			public int compare( Closure c1, Closure c2) {
+				return c1.getNumber().compareTo( c2.getNumber());
+			}
+		});
+
 		for ( int i = 0; i < closureList.size(); i++) {
-			Closure closure = closureList.get(i);
-			Map<RuleElement, EventHandler> handlerMap = parserTable.get(closure);
-            
+			Closure closure = closureList.get( i);
+			Map<RuleElement, EventHandler> handlerMap = parserTable.get( closure);
+
 			if ( closure.getName().isEmpty())
-			  closure.setName( "I" + closureList.indexOf( closure));
-			
-		    result +=  closure.getName() + "\t"; 
-			for (RuleElement ruleElement : terminalElements) {
-				EventHandler handler = handlerMap.get(ruleElement);
-				if (handler instanceof ShiftAction) {
-					result += " \t " + ruleElement + " : s" + closureList.indexOf(((ShiftAction) handler).getToClosure());
-				} else if (handler instanceof ReduceAction) {
-					result += " \t " + ruleElement + " : r" + productionList.indexOf(((ReduceAction) handler).getReduceRule());
-				} else if (handler instanceof AcceptAction) {
+				closure.setNumber( closureList.indexOf( closure));
+
+			result += closure.getName() + "\t";
+			for ( RuleElement ruleElement : terminalElements) {
+				EventHandler handler = handlerMap.get( ruleElement);
+				if ( handler instanceof ShiftAction) {
+					result += " \t " + ruleElement + " : s" + closureList.indexOf( ( (ShiftAction) handler).getToClosure());
+				} else if ( handler instanceof ReduceAction) {
+					result += " \t " + ruleElement + " : r" + productionList.indexOf( ( (ReduceAction) handler).getReduceRule());
+				} else if ( handler instanceof AcceptAction) {
 					result += " \t " + ruleElement + " : acc";
-				}  else if (handler instanceof ReadAction) {
-					result += " \t " + ruleElement + " : next";
 				} else {
 					result += " \t\t ";
 				}
 			}
-			
 
-			for (RuleElement ruleElement : nonterminalElements) {
-				EventHandler handler = handlerMap.get(ruleElement);	
-				if (handler instanceof Goto) {
-					result += " \t " + ruleElement + " : goto " + closureList.indexOf(((Goto) handler).getToClosure());
+			for ( RuleElement ruleElement : nonterminalElements) {
+				EventHandler handler = handlerMap.get( ruleElement);
+				if ( handler instanceof Goto) {
+					result += " \t " + ruleElement + " : goto " + closureList.indexOf( ( (Goto) handler).getToClosure());
 				} else {
 					result += " \t\t ";
 				}
@@ -345,7 +415,24 @@ public class Lr0ItemAutomata<Element extends Comparable<Element>> implements Ite
 		return result;
 	}
 
+
 	public ContextFreeGrammar getGrammar() {
 		return grammar;
+	}
+
+
+	public boolean isSLR1() {
+		return isSLR1;
+	}
+	
+	
+	
+	public void setNonterminalHandler( NonterminalEventHandler nonterminalHandler) {
+		this.nonterminalHandler = nonterminalHandler;
+	}
+	
+	
+	public void setTerminalHandler( TerminalEventHandler terminalHandler) {
+		this.terminalHandler = terminalHandler;
 	}
 }

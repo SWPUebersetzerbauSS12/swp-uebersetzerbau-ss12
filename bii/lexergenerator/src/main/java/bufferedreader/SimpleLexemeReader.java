@@ -32,6 +32,7 @@
 
 package bufferedreader;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -44,11 +45,11 @@ public class SimpleLexemeReader implements LexemeReader {
 	private RandomAccessFile file;
 	
 	private long lexemeBeginMarker;
+	private String sourceFile;
 	
-	public SimpleLexemeReader( String SourceFile) throws IOException {
-		// we open the file read only
-		file = new RandomAccessFile( SourceFile, "r");
-		lexemeBeginMarker = file.getFilePointer();
+	public SimpleLexemeReader( String SourceFile) throws LexemeReaderException {
+		this.sourceFile = sourceFile;
+		reopen();
 	}
 
 	public char getNextChar() throws LexemeReaderException {
@@ -91,5 +92,16 @@ public class SimpleLexemeReader implements LexemeReader {
 		}
 	}
 	
+	
+	public void reopen() throws LexemeReaderException {
+	  try {
+			// we open the file read only
+			file = new RandomAccessFile( sourceFile, "r");
+			lexemeBeginMarker = file.getFilePointer();
+	  } catch ( Exception e) {
+	  	Notification.printDebugException( e);
+	  	throw new LexemeReaderException( String.format("Cannot open the source file '%s'.", sourceFile));
+		}
+	}
 
 }

@@ -51,5 +51,10 @@ public interface LexerToParserInterface {
 	 * @throws LexemIdentificationException wird geworfen, wenn der Lexer das gelesene Lexem keinem bekannten Tokentyp zuweisen kann.
 	 */
 	Token getNextToken() throws LexemeReaderException, LexemIdentificationException;
+	
+	/**
+	 * Resets the lexer to initial state. Next call of getNextToken() delivers anew the first token. 
+	 */
+	void reset();
 
 }

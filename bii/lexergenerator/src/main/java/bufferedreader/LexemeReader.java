@@ -54,6 +54,13 @@ public interface LexemeReader {
 	
 	
 	/**
+	 * Öffnet die Eingabedatei erneut. Der nächste Aufruf von {@link #getNextChar()} 
+	 * liefert dann das erste Zeichen aus der Quelldatei.  
+	 * @throws LexemeReaderException 
+	 */
+	void reopen() throws LexemeReaderException;
+	
+	/**
 	 * Acceptiert das zuletzt gelesene Lexem, indem es den Marker lexemeBegin 
 	 * genau hinter dem zuletzt gelesenen Lexem positioniert. 
 	 * @throws LexemeReaderException 

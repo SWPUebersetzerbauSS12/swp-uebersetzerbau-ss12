@@ -176,4 +176,11 @@ public class Tokenizer implements LexerToParserInterface {
 		return Token.getEofToken();
 	}
 
+
+
+	public void reset() {
+		dfa.resetToInitialState();
+		lexemeReader.reopen();
+	}
+
 }

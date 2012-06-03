@@ -33,6 +33,7 @@
 package bufferedreader;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -58,14 +59,12 @@ public class BufferedLexemeReader implements LexemeReader {
 	private char[] buffer2 = new char[NUM_BUFFER_SIZE];
 	private FileReader fileReader;
 	private boolean endOfFileReached = false;
+	private String sourceFile;
 	
-	public BufferedLexemeReader( String SourceFile) throws IOException {
-		// we open the file read only
-		File file = new File( SourceFile);
-		fileReader = new FileReader( file);
-		initBuffer();
+	public BufferedLexemeReader( String SourceFile) throws LexemeReaderException {
+		this.sourceFile = sourceFile;
+		reopen();
 	}
-	
 	
 	private void initBuffer() {
 	  readNextBlockIntoBuffer( buffer1);
@@ -185,6 +184,19 @@ public class BufferedLexemeReader implements LexemeReader {
 	public void stepBackward( int steps) throws LexemeReaderException {
 		// todo: check if this func is error free
 		forwardPosition = Math.max( lexemeBeginMarker-1, forwardPosition -steps);      
+	}
+
+
+	public void reopen() throws LexemeReaderException {
+	  try {
+	    // we open the file read only
+		  File file = new File( sourceFile);
+		  fileReader = new FileReader( file);
+			initBuffer();
+	  } catch ( FileNotFoundException e) {
+	  	Notification.printDebugException( e);
+	  	throw new LexemeReaderException( String.format("Cannot open the source file '%s'.", sourceFile));
+		}
 	}
 
 }

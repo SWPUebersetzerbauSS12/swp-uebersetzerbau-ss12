@@ -33,9 +33,10 @@
 package bufferedreader;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+
+import utils.Notification;
 
 public class MemoryStreamLexemeReader implements LexemeReader {
 	

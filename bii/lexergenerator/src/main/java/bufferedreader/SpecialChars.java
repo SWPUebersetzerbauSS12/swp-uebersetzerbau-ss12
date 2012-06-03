@@ -86,5 +86,10 @@ public class SpecialChars {
 				return false;			
 		}
 	}
+	
+	public static boolean isEOF( char c) {
+		return CHAR_EOF == c;
+	}
+	
  
 }

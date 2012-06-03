@@ -34,6 +34,8 @@ package tokenmatcher;
 
 import java.io.Serializable;
 
+import tokenmatcher.attributes.Attribute;
+
 public interface StatePayload extends Serializable {
 
 	/**
@@ -49,7 +51,7 @@ public interface StatePayload extends Serializable {
 	 * 
 	 * @return das Attribut als Zeichenkette.
 	 */
-	String getAttribute();
+	Attribute getAttribute();
 
 	/*
 	 * no longer used int getBacksteps();

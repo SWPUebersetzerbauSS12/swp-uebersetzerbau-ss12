@@ -125,7 +125,7 @@ public class BufferedLexemeReader implements LexemeReader {
 	 * @throw LexemeReaderException wenn das Ende der Datei erreicht ist oder 
 	 * ein IO-Fehler beim Lesen der Datei aufgetreten ist.
 	 */
-	public char getNextChar() throws LexemeReaderException, EndOfFileException {
+	public char getNextChar() throws LexemeReaderException {
 		char result;
 		char readedChar = readCharFromBufferAtPosition( forwardPosition);
 		if ( readedChar == EOF_CHAR) {
@@ -151,9 +151,7 @@ public class BufferedLexemeReader implements LexemeReader {
 				endOfFileReached = true;
 			  // the readed EOF is the real EOF of the file
 		  	// return it (to stop the lexical analysis)
-		  	// Result := EOF_CHAR;
-		  	// or throw an exception to avoid an extra check
-				throw new EndOfFileException();   
+		  	result = EOF_CHAR;  
 			}
 		} else
 		    // otherwise return the readed char

@@ -143,7 +143,7 @@ public class FiniteStateMachine<TransitionConditionType extends Serializable, St
 	 * @return Die HashMap die alle Zustände dieses endlichen Automaten,
 	 *         geordnet nach ihren eindetige ID enthält.
 	 */
-	protected HashMap<UUID, State<TransitionConditionType, StatePayloadType>> getStates() {
+	public HashMap<UUID, State<TransitionConditionType, StatePayloadType>> getStates() {
 		return _states;
 	}
 

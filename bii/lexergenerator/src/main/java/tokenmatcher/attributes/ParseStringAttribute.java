@@ -34,6 +34,11 @@ package tokenmatcher.attributes;
 
 public class ParseStringAttribute implements Attribute {
 
+	/**
+	 * serialVersionUID
+	 */
+	private static final long serialVersionUID = 7341572206725830700L;
+	
 	private String value;
 	
 	public ParseStringAttribute() {

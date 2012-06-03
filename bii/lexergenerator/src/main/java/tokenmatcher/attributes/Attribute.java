@@ -32,7 +32,9 @@
 
 package tokenmatcher.attributes;
 
-public interface Attribute {
+import java.io.Serializable;
+
+public interface Attribute  extends Serializable  {
 
 	Object lexemToValue( String lexem);
 	

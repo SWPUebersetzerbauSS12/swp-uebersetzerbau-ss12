@@ -30,14 +30,14 @@ public class TokenizerTest {
 	 */
 	@Test
 	public void testGetNextToken() throws Exception {
-		String sourceFile = "src/test/resources/source/tokenmatcher/testrelop.fun";
+		File sourceFile = new File("src/test/resources/source/tokenmatcher/testrelop.fun");
 		
 		FiniteStateMachine<Character, StatePayload> fsm = generateRelopFSM();
 		fsm.union(generateCommentFSM());
 		NfaToDfaConverter<Character, StatePayload> nfaToDfaConverter = new NfaToDfaConverter<Character, StatePayload>();
 		fsm = nfaToDfaConverter.convertToDfa(fsm);
 
-		LexemeReader lexemeReader = new BufferedLexemeReader(new File(sourceFile));
+		LexemeReader lexemeReader = new BufferedLexemeReader(sourceFile);
 //		LexemeReader lexemeReader = new SimpleLexemeReader(sourceFile);
 
 		Tokenizer tokenizer = new Tokenizer(lexemeReader, new MinimalDfa<Character, StatePayload>(fsm));

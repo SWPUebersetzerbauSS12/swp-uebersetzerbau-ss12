@@ -54,7 +54,8 @@ public interface LexerToParserInterface {
 	
 	/**
 	 * Resets the lexer to initial state. Next call of getNextToken() delivers anew the first token. 
+	 * @throws LexemeReaderException 
 	 */
-	void reset();
+	void reset() throws LexemeReaderException;
 
 }

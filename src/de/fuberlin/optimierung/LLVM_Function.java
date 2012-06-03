@@ -37,92 +37,6 @@ public class LLVM_Function {
 		this.endBlock = this.blocks.get(this.numberBlocks-1);
 	}
 	
-	/**
-	 * Aendere den Namen aller Operanden mit Namen oldName in c zu newName.
-	 * @param c Befehl, dessen Operanden durchsucht werden
-	 * @param oldName zu aendernder Name
-	 * @param newName neu zu setzender Name
-	 */
-	private void changeOperandName(ILLVM_Command c, String oldName, String newName) {
-		LinkedList<LLVM_Parameter> operands = c.getOperands();
-		for(LLVM_Parameter o : operands) {
-			if(o.getName().equals(oldName)) {
-				o.setName(newName);
-			}
-		}
-	}
-	
-	/**
-	 * Durch das Loeschen von Befehlen kann nach %2=... ein %4=... folgen.
-	 * Dies ist nicht erlaubt, diese Funktion passt die Namen an.
-	 * Achtung: nur direkt vor der Ausgabe des Codes nutzen, Hashmaps
-	 * werden nicht aktualisiert.
-	 */
-	public void updateUnnamedLabelNames() {
-	
-		String nextUnnamed = "%1";
-		int nextNumber = 1;
-		
-		// Erster Block muss nicht betrachtet werden
-		for(int i=0; i<this.numberBlocks; i++) {
-			
-			ILLVM_Block block = this.blocks.get(i);
-			
-			// Teste ab zweitem Block das Label
-			if(i>0) {
-				String label = block.getLabel();
-				// Ist es ein unbenanntes Label?
-				if(label!=null && label.matches("%[1-9][0-9]*")) {
-					// Ist es nicht der folgende Bezeichner?
-					if(!label.equals(nextUnnamed)) {
-						// Setze Label auf nextUnnamed
-						block.setLabel(nextUnnamed);
-						// Setze alle Verwendungen auf nextUnnamed
-						LinkedList<ILLVM_Command> uses = this.registerMap.getUses(label);
-						for(ILLVM_Command u : uses) {
-							this.changeOperandName(u, label, nextUnnamed);
-						}
-					}
-					nextNumber++;
-					nextUnnamed = "%" + nextNumber;
-				}	
-				
-			}
-			
-			// Gehe Befehle des Blocks durch
-			if(!block.isEmpty()) {
-				ILLVM_Command c = block.getFirstCommand();
-				while(c!=null) {
-					LLVM_Parameter p = c.getTarget();
-					if(p!=null) {
-						String name = p.getName();
-						// Ist name unbenannenter Bezeichner?
-						if(name!=null && name.matches("%[1-9][0-9]*")) {
-							
-							// Ist es nicht der folgende Bezeichner?
-							if(!name.equals(nextUnnamed)) {
-								// Ersetze in Definition durch nextUnnamed
-								p.setName(nextUnnamed);
-								// Ersetze in allen Verwendungen durch nextUnnamed
-								LinkedList<ILLVM_Command> uses = this.registerMap.getUses(name);
-								for(ILLVM_Command u : uses) {
-									this.changeOperandName(u, name, nextUnnamed);
-								}
-							}
-							
-							nextNumber++;
-							nextUnnamed = "%" + nextNumber;
-							
-						}
-					}
-					c = c.getSuccessor();
-				}
-				
-			}	// if block not empty
-		}	// for
-		
-	}
-	
 	/*
 	 * *********************************************************
 	 * *********** Flussgraph - Erstellung *********************
@@ -138,11 +52,12 @@ public class LLVM_Function {
 		
 		// Teste, ob Labels gesetzt sind
 		// Wenn nein, dann erstelle die Labels
-		if(this.numberBlocks>1) {
+		/*if(this.numberBlocks>1) {
 			if(this.blocks.get(1).getLabel().equals("")) {
 				this.createNewLabels();
 			}
-		}
+		}*/
+		this.createNewLabels();
 			
 		// Erstelle Label zu Block Mapping
 		this.mapLabelsToBlocks();
@@ -194,8 +109,8 @@ public class LLVM_Function {
 	}
 	
 	/**
-	 * Setze Labels, falls in urspruenglicher Eingabe weder konkrete Labelnamen
-	 * noch unbezeichnete Labels in Kommentaren angegeben waren
+	 * Setze Labels fuer Bloecke in denen sie noch nicht gesetzt sind
+	 * Neue Labels haben die Form wie z.B. %4
 	 */
 	private void createNewLabels() {
 		String nextUnnamed = "%1";
@@ -204,7 +119,8 @@ public class LLVM_Function {
 		for(int i=0; i<this.numberBlocks; i++) {
 			ILLVM_Block block = this.blocks.get(i);
 			// Setze ab zweitem Block das Label
-			if(i>0) {
+			// Nur falls kein Label gesetzt ist
+			if(i>0 && block.getLabel().equals("")) {
 				block.setLabel(nextUnnamed);
 				nextNumber++;
 				nextUnnamed = "%" + nextNumber;
@@ -783,6 +699,98 @@ public class LLVM_Function {
 			deletedBlocks = this.eliminateDeadBlocksFromList(deletedBlocks);
 			
 		}
+	}
+	
+	/*
+	 * *********************************************************
+	 * *********** Labels zur Ausgabe anpassen *****************
+	 * *********************************************************
+	 */
+	
+	/**
+	 * Aendere den Namen aller Operanden mit Namen oldName in c zu newName.
+	 * @param c Befehl, dessen Operanden durchsucht werden
+	 * @param oldName zu aendernder Name
+	 * @param newName neu zu setzender Name
+	 */
+	private void changeOperandName(ILLVM_Command c, String oldName, String newName) {
+		LinkedList<LLVM_Parameter> operands = c.getOperands();
+		for(LLVM_Parameter o : operands) {
+			if(o.getName().equals(oldName)) {
+				o.setName(newName);
+			}
+		}
+	}
+	
+	/**
+	 * Durch das Loeschen von Befehlen kann nach %2=... ein %4=... folgen.
+	 * Dies ist nicht erlaubt, diese Funktion passt die Namen an.
+	 * Achtung: nur direkt vor der Ausgabe des Codes nutzen, Hashmaps
+	 * werden nicht aktualisiert.
+	 */
+	public void updateUnnamedLabelNames() {
+	
+		String nextUnnamed = "%1";
+		int nextNumber = 1;
+		
+		// Erster Block muss nicht betrachtet werden
+		for(int i=0; i<this.numberBlocks; i++) {
+			
+			ILLVM_Block block = this.blocks.get(i);
+			
+			// Teste ab zweitem Block das Label
+			if(i>0) {
+				String label = block.getLabel();
+				// Ist es ein unbenanntes Label?
+				if(label!=null && label.matches("%[1-9][0-9]*")) {
+					// Ist es nicht der folgende Bezeichner?
+					if(!label.equals(nextUnnamed)) {
+						// Setze Label auf nextUnnamed
+						block.setLabel(nextUnnamed);
+						// Setze alle Verwendungen auf nextUnnamed
+						LinkedList<ILLVM_Command> uses = this.registerMap.getUses(label);
+						for(ILLVM_Command u : uses) {
+							this.changeOperandName(u, label, nextUnnamed);
+						}
+					}
+					nextNumber++;
+					nextUnnamed = "%" + nextNumber;
+				}	
+				
+			}
+			
+			// Gehe Befehle des Blocks durch
+			if(!block.isEmpty()) {
+				ILLVM_Command c = block.getFirstCommand();
+				while(c!=null) {
+					LLVM_Parameter p = c.getTarget();
+					if(p!=null) {
+						String name = p.getName();
+						// Ist name unbenannenter Bezeichner?
+						if(name!=null && name.matches("%[1-9][0-9]*")) {
+							
+							// Ist es nicht der folgende Bezeichner?
+							if(!name.equals(nextUnnamed)) {
+								// Ersetze in Definition durch nextUnnamed
+								p.setName(nextUnnamed);
+								// Ersetze in allen Verwendungen durch nextUnnamed
+								LinkedList<ILLVM_Command> uses = this.registerMap.getUses(name);
+								for(ILLVM_Command u : uses) {
+									this.changeOperandName(u, name, nextUnnamed);
+								}
+							}
+							
+							nextNumber++;
+							nextUnnamed = "%" + nextNumber;
+							
+						}
+					}
+					c = c.getSuccessor();
+				}
+				
+			}	// if block not empty
+		}	// for
+		
 	}
 	
 	/*

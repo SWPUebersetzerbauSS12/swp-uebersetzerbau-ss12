@@ -26,7 +26,7 @@ public class SemanticAnalysisTest {
 		analyzer.analyze();
 	}
 
-	@Test
+	@Test(expected = IllegalStateException.class)
 	public void testInvalidCode() {
 		final String code = "def int foo() { int a; int a; }";
 		try {

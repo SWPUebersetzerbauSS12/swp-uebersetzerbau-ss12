@@ -38,6 +38,14 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
 import regextodfaconverter.MinimalDfa;
 import tokenmatcher.StatePayload;
 import utils.Notification;
@@ -90,7 +98,7 @@ public class MinimalDfaProvider {
 	 *            Definitionsdatei, einen minimalen DFA erzeugt
 	 * @param skipDeserialization
 	 *            Angabe, ob das Laden des minimalen DFA übersprungen werden
-	 *            soll oder nicht (Standard = false)
+	 *            soll oder nicht
 	 * @return minimaler DFA der auf Basis der regulären Definitionsdatei und
 	 *         des minimalen DFA-Builders erzeugt und gegebenenfalls
 	 *         deserialisiert und/oder abgespeichert wurde
@@ -115,10 +123,10 @@ public class MinimalDfaProvider {
 	 *            Definitionsdatei, einen minimalen DFA erzeugt
 	 * @param skipDeserialization
 	 *            Angabe, ob das Laden des minimalen DFA übersprungen werden
-	 *            soll oder nicht (Standard = false)
+	 *            soll oder nicht
 	 * @param skipSerialization
 	 *            Angabe, ob das Speichern des minimalen DFA übersprungen werden
-	 *            soll oder nicht (Standard = false)
+	 *            soll oder nicht
 	 * @return minimaler DFA der auf Basis der regulären Definitionsdatei und
 	 *         des minimalen DFA-Builders erzeugt und gegebenenfalls
 	 *         deserialisiert und/oder abgespeichert wurde
@@ -147,13 +155,13 @@ public class MinimalDfaProvider {
 	 *            Definitionsdatei, einen minimalen DFA erzeugt
 	 * @param skipDeserialization
 	 *            Angabe, ob das Laden des minimalen DFA übersprungen werden
-	 *            soll oder nicht (Standard = false)
+	 *            soll oder nicht
 	 * @param skipSerialization
 	 *            Angabe, ob das Speichern des minimalen DFA übersprungen werden
-	 *            soll oder nicht (Standard = false)
+	 *            soll oder nicht
 	 * @param dfaFile
 	 *            Pfad zum Ort, an dem der minimale DFA
-	 *            abgespeichert/serialisiert werden soll  (Standard = rdFile+".dfa")
+	 *            abgespeichert/serialisiert werden soll
 	 * @return minimaler DFA der auf Basis der regulären Definitionsdatei und
 	 *         des minimalen DFA-Builders erzeugt und gegebenenfalls
 	 *         deserialisiert und/oder abgespeichert wurde
@@ -174,9 +182,17 @@ public class MinimalDfaProvider {
 			throw new MinimalDfaProviderException("Die angegebene Datei '"
 					+ rdFile.getAbsolutePath() + "' existiert nicht!");
 		}
-
+		if (!rdFile.isFile()) {
+			throw new MinimalDfaProviderException("Der angegebene Pfad '" + rdFile.getAbsolutePath()
+					+ "' verweist nicht auf eine Datei (mit regulären Definitionen)!");
+		}
+		if (!dfaFile.isFile()) {
+			throw new MinimalDfaProviderException("Der angegebene Pfad '" + dfaFile.getAbsolutePath()
+					+ "' verweist nicht auf eine Datei (mit serialisiertem DFA)!");
+		}
+		
 		/** Logik */
-		String version = "0.1"; // TODO: Version automatisch ermitteln
+		String version = getVersion();
 		String rdFileHash;
 		try {
 			rdFileHash = getFilehashAsString(rdFile);
@@ -264,4 +280,32 @@ public class MinimalDfaProvider {
 		return (sb.toString());
 	}
 
+	/**
+	 * Liest die aktuelle Version aus und gibt diese zurück.
+	 * @return Die aktuelle Version.
+	 */
+	private static String getVersion()
+	{
+	    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+	    DocumentBuilder db = null;
+		try {
+			db = dbf.newDocumentBuilder();
+		} catch (ParserConfigurationException e) {
+			return "unknown";
+		}
+
+	    Document dom;
+		try {
+			dom = db.parse("pom.xml");
+		} catch (Exception e) {
+			return "unknown";
+		}
+
+	    Element docEle = dom.getDocumentElement();
+
+	    NodeList nl = docEle.getElementsByTagName("version");
+	    
+	    return nl.item(0).getFirstChild().getNodeValue();
+	}
+	
 }

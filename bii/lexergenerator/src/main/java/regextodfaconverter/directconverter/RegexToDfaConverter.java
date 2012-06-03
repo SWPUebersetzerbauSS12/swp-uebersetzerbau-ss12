@@ -39,6 +39,11 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import regextodfaconverter.ConvertExecption;
+import regextodfaconverter.directconverter.lr0parser.grammar.ContextFreeGrammar;
+import regextodfaconverter.directconverter.lr0parser.grammar.Grammars;
+import regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
+import regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
+import regextodfaconverter.directconverter.lr0parser.grammar.ProductionSet;
 import regextodfaconverter.directconverter.syntaxtree.SyntaxTree;
 import regextodfaconverter.directconverter.syntaxtree.SyntaxTreeAttributor;
 import regextodfaconverter.directconverter.syntaxtree.SyntaxTreeException;
@@ -88,18 +93,20 @@ public class RegexToDfaConverter {
 	 * @throws Exception
 	 * 
 	 */
-	public static <StatePayloadType extends Serializable> FiniteStateMachine<Character, StatePayloadType> convert(
-			String regex, StatePayloadType payload) throws Exception {
+	public static <StatePayloadType extends Serializable> FiniteStateMachine<Character, StatePayloadType> convert( String regex, StatePayloadType payload)
+			throws Exception {
 		try {
 			SyntaxTree syntaxTree = convertRegexToSyntaxTree( regex);
-			FiniteStateMachine<Character, StatePayloadType> dfa = convertSyntaxTreeToDfa(
-					syntaxTree, payload);
-			return dfa;
+		//TODO	FiniteStateMachine<Character, StatePayloadType> dfa = convertSyntaxTreeToDfa( syntaxTree, payload);
+		//	return dfa;
+			return null;
 		} catch ( Exception e) {
 			Notification.printDebugException( e);
 			throw new Exception( "Cannot convert regex to DFA.");
 		}
 	}
+	
+
 
 
 	/**
@@ -108,10 +115,9 @@ public class RegexToDfaConverter {
 	 * @return
 	 * @throws SyntaxTreeException
 	 */
-	private static SyntaxTree convertRegexToSyntaxTree( String regex)
-			throws SyntaxTreeException {
+	private static SyntaxTree convertRegexToSyntaxTree( String regex) throws SyntaxTreeException {
 		final SyntaxTreeAttributor syntaxTreeAttributor = new SyntaxTreeAttributor();
-		SyntaxTree syntaxTree = new SyntaxTree( regex, new NewNodeEventHandler() {
+		SyntaxTree syntaxTree = new SyntaxTree( Grammars.getRegexGrammar(), regex, new NewNodeEventHandler() {
 
 			public void doOnEvent( Object sender, BinaryTreeNode node) {
 				syntaxTreeAttributor.nullable( node);
@@ -140,13 +146,11 @@ public class RegexToDfaConverter {
 	 * @throws DirectConverterException
 	 * @throws Exception
 	 */
-	private static <StatePayloadType extends Serializable> FiniteStateMachine<Character, StatePayloadType> convertSyntaxTreeToDfa(
-			SyntaxTree syntaxTree, StatePayloadType payload)
-			throws DirectConverterException {
+	private static <StatePayloadType extends Serializable> FiniteStateMachine<Character, StatePayloadType> convertSyntaxTreeToDfa( SyntaxTree syntaxTree,
+			StatePayloadType payload) throws DirectConverterException {
 		// ensure, that the syntax tree has annotaions
 		if ( Test.isUnassigned( syntaxTree.getAnnotations()))
-			throw new DirectConverterException(
-					"Cannot convert syntax tree to DFA. Missing annotations.");
+			throw new DirectConverterException( "Cannot convert syntax tree to DFA. Missing annotations.");
 
 		try {
 			SyntaxTreeAttributor annotations = syntaxTree.getAnnotations();
@@ -158,8 +162,7 @@ public class RegexToDfaConverter {
 			FiniteStateMachine<Character, StatePayloadType> dfa = new FiniteStateMachine<Character, StatePayloadType>();
 
 			// add start state as unhandled
-			unhandledStates.put( annotations.firstpos( syntaxTree.getRoot()),
-					dfa.getInitialState());
+			unhandledStates.put( annotations.firstpos( syntaxTree.getRoot()), dfa.getInitialState());
 
 			State<Character, StatePayloadType> currentState;
 			BinaryTreeNodeCollection currentCollection;
@@ -174,14 +177,12 @@ public class RegexToDfaConverter {
 				HashMap<Character, BinaryTreeNodeCollection> stateCandidates = new HashMap<Character, BinaryTreeNodeCollection>();
 				Character currentTerminalCharacter;
 
-				for ( Character currentCharacterOfCharSet : syntaxTree
-						.getCharacterSet()) {
+				for ( Character currentCharacterOfCharSet : syntaxTree.getCharacterSet()) {
 
 					BinaryTreeNodeCollection followPositionsOfTerminal = new BinaryTreeNodeSet();
 					for ( BinaryTreeNode node : currentCollection) {
 						if ( node.nodeValue instanceof Terminal) {
-							Character terminalNodeCharacter = ( (Terminal) node.nodeValue)
-									.getValue();
+							Character terminalNodeCharacter = ( (Terminal) node.nodeValue).getValue();
 							if ( terminalNodeCharacter == currentCharacterOfCharSet) {
 								followPositionsOfTerminal.addAll( annotations.followpos( node));
 							}
@@ -191,12 +192,10 @@ public class RegexToDfaConverter {
 					// if set not empty, then add set to states
 					State<Character, StatePayloadType> targetState = null;
 					if ( !followPositionsOfTerminal.isEmpty()) {
-						if ( !handledStates.containsKey( followPositionsOfTerminal)
-								&& !unhandledStates.containsKey( followPositionsOfTerminal)) {
+						if ( !handledStates.containsKey( followPositionsOfTerminal) && !unhandledStates.containsKey( followPositionsOfTerminal)) {
 							targetState = new State<Character, StatePayloadType>();
 							unhandledStates.put( followPositionsOfTerminal, targetState);
-							System.out.println( currentCharacterOfCharSet + " : "
-									+ followPositionsOfTerminal);
+							System.out.println( currentCharacterOfCharSet + " : " + followPositionsOfTerminal);
 
 						} else if ( handledStates.containsKey( followPositionsOfTerminal)) {
 							targetState = handledStates.get( followPositionsOfTerminal);
@@ -207,8 +206,7 @@ public class RegexToDfaConverter {
 						// setze Übergang
 						dfa.addTransition( targetState, currentCharacterOfCharSet);
 						// und ggf. als Endzustand
-						if ( followPositionsOfTerminal.contains( syntaxTree
-								.getTerminatorNode())) {
+						if ( followPositionsOfTerminal.contains( syntaxTree.getTerminatorNode())) {
 							targetState.setFinite( true);
 							targetState.setPayload( payload);
 						}
@@ -225,33 +223,35 @@ public class RegexToDfaConverter {
 
 		} catch ( Exception e) {
 			Notification.printDebugException( e);
-			throw new DirectConverterException( "Cannot convert syntax tree to DFA. "
-					+ e.getMessage());
+			throw new DirectConverterException( "Cannot convert syntax tree to DFA. " + e.getMessage());
 		}
 
 	}
 
 
-	private static <StatePayloadType extends Serializable> FiniteStateMachine<Character, StatePayloadType> unifyDfa( FiniteStateMachine<Character, StatePayloadType> destinationMachine, FiniteStateMachine<Serializable, Serializable> ... sourceMachines) throws Exception {
+	private static <StatePayloadType extends Serializable> FiniteStateMachine<Character, StatePayloadType> unifyDfa(
+			FiniteStateMachine<Character, StatePayloadType> destinationMachine, FiniteStateMachine<Serializable, Serializable>... sourceMachines) throws Exception {
 		// ensure, that the syntax tree has annotaions
-    if ( Test.isUnassigned( sourceMachines))
-    	return destinationMachine;
-    else if ( Test.isUnassigned( destinationMachine)) {
-    	throw new ConvertExecption( "Cannot unify the deterministic automats, cause there is no destination automata specified.");
-    } else if ( !destinationMachine.isDeterministic()) {
-    	throw new ConvertExecption( "Cannot unify the deterministic automats. The destination automata is not deterministic.");
-    } else {
-    	for ( FiniteStateMachine<Serializable, Serializable> sourceMachine : sourceMachines) {
-			  if ( !sourceMachine.isDeterministic()) {
-		   	  throw new ConvertExecption( "Cannot unify the deterministic automats. One of the source automats is not deterministic.");		
-			  }
-		    
-    	// now we can start to merge the states of the automats
+		if ( Test.isUnassigned( sourceMachines))
+			return destinationMachine;
+		else if ( Test.isUnassigned( destinationMachine)) {
+			throw new ConvertExecption( "Cannot unify the deterministic automats, cause there is no destination automata specified.");
+		} else if ( !destinationMachine.isDeterministic()) {
+			throw new ConvertExecption( "Cannot unify the deterministic automats. The destination automata is not deterministic.");
+		} else {
 			for ( FiniteStateMachine<Serializable, Serializable> sourceMachine : sourceMachines) {
-				sourceMachine.getCurrentState().
+				if ( !sourceMachine.isDeterministic()) {
+					throw new ConvertExecption( "Cannot unify the deterministic automats. One of the source automats is not deterministic.");
+				}
+
+				// now we can start to merge the states of the automats
+				/*
+				 * for ( FiniteStateMachine<Serializable, Serializable> sourceMachine :
+				 * sourceMachines) { sourceMachine.getCurrentState(). }
+				 */
 			}
-    }
-    
-	
+
+		}
+		return destinationMachine;
 	}
 }

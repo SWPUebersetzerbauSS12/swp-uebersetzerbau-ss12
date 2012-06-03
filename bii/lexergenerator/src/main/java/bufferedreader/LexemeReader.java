@@ -42,7 +42,7 @@ public interface LexemeReader {
 	 * @throws LexemeReaderException wenn es zu einen IO Fehler kam. 
 	 * @throws EndOfFileException 
 	 */
-	char getNextChar() throws LexemeReaderException, EndOfFileException;
+	char getNextChar() throws LexemeReaderException;
 	
 	
 	/**

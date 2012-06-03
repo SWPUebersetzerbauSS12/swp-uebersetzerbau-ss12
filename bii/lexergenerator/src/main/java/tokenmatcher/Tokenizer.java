@@ -33,8 +33,8 @@
 package tokenmatcher;
 
 import lexergen.Settings;
+import tokenmatcher.attributes.Attribute;
 import tokenmatcher.errorhandler.ErrorCorrector;
-import bufferedreader.EndOfFileException;
 import bufferedreader.LexemeReader;
 import bufferedreader.LexemeReaderException;
 import bufferedreader.SpecialChars;
@@ -75,14 +75,15 @@ public class Tokenizer implements LexerToParserInterface {
 	
 	
 
-	public Token getNextToken() throws EndOfFileException, LexemeReaderException,
+	public Token getNextToken() throws LexemeReaderException,
 			LexemIdentificationException {
 		Character currentChar;
 		String currentLexem = "";
 		
 		dfa.resetToInitialState();
 
-		while ( true) {
+		boolean eofReached = false;
+		while ( !eofReached) {
 			currentChar = lexemeReader.getNextChar();
       currentPositionInLine++;
 			
@@ -120,7 +121,8 @@ public class Tokenizer implements LexerToParserInterface {
 
 				// Token erstellen
 				String tokenType = payload.getTokenType();
-				String attribute = payload.getAttribute();
+				Attribute attribute = payload.getAttribute();
+				Object attributeValue = attribute.lexemToValue( currentLexem);
 				// TODO: convert lexem to corresponding value
 				Token recognisedToken = new Token( tokenType, attribute, currentLine, currentPositionInLine);
 
@@ -151,14 +153,18 @@ public class Tokenizer implements LexerToParserInterface {
 					while ( thisLine == currentLine){
 						// ignore remaining line
 						recognisedToken = getNextToken();
+						if ( recognisedToken.isEofToken()) {
+							eofReached = true;
+							break;
+						}
 					} 
 					readMode = ReadMode.READ_NORMAL;
 					return recognisedToken;
 				} else
 				  return recognisedToken;
 				
-			} else if ( currentChar == SpecialChars.CHAR_EOF) {
-				throw new EndOfFileException();
+			} else if ( SpecialChars.isEOF( currentChar)) {
+				eofReached = true;
 		  } else if ( readMode == ReadMode.READ_NORMAL){
 		  	//errorCorrector.handleMismatch( currentChar, lexemeReader, dfa, currentLine, currentPositionInLine);	
 		  System.err.println( currentChar);
@@ -166,7 +172,8 @@ public class Tokenizer implements LexerToParserInterface {
 		  	// ignore, cause we scan a comment at the moment
 		  }
 		}
-
+		
+		return Token.getEofToken();
 	}
 
 }

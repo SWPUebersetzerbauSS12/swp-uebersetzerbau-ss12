@@ -41,12 +41,19 @@ import java.util.Iterator;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import regextodfaconverter.directconverter.RegexSpecialChars;
+import regextodfaconverter.directconverter.lr0parser.ItemAutomata;
+import regextodfaconverter.directconverter.lr0parser.Lr0ItemAutomata;
+import regextodfaconverter.directconverter.lr0parser.ReduceEventHandler;
+import regextodfaconverter.directconverter.lr0parser.ShiftEventHandler;
+import regextodfaconverter.directconverter.lr0parser.grammar.ContextFreeGrammar;
+import regextodfaconverter.directconverter.lr0parser.grammar.Grammar;
+import regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
+import regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
 import regextodfaconverter.directconverter.syntaxtree.node.BinaryTreeNode;
 import regextodfaconverter.directconverter.syntaxtree.node.NewNodeEventHandler;
 import regextodfaconverter.directconverter.syntaxtree.node.NodeValue;
 import regextodfaconverter.directconverter.syntaxtree.node.Operator;
 import regextodfaconverter.directconverter.syntaxtree.node.OperatorType;
-import regextodfaconverter.directconverter.syntaxtree.node.Terminal;
 
 import utils.Notification;
 import utils.Test;
@@ -61,25 +68,28 @@ public class SyntaxTree implements Iterable<BinaryTreeNode> {
 
 	private BinaryTreeNode root = null;
 
-	private ArrayBlockingQueue<Character> regexCharacters = null;
+	private ArrayList<Character> inputCharacters = null;
 	
 	public NewNodeEventHandler onNewParentNode = null;
 
 	private SyntaxTreeAttributor annotations = null;
 
 	private int blockCounter = 0;
+	
+	private Grammar grammar;
 
 
-	public SyntaxTree( String regex)
+	public SyntaxTree( ContextFreeGrammar grammar, String expression)
 			throws SyntaxTreeException {
-		this( regex, null);
+		this( grammar, expression, null);
 	}
 	
-	public SyntaxTree( String regex, NewNodeEventHandler newNodeEventHandler)
+	public SyntaxTree(  ContextFreeGrammar grammar, String expression, NewNodeEventHandler newNodeEventHandler)
 			throws SyntaxTreeException {
 		super();
+		this.grammar = grammar;
 		this.onNewParentNode = newNodeEventHandler;
-		String terminizedRegex = "(" + regex + ")" + RegexSpecialChars.TERMINATOR;
+		String terminizedRegex = "(" + expression + ")" + RegexSpecialChars.TERMINATOR;
 		init( terminizedRegex);
 		buildTree();
 		if ( blockCounter != 0)
@@ -88,19 +98,40 @@ public class SyntaxTree implements Iterable<BinaryTreeNode> {
 	}
 
 
-	private void init( String regex) {
-		blockCounter = 0;
-		regexCharacters = new ArrayBlockingQueue<Character>( regex.length());
-		for ( Character regexChar : regex.toCharArray()) {
-			try {
-				regexCharacters.put( regexChar);
-			} catch ( InterruptedException e) {
-				Notification.printDebugException( e);
+	private void buildTree() {
+		ItemAutomata<Character> itemAutomata = new Lr0ItemAutomata<Character>( (ContextFreeGrammar) grammar);
+		
+		itemAutomata.setReduceEventHandler( new ReduceEventHandler() {
+			
+			public Object handle( Object sender, Nonterminal nonterminal, int countOfReducedElements, int countOfLeftElementsOnStack) throws Exception {
+				System.out.println( "reduce to " + nonterminal);
+				return null;
 			}
+		});
+		
+		itemAutomata.setShiftEventHandler( new ShiftEventHandler() {
+			
+			public Object handle( Object sender, Terminal shiftedTerminal) throws Exception {
+				System.out.println( "shift " +shiftedTerminal);
+				return null;
+			}
+		});
+		
+		itemAutomata.match( inputCharacters);
+		
+	}
+
+	private void init( String inputString) {
+		blockCounter = 0;
+		inputCharacters = new ArrayList<Character>();
+		for ( Character inputCharacter : inputString.toCharArray()) {
+		  inputCharacters.add( inputCharacter);
 		}
 	}
 	
 	
+	
+
 	public SyntaxTreeAttributor getAnnotations() {
 		return annotations;
 	}
@@ -110,7 +141,7 @@ public class SyntaxTree implements Iterable<BinaryTreeNode> {
 		this.annotations = annotations;
 	}
 	
-
+/*
 	private Character readNextChar( String errorMessage)
 			throws SyntaxTreeException {
 		Character result;
@@ -252,7 +283,7 @@ public class SyntaxTree implements Iterable<BinaryTreeNode> {
 		return result;
 	}
 
-
+*/
 	public Iterator<BinaryTreeNode> iterator() {
 		return new SyntaxTreeIterator( this);
 	}
@@ -266,21 +297,22 @@ public class SyntaxTree implements Iterable<BinaryTreeNode> {
 	public Collection<Character> getCharacterSet() {
 		Collection<Character> characters = new HashSet<Character>();
 		for ( BinaryTreeNode node : this) {
-			if ( Test.isAssigned( node) 
-					&& node.nodeValue instanceof Terminal) {
-				Character currentTerminal = ( (Terminal) node.nodeValue).getValue();
+			if ( Test.isAssigned( node)
+					&& node.nodeValue instanceof regextodfaconverter.directconverter.syntaxtree.node.Terminal) {
+				Character currentTerminal = ( (regextodfaconverter.directconverter.syntaxtree.node.Terminal) node.nodeValue).getValue();
 				if ( currentTerminal != RegexSpecialChars.TERMINATOR)
-          characters.add( ( (Terminal) node.nodeValue).getValue());
+          characters.add( ( (regextodfaconverter.directconverter.syntaxtree.node.Terminal) node.nodeValue).getValue());
 			}
 		}
 		return characters; 
 	}
-	
+
+
 	public BinaryTreeNode getTerminatorNode() {
 		for ( BinaryTreeNode node : this) {
 			if ( Test.isAssigned( node) 
-					&& node.nodeValue instanceof Terminal
-					&& ( (Terminal) node.nodeValue).getValue() == RegexSpecialChars.TERMINATOR) 
+					&& node.nodeValue instanceof regextodfaconverter.directconverter.syntaxtree.node.Terminal
+					&& ( (regextodfaconverter.directconverter.syntaxtree.node.Terminal) node.nodeValue).getValue() == RegexSpecialChars.TERMINATOR) 
 				return node;
 		}
 		return null; 

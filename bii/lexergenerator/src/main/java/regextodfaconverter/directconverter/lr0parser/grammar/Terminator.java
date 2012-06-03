@@ -30,17 +30,30 @@
  *
  */
 
-package bufferedreader;
+
+package regextodfaconverter.directconverter.lr0parser.grammar;
+
+import utils.Test;
 
 
-public class EndOfFileException extends Exception {
-
+public class Terminator extends Terminal  {
 	
-	public EndOfFileException() {
-		super( "End of file.");
+	
+	public Terminator() {
+		super('$');
 	}
 	
-	public EndOfFileException( String message) {
-		super( message);
+	@Override
+	public boolean equals( Object theOtherObject) {
+		
+		if ( Test.isUnassigned( theOtherObject))
+			return false;
+		
+		if ( !( theOtherObject instanceof Terminator))
+			return false;
+		
+		return true;
 	}
+	
+
 }

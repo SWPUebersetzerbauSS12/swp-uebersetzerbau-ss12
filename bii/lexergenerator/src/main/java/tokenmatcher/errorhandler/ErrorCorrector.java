@@ -34,8 +34,6 @@ package tokenmatcher.errorhandler;
 
 import java.util.Collection;
 
-import lexergen.Settings;
-
 import tokenmatcher.DeterministicFiniteAutomata;
 import tokenmatcher.LexemIdentificationException;
 import tokenmatcher.StatePayload;

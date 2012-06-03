@@ -32,10 +32,7 @@
  *
  */
 
-
 package parser;
-
-import tokenmatcher.TokenType;
 
 public interface IToken {
 

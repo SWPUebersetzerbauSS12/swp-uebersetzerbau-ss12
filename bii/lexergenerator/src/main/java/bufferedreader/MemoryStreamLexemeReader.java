@@ -32,17 +32,10 @@
 
 package bufferedreader;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.CharBuffer;
-
-import utils.Notification;
-
 
 public class MemoryStreamLexemeReader implements LexemeReader {
 	

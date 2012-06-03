@@ -32,14 +32,32 @@
 
 package bufferedreader;
 
-
+/**
+ * 
+ * @author 
+ *
+ */
 public class LexemeReaderException extends Exception {
 
 	
+	/**
+	 * serialVersionUID
+	 */
+	private static final long serialVersionUID = 8963094022614264095L;
+
+	/**
+	 * Erstellt ein neues LexemeReaderException Objekt.
+	 */
 	public LexemeReaderException() {
 		super();
 	}
 	
+	/**
+	 * Erstellt ein neues LexemeReaderException Objekt.
+	 * 
+	 * @param message
+	 *            Die genaue Fehlerbeschreibung.
+	 */
 	public LexemeReaderException( String message) {
 		super( message);
 	}

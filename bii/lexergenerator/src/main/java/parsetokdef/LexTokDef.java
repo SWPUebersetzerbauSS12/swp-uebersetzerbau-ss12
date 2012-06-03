@@ -29,6 +29,7 @@
  * Version: 1.0
  *
  */
+
 package parsetokdef;
 
 import java.io.BufferedReader;
@@ -41,15 +42,9 @@ import java.util.HashMap;
 import utils.IRule;
 import utils.Rule;
 
-import lexergen.Settings;
-
 public class LexTokDef extends ReadTokDefAbstract {
 
 	private HashMap<String, Boolean> seenPattern;
-
-	public LexTokDef() throws TokenDefinitionException, IOException {
-		super();
-	}
 
 	public LexTokDef(File regularDefinitionFile) throws IOException,
 			TokenDefinitionException {
@@ -57,16 +52,10 @@ public class LexTokDef extends ReadTokDefAbstract {
 	}
 
 	@Override
-	public void readFile() throws TokenDefinitionException, IOException {
-		readFile(Settings.getRegularDefinitionFileName());
-	}
-
-	@Override
-	public void readFile(String path) throws TokenDefinitionException,
+	public void readFile(File file) throws TokenDefinitionException,
 			IOException {
 
-		path = (path == null) ? Settings.getRegularDefinitionFileName() : path;
-		BufferedReader br = new BufferedReader(new FileReader(path));
+		BufferedReader br = new BufferedReader(new FileReader(file));
 		StringBuilder sb = new StringBuilder();
 		String pattern = null;
 		seenPattern = new HashMap<String, Boolean>();

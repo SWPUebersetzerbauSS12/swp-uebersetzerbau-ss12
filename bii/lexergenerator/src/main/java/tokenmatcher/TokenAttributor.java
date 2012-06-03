@@ -30,7 +30,6 @@
  *
  */
 
-
 package tokenmatcher;
 
 /**

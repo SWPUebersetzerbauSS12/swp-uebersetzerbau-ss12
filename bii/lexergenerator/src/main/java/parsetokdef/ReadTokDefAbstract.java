@@ -1,3 +1,35 @@
+/*
+ * 
+ * Copyright 2012 lexergen.
+ * This file is part of lexergen.
+ * 
+ * lexergen is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * lexergen is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with lexergen.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ * lexergen:
+ * A tool to chunk source code into tokens for further processing in a compiler chain.
+ * 
+ * Projectgroup: bi, bii
+ * 
+ * Authors: Benjamin Weißenfels 
+ *            
+ * Module:  Softwareprojekt Übersetzerbau 2012 
+ * 
+ * Created: Apr. 2012 
+ * Version: 1.0
+ *
+ */
+
 package parsetokdef;
 
 import java.io.File;
@@ -24,48 +56,10 @@ public abstract class ReadTokDefAbstract {
 	 * @throws IOException
 	 * @throws TokenDefinitionException
 	 */
-
 	public ReadTokDefAbstract(File file) throws IOException,
 			TokenDefinitionException {
-		if (file != null)
-			readFile(file.getCanonicalPath());
-		else
-			readFile();
+		readFile(file);
 	}
-
-	/**
-	 * reads a token defintion file which should be defined in token settings
-	 * definition is taken.
-	 * 
-	 * @throws TokenDefinitionException
-	 * @throws IOException 
-	 */
-	public ReadTokDefAbstract() throws TokenDefinitionException, IOException {
-		readFile(null);
-	}
-
-	/**
-	 * reads a token defintion file. If the path is null, the default token
-	 * definition is taken.
-	 * 
-	 * @param path
-	 * @throws TokenDefinitionException
-	 * @throws IOException 
-	 */
-	public ReadTokDefAbstract(String path) throws TokenDefinitionException, IOException {
-		readFile(path);
-	}
-
-	/**
-	 * reads the default token definition, which is located in
-	 * ./src/main/resources/def/tokendefinition
-	 * 
-	 * @throws FileNotFoundException
-	 * @throws TokenDefinitionException
-	 * @throws IOException 
-	 */
-	abstract public void readFile() throws FileNotFoundException,
-			TokenDefinitionException, IOException;
 
 	/**
 	 * reads a token defintion file. If the path is null, the default token
@@ -76,7 +70,7 @@ public abstract class ReadTokDefAbstract {
 	 * @throws TokenDefinitionException
 	 * @throws IOException 
 	 */
-	abstract public void readFile(String path) throws FileNotFoundException,
+	abstract public void readFile(File file) throws FileNotFoundException,
 			TokenDefinitionException, IOException;
 
 	/**

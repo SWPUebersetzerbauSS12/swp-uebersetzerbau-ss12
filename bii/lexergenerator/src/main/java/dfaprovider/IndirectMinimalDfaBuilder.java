@@ -105,9 +105,6 @@ public class IndirectMinimalDfaBuilder implements MinimalDfaBuilder {
 					irule.getTokenType(), irule.getTokenValue(), counter * (-1));
 			regex = irule.getRegexp();
 			
-			System.out.println(payload.getTokenType() + ", " + payload.getAttribute());
-			System.out.println(regex);
-			
 			// Aus Regex NFA machen.
 			try {
 				fsm = converter.convertToNFA(regex, payload);

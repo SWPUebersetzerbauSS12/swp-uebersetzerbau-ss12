@@ -1,8 +1,7 @@
 package tokenmatcher;
 
+import java.io.File;
 import java.util.ArrayList;
-
-import lexergen.Settings;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -17,7 +16,6 @@ import tokenmatcher.TokenType;
 import tokenmatcher.Tokenizer;
 import tokenmatcher.attributes.ParseStringAttribute;
 import tokenmatcher.attributes.StringAttribute;
-import tokenmatcher.errorhandler.ErrorCorrector.CorrectionMode;
 import bufferedreader.*;
 
 /**
@@ -34,16 +32,13 @@ public class TokenizerTest {
 	public void testGetNextToken() throws Exception {
 		String sourceFile = "src/test/resources/source/tokenmatcher/testrelop.fun";
 		
-		Settings.readSettings();
-		Settings.setErrorCorrectionMode(CorrectionMode.PANIC_MODE); // Dieser Test ist nur im PANIC_MODE durchführbar.
-		
 		FiniteStateMachine<Character, StatePayload> fsm = generateRelopFSM();
 		fsm.union(generateCommentFSM());
 		NfaToDfaConverter<Character, StatePayload> nfaToDfaConverter = new NfaToDfaConverter<Character, StatePayload>();
 		fsm = nfaToDfaConverter.convertToDfa(fsm);
 
-		LexemeReader lexemeReader = new BufferedLexemeReader(sourceFile);
-		//LexemeReader lexemeReader = new SimpleLexemeReader(sourceFile);
+		LexemeReader lexemeReader = new BufferedLexemeReader(new File(sourceFile));
+//		LexemeReader lexemeReader = new SimpleLexemeReader(sourceFile);
 
 		Tokenizer tokenizer = new Tokenizer(lexemeReader, new MinimalDfa<Character, StatePayload>(fsm));
 

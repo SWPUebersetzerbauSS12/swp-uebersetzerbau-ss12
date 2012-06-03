@@ -30,43 +30,43 @@
  *
  */
 
-package dfaprovider;
+package lexergen;
+
+import java.io.File;
+
+import parser.IToken;
 
 /**
- * Stellt einen Fehler dar, der auftritt, wenn im
- * MinimalDfaCharacterStatePayloadWrapper ein Fehler vorliegt.
+ * Stellt die Schnittstelle eines Lexergenerators dar.
  * 
- * Mögliche Fehlerfälle sind: - Fehler beim Deserialisieren des
- * {@link MinimalDfaCharacterStatePayloadWrapper} - laden aus der übergebenen
- * Datei nicht möglich bzw. fehlerhaft - Cast nach
- * {@link MinimalDfaCharacterStatePayloadWrapper}" schlägt fehl
- * 
- * @author Maximilian Schröder
+ * @author Daniel Rotar
  * 
  */
-public class MinimalDfaCharacterStatePayloadWrapperException extends Exception {
+public interface Lexergenerator {
 
 	/**
-	 * serialVersionUID
-	 */
-	private static final long serialVersionUID = -5365197771428767919L;
-
-	/**
-	 * Erstellt ein neues MinimalDfaCharacterStatePayloadWrapperException
-	 * Objekt.
-	 */
-	public MinimalDfaCharacterStatePayloadWrapperException() {
-		super();
-	}
-
-	/**
-	 * Erstellt ein neues MinimalDfaCharacterStatePayloadWrapperException
-	 * Objekt.
+	 * Gibt die Datei, die die regulären Definitionen enthält zurück.
 	 * 
-	 * @param message
-	 *            Die genaue Fehlerbeschreibung.
+	 * @return Die Datei, die die regulären Definitionen enthält.
 	 */
-	public MinimalDfaCharacterStatePayloadWrapperException(String message) {
-		super(message);
-	}
+	File getRegularDefinitionFile();
+
+	/**
+	 * Gibt die Datei, die das Quellprogramm enthält zurück.
+	 * 
+	 * @return Die Datei, die das Quellprogramm enthält.
+	 */
+	File getSourceProgramFile();
+
+	/**
+	 * Gibt das nächste Token zurück.
+	 * 
+	 * @return Das nächste Token.
+	 */
+	IToken getNextToken() throws LexergeneratorException;
+
+	/**
+	 * Setzt die Position im Quellprogramm auf die Startposition zurück.
+	 */
+	void reset();
 }

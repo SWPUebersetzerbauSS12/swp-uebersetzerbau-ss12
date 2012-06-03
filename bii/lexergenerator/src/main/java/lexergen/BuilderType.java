@@ -30,43 +30,20 @@
  *
  */
 
-package dfaprovider;
+package lexergen;
 
 /**
- * Stellt einen Fehler dar, der auftritt, wenn im
- * MinimalDfaCharacterStatePayloadWrapper ein Fehler vorliegt.
- * 
- * Mögliche Fehlerfälle sind: - Fehler beim Deserialisieren des
- * {@link MinimalDfaCharacterStatePayloadWrapper} - laden aus der übergebenen
- * Datei nicht möglich bzw. fehlerhaft - Cast nach
- * {@link MinimalDfaCharacterStatePayloadWrapper}" schlägt fehl
- * 
- * @author Maximilian Schröder
- * 
+ * Stellt die Methoden zur DFA-Erstellung dar.
+ * @author Daniel Rotar
+ *
  */
-public class MinimalDfaCharacterStatePayloadWrapperException extends Exception {
-
+public enum BuilderType {
 	/**
-	 * serialVersionUID
+	 * Der DFA wird auf direktem Weg erstellt.
 	 */
-	private static final long serialVersionUID = -5365197771428767919L;
-
+	indirectBuilder,
 	/**
-	 * Erstellt ein neues MinimalDfaCharacterStatePayloadWrapperException
-	 * Objekt.
+	 * Der DFA wird über einen NFA erstellt.
 	 */
-	public MinimalDfaCharacterStatePayloadWrapperException() {
-		super();
-	}
-
-	/**
-	 * Erstellt ein neues MinimalDfaCharacterStatePayloadWrapperException
-	 * Objekt.
-	 * 
-	 * @param message
-	 *            Die genaue Fehlerbeschreibung.
-	 */
-	public MinimalDfaCharacterStatePayloadWrapperException(String message) {
-		super(message);
-	}
+	directBuilder
 }

@@ -30,8 +30,6 @@
  *
  */
 
-
-
 package regextodfaconverter.directconverter.lr0parser;
 
 public class GotoException extends Exception {

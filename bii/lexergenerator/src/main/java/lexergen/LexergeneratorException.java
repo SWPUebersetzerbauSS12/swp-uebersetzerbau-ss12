@@ -30,43 +30,36 @@
  *
  */
 
-package dfaprovider;
+package lexergen;
 
 /**
- * Stellt einen Fehler dar, der auftritt, wenn im
- * MinimalDfaCharacterStatePayloadWrapper ein Fehler vorliegt.
+ * Stellt einen Fehler dar, der bei der Verwendung einer Lexergeneratorklasse
+ * auftreten kann.
  * 
- * Mögliche Fehlerfälle sind: - Fehler beim Deserialisieren des
- * {@link MinimalDfaCharacterStatePayloadWrapper} - laden aus der übergebenen
- * Datei nicht möglich bzw. fehlerhaft - Cast nach
- * {@link MinimalDfaCharacterStatePayloadWrapper}" schlägt fehl
- * 
- * @author Maximilian Schröder
+ * @author Daniel Rotar
  * 
  */
-public class MinimalDfaCharacterStatePayloadWrapperException extends Exception {
+public class LexergeneratorException extends Exception {
 
 	/**
 	 * serialVersionUID
 	 */
-	private static final long serialVersionUID = -5365197771428767919L;
+	private static final long serialVersionUID = -3639221114631303496L;
 
 	/**
-	 * Erstellt ein neues MinimalDfaCharacterStatePayloadWrapperException
-	 * Objekt.
+	 * Erstellt ein neues LexergeneratorException Objekt.
 	 */
-	public MinimalDfaCharacterStatePayloadWrapperException() {
+	public LexergeneratorException() {
 		super();
 	}
 
 	/**
-	 * Erstellt ein neues MinimalDfaCharacterStatePayloadWrapperException
-	 * Objekt.
+	 * Erstellt ein neues LexergeneratorException Objekt.
 	 * 
 	 * @param message
 	 *            Die genaue Fehlerbeschreibung.
 	 */
-	public MinimalDfaCharacterStatePayloadWrapperException(String message) {
+	public LexergeneratorException(String message) {
 		super(message);
 	}
 }

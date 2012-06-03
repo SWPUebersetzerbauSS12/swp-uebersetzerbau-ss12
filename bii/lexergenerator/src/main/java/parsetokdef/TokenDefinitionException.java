@@ -29,12 +29,18 @@
  * Version: 1.0
  *
  */
+
 package parsetokdef;
 
+/**
+ * 
+ * @author 
+ *
+ */
 public class TokenDefinitionException extends Exception {
 
 	/**
-	 * 
+	 * serialVersionUID
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -42,11 +48,17 @@ public class TokenDefinitionException extends Exception {
 		super(message);
 	}
 	
+	/**
+	 * Erstellt ein neues TokenDefinitionException Objekt.
+	 */
 	public TokenDefinitionException(int line, String message) {
 		this("Something went wrong when reading the token definition\nline "
 				+ line + ": " + message);
 	}
 	
+	/**
+	 * Erstellt ein neues TokenDefinitionException Objekt.
+	 */
 	public TokenDefinitionException(int line, int col, String message) {
 		this("Something went wrong when reading the token definition\n("
 				+ line + ","+col+") : " + message);

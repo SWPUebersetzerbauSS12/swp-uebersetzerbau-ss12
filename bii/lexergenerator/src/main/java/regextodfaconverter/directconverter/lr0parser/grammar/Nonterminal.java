@@ -30,7 +30,6 @@
  *
  */
 
-
 package regextodfaconverter.directconverter.lr0parser.grammar;
 
 import utils.Test;

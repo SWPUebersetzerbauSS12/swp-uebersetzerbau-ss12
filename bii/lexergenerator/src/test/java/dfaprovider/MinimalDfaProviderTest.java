@@ -4,8 +4,6 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 
-import lexergen.Settings;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -21,7 +19,6 @@ public class MinimalDfaProviderTest {
 	 */
 	@Test
 	public void testGetMinimalDfaCorrectInput() throws Exception {
-		Settings.readSettings();
 		File failRDFile =  new File("C:\\TEMP\\");
 		File failRDPath = new File("C:\\TEMP\\dfaprovider2.test.rd");
 		File failDFAPath = new File("C:\\TEMP\\dfaprovider2.test.rd.dfa");
@@ -81,7 +78,6 @@ public class MinimalDfaProviderTest {
 	 */
 	@Test
 	public void testGetMinimalDfa2Param() throws Exception {
-		Settings.readSettings();
 		File rdInputFile = new File("C:\\TEMP\\dfaprovider.test.rd");
 		MinimalDfaBuilder builder1 = new IndirectMinimalDfaBuilder();
 		MinimalDfaBuilder builder2 = new DirectMinimalDfaBuilder();
@@ -98,7 +94,6 @@ public class MinimalDfaProviderTest {
 	 */
 	@Test
 	public void testGetMinimalDfa3Param() throws Exception {
-		Settings.readSettings();
 		File rdInputFile = new File("C:\\TEMP\\dfaprovider.test.rd");
 		MinimalDfaBuilder builder1 = new IndirectMinimalDfaBuilder();
 		MinimalDfaBuilder builder2 = new DirectMinimalDfaBuilder();
@@ -119,7 +114,6 @@ public class MinimalDfaProviderTest {
 	 */
 	@Test
 	public void testGetMinimalDfa4Param() throws Exception {
-		Settings.readSettings();
 		File rdInputFile = new File("C:\\TEMP\\dfaprovider.test.rd");
 		MinimalDfaBuilder builder1 = new IndirectMinimalDfaBuilder();
 		MinimalDfaBuilder builder2 = new DirectMinimalDfaBuilder();
@@ -144,7 +138,6 @@ public class MinimalDfaProviderTest {
 	 */
 	@Test
 	public void testGetMinimalDfa5Param() throws Exception {
-		Settings.readSettings();
 		File rdInputFile = new File("C:\\TEMP\\dfaprovider.test.rd");
 		File dfaInputFile = new File("C:\\TEMP\\dfaprovider.test.rd.dfa");
 		MinimalDfaBuilder builder1 = new IndirectMinimalDfaBuilder();

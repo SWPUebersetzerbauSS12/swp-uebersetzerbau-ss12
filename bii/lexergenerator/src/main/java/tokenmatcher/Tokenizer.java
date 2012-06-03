@@ -32,7 +32,6 @@
 
 package tokenmatcher;
 
-import lexergen.Settings;
 import tokenmatcher.attributes.Attribute;
 import tokenmatcher.errorhandler.ErrorCorrector;
 import bufferedreader.LexemeReader;

@@ -50,6 +50,8 @@ public class TokenParser {
 			System.out.println("accepted");
 		}
 		tree.printTree();
+		tree.CompressSyntaxTree();
+		tree.printTree();
 		return tree;
 	}
 	

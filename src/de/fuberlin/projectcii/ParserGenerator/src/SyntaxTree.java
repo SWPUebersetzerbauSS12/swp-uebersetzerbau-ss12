@@ -1,5 +1,6 @@
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 
 import Extern.ISyntaxTree;
 
@@ -102,6 +103,10 @@ public class SyntaxTree implements ISyntaxTree {
 		this.symbol=symbol;
 	}
 	
+	
+	//---------------------
+	// End of Interface Methodes
+	
 	private void printChild(ISyntaxTree node,int level,boolean first){
 		
 		if (!first){
@@ -121,6 +126,33 @@ public class SyntaxTree implements ISyntaxTree {
 				System.out.println("");
 				first = false;
 			}
+		}
+	}
+	
+	//TODO validate methode
+	
+	public void CompressSyntaxTree(){
+		
+		boolean newChilds = true;
+		
+		while (newChilds){
+			newChilds = false;
+			Vector<ISyntaxTree> singleChilds = new Vector<ISyntaxTree>();
+			
+			for (ISyntaxTree child:children){
+				if (child.getChildren().size() == 1){
+					singleChilds.add(child);
+					newChilds = true;
+				}
+			}
+			for (ISyntaxTree child:singleChilds){
+				child.getChild(0).setParent(this);
+				children.add(child.getChild(0));
+				children.remove(child);
+			}
+		}
+		for (ISyntaxTree child:children){
+			((SyntaxTree) child).CompressSyntaxTree();
 		}
 	}
 

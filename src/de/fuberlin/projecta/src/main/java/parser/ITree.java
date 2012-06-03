@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import lombok.Getter;
 import utils.StringUtils;
 import analysis.SymbolTableStack;
+import analysis.ast.nodes.AbstractSyntaxTree;
 import analysis.ast.nodes.BasicType;
 import analysis.ast.nodes.BinaryOp;
 import analysis.ast.nodes.Id;
@@ -135,6 +136,10 @@ public abstract class ITree implements ISyntaxTree {
 				System.out.println(StringUtils.repeat(' ', depth)
 						+ this.getClass().getName());
 			}
+			if (((AbstractSyntaxTree) this).getTable() != null) {
+				System.out.println(StringUtils.repeat(' ', depth)
+						+ ((AbstractSyntaxTree) this).getTable());
+			}
 		}
 
 		for (int i = 0; i < getChildrenCount(); ++i) {
@@ -148,7 +153,7 @@ public abstract class ITree implements ISyntaxTree {
 		return children;
 	}
 
-	public abstract void run(SymbolTableStack tables);
+	public abstract void buildSymbolTable(SymbolTableStack tables);
 
 	@Override
 	public boolean equals(Object object) {

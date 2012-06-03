@@ -13,7 +13,8 @@ public class Tree extends ITree {
 	}
 
 	@Override
-	public void run(SymbolTableStack tables) {
+	public void buildSymbolTable(SymbolTableStack tables) {
+		// empty, this should be filled by AST nodes
 	}
 
 }

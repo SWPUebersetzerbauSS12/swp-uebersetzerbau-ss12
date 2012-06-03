@@ -53,8 +53,6 @@ public interface ISyntaxTree {
 	 * Adds a new attribute to the nodes attribute collection, if this name is
 	 * not already inserted.
 	 * 
-	 * TODO: Do we need this?
-	 * 
 	 * @param name
 	 *            the attribute's name to insert.
 	 * @return True if add was successful, False otherwise.
@@ -69,9 +67,9 @@ public interface ISyntaxTree {
 	public List<ISyntaxTree> getChildren();
 
 	/**
-	 * Semantic rules !
+	 * This should be used in order to build the SymbolTable.
 	 */
-	public void run(SymbolTableStack tables);
+	public void buildSymbolTable(SymbolTableStack tables);
 
 	public void printTree();
 }

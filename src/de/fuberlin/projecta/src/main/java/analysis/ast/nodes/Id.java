@@ -10,7 +10,7 @@ public class Id extends AbstractSyntaxTree {
 	@Getter
 	private String value;
 	
-	public void run(SymbolTableStack tables) {
+	public void buildSymbolTable(SymbolTableStack tables) {
 
 	}
 

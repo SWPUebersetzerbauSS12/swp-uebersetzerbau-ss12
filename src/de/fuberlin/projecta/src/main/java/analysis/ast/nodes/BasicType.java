@@ -11,7 +11,7 @@ public class BasicType extends Type {
 	@Getter
 	TokenType type;
 	
-	public void run(SymbolTableStack tables) {
+	public void buildSymbolTable(SymbolTableStack tables) {
 
 	}
 }

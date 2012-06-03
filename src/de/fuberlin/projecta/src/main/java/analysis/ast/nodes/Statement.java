@@ -5,7 +5,7 @@ import analysis.SymbolTableStack;
 
 public abstract class Statement extends AbstractSyntaxTree {
 
-	public void run(SymbolTableStack tables) {
+	public void buildSymbolTable(SymbolTableStack tables) {
 
 	}
 }

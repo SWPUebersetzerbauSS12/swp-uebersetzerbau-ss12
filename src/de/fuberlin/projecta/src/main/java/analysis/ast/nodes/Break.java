@@ -4,7 +4,7 @@ import analysis.SymbolTableStack;
 
 
 public class Break extends Statement {
-	public void run(SymbolTableStack tables) {
+	public void buildSymbolTable(SymbolTableStack tables) {
 
 	}
 

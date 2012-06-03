@@ -3,7 +3,7 @@ package analysis.ast.nodes;
 import analysis.SymbolTableStack;
 
 public class Args extends AbstractSyntaxTree {
-	public void run(SymbolTableStack tables) {
+	public void buildSymbolTable(SymbolTableStack tables) {
 
 	}
 

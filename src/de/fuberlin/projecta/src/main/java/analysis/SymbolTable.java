@@ -1,16 +1,21 @@
 package analysis;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
+
+import analysis.ast.nodes.Id;
+import analysis.ast.nodes.Type;
 
 /**
  * @author Christian Cikryt
  */
 public class SymbolTable {
 
-	private HashMap<String, Object> hashMap;
+	// private HashMap<String, EntryType> entries;
+	private List<EntryType> entries;
 
 	public SymbolTable() {
-		hashMap = new HashMap<String, Object>();
+		entries = new ArrayList<EntryType>();
 	}
 
 	/**
@@ -20,26 +25,100 @@ public class SymbolTable {
 	 * @param name
 	 * @param entry
 	 */
-	public void updateEntry(String name, Object value) throws IllegalStateException {
-		if (!hashMap.containsKey(name))
-			throw new IllegalStateException("No such symbol: " + name);
-		
-		hashMap.put(name, value);
+	public void updateEntry(EntryType value) throws IllegalStateException {
+		// TODO: currently not implemented
+		throw new SemanticException("currently not implemented, sry");
 	}
-	
-	public void insertEntry(String name, Object value) throws IllegalStateException {
-		if (hashMap.containsKey(name))
-			throw new IllegalStateException("Symbol already defined: " + name);
+
+	public void insertEntry(Id id, Type type, List<EntryType> params)
+			throws IllegalStateException {
 		
-		hashMap.put(name, value);
+		if (lookup(id.getValue(), params) == null) {
+			entries.add(new EntryType(id, type, params));
+		} else {
+			throw new IllegalStateException(id.getValue()
+					+ " is already registered in this symbolTable. "
+					+ "You may want to update instead.");
+		}
+	}
+
+	public void insertEntry(Id id, Type type) throws IllegalStateException {
+		if (lookup(id.getValue()) == null) {
+			entries.add(new EntryType(id, type));
+		} else {
+			throw new IllegalStateException(id.getValue()
+					+ " is already registered in this symbolTable. "
+					+ "You may want to update instead.");
+		}
+
+	}
+
+	public void insertEntry(EntryType entry) {
+		if (lookup(entry.getId(), entry.getParams()) == null) {
+			entries.add(entry);
+		} else {
+			throw new IllegalStateException(entry.getId()
+					+ " is already registered in this symbolTable. "
+					+ "You may want to update instead. 3" + lookup(entry.getId(), entry.getParams()) + ":" + entry);
+		}
 	}
 
 	/**
-	 * Find value for a specific key
-	 * @param name Key
+	 * Find value for a specific key. If multiple instances of this node exist,
+	 * the first one is taken.
+	 * 
+	 * @param name
+	 *            Key
 	 * @return Value, may be null
 	 */
-	public Object lookup(String name) {
-		return hashMap.get(name);
+	public EntryType lookup(String name) {
+		for (EntryType entry : entries) {
+			if (entry.getId().equals(name)) {
+				return entry;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * This is basically the method to look for function definitions.
+	 * 
+	 * @param name
+	 *            function name
+	 * @param params
+	 *            function parameter
+	 * @return The Entry for this method
+	 */
+	public EntryType lookup(String name, List<EntryType> params) {
+		EntryType ret = null;
+		for (EntryType entry : entries) {
+			if (entry.getId().equals(name)) {
+				boolean found = true;
+				if (entry.getParams().size() == params.size()) {
+					for (int i = 0; i < params.size(); i++) {
+						if (!entry.getParams().get(i).equals(params.get(i))) {
+							found = false;
+						}
+					}
+				} else {
+					found = false;
+				}
+				if(found) ret = entry;
+			}
+		}
+		return ret;
+	}
+
+	public List<EntryType> getEntries() {
+		return entries;
+	}
+
+	@Override
+	public String toString() {
+		String ret = "";
+		for (EntryType entry : entries) {
+			ret += entry.getId() + ", ";
+		}
+		return ret;
 	}
 }

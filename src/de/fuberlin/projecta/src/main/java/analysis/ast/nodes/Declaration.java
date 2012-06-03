@@ -2,10 +2,10 @@ package analysis.ast.nodes;
 
 import analysis.SymbolTableStack;
 
-
 public class Declaration extends AbstractSyntaxTree {
-	public void run(SymbolTableStack tables) {
-
+	@Override
+	public void buildSymbolTable(SymbolTableStack tables) {
+		tables.top().insertEntry((Id)getChild(1), (Type)getChild(0));
 	}
 
 	@Override

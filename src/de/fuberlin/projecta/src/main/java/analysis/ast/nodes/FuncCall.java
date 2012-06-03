@@ -11,7 +11,7 @@ import analysis.SymbolTableStack;
  * 
  */
 public class FuncCall extends AbstractSyntaxTree {
-	public void run(SymbolTableStack tables) {
+	public void buildSymbolTable(SymbolTableStack tables) {
 
 	}
 

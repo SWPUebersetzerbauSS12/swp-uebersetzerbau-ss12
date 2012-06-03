@@ -10,8 +10,9 @@ public class BoolLiteral extends Statement {
 	@Getter
 	private boolean value;
 	
-	public void run(SymbolTableStack tables) {
-
+	@Override
+	public void buildSymbolTable(SymbolTableStack stack){
+		
 	}
 
 	@Override

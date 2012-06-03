@@ -52,7 +52,7 @@ public class SemanticAnalyzer {
 	public void analyze() throws SemanticException {
 		toAST(parseTree);
 		parseTreeForRemoval();
-		parseTreeForSemanticActions(AST);
+		parseTreeForBuildingSymbolTable();
 		AST.printTree();
 		checkForValidity(AST);
 	}
@@ -431,12 +431,8 @@ public class SemanticAnalyzer {
 	 * 
 	 * @param tree
 	 */
-	private void parseTreeForSemanticActions(ISyntaxTree tree) {
-		for (int i = 0; i < tree.getChildrenCount(); i++) {
-			parseTreeForSemanticActions(tree.getChild(i));
-		}
-
-		tree.run(tables);
+	private void parseTreeForBuildingSymbolTable() {
+		AST.buildSymbolTable(tables);
 	}
 
 	/**

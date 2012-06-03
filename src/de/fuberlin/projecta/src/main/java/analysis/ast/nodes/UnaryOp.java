@@ -14,7 +14,7 @@ public class UnaryOp extends AbstractSyntaxTree {
 		this.op = op;
 	}
 	
-	public void run(SymbolTableStack tables) {
+	public void buildSymbolTable(SymbolTableStack tables) {
 
 	}
 

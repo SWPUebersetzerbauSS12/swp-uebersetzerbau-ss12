@@ -10,7 +10,7 @@ public class RealLiteral extends Statement {
 	@Getter
 	private double value;
 	
-	public void run(SymbolTableStack tables) {
+	public void buildSymbolTable(SymbolTableStack tables) {
 
 	}
 

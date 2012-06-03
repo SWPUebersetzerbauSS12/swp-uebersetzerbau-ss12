@@ -1,5 +1,9 @@
 package analysis.ast.nodes;
 
+import java.util.List;
+
+import parser.ISyntaxTree;
+
 import lexer.TokenType;
 import lombok.Getter;
 import analysis.SemanticException;
@@ -15,7 +19,7 @@ public class BinaryOp extends AbstractSyntaxTree {
 		this.op = op;
 	}
 	
-	public void run(SymbolTableStack tables) {
+	public void buildSymbolTable(SymbolTableStack tables) {
 
 	}
 
@@ -25,9 +29,9 @@ public class BinaryOp extends AbstractSyntaxTree {
 		switch (this.getOp()) {
 		case OP_ASSIGN:
 			if(this.getChild(0) instanceof Id){
-				AbstractSyntaxTree[] children = (AbstractSyntaxTree[]) this.getChildren().toArray();
-				for(int i = 1; i<children.length; i++){
-					if(!children[i].checkSemantics()){
+				List<ISyntaxTree> children = this.getChildren();
+				for(ISyntaxTree child : children){
+					if(!((AbstractSyntaxTree)child).checkSemantics()){
 						return false;
 					}
 				}

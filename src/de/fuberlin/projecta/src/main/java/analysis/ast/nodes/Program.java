@@ -5,8 +5,15 @@ import analysis.SymbolTableStack;
 
 
 public class Program extends AbstractSyntaxTree {
-	public void run(SymbolTableStack tables) {
-
+	
+	@Override
+	public void buildSymbolTable(SymbolTableStack stack){
+		stack.push();
+		for(ISyntaxTree child : this.getChildren()){
+			child.buildSymbolTable(stack);
+		}
+		table = stack.pop();	
+		
 	}
 
 	@Override

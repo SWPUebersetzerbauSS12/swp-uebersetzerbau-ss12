@@ -8,7 +8,7 @@ import analysis.SymbolTableStack;
  * 
  */
 public class ArrayCall extends AbstractSyntaxTree {
-	public void run(SymbolTableStack tables) {
+	public void buildSymbolTable(SymbolTableStack tables) {
 
 	}
 

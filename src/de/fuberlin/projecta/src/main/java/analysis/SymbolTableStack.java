@@ -1,14 +1,11 @@
 package analysis;
 
+import java.util.List;
 import java.util.Stack;
 
 public class SymbolTableStack {
 
 	private Stack<SymbolTable> stack = new Stack<SymbolTable>();
-
-	public SymbolTableStack() {
-		stack.push(new SymbolTable());
-	}
 
 	/**
 	 * Searches one entry in all symbol tables, beginning from the top
@@ -16,14 +13,21 @@ public class SymbolTableStack {
 	 * @param name
 	 * @return The object associated with name, null if none is found.
 	 */
-	public Object findEntry(String name) {
-		for (int i = 0; i < stack.size(); ++i) {
+	public EntryType findEntry(String name) {
+		for (int i = stack.size() -1; i >= 0; --i) {
 			SymbolTable table = stack.get(i);
-			Object content = table.lookup(name);
+			EntryType content = table.lookup(name);
 			if (content != null)
 				return content;
 		}
 		return null;
+	}
+	
+	/**
+	 * @return	A set of entries of the current top symbolTable
+	 */
+	public List<EntryType> getEntries(){
+		return top().getEntries();
 	}
 
 	/**
@@ -42,6 +46,7 @@ public class SymbolTableStack {
 	 */
 	public SymbolTable pop() {
 		return stack.pop();
+		
 	}
 
 	/**

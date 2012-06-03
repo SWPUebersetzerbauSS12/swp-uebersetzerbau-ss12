@@ -10,7 +10,7 @@ public class IntLiteral extends Statement {
 	@Getter
 	private int value;
 	
-	public void run(SymbolTableStack tables) {
+	public void buildSymbolTable(SymbolTableStack tables) {
 
 	}
 

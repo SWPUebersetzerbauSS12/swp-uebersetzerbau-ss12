@@ -10,7 +10,7 @@ public class StringLiteral extends Statement {
 	@Getter
 	private String value;
 	
-	public void run(SymbolTableStack tables) {
+	public void buildSymbolTable(SymbolTableStack tables) {
 
 	}
 

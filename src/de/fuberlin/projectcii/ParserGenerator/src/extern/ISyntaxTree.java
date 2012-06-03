@@ -14,6 +14,8 @@ public ISyntaxTree getParent();
 
 public void addChild(ISyntaxTree tree);
 
+// TODO change returnvalue back to IToken 
+
 public String getSymbol();
 
 /**

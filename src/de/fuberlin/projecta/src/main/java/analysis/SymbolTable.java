@@ -9,7 +9,7 @@ import analysis.ast.nodes.Type;
 /**
  * @author Christian Cikryt
  */
-public class SymbolTable {
+public class SymbolTable implements ISymbolTable{
 
 	// private HashMap<String, EntryType> entries;
 	private List<EntryType> entries;
@@ -109,6 +109,7 @@ public class SymbolTable {
 		return ret;
 	}
 
+	@Override
 	public List<EntryType> getEntries() {
 		return entries;
 	}

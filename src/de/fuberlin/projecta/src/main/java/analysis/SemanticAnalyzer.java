@@ -221,12 +221,7 @@ public class SemanticAnalyzer {
 						stmt = new Print();
 					}
 				} else if (firstChild.getSymbol().isNonTerminal()) {
-					if (firstChild.getSymbol().asNonTerminal() == NonTerminal.block) {
-						stmt = new Block();
-					} else if (firstChild.getSymbol().asNonTerminal() == NonTerminal.assign) {
-						// use the default case
-						toAST(firstChild, insertNode);
-					}
+					toAST(firstChild, insertNode);
 				}
 
 				if (stmt != null) {

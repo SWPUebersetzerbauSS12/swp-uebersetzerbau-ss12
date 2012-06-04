@@ -35,14 +35,8 @@ public interface IToken {
 		/** Identifier */
 		ID("id"),
 
-		/** Bool (bool) type */
-		BOOL_TYPE("bool"),
-		/** String (string) type */
-		STRING_TYPE("string"),
-		/** Integer (int) type) */
-		INT_TYPE("int"),
-		/** Real (real) type */
-		REAL_TYPE("float"),
+		/** Basic type */
+		BASIC("basic"),
 
 		/** Boolean literal */
 		BOOL_TRUE("true"),

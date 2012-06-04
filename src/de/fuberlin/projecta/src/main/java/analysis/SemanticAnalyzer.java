@@ -1,11 +1,12 @@
 package analysis;
 
+import lexer.BasicTokenType;
 import lexer.TokenType;
 import lombok.Getter;
 import parser.ISyntaxTree;
-import parser.Tree.DefaultAttribute;
 import parser.NonTerminal;
 import parser.Symbol.Reserved;
+import parser.Tree.DefaultAttribute;
 import analysis.ast.nodes.Args;
 import analysis.ast.nodes.Array;
 import analysis.ast.nodes.ArrayCall;
@@ -96,44 +97,33 @@ public class SemanticAnalyzer {
 				insertNode.addChild(func);
 				return;
 			case type:
-				if (tree.getChild(0).getSymbol().isNonTerminal()) {
-					if (tree.getChild(0).getSymbol().asNonTerminal() == NonTerminal.basic) {
+				if (tree.getChild(0).getSymbol().asTerminal() == TokenType.BASIC) {
 
-						if (tree.getChild(1).getChildrenCount() != 0) { // this
-																		// is
-																		// type_
-																		// and
-																		// it
-																		// must
-																		// exist!
-							Type array = new Array();
+					// this is type_ and it must exist!
+					if (tree.getChild(1).getChildrenCount() != 0) {
+						Type array = new Array();
 
-							// the basic node gets added to this temporary node
-							// and is passed to the new array
-							ISyntaxTree tmp = new Program(); // it doesn't
-																// matter
-																// which node to
-																// take as long
-																// as
-																// it is a
-																// treenode.
-							toAST(tree.getChild(0), tmp);
+						// the basic node gets added to this temporary node
+						// and is passed to the new array
+						// it doesn't matter which node to take as long as
+						// it is a treenode.
+						ISyntaxTree tmp = new Program();
+						toAST(tree.getChild(0), tmp);
 
-							array.addAttribute(lattribute);
-							boolean success = array.setAttribute(lattribute,
-									tmp.getChild(0)); // this is already the
-														// BasicType node
-							assert (success);
+						array.addAttribute(lattribute);
+						// this is already the BasicType node
+						boolean success = array.setAttribute(lattribute,
+								tmp.getChild(0));
+						assert (success);
 
-							insertNode.addChild(array);
+						insertNode.addChild(array);
 
-							toAST(tree.getChild(1), array);
+						toAST(tree.getChild(1), array);
 
-						} else
-							// type_ is empty, hook the basic node in the parent
-							toAST(tree.getChild(0), insertNode);
+					} else
+						// type_ is empty, hook the basic node in the parent
+						toAST(tree.getChild(0), insertNode);
 
-					}
 				} else { // we have a record! *CONGRATS*
 					Record record = new Record();
 
@@ -340,7 +330,7 @@ public class SemanticAnalyzer {
 				return;
 
 				// list of nodes which use the default case:
-				// assign_, basic, bool_, decls, equality_, expr_, factor_,
+				// assign_, bool_, decls, equality_, expr_, factor_,
 				// func_, join_,
 				// params, params_, rel_, stmt_, stmt__, stmts,
 			default:
@@ -354,17 +344,10 @@ public class SemanticAnalyzer {
 		} else if (tree.getSymbol().isTerminal()) {
 			TokenType t = tree.getSymbol().asTerminal();
 			switch (t) {
-			case BOOL_TYPE:
-				insertNode.addChild(new BasicType(TokenType.BOOL_TYPE));
-				return;
-			case INT_TYPE:
-				insertNode.addChild(new BasicType(TokenType.INT_TYPE));
-				return;
-			case REAL_TYPE:
-				insertNode.addChild(new BasicType(TokenType.REAL_TYPE));
-				return;
-			case STRING_TYPE:
-				insertNode.addChild(new BasicType(TokenType.STRING_TYPE));
+			case BASIC:
+				BasicTokenType type = (BasicTokenType) tree
+						.getAttribute(DefaultAttribute.TokenValue.name());
+				insertNode.addChild(new BasicType(type));
 				return;
 			case INT_LITERAL:
 				insertNode.addChild(new IntLiteral((Integer) tree

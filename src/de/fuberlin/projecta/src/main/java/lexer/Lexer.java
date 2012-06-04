@@ -203,7 +203,7 @@ public class Lexer implements ILexer {
 			}
 			if (is.getNextChars(4).matches("int" + delimiterRegexp)) {
 				is.consumeChars(3);
-				return new Token(TokenType.INT_TYPE, null, this.line, offset);
+				return new Token(TokenType.BASIC, BasicTokenType.INT, this.line, offset);
 			}
 		}
 		if (s.equals("t")) {
@@ -242,7 +242,7 @@ public class Lexer implements ILexer {
 			}
 			if (is.getNextChars(5).equals("real ")) {
 				is.consumeChars(4);
-				return new Token(TokenType.REAL_TYPE, null, this.line, offset);
+				return new Token(TokenType.BASIC, BasicTokenType.REAL, this.line, offset);
 			}
 			if (is.getNextChars(7).matches("record" + delimiterRegexp)) {
 				is.consumeChars(6);
@@ -252,7 +252,7 @@ public class Lexer implements ILexer {
 		if (s.equals("s")) {
 			if (is.getNextChars(7).matches("string" + delimiterRegexp)) {
 				is.consumeChars(6);
-				return new Token(TokenType.STRING_TYPE, null,  this.line, offset);
+				return new Token(TokenType.BASIC, BasicTokenType.STRING,  this.line, offset);
 			}
 		}
 		if (s.equals("b")) {
@@ -262,7 +262,7 @@ public class Lexer implements ILexer {
 			}
 			if(is.getNextChars(5).matches("bool" + delimiterRegexp)){
 				is.consumeChars(4);
-				return new Token(TokenType.BOOL_TYPE, null, line, offset);
+				return new Token(TokenType.BASIC, BasicTokenType.BOOL, line, offset);
 			}
 		}
 		if (s.equals("p")

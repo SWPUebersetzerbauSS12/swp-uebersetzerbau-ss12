@@ -197,25 +197,13 @@ public class Parser implements IParser {
 		// optparams
 		table.setEntry(NonTerminal.optparams, TokenType.RPAREN,
 				"optparams ::= EPSILON");
-		table.setEntry(NonTerminal.optparams, TokenType.INT_TYPE,
-				"optparams ::= params");
-		table.setEntry(NonTerminal.optparams, TokenType.REAL_TYPE,
-				"optparams ::= params");
-		table.setEntry(NonTerminal.optparams, TokenType.STRING_TYPE,
-				"optparams ::= params");
-		table.setEntry(NonTerminal.optparams, TokenType.BOOL_TYPE,
+		table.setEntry(NonTerminal.optparams, TokenType.BASIC,
 				"optparams ::= params");
 		table.setEntry(NonTerminal.optparams, TokenType.RECORD,
 				"optparams ::= params");
 
 		// params
-		table.setEntry(NonTerminal.params, TokenType.INT_TYPE,
-				"params ::= type ID params_");
-		table.setEntry(NonTerminal.params, TokenType.REAL_TYPE,
-				"params ::= type ID params_");
-		table.setEntry(NonTerminal.params, TokenType.STRING_TYPE,
-				"params ::= type ID params_");
-		table.setEntry(NonTerminal.params, TokenType.BOOL_TYPE,
+		table.setEntry(NonTerminal.params, TokenType.BASIC,
 				"params ::= type ID params_");
 		table.setEntry(NonTerminal.params, TokenType.RECORD,
 				"params ::= type ID params_");
@@ -252,38 +240,20 @@ public class Parser implements IParser {
 				"decls ::=  EPSILON");
 		table.setEntry(NonTerminal.decls, TokenType.BOOL_LITERAL,
 				"decls ::=  EPSILON");
-		table.setEntry(NonTerminal.decls, TokenType.INT_TYPE,
-				"decls ::=  decl decls");
-		table.setEntry(NonTerminal.decls, TokenType.REAL_TYPE,
-				"decls ::=  decl decls");
-		table.setEntry(NonTerminal.decls, TokenType.STRING_TYPE,
-				"decls ::=  decl decls");
-		table.setEntry(NonTerminal.decls, TokenType.BOOL_TYPE,
+		table.setEntry(NonTerminal.decls, TokenType.BASIC,
 				"decls ::=  decl decls");
 		table.setEntry(NonTerminal.decls, TokenType.RECORD,
 				"decls ::=  decl decls");
 
 		// decl
-		table.setEntry(NonTerminal.decl, TokenType.INT_TYPE,
-				"decl ::=  type ID OP_SEMIC");
-		table.setEntry(NonTerminal.decl, TokenType.REAL_TYPE,
-				"decl ::=  type ID OP_SEMIC");
-		table.setEntry(NonTerminal.decl, TokenType.STRING_TYPE,
-				"decl ::=  type ID OP_SEMIC");
-		table.setEntry(NonTerminal.decl, TokenType.BOOL_TYPE,
+		table.setEntry(NonTerminal.decl, TokenType.BASIC,
 				"decl ::=  type ID OP_SEMIC");
 		table.setEntry(NonTerminal.decl, TokenType.RECORD,
 				"decl ::=  type ID OP_SEMIC");
 
 		// type
-		table.setEntry(NonTerminal.type, TokenType.INT_TYPE,
-				"type ::=  basic type_");
-		table.setEntry(NonTerminal.type, TokenType.REAL_TYPE,
-				"type ::=  basic type_");
-		table.setEntry(NonTerminal.type, TokenType.STRING_TYPE,
-				"type ::=  basic type_");
-		table.setEntry(NonTerminal.type, TokenType.BOOL_TYPE,
-				"type ::=  basic type_");
+		table.setEntry(NonTerminal.type, TokenType.BASIC,
+				"type ::=  BASIC type_");
 		table.setEntry(NonTerminal.type, TokenType.RECORD,
 				"type ::= RECORD LBRACE decls RBRACE type_");
 
@@ -786,16 +756,6 @@ public class Parser implements IParser {
 		table.setEntry(NonTerminal.args_, TokenType.RPAREN, "args_ ::= EPSILON");
 		table.setEntry(NonTerminal.args_, TokenType.OP_COMMA,
 				"args_ ::= OP_COMMA args");
-
-		// basic
-		table.setEntry(NonTerminal.basic, TokenType.INT_TYPE,
-				"basic ::=  INT_TYPE");
-		table.setEntry(NonTerminal.basic, TokenType.REAL_TYPE,
-				"basic ::= REAL_TYPE");
-		table.setEntry(NonTerminal.basic, TokenType.STRING_TYPE,
-				"basic ::=  STRING_TYPE");
-		table.setEntry(NonTerminal.basic, TokenType.BOOL_TYPE,
-				"basic ::=  BOOL_TYPE");
 	}
 
 }

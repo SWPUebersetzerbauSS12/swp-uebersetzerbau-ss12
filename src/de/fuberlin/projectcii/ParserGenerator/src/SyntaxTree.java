@@ -122,6 +122,11 @@ public class SyntaxTree implements ISyntaxTree {
 				first = false;
 			}
 			else{
+				if (!first){
+					for(int i=0;i<level;i++){
+						System.out.print("\t");
+					}
+				}
 				System.out.print(child.getSymbol());
 				System.out.println("");
 				first = false;
@@ -129,7 +134,13 @@ public class SyntaxTree implements ISyntaxTree {
 		}
 	}
 	
-	//TODO validate methode
+	/**
+	 * 
+	 * Compresses the SyntaxTree by eliminating all single-child-nodes
+	 * 
+	 * @author Patrick Schlott
+	 *
+	 */
 	
 	public void CompressSyntaxTree(){
 		
@@ -147,8 +158,7 @@ public class SyntaxTree implements ISyntaxTree {
 			}
 			for (ISyntaxTree child:singleChilds){
 				child.getChild(0).setParent(this);
-				children.add(child.getChild(0));
-				children.remove(child);
+				children.set(children.indexOf(child), child.getChild(0));
 			}
 		}
 		for (ISyntaxTree child:children){

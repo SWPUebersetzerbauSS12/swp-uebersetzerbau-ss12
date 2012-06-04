@@ -123,7 +123,7 @@ public class SyntaxTree implements ISyntaxTree {
 			}
 			else{
 				if (!first){
-					for(int i=0;i<level;i++){
+					for(int i=0;i<level+1;i++){
 						System.out.print("\t");
 					}
 				}

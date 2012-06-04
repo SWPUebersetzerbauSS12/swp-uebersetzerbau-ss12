@@ -38,17 +38,19 @@ public abstract class AbstractSyntaxTree extends Tree {
 	 */
 	@Override
 	public boolean equals(Object object) {
-		if (object.getClass() == this.getClass()) {
-			ISyntaxTree ot = (ISyntaxTree) object;
-			if (getChildrenCount() == ot.getChildrenCount()) {
-				for (int i = 0; i < getChildrenCount(); i++) {
-					if (!getChild(i).equals(ot.getChild(i))) {
-						break;
-					} 					
+		if(object != null){
+			if (object.getClass() == this.getClass()) {
+				ISyntaxTree ot = (ISyntaxTree) object;
+				if (getChildrenCount() == ot.getChildrenCount()) {
+					for (int i = 0; i < getChildrenCount(); i++) {
+						if (!getChild(i).equals(ot.getChild(i))) {
+							break;
+						} 					
+					}
+					return true;
 				}
-				return true;
 			}
-		}
+		}		
 		return false;
 	}
 }

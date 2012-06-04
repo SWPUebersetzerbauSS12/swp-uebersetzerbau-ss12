@@ -4,11 +4,9 @@ import lexer.io.StringCharStream;
 
 import org.junit.Test;
 
-import analysis.SemanticAnalyzer;
-import analysis.SemanticException;
-
-import parser.Parser;
 import parser.ParseException;
+import parser.Parser;
+import analysis.SemanticAnalyzer;
 
 public class SemanticAnalysisTest {
 
@@ -29,12 +27,19 @@ public class SemanticAnalysisTest {
 	@Test(expected = IllegalStateException.class)
 	public void testInvalidCode() {
 		final String code = "def int foo() { int a; int a; }";
-		try {
-			analyze(code);
-		} catch (SemanticException e) {
-			System.out.println("Semantic analysis failed.");
-			System.out.println(e.toString());
-		}
+		analyze(code);
+	}
+	
+	@Test
+	public void testValidFunctionDef() {
+		final String code = "def int foo() { int a;} def int foo(int a) {}";
+		analyze(code);
+	}
+	
+	@Test(expected = IllegalStateException.class)
+	public void testInvalidFunctionDef() {
+		final String code = "def int foo() {} def real foo() {}";
+		analyze(code);
 	}
 
 	@Test
@@ -46,6 +51,18 @@ public class SemanticAnalysisTest {
 	@Test(expected = ClassCastException.class)
 	public void testIncompatibleOperands() {
 		final String code = "def int foo() { int a; a = 0.0; }";
+		analyze(code);
+	}
+	
+	@Test
+	public void testRecordAsReturnType(){
+		final String code = "def record {int real; int imag;} foo(){record {int real; int imag;} myRecord; return myRecord;}";
+		analyze(code);
+	}
+	
+	@Test
+	public void testRecordBehaviour(){
+		final String code = "def int foobar(record {int r; int i;} myImaginaire){myImaginaire.r = 1; myImaginaire.i = 0;}";
 		analyze(code);
 	}
 

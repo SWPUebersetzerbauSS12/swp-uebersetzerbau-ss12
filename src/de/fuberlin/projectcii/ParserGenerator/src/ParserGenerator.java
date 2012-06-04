@@ -5,32 +5,34 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-/* 
+/**
  * The ParserGenerator reads a Grammar and tries to convert the 
  * Grammar in a way that it can be Parsed with Lookahead 1 by
  * eliminating Leftrekursions and factorising the Productions
  * 
  * Additional the ParserGenerator creates a Parsetable from the modified
  * Grammar.
- * 
  */
-
 public class ParserGenerator {
 	
 	//Contains the Grammar the Parsetable is created from
 	private Map<String, Vector<Vector<String>>> grammarMap;
 	
+	//Contains the Parsertable
+	//key = Head (nonterminal on left side of a production rule)
+	//value = HashMap where key = terminal and value = index of related production in grammaMap
 	private Map<String, HashMap<String,Vector<Integer>>> parserTable = 
 		new HashMap<String, HashMap<String,Vector<Integer>>>();
 	
+	//start symbol of grammar
 	private String start;
+	//Vector containing all terminal symbols
 	private Vector<String> Terminals;
+	//Vector containing all nonterminal symbols
 	private Vector<String> Nonterminal;
 	
 	//FollowSets of each NonTerminal
 	private Map<String, Set<String>> followSets = new HashMap<String, Set<String>>();
-	//FirstSets of each NonTerminal
-	private Map<String, Set<String>> firstSets = new HashMap<String, Set<String>>();
 	//FirstSets of each Production of each NonTerminal
 	private Map<String, HashMap<String,Integer>> firstSetsProductions = new HashMap<String, HashMap<String,Integer>>();
 	
@@ -39,8 +41,11 @@ public class ParserGenerator {
 		Nonterminal = new Vector<String>();
 	}
 	
-	/*
-	 * initializes the grammar so a Parsetable can be created from it
+	/**
+	 * Initializes the grammar so a parsetable can be created from it.
+	 * 
+	 * @param file Path to the grammar file
+	 * @return returns the created parsertable
 	 */
 	public Map<String, HashMap<String,Vector<Integer>>> createParserTable(String file){
 		//Read the Grammar from file
@@ -51,12 +56,12 @@ public class ParserGenerator {
 		/*
 		 * computeFirstSet
 		 */
-		createFirstSet();
+		firstSetsProductions = createFirstSet(grammarMap);
 		
 		/*
 		 * computeFollowSet
 		 */
-		createFollowSet();
+		followSets = createFollowSet(grammarMap);
 		/*
 		 * Create Parsetable
 		 */
@@ -84,12 +89,11 @@ public class ParserGenerator {
 		return this.start;
 	}
 	
-
-	/*
-	 * Reads the Grammar from a given file
+	/**
+	 * Reads the Grammar from a given file.
 	 * 
-	 * Input: String file - Path to the file
-	 * Return: Void
+	 * @author Patrick Schlott
+	 * @param file Path to the grammar file
 	 */
 	private void readGrammar(String file){
 		GrammarReader gR = new GrammarReader();
@@ -99,7 +103,9 @@ public class ParserGenerator {
 	}
 	
 	
-
+	/**
+	 * Generates 2 Vectors of Strings containing all nonterminals and terminals.
+	 */
 	private void fillTerminalNonterminal(){
 		
 		for (String nonTerminal:grammarMap.keySet()){
@@ -119,25 +125,41 @@ public class ParserGenerator {
 	}
 	
 	
-
-	private void createFirstSet() {
-
+	/**
+	 * Evaluates the firstsets of a grammar.
+	 * 
+	 * @author Christoph Schroeder
+	 * @param grammarMap contains the grammar 
+	 * @return returns a Map with all firstsets where
+	 * key = head of a production and value = HashMap with
+	 * firstitems as key and indexes of related productions
+	 * in grammarMap as values
+	 */
+	private Map<String, HashMap<String,Integer>> createFirstSet(Map<String, Vector<Vector<String>>> grammarMap) {
+		Map<String, HashMap<String,Integer>> firstSet = new HashMap<String, HashMap<String,Integer>> ();
 		for (String head : Nonterminal) {
-			// String head = p.getHead();
-			firstSets.put(head, evalFirstSet(head, grammarMap,true));
+			firstSet.put(head, evalFirstSet(head, grammarMap));
 		}
-		Printer.printFirstSetsProductions(firstSetsProductions);
-		
+		Printer.printFirstSetsProductions(firstSet); 
+		return firstSet;		
 	}
 	
-	private Set<String> evalFirstSet(String head,
-			Map<String, Vector<Vector<String>>> grammarMap,Boolean newHead) {
-		if (firstSets.containsKey(head)) {
-			return firstSets.get(head);
+	/***
+	 * Evaluates the firstset of a given Nonterminal regarding to a grammarMap.
+	 * 
+	 * @author Christoph Schroeder
+	 * @param head Nonterminal on left side of production rule
+	 * @param grammarMap contains the grammar 
+	 * @return returns firstset as Hashmap where key = item of firstset 
+	 * and value = index of related production in grammarMap
+	 */
+	private HashMap<String,Integer> evalFirstSet(String head,
+			Map<String, Vector<Vector<String>>> grammarMap) {
+		
+		if (firstSetsProductions.containsKey(head)) {
+			return firstSetsProductions.get(head);
 		}
 		
-		//FirstSet of current head
-		Set<String> fs = new HashSet<String>();
 		//FirstSet of current head for each production
 		HashMap<String,Integer> fsp = new HashMap<String,Integer>();
 		
@@ -154,7 +176,7 @@ public class ParserGenerator {
 			} 
 			else 
 			{
-				currentFS.addAll(evalFirstSet(term, grammarMap,false));
+				currentFS.addAll(evalFirstSet(term, grammarMap).keySet());
 			}
 			
 			//FirstSet Evaluation Rule 2 and 3
@@ -170,7 +192,7 @@ public class ParserGenerator {
 					//else add terminal to FirstSet
 					if(Nonterminal.contains(nextTerm))
 					{
-						tempFS = evalFirstSet(nextTerm, grammarMap,false);
+						tempFS = evalFirstSet(nextTerm, grammarMap).keySet();
 					}
 					else
 					{
@@ -191,40 +213,42 @@ public class ParserGenerator {
 				}
 			}
 			
-			//add FirstSet of current production to FirstSet of head
-			fs.addAll(currentFS);
 			
 			//add FirstSet of current production and it's index to FS of this production
-			if(newHead)
+			for(String item : currentFS)
 			{
-				for(String item : currentFS)
-				{
-					fsp.put(item, i);
-				}
-				i++;
+				fsp.put(item, i);
 			}
-
+			i++;
 		}
 		
-		//add FirstSets of each production to FirstSet of this NonTerminal
-		if(newHead)
-		{
-			firstSetsProductions.put(head, fsp);
-		}
-		
-		return fs;
+		return fsp;
 	}
-	
 
-	private void createFollowSet() {
+	/**
+	 * Evaluates all followsets of a grammar given by a grammarMap.
+	 * 
+	 * @param grammarMap contains the grammar 
+	 * @return HashMap with nonterminals as key and followsets as value
+	 */
+	private HashMap<String, Set<String>> createFollowSet(Map<String, Vector<Vector<String>>> grammarMap) {
+		HashMap<String, Set<String>> followSets = new HashMap<String, Set<String>>();
 		for (String head : Nonterminal) {
 			// String head = p.getHead();
-			followSets.put(head, evalFollowSet(head));
+			followSets.put(head, evalFollowSet(head,grammarMap));
 		}
 		Printer.printFollowSets(followSets);
+		return followSets;
 	}
 	
-	private Set<String> evalFollowSet(String head) {
+	/**
+	 * Evaluates followset of a nonterminal regarding to a grammaMap
+	 * 
+	 * @param head nonterminal at left side of a production rule
+	 * @param grammarMap contains the grammar
+	 * @return returns a set with all folloitems of given head
+	 */
+	private Set<String> evalFollowSet(String head,Map<String, Vector<Vector<String>>> grammarMap) {
 		if (followSets.containsKey(head)) {
 			return followSets.get(head);
 		}
@@ -244,10 +268,10 @@ public class ParserGenerator {
 								fs.add(follow);
 							}
 							else{
-								HashSet<String> first = new HashSet<String>(firstSets.get(follow));
+								HashSet<String> first = new HashSet<String>(firstSetsProductions.get(follow).keySet());
 
 								if (first.contains(Settings.getEPSILON())){
-									if (!currentHead.equals(head)) { fs.addAll(evalFollowSet(currentHead));}
+									if (!currentHead.equals(head)) { fs.addAll(evalFollowSet(currentHead,grammarMap));}
 									first.remove(Settings.getEPSILON());
 									fs.addAll(first);
 								} else {
@@ -258,7 +282,7 @@ public class ParserGenerator {
 						else{
 							if (!currentHead.equals(head)){
 								//  the last symbol
-								fs.addAll(evalFollowSet(currentHead));
+								fs.addAll(evalFollowSet(currentHead,grammarMap));
 							}
 						}						
 						break;
@@ -269,6 +293,15 @@ public class ParserGenerator {
 		return fs;
 	}
 	
+	/**
+	 * Evaluates the parsertable.
+	 * 
+	 * @author Chistoph Schroeder
+	 * @return returns parsertable as HashMap where:
+	 * Key = nonterminal
+	 * Value = HasMap where Key = terminal and values = index
+	 * of related production in grammarMap
+	 */
 	private HashMap<String, HashMap<String,Vector<Integer>>> createParserTable(){
 		
 		HashMap<String, HashMap<String,Vector<Integer>>> ret = 
@@ -277,7 +310,7 @@ public class ParserGenerator {
 		for(String head : Nonterminal)
 		{
 			HashMap<String,Vector<Integer>> parseTableColumn = new HashMap<String,Vector<Integer>>();
-			Set<String> currentFirstSet = firstSets.get(head);
+			Set<String> currentFirstSet = firstSetsProductions.get(head).keySet();
 			Set<String> currentFollowSet = followSets.get(head);
 			
 			for(String terminal : Terminals)
@@ -308,6 +341,11 @@ public class ParserGenerator {
 		return ret;		
 	}
 
+	/**
+	 * Get method for grammarMap.
+	 * 
+	 * @return map containing the grammar.
+	 */
 	public Map<String, Vector<Vector<String>>> getGrammar() {
 
 		return grammarMap;

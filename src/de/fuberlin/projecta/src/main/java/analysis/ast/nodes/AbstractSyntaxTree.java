@@ -15,7 +15,7 @@ public abstract class AbstractSyntaxTree extends Tree {
 	SymbolTable table;
 
 	public AbstractSyntaxTree() {
-		super();
+		super(null);
 	}
 
 	public AbstractSyntaxTree(Symbol symbol) {

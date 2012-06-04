@@ -3,7 +3,7 @@ package analysis;
 import lexer.TokenType;
 import lombok.Getter;
 import parser.ISyntaxTree;
-import parser.ITree.DefaultAttribute;
+import parser.Tree.DefaultAttribute;
 import parser.NonTerminal;
 import parser.Symbol.Reserved;
 import analysis.ast.nodes.Args;

@@ -8,7 +8,7 @@ import lexer.SyntaxErrorException;
 import lexer.TokenType;
 import lombok.Getter;
 import lombok.Setter;
-import parser.ITree.DefaultAttribute;
+import parser.Tree.DefaultAttribute;
 
 public class Parser implements IParser {
 

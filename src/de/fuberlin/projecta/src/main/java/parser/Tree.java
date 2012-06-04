@@ -17,10 +17,6 @@ import analysis.ast.nodes.UnaryOp;
 
 public class Tree implements ISyntaxTree {
 
-	public enum DefaultAttribute {
-		TokenValue
-	}
-
 	@Getter
 	private final Symbol symbol;
 

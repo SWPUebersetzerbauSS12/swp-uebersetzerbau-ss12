@@ -5,8 +5,8 @@ import lexer.TokenType;
 import lombok.Getter;
 import parser.ISyntaxTree;
 import parser.NonTerminal;
+import parser.Parser;
 import parser.Symbol.Reserved;
-import parser.Tree.DefaultAttribute;
 import analysis.ast.nodes.Args;
 import analysis.ast.nodes.Array;
 import analysis.ast.nodes.ArrayCall;
@@ -38,7 +38,7 @@ import analysis.ast.nodes.While;
 
 public class SemanticAnalyzer {
 
-	private static final String lattribute = "lattribute";
+	private static final String LAttribute = "LAttribute";
 
 	private ISyntaxTree parseTree;
 	private SymbolTableStack tables;
@@ -110,9 +110,9 @@ public class SemanticAnalyzer {
 						ISyntaxTree tmp = new Program();
 						toAST(tree.getChild(0), tmp);
 
-						array.addAttribute(lattribute);
+						array.addAttribute(LAttribute);
 						// this is already the BasicType node
-						boolean success = array.setAttribute(lattribute,
+						boolean success = array.setAttribute(LAttribute,
 								tmp.getChild(0));
 						assert (success);
 
@@ -132,8 +132,8 @@ public class SemanticAnalyzer {
 						Type array = new Array();
 						toAST(tree.getChild(2), record); // <-- decls!!!
 
-						array.addAttribute(lattribute);
-						array.setAttribute(lattribute, record);
+						array.addAttribute(LAttribute);
+						array.setAttribute(LAttribute, record);
 
 						toAST(tree.getChild(4), array);
 
@@ -154,15 +154,15 @@ public class SemanticAnalyzer {
 
 				if (tree.getChild(3).getChildrenCount() != 0) {
 					Array array = new Array();
-					array.addAttribute(lattribute);
-					array.setAttribute(lattribute,
-							insertNode.getAttribute(lattribute));
+					array.addAttribute(LAttribute);
+					array.setAttribute(LAttribute,
+							insertNode.getAttribute(LAttribute));
 					toAST(tree.getChild(3), array);
 					insertNode.addChild(array);
 				} else // array declaration stopped here...
 				{
 					insertNode.addChild((ISyntaxTree) insertNode
-							.getAttribute(lattribute));
+							.getAttribute(LAttribute));
 				}
 
 				return;
@@ -289,24 +289,24 @@ public class SemanticAnalyzer {
 				} else {
 					ISyntaxTree tmp = new Program();
 					toAST(tree.getChild(0), tmp);
-					tree.getChild(1).addAttribute(lattribute);
+					tree.getChild(1).addAttribute(LAttribute);
 					// there is only one child (the id itself)!
-					tree.getChild(1).setAttribute(lattribute, tmp.getChild(0));
+					tree.getChild(1).setAttribute(LAttribute, tmp.getChild(0));
 					toAST(tree.getChild(1), insertNode);
 				}
 				return;
 			case loc__:
-				tree.getChild(0).addAttribute(lattribute);
-				tree.getChild(0).setAttribute(lattribute,
-						tree.getAttribute(lattribute));
+				tree.getChild(0).addAttribute(LAttribute);
+				tree.getChild(0).setAttribute(LAttribute,
+						tree.getAttribute(LAttribute));
 				if (tree.getChild(1).getChildrenCount() == 0) {
 					toAST(tree.getChild(0), insertNode);
 				} else {
 					ISyntaxTree tmp = new Program();
 					toAST(tree.getChild(0), tmp);
 					if (tmp.getChildrenCount() == 1) {
-						tree.getChild(1).addAttribute(lattribute);
-						tree.getChild(1).setAttribute(lattribute,
+						tree.getChild(1).addAttribute(LAttribute);
+						tree.getChild(1).setAttribute(LAttribute,
 								tmp.getChild(0));
 						toAST(tree.getChild(1), insertNode);
 					}
@@ -317,14 +317,14 @@ public class SemanticAnalyzer {
 				if (tree.getChild(0).getSymbol().asTerminal() == TokenType.OP_DOT) {
 					RecordVarCall varCall = new RecordVarCall();
 					varCall.addChild((ISyntaxTree) tree
-							.getAttribute(lattribute));
+							.getAttribute(LAttribute));
 
 					toAST(tree.getChild(1), varCall);
 					insertNode.addChild(varCall);
 				} else {
 					ArrayCall array = new ArrayCall();
 					toAST(tree.getChild(1), array);
-					array.addChild((ISyntaxTree) tree.getAttribute(lattribute));
+					array.addChild((ISyntaxTree) tree.getAttribute(LAttribute));
 					insertNode.addChild(array);
 				}
 				return;
@@ -346,28 +346,28 @@ public class SemanticAnalyzer {
 			switch (t) {
 			case BASIC:
 				BasicTokenType type = (BasicTokenType) tree
-						.getAttribute(DefaultAttribute.TokenValue.name());
+						.getAttribute(Parser.TokenValue);
 				insertNode.addChild(new BasicType(type));
 				return;
 			case INT_LITERAL:
 				insertNode.addChild(new IntLiteral((Integer) tree
-						.getAttribute(DefaultAttribute.TokenValue.name())));
+						.getAttribute(Parser.TokenValue)));
 				return;
 			case STRING_LITERAL:
 				insertNode.addChild(new StringLiteral((String) tree
-						.getAttribute(DefaultAttribute.TokenValue.name())));
+						.getAttribute(Parser.TokenValue)));
 				return;
 			case REAL_LITERAL:
 				insertNode.addChild(new RealLiteral((Double) tree
-						.getAttribute(DefaultAttribute.TokenValue.name())));
+						.getAttribute(Parser.TokenValue)));
 				return;
 			case BOOL_LITERAL:
 				insertNode.addChild(new BoolLiteral((Boolean) tree
-						.getAttribute(DefaultAttribute.TokenValue.name())));
+						.getAttribute(Parser.TokenValue)));
 				return;
 			case ID:
 				insertNode.addChild(new Id((String) tree
-						.getAttribute(DefaultAttribute.TokenValue.name())));
+						.getAttribute(Parser.TokenValue)));
 				return;
 			default:// everything, which has no class member in its node uses
 					// the default.

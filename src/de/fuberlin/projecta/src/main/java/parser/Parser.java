@@ -8,9 +8,10 @@ import lexer.SyntaxErrorException;
 import lexer.TokenType;
 import lombok.Getter;
 import lombok.Setter;
-import parser.Tree.DefaultAttribute;
 
 public class Parser implements IParser {
+
+	public final static String TokenValue = "TokenValue";
 
 	private ILexer lexer;
 	private ParseTable table;
@@ -83,10 +84,9 @@ public class Parser implements IParser {
 				TokenType terminal = peek.asTerminal();
 				if (terminal == TokenType.valueOf(token.getType())) {
 					ISyntaxTree node = new Tree(new Symbol(terminal));
-					node.addAttribute(DefaultAttribute.TokenValue.name());
+					node.addAttribute(TokenValue);
 					final boolean success = node.setAttribute(
-							DefaultAttribute.TokenValue.name(),
-							token.getAttribute());
+							TokenValue, token.getAttribute());
 					assert (success);
 					currentNode.addChild(node);
 					try {

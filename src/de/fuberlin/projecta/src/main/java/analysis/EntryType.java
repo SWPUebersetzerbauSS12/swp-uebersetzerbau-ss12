@@ -9,7 +9,10 @@ import analysis.ast.nodes.Id;
 import analysis.ast.nodes.Type;
 
 /**
- * @author Christian Cikryt
+ * This class represents an entry of a symboltable. It has at least an id and a
+ * type. Optionally it has a list of EntryTypes, which correspond to parameters
+ * which are defined by declaring functions.
+ * 
  */
 public class EntryType {
 
@@ -44,37 +47,43 @@ public class EntryType {
 	 */
 	@Override
 	public boolean equals(Object o) {
-		if (o instanceof EntryType) {
-			EntryType ot = (EntryType) o;
+		if (o != null) {
+			if (o instanceof EntryType) {
+				EntryType ot = (EntryType) o;
 
-			if (id.getClass() == ot.getId().getClass()
-					&& type.getClass() == ot.getType().getClass()) {
-				if (type instanceof BasicType) {
-					if (((BasicType) type).getType() == ((BasicType) ot
-							.getType()).getType()) {
+				if (id.getClass() == ot.getId().getClass()
+						&& type.getClass() == ot.getType().getClass()) {
+					if (type instanceof BasicType) { // is it the same basictype
+														// here??
+						if (((BasicType) type).getType() == ((BasicType) ot
+								.getType()).getType()) {
+							for (int i = 0; i < params.size(); i++) {
+								if (!params.get(i)
+										.equals(ot.getParams().get(i))) {
+									return false;
+								}
+							}
+						} else {
+							return false;
+						}
+					} else { // if its not basic the class must be equal instead
+								// so simply go through the children
 						for (int i = 0; i < params.size(); i++) {
 							if (!params.get(i).equals(ot.getParams().get(i))) {
 								return false;
 							}
 						}
-					} else {
-						return false;
 					}
-				} else {
-					for (int i = 0; i < params.size(); i++) {
-						if (!params.get(i).equals(ot.getParams().get(i))) {
-							return false;
-						}
-					}
+					return true;
 				}
-				return true;
 			}
 		}
-		System.out.println("equal failed: " + this.getClass() + ", "
-				+ o.getClass());
 		return false;
 	}
 
+	/**
+	 * debug only ...
+	 */
 	@Override
 	public String toString() {
 		String ret = id + ":" + type.getClass() + ":params(";

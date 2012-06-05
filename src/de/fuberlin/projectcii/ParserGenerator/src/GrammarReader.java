@@ -459,8 +459,10 @@ public class GrammarReader {
 					 * <"N"1> at end of production
 					 */
 					else{
-						production.add(head1);
-						nonTerminalMod.InsertProduction(production);
+						if (!production.elementAt(0).equals(Settings.getEPSILON())){
+							production.add(head1);
+							nonTerminalMod.InsertProduction(production);
+						}
 					}
 					i++;
 				}

@@ -242,8 +242,9 @@ public class ParserGenerator {
 	}
 	
 	/**
-	 * Evaluates followset of a nonterminal regarding to a grammaMap
+	 * Evaluates followset of a nonterminal regarding to a grammarMap
 	 * 
+	 * @author Patrick Schlott, Ying Wei
 	 * @param head nonterminal at left side of a production rule
 	 * @param grammarMap contains the grammar
 	 * @return returns a set with all folloitems of given head

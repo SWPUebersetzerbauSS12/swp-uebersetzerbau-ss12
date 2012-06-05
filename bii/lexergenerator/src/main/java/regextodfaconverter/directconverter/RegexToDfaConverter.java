@@ -40,6 +40,7 @@ import java.util.HashMap;
 
 import regextodfaconverter.ConvertExecption;
 import regextodfaconverter.directconverter.lr0parser.grammar.ContextFreeGrammar;
+import regextodfaconverter.directconverter.lr0parser.grammar.Grammar;
 import regextodfaconverter.directconverter.lr0parser.grammar.Grammars;
 import regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
 import regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
@@ -97,6 +98,8 @@ public class RegexToDfaConverter {
 			throws Exception {
 		try {
 			SyntaxTree syntaxTree = convertRegexToSyntaxTree( regex);
+			
+			System.out.println( SyntaxTree.compress( syntaxTree));
 		//TODO	FiniteStateMachine<Character, StatePayloadType> dfa = convertSyntaxTreeToDfa( syntaxTree, payload);
 		//	return dfa;
 			return null;
@@ -107,8 +110,6 @@ public class RegexToDfaConverter {
 	}
 	
 
-
-
 	/**
 	 * 
 	 * @param Regex
@@ -117,7 +118,9 @@ public class RegexToDfaConverter {
 	 */
 	private static SyntaxTree convertRegexToSyntaxTree( String regex) throws SyntaxTreeException {
 		final SyntaxTreeAttributor syntaxTreeAttributor = new SyntaxTreeAttributor();
-		SyntaxTree syntaxTree = new SyntaxTree( Grammars.getRegexGrammar(), regex, new NewNodeEventHandler() {
+		SyntaxTree syntaxTree = new SyntaxTree( Grammars.getRegexGrammar(), regex, null);
+
+		/*		SyntaxTree syntaxTree = new SyntaxTree( Grammars.getRegexGrammar(), regex, new NewNodeEventHandler() {
 
 			public void doOnEvent( Object sender, BinaryTreeNode node) {
 				syntaxTreeAttributor.nullable( node);
@@ -132,7 +135,7 @@ public class RegexToDfaConverter {
 			syntaxTreeAttributor.followpos( node);
 		}
 		syntaxTree.setAnnotations( syntaxTreeAttributor);
-
+*/
 		return syntaxTree;
 	}
 

@@ -30,12 +30,20 @@
  *
  */
 
-
 package regextodfaconverter.directconverter.syntaxtree.node;
 
+import regextodfaconverter.directconverter.syntaxtree.SyntaxTree;
 
-public interface NewNodeEventHandler {
-  
-  void doOnEvent( Object sender, TreeNode node);
-  
+/**
+ * Liefert den Wert eines Blattes des {@link SyntaxTree Syntaxbaumes}.
+ * 
+ * @author Johannes Dahlke
+ *
+ */
+public class Leaf<Value> extends TreeNode<Value> {	
+	
+	public Leaf( Value value) {
+		super( value);
+	}
+
 }

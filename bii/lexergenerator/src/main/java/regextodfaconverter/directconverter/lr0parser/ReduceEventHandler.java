@@ -31,11 +31,12 @@
  */
 
 
-package regextodfaconverter.directconverter.syntaxtree.node;
+package regextodfaconverter.directconverter.lr0parser;
 
+import regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
+import regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
 
-public interface NewNodeEventHandler {
-  
-  void doOnEvent( Object sender, TreeNode node);
-  
+public interface ReduceEventHandler {
+
+	Object handle( Object sender, Nonterminal nonterminal, int countOfReducedElements, int countOfLeftElementsOnStack) throws Exception;
 }

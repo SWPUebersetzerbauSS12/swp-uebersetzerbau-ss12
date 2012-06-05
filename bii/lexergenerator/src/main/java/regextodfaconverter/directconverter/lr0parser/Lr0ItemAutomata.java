@@ -257,7 +257,7 @@ public class Lr0ItemAutomata<Element extends Comparable<Element>> implements Ite
 		ResetAutomata();
 		LoadInputIntoQueue( input);
 
-		EventHandler handler;
+	  EventHandler handler;
 		boolean accepted = false;
 		try {
 		 do {	
@@ -272,18 +272,17 @@ public class Lr0ItemAutomata<Element extends Comparable<Element>> implements Ite
 			  if ( handler instanceof ReduceAction) {
 			  	currentClosure = closureStack.peek();
 			  	RuleElement nonterminalToHandle = symbolStack.peek();
-			  	
-			  	// notify about reduce action
-			  	if ( Test.isAssigned( reduceEventHandler)) {
-			  		int countOfReducedElements = ((ReduceAction) handler).getReduceRule().getRightRuleSide().size();
-			  		int countOfLeftElements = getSymbolStack().size() -1; // we subtract the terminator symbol
-			  		reduceEventHandler.handle( this, (Nonterminal) nonterminalToHandle, countOfReducedElements, countOfLeftElements);
-			  	}
-			  	
 			  	// process the goto
 			  	assert nonterminalToHandle instanceof Nonterminal;
 			  	EventHandler gotoHandler = parserTable.get( currentClosure).get( nonterminalToHandle);
 			  	gotoHandler.handle( this);	
+			  
+			    // notify about reduce action
+			  	if ( Test.isAssigned( reduceEventHandler)) {
+			  		int countOfReducedElements = ((ReduceAction) handler).getReduceRule().getRightRuleSide().size();
+			  		int countOfLeftElements = getSymbolStack().size() -1 -1; // we subtract the terminator symbol and the nonterminal from left side of  production
+			  		reduceEventHandler.handle( this, (Nonterminal) nonterminalToHandle, countOfReducedElements, countOfLeftElements);
+			  	}
 			  	
 			  } else if ( handler instanceof ShiftAction) {			  	
 			  	if ( Test.isAssigned( shiftEventHandler))

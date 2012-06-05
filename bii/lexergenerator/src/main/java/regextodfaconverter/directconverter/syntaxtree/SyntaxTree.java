@@ -32,12 +32,14 @@
 
 package regextodfaconverter.directconverter.syntaxtree;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Stack;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import regextodfaconverter.directconverter.RegexSpecialChars;
@@ -47,13 +49,19 @@ import regextodfaconverter.directconverter.lr0parser.ReduceEventHandler;
 import regextodfaconverter.directconverter.lr0parser.ShiftEventHandler;
 import regextodfaconverter.directconverter.lr0parser.grammar.ContextFreeGrammar;
 import regextodfaconverter.directconverter.lr0parser.grammar.Grammar;
+import regextodfaconverter.directconverter.lr0parser.grammar.Grammars;
 import regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
+import regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
+import regextodfaconverter.directconverter.lr0parser.grammar.ProductionSet;
 import regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
 import regextodfaconverter.directconverter.syntaxtree.node.BinaryTreeNode;
+import regextodfaconverter.directconverter.syntaxtree.node.InnerNode;
+import regextodfaconverter.directconverter.syntaxtree.node.Leaf;
 import regextodfaconverter.directconverter.syntaxtree.node.NewNodeEventHandler;
 import regextodfaconverter.directconverter.syntaxtree.node.NodeValue;
 import regextodfaconverter.directconverter.syntaxtree.node.Operator;
 import regextodfaconverter.directconverter.syntaxtree.node.OperatorType;
+import regextodfaconverter.directconverter.syntaxtree.node.TreeNode;
 
 import utils.Notification;
 import utils.Test;
@@ -63,19 +71,18 @@ import utils.Test;
  * @author Johannes Dahlke
  *
  */
-public class SyntaxTree implements Iterable<BinaryTreeNode> {
-
-
-	private BinaryTreeNode root = null;
+public class SyntaxTree implements Iterable<TreeNode>, Cloneable {
 
 	private ArrayList<Character> inputCharacters = null;
-	
-	public NewNodeEventHandler onNewParentNode = null;
 
+	private Stack<TreeNode> nodeStack = null;
+	
+	public NewNodeEventHandler onNewNodeEvent = null;
+
+	private TreeNode rootNode = null;
+	
 	private SyntaxTreeAttributor annotations = null;
 
-	private int blockCounter = 0;
-	
 	private Grammar grammar;
 
 
@@ -84,51 +91,106 @@ public class SyntaxTree implements Iterable<BinaryTreeNode> {
 		this( grammar, expression, null);
 	}
 	
+	/**
+	 * Erweitert die Grammatik für reguläre  Ausdrücke um das Terminatorsymbol.
+	 * @return
+	 */
+	private Grammar extendGrammar( Grammar grammar) {
+		Grammar extendedGrammar = grammar;
+		Nonterminal embracingNonterminal = new Nonterminal();
+		Terminal<Character> terminator = new Terminal<Character>( RegexSpecialChars.TERMINATOR);
+		ProductionSet productions = new ProductionSet();
+		extendedGrammar.addProduction( new ProductionRule( embracingNonterminal, extendedGrammar.getStartSymbol(), terminator));
+		extendedGrammar.setStartSymbol( embracingNonterminal);
+		return extendedGrammar;
+	}
+	
 	public SyntaxTree(  ContextFreeGrammar grammar, String expression, NewNodeEventHandler newNodeEventHandler)
 			throws SyntaxTreeException {
 		super();
-		this.grammar = grammar;
-		this.onNewParentNode = newNodeEventHandler;
-		String terminizedRegex = "(" + expression + ")" + RegexSpecialChars.TERMINATOR;
-		init( terminizedRegex);
+		this.grammar = extendGrammar( grammar);
+		this.onNewNodeEvent = newNodeEventHandler;
+		String terminizedExpression = "(" + expression + ")" + RegexSpecialChars.TERMINATOR;
+		initTreeSkeleton();
+		preprocessInput( terminizedExpression);
 		buildTree();
-		if ( blockCounter != 0)
-			throw new SyntaxTreeException(
-					"Invalid regular expression. There are brackets missing.");
 	}
 
 
 	private void buildTree() {
 		ItemAutomata<Character> itemAutomata = new Lr0ItemAutomata<Character>( (ContextFreeGrammar) grammar);
 		
-		itemAutomata.setReduceEventHandler( new ReduceEventHandler() {
-			
-			public Object handle( Object sender, Nonterminal nonterminal, int countOfReducedElements, int countOfLeftElementsOnStack) throws Exception {
-				System.out.println( "reduce to " + nonterminal);
-				return null;
-			}
-		});
+		itemAutomata.setReduceEventHandler( getReduceEventHandler());
 		
-		itemAutomata.setShiftEventHandler( new ShiftEventHandler() {
-			
-			public Object handle( Object sender, Terminal shiftedTerminal) throws Exception {
-				System.out.println( "shift " +shiftedTerminal);
-				return null;
-			}
-		});
-		
+		itemAutomata.setShiftEventHandler( getShiftEventHandler());
+
 		itemAutomata.match( inputCharacters);
 		
+		rootNode = nodeStack.peek();
+	}
+	
+
+	protected ReduceEventHandler getReduceEventHandler() {
+		return new ReduceEventHandler() {
+			
+			public Object handle( Object sender, Nonterminal nonterminal, int countOfReducedElements, int countOfLeftElementsOnStack) throws Exception {
+			  System.out.println( "reduce to " + nonterminal + ". Reduced elements: " + countOfReducedElements + " Left elements: " + countOfLeftElementsOnStack);
+				
+			  // create new inner node
+			  String nonterminalName = nonterminal.toString();
+				InnerNode newInnerNode = new InnerNode( nonterminalName);
+				
+				if ( Test.isAssigned( onNewNodeEvent))
+					onNewNodeEvent.doOnEvent( this, newInnerNode);
+				
+				// add childs to the new inner node
+			  for ( int i = 0; i < countOfReducedElements; i++) {
+			  	TreeNode childNode = nodeStack.pop();
+			  	newInnerNode.insertChild( childNode, 0);
+			  	if ( childNode instanceof InnerNode)
+			  	  System.out.println( "pop: " +((InnerNode)childNode).toFullString());
+			  	else
+			  	  System.out.println( "pop: " +childNode);
+			  		
+				}
+			  
+				// push the inner node onto stack
+				nodeStack.push( newInnerNode);
+					
+				return null;
+			}
+		};
 	}
 
-	private void init( String inputString) {
-		blockCounter = 0;
+
+	protected ShiftEventHandler getShiftEventHandler() {
+		return new ShiftEventHandler() {
+
+			public Object handle( Object sender, Terminal shiftedTerminal) throws Exception {
+				System.out.println( "shift " + shiftedTerminal);
+				Comparable terminalSymbol = shiftedTerminal.getSymbol();
+				
+				Leaf newLeaf = new Leaf( terminalSymbol);
+				
+				if ( Test.isAssigned( onNewNodeEvent))
+					onNewNodeEvent.doOnEvent( this, newLeaf);
+
+				nodeStack.push( newLeaf);
+				return null;
+			}
+		};
+	}
+
+	private void initTreeSkeleton() {
+		nodeStack = new Stack<TreeNode>();
+	}
+	
+	private void preprocessInput( String inputString) {
 		inputCharacters = new ArrayList<Character>();
 		for ( Character inputCharacter : inputString.toCharArray()) {
 		  inputCharacters.add( inputCharacter);
 		}
 	}
-	
 	
 	
 
@@ -141,182 +203,80 @@ public class SyntaxTree implements Iterable<BinaryTreeNode> {
 		this.annotations = annotations;
 	}
 	
-/*
-	private Character readNextChar( String errorMessage)
-			throws SyntaxTreeException {
-		Character result;
-		if ( ( result = regexCharacters.poll()) == null)
-			throw new SyntaxTreeException( errorMessage);
-		return result;
-	}
-
-	private Character testNextChar() {
-		return regexCharacters.peek();
-	}
-
-	private Terminal readTerminal() throws SyntaxTreeException {
-		char readedChar;
-		
-		if ( RegexSpecialChars.isBasicOperator( testNextChar())) {
-		  // we read the empty word
-			readedChar = RegexSpecialChars.EMPTY_STRING;
-		} else {
-			readedChar = readNextChar( "Expect a terminal. But there a no more characters to read.");
-			if ( RegexSpecialChars.REGEX_MASK_CHAR == readedChar)
-				readedChar = readNextChar( "Expect a terminal. But there a no more characters to read.");
-		  
-			// otherwise process the readed char as is
-			// it could be a terminal or grouping bracket solely 			
-		}
-		
-		return new Terminal( readedChar);
-	}
-
-
-
-	private Operator readOperation() throws SyntaxTreeException {
-		Character nextChar;
-		if ( ( nextChar = regexCharacters.peek()) != null) {
-			switch ( nextChar) {
-				case RegexSpecialChars.REGEX_ALTERNATIVE_CHAR:
-					regexCharacters.poll();
-					return new Operator( OperatorType.ALTERNATIVE);
-				case RegexSpecialChars.REGEX_KLEENE_CLOSURE:
-					regexCharacters.poll();
-					return new Operator( OperatorType.REPETITION);
-				default:
-					return new Operator( OperatorType.CONCATENATION);
-			}
-		}
-		throw new SyntaxTreeException(
-				"Expect a operator. But there a no more characters to read.");
-	}
-
-
-	private BinaryTreeNode createChildNode() throws SyntaxTreeException {
-
-		Terminal readedTerminal = readTerminal();
-
-		if ( readedTerminal.getValue() == RegexSpecialChars.REGEX_GROUP_END) {
-			blockCounter++;
-			return null;
-		}
-
-		if ( readedTerminal.getValue() == RegexSpecialChars.REGEX_GROUP_BEGIN)
-			blockCounter--;
-
-		BinaryTreeNode leafNode = ( readedTerminal.getValue() == RegexSpecialChars.REGEX_GROUP_BEGIN) ? buildSubTree()
-				: newBinaryTreeNode( readedTerminal, null, null);
-
-		return leafNode;
-	}
-
-
-	private BinaryTreeNode createParentNode( BinaryTreeNode leftNode)
-			throws SyntaxTreeException {
-
-		if ( Test.isUnassigned( leftNode)) {
-			leftNode = createChildNode();
-		}
-		if ( Test.isUnassigned( leftNode))
-			return null;
-
-		Operator operator;
-		try {
-			operator = readOperation();
-		} catch ( Exception e) {
-			// Notification.printDebugException( e);
-			return null;
-		}
-
-		BinaryTreeNode rightNode = null;
-		if ( operator.getOperatorType().isBinary()) {
-			rightNode = createChildNode();
-			if ( Test.isUnassigned( rightNode)) {
-				return null;
-			}
-		}
-
-		return newBinaryTreeNode( operator, leftNode, rightNode);
-	}
-	
-	private BinaryTreeNode newBinaryTreeNode( NodeValue value, BinaryTreeNode leftNode, BinaryTreeNode rightNode) {
-		BinaryTreeNode newNode = new BinaryTreeNode( value, leftNode, rightNode);
-		if ( Test.isAssigned( onNewParentNode)) {
-			onNewParentNode.doOnEvent( this, newNode);
-		}
-		return newNode;
-	}
-
-
-	private BinaryTreeNode buildSubTree() throws SyntaxTreeException {
-		BinaryTreeNode currentNode = null;
-		BinaryTreeNode previousNode = currentNode;
-		while ( ( currentNode = createParentNode( currentNode)) != null) {
-			previousNode = currentNode;
-			if ( Test.isAssigned( currentNode))
-				root = currentNode;
-		}
-		return previousNode;
-	}
-
-
-	private void buildTree() throws SyntaxTreeException {
-		BinaryTreeNode currentNode = null;
-		while ( ( currentNode = createParentNode( currentNode)) != null) {
-			if ( Test.isAssigned( currentNode))
-				root = currentNode;
-		}
-	}
-
-
-	@Override
-	public String toString() {
-		String result = "";
-		for ( BinaryTreeNode node : this) {
-			if ( !( ( node.nodeValue instanceof Terminal) && ( ( (Terminal) node.nodeValue)
-					.getValue() == RegexSpecialChars.EMPTY_STRING)))
-				result += node.nodeValue + "  ";
-			else
-				result += "ε  ";
-		}
-		return result;
-	}
-
-*/
-	public Iterator<BinaryTreeNode> iterator() {
+	public Iterator<TreeNode> iterator() {
 		return new SyntaxTreeIterator( this);
 	}
 
 
-	public BinaryTreeNode getRoot() {
-		return root;
+	public TreeNode getRoot() {
+		return nodeStack.peek();
 	}
 
 	
 	public Collection<Character> getCharacterSet() {
 		Collection<Character> characters = new HashSet<Character>();
-		for ( BinaryTreeNode node : this) {
+		for ( TreeNode node : this) {
 			if ( Test.isAssigned( node)
-					&& node.nodeValue instanceof regextodfaconverter.directconverter.syntaxtree.node.Terminal) {
-				Character currentTerminal = ( (regextodfaconverter.directconverter.syntaxtree.node.Terminal) node.nodeValue).getValue();
-				if ( currentTerminal != RegexSpecialChars.TERMINATOR)
-          characters.add( ( (regextodfaconverter.directconverter.syntaxtree.node.Terminal) node.nodeValue).getValue());
+					&& node instanceof Leaf) {
+				Character currentTerminal = (Character)( (Leaf) node).getValue();
 			}
 		}
 		return characters; 
 	}
-
-
-	public BinaryTreeNode getTerminatorNode() {
-		for ( BinaryTreeNode node : this) {
-			if ( Test.isAssigned( node) 
-					&& node.nodeValue instanceof regextodfaconverter.directconverter.syntaxtree.node.Terminal
-					&& ( (regextodfaconverter.directconverter.syntaxtree.node.Terminal) node.nodeValue).getValue() == RegexSpecialChars.TERMINATOR) 
-				return node;
+	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		
+		SyntaxTree clonedTree = (SyntaxTree) super.clone();
+		
+		clonedTree.grammar = this.grammar;
+		clonedTree.rootNode = (TreeNode) this.rootNode.clone();
+		
+		return clonedTree;
+	}
+		
+	
+	public static SyntaxTree compress( SyntaxTree originalTree) {
+		
+		// we work on a copy
+		SyntaxTree clonedTree;
+		try {
+			clonedTree = (SyntaxTree) originalTree.clone();
+		} catch ( CloneNotSupportedException e) {
+			Notification.printDebugException( e);
+			return null;
 		}
-		return null; 
+		
+		// determine all nodes that can be skipped
+		ArrayList<InnerNode> nodesToSkip = new ArrayList<InnerNode>();
+		for ( TreeNode treeNode : clonedTree) {
+			if ( treeNode instanceof InnerNode) {
+				InnerNode innerTreeNode = (InnerNode) treeNode;
+				if ( innerTreeNode.childCount() == 1 
+						&& Test.isAssigned( innerTreeNode.getParentNode())
+						&& innerTreeNode.getParentNode() instanceof InnerNode) {
+					nodesToSkip.add( innerTreeNode);
+				} 
+			}
+		}
+		
+		// remove singles 
+		for ( InnerNode innerTreeNode : nodesToSkip) {
+			InnerNode innerTreeNodeParent = (InnerNode) innerTreeNode.getParentNode();
+			TreeNode childNode = innerTreeNode.getNodeWithIndex( 0);
+			childNode.setParentNode( innerTreeNodeParent);
+			innerTreeNode.setParentNode( null);
+		}
+		return clonedTree;
 	}
 
-
+	
+	@Override
+	public String toString() {
+		return Test.isAssigned( rootNode) 
+				? (( rootNode instanceof InnerNode) 
+						? ((InnerNode)rootNode).toFullString() 
+						: rootNode.toString()) 
+				: super.toString();
+	}
 }

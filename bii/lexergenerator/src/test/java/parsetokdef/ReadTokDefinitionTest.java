@@ -1,11 +1,9 @@
 package parsetokdef;
 
+import java.io.File;
 import java.util.List;
 
-import lexergen.Settings;
-
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import tokenmatcher.attributes.Attribute;
@@ -17,34 +15,31 @@ import utils.IRule;
  */
 public class ReadTokDefinitionTest {
 
-	@Before
-	public void readSettings() {
-		Settings.readSettings();
-	}
-
 	/**
 	 * Test of readFile method, of class ReadTokDefinition.
 	 */
 	@Test
 	public void testReadFile() throws Exception {
-		String path = Settings.getDefaultTokenDef();
-		ReadTokDefinition instance = new ReadTokDefinition();
-		instance.readFile(path);
+		File rdFile = new File("src/test/resources/def/parsetokdef/test.rd");
+		ReadTokDefinition instance = new ReadTokDefinition(rdFile);
+		instance.readFile(rdFile);
 	}
 
 	@Test
 	public void testRegex() throws Exception {
-		String path = null;
-		List<IRule> rules = new ReadTokDefinition(path).getRules();
+		File rdFile = new File("src/test/resources/def/parsetokdef/test.rd");
+		List<IRule> rules = new ReadTokDefinition(rdFile).getRules();
+		
 		String tokenType = rules.get(0).getTokenType();
 		Attribute tokenValue = rules.get(0).getTokenValue();
 		String tokenRegex = rules.get(0).getRegexp();
 		Assert.assertEquals("BRACKET", tokenType);
-		Assert.assertEquals("(", tokenValue);
+		Assert.assertEquals("(", tokenValue.toString());
 		Assert.assertEquals("\\(", tokenRegex);
+		
 		tokenType = rules.get(5).getTokenType();
 		tokenValue = rules.get(5).getTokenValue();
 		Assert.assertEquals("OP", tokenType);
-		Assert.assertEquals("L", tokenValue);
+		Assert.assertEquals("L", tokenValue.toString());
 	}
 }

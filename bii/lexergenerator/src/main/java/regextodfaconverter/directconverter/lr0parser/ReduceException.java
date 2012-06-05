@@ -30,7 +30,6 @@
  *
  */
 
-
 package regextodfaconverter.directconverter.lr0parser;
 
 public class ReduceException extends Exception {

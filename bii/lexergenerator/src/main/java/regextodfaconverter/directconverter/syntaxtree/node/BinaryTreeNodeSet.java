@@ -30,7 +30,6 @@
  *
  */
 
-
 package regextodfaconverter.directconverter.syntaxtree.node;
 
 import java.util.HashSet;

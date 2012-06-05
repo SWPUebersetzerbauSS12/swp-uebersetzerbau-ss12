@@ -32,7 +32,6 @@
 
 package tokenmatcher.attributes;
 
-
 /**
  * Klasse für Integer-Attribute, deren Wert 
  * nicht in Tokendefinitionsdatei angeben ist, 
@@ -45,6 +44,11 @@ package tokenmatcher.attributes;
  */
 public class ParseIntAttribute extends GenericParseAttribute<Integer> {
 
+	/**
+	 * serialVersionUID
+	 */
+	private static final long serialVersionUID = -114480103207948465L;
+	
 	public ParseIntAttribute() {
 		super( Integer.class);
 	}

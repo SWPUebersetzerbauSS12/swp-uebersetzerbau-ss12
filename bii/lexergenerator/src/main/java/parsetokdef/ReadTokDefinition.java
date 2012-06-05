@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import lexergen.Settings;
 import utils.IRule;
 import utils.Rule;
 
@@ -60,22 +59,7 @@ public class ReadTokDefinition extends ReadTokDefAbstract {
 
 	public ReadTokDefinition(File file) throws IOException,
 			TokenDefinitionException {
-		if (file != null)
-			readFile(file.getCanonicalPath());
-		else
-			readFile();
-	}
-
-	/**
-	 * reads a token defintion file which should be defined in token settings
-	 * definition is taken.
-	 * 
-	 * @throws FileNotFoundException
-	 * @throws TokenDefinitionException
-	 */
-	public ReadTokDefinition() throws FileNotFoundException,
-			TokenDefinitionException, IOException {
-		readFile(null);
+		super(file);
 	}
 
 	/**
@@ -86,36 +70,9 @@ public class ReadTokDefinition extends ReadTokDefAbstract {
 	 * @throws FileNotFoundException
 	 * @throws TokenDefinitionException
 	 */
-	public ReadTokDefinition(String path) throws FileNotFoundException,
-			TokenDefinitionException, IOException {
-		readFile(path);
-	}
-
-	/**
-	 * reads the default token definition, which is located in
-	 * ./src/main/resources/def/tokendefinition
-	 * 
-	 * @throws FileNotFoundException
-	 * @throws TokenDefinitionException
-	 */
-	public void readFile() throws FileNotFoundException,
+	public void readFile(File file) throws FileNotFoundException,
 			TokenDefinitionException {
-		readFile(null);
-	}
-
-	/**
-	 * reads a token defintion file. If the path is null, the default token
-	 * definition is taken.
-	 * 
-	 * @param path
-	 * @throws FileNotFoundException
-	 * @throws TokenDefinitionException
-	 */
-	public void readFile(String path) throws FileNotFoundException,
-			TokenDefinitionException {
-
-		path = (path == null) ? Settings.getDefaultTokenDef() : path;
-		Scanner s = new Scanner(new File(path));
+		Scanner s = new Scanner(file);
 
 		// new delimeter for getting the tokens
 		s.useDelimiter("(\\n+)|(\\t+\\{)");

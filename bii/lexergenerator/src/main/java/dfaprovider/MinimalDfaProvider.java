@@ -186,10 +186,11 @@ public class MinimalDfaProvider {
 			throw new MinimalDfaProviderException("Der angegebene Pfad '" + rdFile.getAbsolutePath()
 					+ "' verweist nicht auf eine Datei (mit regulären Definitionen)!");
 		}
-		if (!dfaFile.isFile()) {
-			throw new MinimalDfaProviderException("Der angegebene Pfad '" + dfaFile.getAbsolutePath()
-					+ "' verweist nicht auf eine Datei (mit serialisiertem DFA)!");
-		}
+//		
+//		if (!dfaFile.isFile()) {
+//			throw new MinimalDfaProviderException("Der angegebene Pfad '" + dfaFile.getAbsolutePath()
+//					+ "' verweist nicht auf eine Datei (mit serialisiertem DFA)!");
+//		}
 		
 		/** Logik */
 		String version = getVersion();

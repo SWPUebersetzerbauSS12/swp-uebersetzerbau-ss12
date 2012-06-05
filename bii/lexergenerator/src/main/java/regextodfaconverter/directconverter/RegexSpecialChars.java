@@ -30,7 +30,6 @@
  *
  */
 
-
 package regextodfaconverter.directconverter;
 
 public class RegexSpecialChars {

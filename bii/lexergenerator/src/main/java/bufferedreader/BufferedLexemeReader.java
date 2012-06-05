@@ -61,9 +61,12 @@ public class BufferedLexemeReader implements LexemeReader {
 	private boolean endOfFileReached = false;
 	private String sourceFile;
 	
-	public BufferedLexemeReader( String SourceFile) throws LexemeReaderException {
-		this.sourceFile = sourceFile;
-		reopen();
+
+	public BufferedLexemeReader( File SourceFile) throws IOException {
+		// we open the file read only
+		fileReader = new FileReader( SourceFile);
+		initBuffer();
+
 	}
 	
 	private void initBuffer() {

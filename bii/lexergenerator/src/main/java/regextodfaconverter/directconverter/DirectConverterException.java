@@ -32,15 +32,32 @@
 
 package regextodfaconverter.directconverter;
 
-
+/**
+ * 
+ * @author 
+ *
+ */
 public class DirectConverterException extends Exception {
 	
 	
+	/**
+	 * serialVersionUID
+	 */
+	private static final long serialVersionUID = -8619890001300848136L;
+
+	/**
+	 * Erstellt ein neues DirectConverterException Objekt.
+	 */
 	public DirectConverterException() {
 		super();
 	}
 	
-
+	/**
+	 * Erstellt ein neues DirectConverterException Objekt.
+	 * 
+	 * @param message
+	 *            Die genaue Fehlerbeschreibung.
+	 */
 	public DirectConverterException( String message) {
 		super( message);
 	}

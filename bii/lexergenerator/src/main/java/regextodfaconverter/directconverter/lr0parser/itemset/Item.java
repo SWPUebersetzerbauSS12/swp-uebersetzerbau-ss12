@@ -30,7 +30,6 @@
  *
  */
 
-
 package regextodfaconverter.directconverter.lr0parser.itemset;
 
 import regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;

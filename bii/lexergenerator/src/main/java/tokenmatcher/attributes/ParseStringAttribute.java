@@ -42,7 +42,11 @@ package tokenmatcher.attributes;
  * @param <T>
  */
 public class ParseStringAttribute extends GenericParseAttribute<String> {
-
+	/**
+	 * serialVersionUID
+	 */
+	private static final long serialVersionUID = 7341572206725830700L;
+	
 	public ParseStringAttribute() {
 		super( String.class);
 	}

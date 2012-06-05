@@ -41,6 +41,12 @@ package tokenmatcher.attributes;
  * @param <T>
  */
 public class StringAttribute extends GenericAttribute<String> {
+
+	/**
+	 * serialVersionUID
+	 */
+	private static final long serialVersionUID = 2418689204545162016L;
+	
 	
 	public StringAttribute( String value) {
 	  super( String.class, value);

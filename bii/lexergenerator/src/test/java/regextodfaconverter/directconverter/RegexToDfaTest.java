@@ -1,5 +1,7 @@
 package regextodfaconverter.directconverter;
 
+import java.io.File;
+
 import org.junit.Test;
 
 import bufferedreader.BufferedLexemeReader;
@@ -27,7 +29,11 @@ public class RegexToDfaTest {
 			//	.convert( "<=|<>|<<|<", new regextodfaconverter.fsm.StatePayload( "OP", new StringAttribute( "LE")));
 			//	.convert( "(a|b)*abb", new regextodfaconverter.fsm.StatePayload( "OP", new StringAttribute( "LE")));
 
+<<<<<<< HEAD
 		LexemeReader lexemeReader = new BufferedLexemeReader( "src/test/resources/source/tokenmatcher/testrelop.fun");// new
+=======
+		LexemeReader lexemeReader = new BufferedLexemeReader(new File("src/test/resources/source/tokenmatcher.testrelop.fun"));// new
+>>>>>>> a0adc8a5a031dab17195df198a5a83aa2caee269
 																																						// SimpleLexemeReader(
 		System.out.println(fsm);
 				System.out.println();

@@ -30,7 +30,10 @@
  *
  */
 
+
 package tokenmatcher.attributes;
+
+import java.io.Serializable;
 
 /**
  * Schnittstelle für das Attribut eines Token.
@@ -38,7 +41,7 @@ package tokenmatcher.attributes;
  * @author Johannes Dahlke
  *
  */
-public interface Attribute {
+public interface Attribute  extends Serializable  {
 
 	Object lexemToValue( String lexem);
 	

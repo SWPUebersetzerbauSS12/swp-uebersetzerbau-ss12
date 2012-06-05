@@ -1,6 +1,3 @@
-package bufferedreader;
-
-
 /*
  * 
  * Copyright 2012 lexergen.
@@ -32,6 +29,8 @@ package bufferedreader;
  * Version: 1.0
  *
  */
+
+package bufferedreader;
 
 public class SpecialChars {
 

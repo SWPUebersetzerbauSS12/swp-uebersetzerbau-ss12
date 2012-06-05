@@ -17,6 +17,10 @@ public class GrammarReader {
 	
 	private Vector<String> heads;
 	
+	private enum ReadingState {
+		   TERMINAL, NONTERMINAL, NONE
+		 }
+	
 	/**
 	 * Getter for the Startsymbol
 	 * 
@@ -44,8 +48,10 @@ public class GrammarReader {
 	public Map<String, Vector<Vector<String>>> createGrammar(String file,int NItr){
 		// Read the file
 		Vector<Productions>grammar=ReadFile(file);
+		Printer.printGrammar(grammar);
 		// Perform Leftfactorisation
 		grammar=combineLeftFactorization(grammar);
+		Printer.printGrammar(grammar);
 		// Eliminate indirect and direct leftrekursions
 		
 		heads = new Vector<String>(); 
@@ -55,6 +61,7 @@ public class GrammarReader {
 		Boolean[] rekursive = {true};
 		int iteration = 0;
 		grammar=eliminateDirectLeftRekursion(grammar);
+		Printer.printGrammar(grammar);
 		// stop at 4 Iterations, the fifth checks is the grammar is deemed unparsable
 		while (rekursive[0] && iteration < NItr){
 			rekursive[0] = false;
@@ -62,6 +69,7 @@ public class GrammarReader {
 			grammar=eliminateDirectLeftRekursion(grammar);
 			iteration++;
 		}
+		System.out.println(iteration);
 		// definie first Element in Vector as startsymbol
 		startSymbol = grammar.elementAt(0).getHead();
 		return buildGrammarMap(grammar);
@@ -84,24 +92,69 @@ public class GrammarReader {
 		try {
 		    BufferedReader in = new BufferedReader(new FileReader(file));
 		    
+		    ReadingState state;
 		    String line;
 		    while ((line = in.readLine()) != null) {
-		    	//Split line in head and rump at ::=
-		    	String[] nonterminalLR = line.split("::=");
-		    	//Create Nonterminal and fill head and rump
-		    	Productions nonterminal = new Productions(nonterminalLR[0].trim());
-		    	//Split productions in Rump at |
-		    	String[] b = nonterminalLR[1].split("\\|");
-		    	//Insert every Production to the Nonterminal
-		        for (String production: b) {
-		        	//Split Elementes at Space
-		    		String[] c = production.trim().split(" ");
-		    		List<String> list = Arrays.asList(c);
-		    		Vector<String> productionVector = new Vector<String>(list);
-		    		nonterminal.InsertProduction(productionVector);
+		    	if (!line.equals("")){
+			    	//Split line in head and rump at ::=
+			    	String[] nonterminalLR = line.split("::=");
+			    	//Create Nonterminal and fill head and rump
+			    	Productions nonterminal = new Productions(nonterminalLR[0].trim());
+
+			    	String rump = "";
+			    	for (int i=1; i< nonterminalLR.length;i++){
+			    		rump+=nonterminalLR[i];
+			    	}
+			    	
+			    	Vector<String> productionVector = new Vector<String>();
+			    	state = ReadingState.NONE;
+			    	String symbol="";
+			    	for (char c:rump.toCharArray()){
+		    			switch (state){
+		    			
+		    			case NONE:
+		    				
+		    				if (c == '"'){
+		    					state = ReadingState.TERMINAL;
+		    				}
+		    				else if (c == '<'){
+		    					state = ReadingState.NONTERMINAL;
+		    				}
+		    				else if (c == '|'){
+		    					nonterminal.InsertProduction(productionVector);
+		    					productionVector = new Vector<String>();
+		    				}
+		    				break;
+		    			
+		    			case TERMINAL:
+		    				
+		    				if (c == '"'){
+		    					state = ReadingState.NONE;
+		    					productionVector.add(symbol);
+		    					symbol = "";
+		    				}
+		    				else{
+		    					symbol+=c;
+		    				}
+		    				break;
+		    				
+		    			case NONTERMINAL:
+		    				
+		    				if (c == '>'){
+		    					state = ReadingState.NONE;
+		    					productionVector.add("<"+symbol+">");
+		    					symbol = "";
+		    				}
+		    				else{
+		    					symbol+=c;
+		    				}
+		    				break;
+		    			}
+			    	}
+			    	nonterminal.InsertProduction(productionVector);
+			    	//Finaly add the Nonterminal to the Grammar
+			    	grammar.add(nonterminal);
 		    	}
-		        //Finaly add the Nonterminal to the Grammar
-		    	grammar.add(nonterminal);
 		    }
 		    in.close();
 		} catch (IOException e) {
@@ -356,7 +409,6 @@ public class GrammarReader {
 			int i=0;
 			//interate through every production and check if first Element equals head 
 			for (Vector<String> production:nonterminal.productions){
-
 				String first = production.firstElement();
 				if (first.equals(head)){
 					bitmap[i] = true;

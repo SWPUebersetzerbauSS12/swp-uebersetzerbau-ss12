@@ -38,7 +38,7 @@ import utils.Test;
 
 /**
  * 
- * @author Joihannes Dahlke
+ * @author Johannes Dahlke
  *
  * @param <E>
  */

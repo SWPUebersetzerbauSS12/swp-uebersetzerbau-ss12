@@ -33,24 +33,36 @@
 package tokenmatcher.attributes;
 
 /**
- * Klasse für String-Attribute, deren Wert 
- * nicht in Tokendefinitionsdatei angeben ist, 
- * sondern aus dem geparsten Lexem hervorgeht.
+ * Generische Basisklasse für Attribute, deren Wert 
+ * bereits in der Tokendefinitionsdatei angeben ist.
  * 
  * @author Johannes Dahlke
  *
  * @param <T>
  */
-public class ParseStringAttribute extends GenericParseAttribute<String> {
+public class GenericAttribute<T> implements Attribute {
 
-	public ParseStringAttribute() {
-		super( String.class);
+	private final T value;
+	private final Class<T> valueType;
+	
+	public GenericAttribute( Class<T> valueType, T value) {
+	  super();
+	  this.valueType = valueType;
+	  this.value = value;
+	}
+	
+	public Object lexemToValue( String lexem) {
+		// ignore lexem
+	  return value;	
+	}
+
+	public Class getValueType() {
+		return valueType;
 	}
 
 	@Override
-	protected Object parseLexem( String lexem) {
-		return lexem;
+	public String toString() {
+		return value.toString();
 	}
-
 	
 }

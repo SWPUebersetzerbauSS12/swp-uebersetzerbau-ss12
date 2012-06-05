@@ -33,24 +33,18 @@
 package tokenmatcher.attributes;
 
 /**
- * Klasse für String-Attribute, deren Wert 
- * nicht in Tokendefinitionsdatei angeben ist, 
- * sondern aus dem geparsten Lexem hervorgeht.
+ * Klasse für Boolean-Attribute, deren Wert 
+ * bereits in der Tokendefinitionsdatei angeben ist.
  * 
  * @author Johannes Dahlke
+ *         Yanlei Li
  *
  * @param <T>
  */
-public class ParseStringAttribute extends GenericParseAttribute<String> {
-
-	public ParseStringAttribute() {
-		super( String.class);
+public class BoolAttribute extends GenericAttribute<Boolean> {
+	
+	public BoolAttribute( Boolean value) {
+	  super( Boolean.class, value);
 	}
-
-	@Override
-	protected Object parseLexem( String lexem) {
-		return lexem;
-	}
-
 	
 }

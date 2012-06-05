@@ -32,24 +32,26 @@
 
 package tokenmatcher.attributes;
 
+
 /**
- * Klasse für String-Attribute, deren Wert 
+ * Klasse für Float-Attribute, deren Wert 
  * nicht in Tokendefinitionsdatei angeben ist, 
  * sondern aus dem geparsten Lexem hervorgeht.
  * 
  * @author Johannes Dahlke
+ *         Yanlei Li
  *
  * @param <T>
  */
-public class ParseStringAttribute extends GenericParseAttribute<String> {
+public class ParseFloatAttribute extends GenericParseAttribute<Float> {
 
-	public ParseStringAttribute() {
-		super( String.class);
+	public ParseFloatAttribute() {
+		super( Float.class);
 	}
 
 	@Override
 	protected Object parseLexem( String lexem) {
-		return lexem;
+		return Float.parseFloat( lexem);
 	}
 
 	

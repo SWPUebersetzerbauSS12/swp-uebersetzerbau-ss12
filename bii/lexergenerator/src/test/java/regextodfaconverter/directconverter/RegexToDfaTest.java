@@ -17,7 +17,7 @@ public class RegexToDfaTest {
 
 	@Test
 	public void testReduceAndBracketRegex() throws Exception {
-
+		
 		FiniteStateMachine<Character, ? extends StatePayload> fsm = new RegexToDfaConverter()
 				.convert( "(a|b)*abb", new regextodfaconverter.fsm.StatePayload( "OP", new StringAttribute( "LE")));
 
@@ -27,7 +27,6 @@ public class RegexToDfaTest {
 				System.out.println();
 		assert fsm.isDeterministic();
 		System.out.println( fsm.isDeterministic());
-		
 		System.out.println(new MinimalDfa( fsm));
 		Tokenizer tokenizer = new Tokenizer( lexemeReader, new MinimalDfa( fsm));
 /*

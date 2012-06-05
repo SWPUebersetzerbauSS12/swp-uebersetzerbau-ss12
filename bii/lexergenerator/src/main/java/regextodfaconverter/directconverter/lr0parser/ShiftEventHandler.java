@@ -31,11 +31,12 @@
  */
 
 
-package regextodfaconverter.directconverter.syntaxtree.node;
+package regextodfaconverter.directconverter.lr0parser;
 
+import regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
 
-public interface NewNodeEventHandler {
-  
-  void doOnEvent( Object sender, TreeNode node);
-  
+public interface ShiftEventHandler {
+
+	
+	Object handle( Object sender, Terminal shiftedTerminal) throws Exception;
 }

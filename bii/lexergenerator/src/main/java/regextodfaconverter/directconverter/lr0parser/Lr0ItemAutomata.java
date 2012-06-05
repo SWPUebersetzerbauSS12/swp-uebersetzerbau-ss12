@@ -59,7 +59,17 @@ import regextodfaconverter.directconverter.lr0parser.itemset.Item;
 import regextodfaconverter.directconverter.lr0parser.itemset.ItemSet;
 import utils.Test;
 
-
+/**
+ * Ein LR(0)-Parser. Ein LR(0)-Parser arbeitet grundsätzlich ohne Lookahead. 
+ * Dieser LR(0)-Parser reduziert zudem die Wahrscheinlichkeit für das Auftreten 
+ * von shift-reduce- und reduce-reduce-Konflikten, indem die Followmengen bei 
+ * der Erzeugung der reduce-Eintrage betrachtet werden. Kommt es so zu keinen Konflikten, 
+ * dann liefert die Eigenschaftsabfrage mit {@link Lr0ItemAutomata#isSLR1()} den Wert true.   
+ * 
+ * @author Johannes Dahlke
+ *
+ * @param <Element> der Typ eines Elementes der zu verarbeitenden Eingabe.
+ */
 public class Lr0ItemAutomata<Element extends Comparable<Element>> implements ItemAutomata<Element>, ItemAutomataInterior<Element> {
 
 	private HashSet<Closure> closures = new HashSet<Closure>();
@@ -71,8 +81,8 @@ public class Lr0ItemAutomata<Element extends Comparable<Element>> implements Ite
 	private Stack<Closure> closureStack;
 	private Queue<Element> inputQueue;
 	
-	private NonterminalEventHandler nonterminalHandler;
-	private TerminalEventHandler terminalHandler;
+	private ReduceEventHandler reduceEventHandler;
+	private ShiftEventHandler shiftEventHandler;
 	
 
 	private Map<Closure, Map<RuleElement, EventHandler>> parserTable = new HashMap<Closure, Map<RuleElement, EventHandler>>() {
@@ -247,7 +257,7 @@ public class Lr0ItemAutomata<Element extends Comparable<Element>> implements Ite
 		ResetAutomata();
 		LoadInputIntoQueue( input);
 
-		EventHandler handler;
+	  EventHandler handler;
 		boolean accepted = false;
 		try {
 		 do {	
@@ -260,17 +270,23 @@ public class Lr0ItemAutomata<Element extends Comparable<Element>> implements Ite
 				handler = parserTable.get( currentClosure).get( terminalToHandle);
 				handler.handle( this);
 			  if ( handler instanceof ReduceAction) {
-			  	// process the goto
 			  	currentClosure = closureStack.peek();
 			  	RuleElement nonterminalToHandle = symbolStack.peek();
+			  	// process the goto
 			  	assert nonterminalToHandle instanceof Nonterminal;
 			  	EventHandler gotoHandler = parserTable.get( currentClosure).get( nonterminalToHandle);
 			  	gotoHandler.handle( this);	
-			  	if ( Test.isAssigned( nonterminalHandler))
-			  		nonterminalHandler.handle( this, (Nonterminal) nonterminalToHandle);
+			  
+			    // notify about reduce action
+			  	if ( Test.isAssigned( reduceEventHandler)) {
+			  		int countOfReducedElements = ((ReduceAction) handler).getReduceRule().getRightRuleSide().size();
+			  		int countOfLeftElements = getSymbolStack().size() -1 -1; // we subtract the terminator symbol and the nonterminal from left side of  production
+			  		reduceEventHandler.handle( this, (Nonterminal) nonterminalToHandle, countOfReducedElements, countOfLeftElements);
+			  	}
+			  	
 			  } else if ( handler instanceof ShiftAction) {			  	
-			  	if ( Test.isAssigned( terminalHandler))
-			  		terminalHandler.handle( this, (Terminal) terminalToHandle);
+			  	if ( Test.isAssigned( shiftEventHandler))
+			  		shiftEventHandler.handle( this, (Terminal) terminalToHandle);
 			  }
 				
 				accepted = handler instanceof AcceptAction;
@@ -425,14 +441,13 @@ public class Lr0ItemAutomata<Element extends Comparable<Element>> implements Ite
 		return isSLR1;
 	}
 	
-	
-	
-	public void setNonterminalHandler( NonterminalEventHandler nonterminalHandler) {
-		this.nonterminalHandler = nonterminalHandler;
+
+	public void setReduceEventHandler( ReduceEventHandler reduceEventHandler) {
+		this.reduceEventHandler = reduceEventHandler;
 	}
-	
-	
-	public void setTerminalHandler( TerminalEventHandler terminalHandler) {
-		this.terminalHandler = terminalHandler;
+
+
+	public void setShiftEventHandler( ShiftEventHandler shiftEventHandler) {
+		this.shiftEventHandler = shiftEventHandler;
 	}
 }

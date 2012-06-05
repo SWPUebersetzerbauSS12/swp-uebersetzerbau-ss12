@@ -83,9 +83,16 @@ public class Nonterminal extends RuleElement {
 			return 1;
 		if ( o instanceof EmptyString)
 			return 1;
-		if ( o instanceof Nonterminal)
-			return ((Nonterminal)o).name.compareTo( this.name);
-		
+		if ( o instanceof Nonterminal) {
+			if ( Test.isAssigned( ((Nonterminal)o).name)
+					&& Test.isAssigned( this.name))
+			  return ((Nonterminal)o).name.compareTo( this.name);
+			else if ( Test.isAssigned( this.name))
+			  return 1;
+			else if ( Test.isAssigned( ((Nonterminal)o).name))
+			  return -1;
+			else return 0; // both has no name
+		}
 		return -1;
 	}
 	

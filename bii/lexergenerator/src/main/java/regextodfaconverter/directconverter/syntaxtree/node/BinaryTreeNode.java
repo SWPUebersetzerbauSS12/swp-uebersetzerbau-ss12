@@ -44,6 +44,9 @@ import utils.Test;
  */
 public class BinaryTreeNode {
 	
+	private static int leafCounter = 0;
+  private int position; 
+	
 	public NodeValue nodeValue; 
 	public BinaryTreeNode leftChildNode;
 	public BinaryTreeNode rightChildNode;
@@ -52,6 +55,7 @@ public class BinaryTreeNode {
 	public BinaryTreeNode( NodeValue nodeValue, BinaryTreeNode leftChildNode, BinaryTreeNode rightChildNode) {
 		super();
 		this.nodeValue = nodeValue;
+		position = nodeValue instanceof Terminal ? ++leafCounter : 0;
 		
 		this.leftChildNode = leftChildNode;
 		if ( Test.isAssigned( this.leftChildNode))
@@ -66,13 +70,18 @@ public class BinaryTreeNode {
 	public String toString() {
 		String result = "";
 
-		result += " ( ";
-		result += Test.isAssigned( leftChildNode) ? leftChildNode.toString() : "null";
-		result += " ) <-- ";
-		result += Test.isAssigned( nodeValue) ? nodeValue.toString() : "null";
-		result += " --> ( ";
-		result += Test.isAssigned( rightChildNode) ? rightChildNode.toString() : "null";
-		result += " ) ";
-		return result;	}
+		 result += " ( ";
+     result += Test.isAssigned( leftChildNode) ? leftChildNode.toString() : "null";
+     result += " ) <-- ";
+     result += (Test.isAssigned( nodeValue) ? nodeValue.toString() : "null") + (nodeValue instanceof Terminal ? ":" +position : "");
+     result += " --> ( ";
+     result += Test.isAssigned( rightChildNode) ? rightChildNode.toString() : "null";
+     result += " ) ";
+		return result;	
+	}
 	
+	
+	public int getPosition() {
+		return position;
+	}
 }

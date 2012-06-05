@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import regextodfaconverter.directconverter.lr0parser.grammar.ContextFreeGrammar;
 import regextodfaconverter.directconverter.lr0parser.grammar.GrammarTest;
+import regextodfaconverter.directconverter.lr0parser.grammar.Grammars;
 import regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
 import regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
 import regextodfaconverter.directconverter.lr0parser.grammar.ProductionSet;
@@ -16,60 +17,7 @@ import regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
 
 public class ItemAutomataTest {
 
-	
-	public static ContextFreeGrammar getRegexGrammar() {
-		ContextFreeGrammar grammar = new ContextFreeGrammar();
-		// we define a simple regex grammar for testing
-		Nonterminal R = new Nonterminal( "R");
-		Nonterminal S = new Nonterminal( "S");
-		Nonterminal T = new Nonterminal( "T");
-		Nonterminal U = new Nonterminal( "U");
-		Nonterminal V = new Nonterminal( "V");
-		Terminal<Character> a = new Terminal<Character>( 'a');
-	
-		Terminal<Character> leftBracket = new Terminal<Character>( '(');
-		Terminal<Character> rightBracket = new Terminal<Character>( ')');
-		Terminal<Character> opKleeneClosure = new Terminal<Character>( '*');
-		Terminal<Character> opAlternative = new Terminal<Character>( '+');
-		Terminal<Character> opConcatenation = new Terminal<Character>( '.');
-		
-		ProductionSet productions = new ProductionSet();
-		productions.add( new ProductionRule(R, R, opAlternative, S));
-		productions.add( new ProductionRule(R, S));
-		productions.add( new ProductionRule(S, S, opConcatenation, T));
-		productions.add( new ProductionRule(S, T));
-		productions.add( new ProductionRule(T, U, opKleeneClosure));
-		productions.add( new ProductionRule(T, U));
-		//productions.add( new ProductionRule(U, R));
-		productions.add( new ProductionRule(U, V));
-		productions.add( new ProductionRule(U, leftBracket, R, rightBracket));
-		productions.add( new ProductionRule(V, a));
-		
-		grammar.addAll( productions);
-		grammar.setStartSymbol( R);
-		
-		return grammar;
-	}
-	
-	private static ContextFreeGrammar getExampleGrammar() {
-		ContextFreeGrammar grammar = new ContextFreeGrammar();
-		// we define a simple regex grammar for testing
-		Nonterminal S = new Nonterminal( "S");
-		Terminal<Character> a = new Terminal<Character>( 'a');
-	
-		Terminal<Character> opStar = new Terminal<Character>( '*');
-		Terminal<Character> opPlus = new Terminal<Character>( '+');
-		
-		ProductionSet productions = new ProductionSet();
-		productions.add( new ProductionRule(S, S, S, opPlus));
-		productions.add( new ProductionRule(S, S, S, opStar));
-		productions.add( new ProductionRule(S, a));
-		
-		grammar.addAll( productions);
-		
-		return grammar;
-	}
-	
+
 
 	private void testMatchingOfExpressionWithGrammar( String expression, ContextFreeGrammar grammar) throws Exception {
 		Lr0ItemAutomata<Character> itemAutomata = new Lr0ItemAutomata<Character>( grammar);
@@ -96,13 +44,13 @@ public class ItemAutomataTest {
 
 	@Test
 	public void testExample() throws Exception {
-		testMatchingOfExpressionWithGrammar( "aa*a+", getExampleGrammar());
+		testMatchingOfExpressionWithGrammar( "aa*a+", Grammars.getExampleGrammar());
 	}
 
 	
 	@Test
 	public void testRegex() throws Exception {
-		testMatchingOfExpressionWithGrammar( "a.a+a+a", getRegexGrammar());
+		testMatchingOfExpressionWithGrammar( "a.a+a+a", Grammars.getRegexGrammar());
 	}
 		
 }

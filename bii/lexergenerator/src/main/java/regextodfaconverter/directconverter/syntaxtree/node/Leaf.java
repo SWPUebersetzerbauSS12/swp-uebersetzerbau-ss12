@@ -30,13 +30,20 @@
  *
  */
 
+package regextodfaconverter.directconverter.syntaxtree.node;
 
-package regextodfaconverter.directconverter.lr0parser;
+import regextodfaconverter.directconverter.syntaxtree.SyntaxTree;
 
-import regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
-
-public interface TerminalEventHandler {
-
+/**
+ * Liefert den Wert eines Blattes des {@link SyntaxTree Syntaxbaumes}.
+ * 
+ * @author Johannes Dahlke
+ *
+ */
+public class Leaf<Value> extends TreeNode<Value> {	
 	
-	Object handle( Object sender, Terminal terminal) throws Exception;
+	public Leaf( Value value) {
+		super( value);
+	}
+
 }

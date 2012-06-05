@@ -32,11 +32,19 @@
 
 package regextodfaconverter.directconverter;
 
+import java.io.ObjectInputStream.GetField;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import regextodfaconverter.ConvertExecption;
+import regextodfaconverter.directconverter.lr0parser.grammar.ContextFreeGrammar;
+import regextodfaconverter.directconverter.lr0parser.grammar.Grammar;
+import regextodfaconverter.directconverter.lr0parser.grammar.Grammars;
+import regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
+import regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
+import regextodfaconverter.directconverter.lr0parser.grammar.ProductionSet;
 import regextodfaconverter.directconverter.syntaxtree.SyntaxTree;
 import regextodfaconverter.directconverter.syntaxtree.SyntaxTreeAttributor;
 import regextodfaconverter.directconverter.syntaxtree.SyntaxTreeException;
@@ -52,18 +60,28 @@ import utils.Notification;
 import utils.Sets;
 import utils.Test;
 
+
 /**
- * Stellt Funktionalitäten bereit, um einen vereinfachten regulären Ausdruck in eine DFA umzuwandeln. 
+ * Stellt Funktionalitäten bereit, um einen vereinfachten regulären Ausdruck in
+ * eine DFA umzuwandeln.
  * 
  * @author Johannes Dahlke
  * 
- * @see <a href="http://kontext.fraunhofer.de/haenelt/kurs/folien/Haenelt_FSA_RegExFSA.pdf">Fraunhofer Institut: Überführung regulärer Ausdrücke in endliche Automaten</a>
- * @see <a href="http://kontext.fraunhofer.de/haenelt/kurs/folien/Haenelt_RegEx-FSA-GMY.pdf">Fraunhofer Institut: Der Algorithmus von Glushkov und McNaughton/Yamada</a>
- * @see <a href="http://kontext.fraunhofer.de/haenelt/kurs/folien/FSA-RegA-6.pdf">Endliche Automaten: Reguläre Mengen, Reguläre Ausdrücke, reguläre Sprachen und endliche Automaten</a>
- * @see <a href="http://kontext.fraunhofer.de/haenelt/kurs/Skripten/FSA-Skript/Haenelt_EA_RegEx2EA.pdf">Überführung regulärer Ausdrücke in endliche Automaten</a>
+ * @see <a
+ *      href="http://kontext.fraunhofer.de/haenelt/kurs/folien/Haenelt_FSA_RegExFSA.pdf">Fraunhofer
+ *      Institut: Überführung regulärer Ausdrücke in endliche Automaten</a>
+ * @see <a
+ *      href="http://kontext.fraunhofer.de/haenelt/kurs/folien/Haenelt_RegEx-FSA-GMY.pdf">Fraunhofer
+ *      Institut: Der Algorithmus von Glushkov und McNaughton/Yamada</a>
+ * @see <a
+ *      href="http://kontext.fraunhofer.de/haenelt/kurs/folien/FSA-RegA-6.pdf">Endliche
+ *      Automaten: Reguläre Mengen, Reguläre Ausdrücke, reguläre Sprachen und
+ *      endliche Automaten</a>
+ * @see <a
+ *      href="http://kontext.fraunhofer.de/haenelt/kurs/Skripten/FSA-Skript/Haenelt_EA_RegEx2EA.pdf">Überführung
+ *      regulärer Ausdrücke in endliche Automaten</a>
  */
 public class RegexToDfaConverter {
-	
 
 	/**
 	 * Wandelt einen vereinfachten regulären Ausdruck in einen DFA um.
@@ -76,130 +94,167 @@ public class RegexToDfaConverter {
 	 * @throws Exception
 	 * 
 	 */
-	public static <StatePayloadType extends Serializable> FiniteStateMachine<Character, StatePayloadType> convert(
-			String regex, StatePayloadType payload) throws Exception {
+	public static <StatePayloadType extends Serializable> FiniteStateMachine<Character, StatePayloadType> convert( String regex, StatePayloadType payload)
+			throws Exception {
 		try {
-			String terminizedRegex = "(" + regex + ")" + RegexSpecialChars.TERMINATOR;
-			SyntaxTree syntaxTree = convertRegexToSyntaxTree( terminizedRegex);
-			FiniteStateMachine<Character, StatePayloadType> dfa = convertSyntaxTreeToDfa( syntaxTree, payload);
-			return dfa;
+			SyntaxTree syntaxTree = convertRegexToSyntaxTree( regex);
+			
+			System.out.println( SyntaxTree.compress( syntaxTree));
+		//TODO	FiniteStateMachine<Character, StatePayloadType> dfa = convertSyntaxTreeToDfa( syntaxTree, payload);
+		//	return dfa;
+			return null;
 		} catch ( Exception e) {
 			Notification.printDebugException( e);
 			throw new Exception( "Cannot convert regex to DFA.");
 		}
 	}
+	
 
-
-  /**
-   * 
-   * @param Regex
-   * @return
-   * @throws SyntaxTreeException 
-   */
+	/**
+	 * 
+	 * @param Regex
+	 * @return
+	 * @throws SyntaxTreeException
+	 */
 	private static SyntaxTree convertRegexToSyntaxTree( String regex) throws SyntaxTreeException {
 		final SyntaxTreeAttributor syntaxTreeAttributor = new SyntaxTreeAttributor();
-		SyntaxTree syntaxTree = new SyntaxTree( regex, new NewNodeEventHandler() {
-			
+		SyntaxTree syntaxTree = new SyntaxTree( Grammars.getRegexGrammar(), regex, null);
+
+		/*		SyntaxTree syntaxTree = new SyntaxTree( Grammars.getRegexGrammar(), regex, new NewNodeEventHandler() {
+
 			public void doOnEvent( Object sender, BinaryTreeNode node) {
 				syntaxTreeAttributor.nullable( node);
 				syntaxTreeAttributor.firstpos( node);
 				syntaxTreeAttributor.lastpos( node);
 			}
-		} );
-		
-		
+		});
+
 		// calc followpos
 		syntaxTreeAttributor.resetFollowPositions();
 		for ( BinaryTreeNode node : syntaxTree) {
 			syntaxTreeAttributor.followpos( node);
 		}
 		syntaxTree.setAnnotations( syntaxTreeAttributor);
-	
+*/
 		return syntaxTree;
 	}
-	
+
+
 	/**
-	 * Konvertiert einen annotierten 
+	 * Konvertiert einen annotierten Syntaxbaum in einen deterministischen
+	 * endlichen Automaten
+	 * 
 	 * @param syntaxTree
 	 * @return
-	 * @throws Exception 
+	 * @throws DirectConverterException
+	 * @throws Exception
 	 */
-	private static <StatePayloadType extends Serializable> FiniteStateMachine<Character, StatePayloadType> convertSyntaxTreeToDfa( SyntaxTree syntaxTree, StatePayloadType payload) throws Exception {
+	private static <StatePayloadType extends Serializable> FiniteStateMachine<Character, StatePayloadType> convertSyntaxTreeToDfa( SyntaxTree syntaxTree,
+			StatePayloadType payload) throws DirectConverterException {
 		// ensure, that the syntax tree has annotaions
 		if ( Test.isUnassigned( syntaxTree.getAnnotations()))
-			throw new Exception( "Cannot convert syntax tree to DFA. Missing annotations.");
-		
-		SyntaxTreeAttributor annotations = syntaxTree.getAnnotations();
-		
-		HashMap<State<Character, StatePayloadType>, BinaryTreeNodeCollection> unhandledStates = new HashMap<State<Character,StatePayloadType>, BinaryTreeNodeCollection>();
-		
-		HashMap<BinaryTreeNodeCollection, State<Character, StatePayloadType>> handledStates = new HashMap<BinaryTreeNodeCollection, State<Character, StatePayloadType>>();
-		
-		
-		FiniteStateMachine<Character, StatePayloadType> dfa = new FiniteStateMachine<Character, StatePayloadType>();
-		
-		// add start state as unhandled
-		unhandledStates.put( dfa.getCurrentState(), annotations.firstpos( syntaxTree.getRoot()));
-		
-		State<Character, StatePayloadType>  currentState;
-		BinaryTreeNodeCollection currentCollection;
-		while ( !unhandledStates.isEmpty()) {
-			// get the next unhandled state ...
-			currentState = unhandledStates.keySet().iterator().next();
-			currentCollection = unhandledStates.remove( currentState);
-			// ... and mark it as handled
-			handledStates.put( currentCollection, currentState);
-		
-			HashMap<Character, BinaryTreeNodeCollection> stateCandidates = new HashMap<Character, BinaryTreeNodeCollection>();
-			Character currentTerminalCharacter;
+			throw new DirectConverterException( "Cannot convert syntax tree to DFA. Missing annotations.");
 
-			for ( Character currentCharacterOfCharSet : syntaxTree.getCharacterSet()) {
+		try {
+			SyntaxTreeAttributor annotations = syntaxTree.getAnnotations();
 
-				BinaryTreeNodeCollection followPositionsOfTerminal = new BinaryTreeNodeSet();
-				for ( BinaryTreeNode node : currentCollection) {
-					assert node.nodeValue instanceof Terminal;
-					followPositionsOfTerminal.addAll( annotations.followpos( node));
-				}
-				
-				System.out.println(followPositionsOfTerminal);
-				
-				// if set not empty, then add set to states 
-				State<Character, StatePayloadType> targetState = null;
-				if ( !followPositionsOfTerminal.isEmpty()) {
-					if ( !handledStates.containsKey( followPositionsOfTerminal)
-							&& !unhandledStates.containsValue( followPositionsOfTerminal)) {
-						targetState = new State<Character, StatePayloadType>();
-						unhandledStates.put( targetState, followPositionsOfTerminal);
-					} else if ( handledStates.containsKey( followPositionsOfTerminal)) {
-						targetState = handledStates.get( followPositionsOfTerminal);
-					} else {
-						for ( State state : unhandledStates.keySet()) {
-							if ( unhandledStates.get( state).equals( followPositionsOfTerminal)) {
-								targetState = state;
+			HashMap<BinaryTreeNodeCollection, State<Character, StatePayloadType>> unhandledStates = new HashMap<BinaryTreeNodeCollection, State<Character, StatePayloadType>>();
+
+			HashMap<BinaryTreeNodeCollection, State<Character, StatePayloadType>> handledStates = new HashMap<BinaryTreeNodeCollection, State<Character, StatePayloadType>>();
+
+			FiniteStateMachine<Character, StatePayloadType> dfa = new FiniteStateMachine<Character, StatePayloadType>();
+
+			// add start state as unhandled
+			unhandledStates.put( annotations.firstpos( syntaxTree.getRoot()), dfa.getInitialState());
+
+			State<Character, StatePayloadType> currentState;
+			BinaryTreeNodeCollection currentCollection;
+			while ( !unhandledStates.isEmpty()) {
+				// get the next unhandled state ...
+				currentCollection = unhandledStates.keySet().iterator().next();
+				currentState = unhandledStates.remove( currentCollection);
+				dfa.setCurrentState( currentState);
+				// ... and mark it as handled
+				handledStates.put( currentCollection, currentState);
+
+				HashMap<Character, BinaryTreeNodeCollection> stateCandidates = new HashMap<Character, BinaryTreeNodeCollection>();
+				Character currentTerminalCharacter;
+
+				for ( Character currentCharacterOfCharSet : syntaxTree.getCharacterSet()) {
+
+					BinaryTreeNodeCollection followPositionsOfTerminal = new BinaryTreeNodeSet();
+					for ( BinaryTreeNode node : currentCollection) {
+						if ( node.nodeValue instanceof Terminal) {
+							Character terminalNodeCharacter = ( (Terminal) node.nodeValue).getValue();
+							if ( terminalNodeCharacter == currentCharacterOfCharSet) {
+								followPositionsOfTerminal.addAll( annotations.followpos( node));
 							}
 						}
 					}
-					
-					// setze Übergang
-					for ( BinaryTreeNode node : followPositionsOfTerminal) {
-						assert node.nodeValue instanceof Terminal;
-						currentTerminalCharacter = ( (Terminal) node.nodeValue)
-								.getValue();
-						if ( currentTerminalCharacter == RegexSpecialChars.TERMINATOR) {
+
+					// if set not empty, then add set to states
+					State<Character, StatePayloadType> targetState = null;
+					if ( !followPositionsOfTerminal.isEmpty()) {
+						if ( !handledStates.containsKey( followPositionsOfTerminal) && !unhandledStates.containsKey( followPositionsOfTerminal)) {
+							targetState = new State<Character, StatePayloadType>();
+							unhandledStates.put( followPositionsOfTerminal, targetState);
+							System.out.println( currentCharacterOfCharSet + " : " + followPositionsOfTerminal);
+
+						} else if ( handledStates.containsKey( followPositionsOfTerminal)) {
+							targetState = handledStates.get( followPositionsOfTerminal);
+						} else {
+							targetState = unhandledStates.get( followPositionsOfTerminal);
+						}
+
+						// setze Übergang
+						dfa.addTransition( targetState, currentCharacterOfCharSet);
+						// und ggf. als Endzustand
+						if ( followPositionsOfTerminal.contains( syntaxTree.getTerminatorNode())) {
 							targetState.setFinite( true);
 							targetState.setPayload( payload);
-						} else {
-							dfa.addTransition( targetState, currentTerminalCharacter);
 						}
+
 					}
-					
+
 				}
 
 			}
 
+			assert dfa.isDeterministic();
+
+			return dfa;
+
+		} catch ( Exception e) {
+			Notification.printDebugException( e);
+			throw new DirectConverterException( "Cannot convert syntax tree to DFA. " + e.getMessage());
 		}
 
-		return dfa;
 	}
 
+
+	private static <StatePayloadType extends Serializable> FiniteStateMachine<Character, StatePayloadType> unifyDfa(
+			FiniteStateMachine<Character, StatePayloadType> destinationMachine, FiniteStateMachine<Serializable, Serializable>... sourceMachines) throws Exception {
+		// ensure, that the syntax tree has annotaions
+		if ( Test.isUnassigned( sourceMachines))
+			return destinationMachine;
+		else if ( Test.isUnassigned( destinationMachine)) {
+			throw new ConvertExecption( "Cannot unify the deterministic automats, cause there is no destination automata specified.");
+		} else if ( !destinationMachine.isDeterministic()) {
+			throw new ConvertExecption( "Cannot unify the deterministic automats. The destination automata is not deterministic.");
+		} else {
+			for ( FiniteStateMachine<Serializable, Serializable> sourceMachine : sourceMachines) {
+				if ( !sourceMachine.isDeterministic()) {
+					throw new ConvertExecption( "Cannot unify the deterministic automats. One of the source automats is not deterministic.");
+				}
+
+				// now we can start to merge the states of the automats
+				/*
+				 * for ( FiniteStateMachine<Serializable, Serializable> sourceMachine :
+				 * sourceMachines) { sourceMachine.getCurrentState(). }
+				 */
+			}
+
+		}
+		return destinationMachine;
+	}
 }

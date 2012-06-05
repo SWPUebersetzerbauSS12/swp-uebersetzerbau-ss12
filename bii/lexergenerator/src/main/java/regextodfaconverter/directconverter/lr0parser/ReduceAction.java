@@ -73,5 +73,6 @@ public class ReduceAction<Element extends Comparable<Element>> extends Action<El
 	public String toString() {
 		return "Reduce with rule " + reduceRule.toString();
 	}
+	
 
 }

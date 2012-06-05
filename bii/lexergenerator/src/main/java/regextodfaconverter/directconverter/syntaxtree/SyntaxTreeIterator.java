@@ -37,20 +37,23 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import regextodfaconverter.directconverter.syntaxtree.node.BinaryTreeNode;
+import regextodfaconverter.directconverter.syntaxtree.node.InnerNode;
+import regextodfaconverter.directconverter.syntaxtree.node.Leaf;
+import regextodfaconverter.directconverter.syntaxtree.node.TreeNode;
 
 import utils.Test;
 
 /**
- * Iteriert von links nach rechts und von unten nach oben über einen Syntaxbaum. 
+ * Traversiert den Syntaxbaum von links nach rechts und von unten nach oben . 
  * 
  * @author Johannes Dahlke
  *
  */
-class SyntaxTreeIterator implements Iterator<BinaryTreeNode> {
+class SyntaxTreeIterator implements Iterator<TreeNode> {
 	
-	private BinaryTreeNode root;
-	private BinaryTreeNode currentNode;
-	private ArrayList<BinaryTreeNode> visitedNodes = new ArrayList<BinaryTreeNode>();
+	private TreeNode root;
+	private TreeNode currentNode;
+	private ArrayList<TreeNode> visitedNodes = new ArrayList<TreeNode>();
 	
 	
 	public SyntaxTreeIterator( SyntaxTree syntaxTree) {
@@ -69,26 +72,26 @@ class SyntaxTreeIterator implements Iterator<BinaryTreeNode> {
 	}
 
 
-	public BinaryTreeNode next() {
-		BinaryTreeNode result = null;
-			while ( Test.isAssigned( currentNode.leftChildNode)
-					&& !visitedNodes.contains( currentNode.leftChildNode))
-				currentNode = currentNode.leftChildNode;
-			if ( Test.isUnassigned( currentNode.leftChildNode)) {
-				visitedNodes.add( currentNode);
-				result = currentNode;
-				currentNode = currentNode.parentNode;
-			} else if ( Test.isAssigned( currentNode.rightChildNode) 
-					        && !visitedNodes.contains( currentNode.rightChildNode)) {
-				currentNode = currentNode.rightChildNode;
-				result = next();
-			} else {
-				visitedNodes.add( currentNode);
-				result = currentNode;
-				currentNode = currentNode.parentNode;
+	public TreeNode next() {
+		TreeNode result = null;
+		if ( currentNode instanceof InnerNode) {
+			InnerNode currentInnerNode = (InnerNode) currentNode;
+			for ( Object childNode : currentInnerNode) {
+				if ( !visitedNodes.contains( childNode)) {
+					currentNode = (TreeNode) childNode;
+					return next();
+				}
 			}
-
-		return result;
+			// all childs are processes. Then return yourself
+			visitedNodes.add( currentInnerNode);
+			currentNode = currentInnerNode.getParentNode();
+			return currentInnerNode;
+		} else {
+			Leaf currentLeaf = (Leaf) currentNode;
+			visitedNodes.add( currentLeaf);
+			currentNode = currentLeaf.getParentNode();
+			return currentLeaf;
+		}
 	}
 
 

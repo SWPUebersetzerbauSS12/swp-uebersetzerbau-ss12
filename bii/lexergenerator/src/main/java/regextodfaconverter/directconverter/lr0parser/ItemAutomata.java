@@ -51,5 +51,11 @@ public interface ItemAutomata<Element extends Comparable<Element>> {
 	 * @return
 	 */
   boolean isSLR1();
+  
+	
+  void setReduceEventHandler( ReduceEventHandler reduceEventHandler);
+	
+	
+	void setShiftEventHandler( ShiftEventHandler shiftEventHandler);
 	
 }

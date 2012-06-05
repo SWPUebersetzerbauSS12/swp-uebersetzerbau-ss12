@@ -42,7 +42,7 @@ import java.util.Set;
 import utils.Sets;
 import utils.Test;
 
-public class ContextFreeGrammar extends ProductionMap {
+public class ContextFreeGrammar extends ProductionMap implements Grammar {
 
 	private Nonterminal startSymbol = null;
 
@@ -185,48 +185,7 @@ public class ContextFreeGrammar extends ProductionMap {
 		} while (!nothingAddedAnymore);
 		return result;
 	}
-/*
-	private Set<Terminal> getFollowSetOfRuleElement(Nonterminal thisNonterminal, HashMap<Nonterminal, Set<Terminal>> growingFollowSetTable) {
-		Set<Terminal> result = new HashSet<Terminal>();
-		EmptyString emptyString = new EmptyString();
 
-		for (Nonterminal nonterminal : this.keySet()) {
-			for (RuleElementSequenz ruleElementSequenz : this.get(nonterminal)) {
-				boolean isLastElementInSequenz = false;
-				boolean startAccumulateFirstSet = false;
-				for (int i = 0; i < ruleElementSequenz.size(); i++) {
-					isLastElementInSequenz = !startAccumulateFirstSet;
-					RuleElement ruleElement = ruleElementSequenz.get(i);
-					if (!startAccumulateFirstSet 
-							&& ruleElement.equals(thisNonterminal)) {
-						startAccumulateFirstSet = true;
-					} else if (startAccumulateFirstSet) {
-						Set<Terminal> currentFirstSet = getFirstSetOfRuleElement(ruleElement, null);
-
-						if (currentFirstSet.contains(emptyString)) {
-							if (ruleElementSequenz.size() > i + 1) {
-								currentFirstSet.remove(emptyString);
-							} else {
-								currentFirstSet.addAll(growingFollowSetTable.get(thisNonterminal));
-							}
-							result = Sets.unionCollections(result, currentFirstSet);
-						} else {
-							result = Sets.unionCollections(result, currentFirstSet);
-							break;
-						}
-
-					}
-				}
-
-				// add Follow(A) to Follow(B) if A -> aB
-				if (isLastElementInSequenz) {
-					result = Sets.unionCollections(result, growingFollowSetTable.get(nonterminal));
-				}
-
-			}
-		}
-
-	*/	
 
 		private Set<Terminal> getFollowSetOfRuleElement(Nonterminal thisNonterminal, HashMap<Nonterminal, Set<Terminal>> growingFollowSetTable) {
 			Set<Terminal> result = new HashSet<Terminal>();

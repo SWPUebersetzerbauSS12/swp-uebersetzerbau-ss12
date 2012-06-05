@@ -41,7 +41,7 @@ public class GrammarReader {
 	 * and the values are vectors containing the productions itself. Each production
 	 * is represented as a vector of terminal and nonterminal symbols
 	 */
-	public Map<String, Vector<Vector<String>>> createGrammar(String file){
+	public Map<String, Vector<Vector<String>>> createGrammar(String file,int NItr){
 		// Read the file
 		Vector<Productions>grammar=ReadFile(file);
 		// Perform Leftfactorisation
@@ -56,7 +56,7 @@ public class GrammarReader {
 		int iteration = 0;
 		grammar=eliminateDirectLeftRekursion(grammar);
 		// stop at 4 Iterations, the fifth checks is the grammar is deemed unparsable
-		while (rekursive[0] && iteration < 5){
+		while (rekursive[0] && iteration < NItr){
 			rekursive[0] = false;
 			grammar=eliminateIndirectLeftRekursion(grammar,rekursive);
 			grammar=eliminateDirectLeftRekursion(grammar);

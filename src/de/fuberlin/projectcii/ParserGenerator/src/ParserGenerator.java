@@ -97,7 +97,7 @@ public class ParserGenerator {
 	 */
 	private void readGrammar(String file){
 		GrammarReader gR = new GrammarReader();
-		grammarMap = gR.createGrammar(file);
+		grammarMap = gR.createGrammar(file,5);
 		
 		start = gR.getStartSymbol();
 	}

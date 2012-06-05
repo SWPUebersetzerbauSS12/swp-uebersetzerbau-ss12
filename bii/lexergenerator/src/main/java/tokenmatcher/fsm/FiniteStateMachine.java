@@ -32,7 +32,7 @@
 
 package tokenmatcher.fsm;
 
-import tokenmatcher.State;
+import tokenmatcher.fsm.State;
 import utils.Test;
 
 

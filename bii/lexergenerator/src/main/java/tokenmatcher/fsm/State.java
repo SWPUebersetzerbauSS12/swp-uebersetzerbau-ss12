@@ -40,7 +40,7 @@ import utils.Test;
  * Ein Zustand kann als Endzustand und Startzustand gekennzeichnet sein 
  * und mit einem Objekt assoziert sein.
  * 
- * @author Joihannes Dahlke
+ * @author Johannes Dahlke
  *
  */
 public class State {

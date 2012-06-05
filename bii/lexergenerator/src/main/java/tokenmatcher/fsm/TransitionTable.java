@@ -34,7 +34,7 @@ package tokenmatcher.fsm;
 
 import java.util.HashMap;
 
-import tokenmatcher.State;
+import tokenmatcher.fsm.State;
 import utils.Test;
 
 

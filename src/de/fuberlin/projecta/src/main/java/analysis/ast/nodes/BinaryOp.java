@@ -1,9 +1,5 @@
 package analysis.ast.nodes;
 
-import java.util.List;
-
-import parser.ISyntaxTree;
-
 import lexer.TokenType;
 import lombok.Getter;
 import analysis.SemanticException;
@@ -31,7 +27,6 @@ public class BinaryOp extends AbstractSyntaxTree {
 			if(!(this.getChild(0) instanceof Id)){
 				return false;
 			}
-				
 			break;
 		case OP_DIV:
 			if (this.getChild(1) instanceof IntLiteral){

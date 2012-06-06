@@ -68,7 +68,7 @@ public abstract class ReadTokDefAbstract {
 	 * @param path
 	 * @throws FileNotFoundException
 	 * @throws TokenDefinitionException
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	abstract public void readFile(File file) throws FileNotFoundException,
 			TokenDefinitionException, IOException;
@@ -82,7 +82,6 @@ public abstract class ReadTokDefAbstract {
 		return rules;
 	}
 
-	
 	/**
 	 * Replaces the definitions in the pattern.
 	 * 
@@ -142,10 +141,24 @@ public abstract class ReadTokDefAbstract {
 
 		String tokenAttributes[] = action.split("\"");
 
+		// if it containes more then three elements there must be more than two
+		// quotes, that's why we do not have to parse the type
 		if (tokenAttributes.length > 3) {
-			return new StringAttribute( tokenAttributes[3]);
+			return new StringAttribute(tokenAttributes[3]);
 		}
-		// todo: return new IntAttribute() if attrib = parseInt() etc. 
+
+		// if there are only three elements, there could be a function call like
+		// parseInt() as value defined
+		if (tokenAttributes.length == 3) {
+			if (tokenAttributes[2].matches(",.*parseInt\\(\\s*.*"))
+					return new StringAttribute("parseInt()");
+			if (tokenAttributes[2].matches(",.*parseDouble\\(\\s*.*"))
+				return new StringAttribute("parseDouble()");
+			if (tokenAttributes[2].matches(",.*parseString\\(\\s*.*"))
+				return new StringAttribute("parseString()");
+		}
+
+		// something went totally wrong
 		return null;
 	}
 }

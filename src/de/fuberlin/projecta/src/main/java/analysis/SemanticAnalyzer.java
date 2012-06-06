@@ -7,6 +7,7 @@ import parser.ISyntaxTree;
 import parser.NonTerminal;
 import parser.Parser;
 import parser.Symbol.Reserved;
+import analysis.ast.nodes.AbstractSyntaxTree;
 import analysis.ast.nodes.Args;
 import analysis.ast.nodes.Array;
 import analysis.ast.nodes.ArrayCall;
@@ -43,7 +44,7 @@ public class SemanticAnalyzer {
 	private ISyntaxTree parseTree;
 	private SymbolTableStack tables;
 	@Getter
-	private ISyntaxTree AST;
+	private AbstractSyntaxTree AST;
 
 	public SemanticAnalyzer(ISyntaxTree tree) {
 		this.parseTree = tree;

@@ -30,11 +30,11 @@ public class LLVM_AllocaCommand extends LLVM_GenericCommand{
 	}
 	
 	public String toString() {
-		String cmd_output = target.getName()+" = ";
+		String cmd_output = target.getName() + " = ";
 		
 		switch(operation){
 			case ALLOCA :
-				cmd_output +="alloca ";
+				cmd_output += "alloca ";
 				break;
 			default:
 				return "";

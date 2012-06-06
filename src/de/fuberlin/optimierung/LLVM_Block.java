@@ -1,10 +1,6 @@
 package de.fuberlin.optimierung;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-
-import sun.awt.image.ImageWatched.Link;
-
+import java.util.*;
 import de.fuberlin.optimierung.commands.*;
 
 class LLVM_Block implements ILLVM_Block {
@@ -52,7 +48,16 @@ class LLVM_Block implements ILLVM_Block {
 	}
 
 	private void removeCommonExpressions() {
+		List<String> whitelist = new ArrayList<String>();
+		whitelist.add(LLVM_Operation.ADD.toString());
+		whitelist.add(LLVM_Operation.MUL.toString());
+		whitelist.add(LLVM_Operation.DIV.toString());
+		whitelist.add(LLVM_Operation.SUB.toString());
+		
 		for (ILLVM_Command i = this.firstCommand; i != null; i=i.getSuccessor()){
+			// Nur Kommandos aus der Whitelist optimieren
+			if (!whitelist.contains(i.getOperation().name())) continue;
+			
 			if (commonex.containsKey(i.getOperation().name())){
 				// Kommando-Hash existiert
 				boolean matched = false;

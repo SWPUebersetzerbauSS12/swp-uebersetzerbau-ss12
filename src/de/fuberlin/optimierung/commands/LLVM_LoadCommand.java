@@ -14,15 +14,28 @@ import de.fuberlin.optimierung.LLVM_Parameter;
 */
 
 public class LLVM_LoadCommand extends LLVM_GenericCommand{
+	private boolean vol = false;
+	private boolean atom = false;
 	
 	public LLVM_LoadCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
 		super(operation, predecessor, block, comment);
 		
+		if (cmd[3].trim().equals("atomic")){
+			atom = true;
+			if (cmd[4].trim().equals("volatile")) vol = true;
+		}else{
+			if (cmd[3].trim().equals("volatile")) vol = true;
+		}
+		
+		int start = 3;
+		start = (atom) ? start + 1 : start;
+		start = (vol) ? start + 1 : start;
+		
 		// <result> <ty>*
-		target = new LLVM_Parameter(cmd[0], cmd[3]);
+		target = new LLVM_Parameter(cmd[0], cmd[start]);
 
 		// optionale Parameter
-		for (int j = 3; (j + 1 < cmd.length); j = j + 2){
+		for (int j = start; (j + 1 < cmd.length); j = j + 2){
 			// <ty> <pointer>
 			operands.add(new LLVM_Parameter(cmd[j+1], cmd[j]));
 		}
@@ -31,12 +44,16 @@ public class LLVM_LoadCommand extends LLVM_GenericCommand{
 	}
 	
 	public String toString() {
-		String cmd_out = target.getName()+" = ";
+		String cmd_out = target.getName() + " = ";
 		cmd_out += "load ";
 		
-		cmd_out += operands.get(0).getTypeString();
+		if (atom) cmd_out += "atomic ";
+		if (vol) cmd_out += "volatile ";
 		
-		for (int i = 0; i < operands.size(); i++){
+		cmd_out += operands.get(0).getTypeString() + " ";
+		cmd_out += operands.get(0).getName();
+		
+		for (int i = 1; i < operands.size(); i++){
 			cmd_out += ", " + operands.get(i).getTypeString() + " ";
 			cmd_out += operands.get(i).getName();
 		}

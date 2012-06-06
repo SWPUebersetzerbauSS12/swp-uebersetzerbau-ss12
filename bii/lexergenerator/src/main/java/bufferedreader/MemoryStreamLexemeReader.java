@@ -35,19 +35,22 @@ package bufferedreader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 
 import utils.Notification;
+import utils.Test;
 
 public class MemoryStreamLexemeReader implements LexemeReader {
 	
-
+	private File file;
 	
 	private int lexemeBeginMarker;
 	private int streamPointer;
 	private char[] buffer;
 	private String sourceFile;
 	
-	public MemoryStreamLexemeReader( String SourceFile) throws LexemeReaderException {
+	public MemoryStreamLexemeReader( String sourceFile) throws LexemeReaderException {
+		super();
 		this.sourceFile = sourceFile;
 		reopen();
 	}
@@ -59,7 +62,7 @@ public class MemoryStreamLexemeReader implements LexemeReader {
 		
 		FileReader fileReader = new FileReader( file);
 		fileReader.read( buffer);
-		
+		fileReader.close();
 	}
 
 
@@ -89,7 +92,7 @@ public class MemoryStreamLexemeReader implements LexemeReader {
 	public void reopen() throws LexemeReaderException {
 	  try {
 	  	// we open the file read only
-			File file = new File( sourceFile);
+			file = new File( sourceFile);
 			loadFileIntoMemory( file);
 			lexemeBeginMarker = 0;
 			streamPointer = 0;

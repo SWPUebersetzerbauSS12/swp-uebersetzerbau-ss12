@@ -48,6 +48,7 @@ public class SimpleLexemeReader implements LexemeReader {
 	private String sourceFile;
 	
 	public SimpleLexemeReader( String sourceFile) throws LexemeReaderException {
+		super();
 		this.sourceFile = sourceFile;
 		reopen();
 	}

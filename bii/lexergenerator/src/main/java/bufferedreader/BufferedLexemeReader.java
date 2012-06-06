@@ -53,20 +53,21 @@ public class BufferedLexemeReader implements LexemeReader {
 	private static final int NUM_BUFFER_SIZE = 1024;
 	private static final char EOF_CHAR = 0x1A;   
 	
+	private File file;
+	private String sourceFile;
+	
 	private int lexemeBeginMarker;
 	private int forwardPosition;
 	private char[] buffer1 = new char[NUM_BUFFER_SIZE];
 	private char[] buffer2 = new char[NUM_BUFFER_SIZE];
 	private FileReader fileReader;
 	private boolean endOfFileReached = false;
-	private String sourceFile;
 	
 
-	public BufferedLexemeReader( File SourceFile) throws IOException {
-		// we open the file read only
-		fileReader = new FileReader( SourceFile);
-		initBuffer();
-
+	public BufferedLexemeReader( String sourceFile) throws LexemeReaderException {
+		super();
+		this.sourceFile = sourceFile;
+		reopen();
 	}
 	
 	private void initBuffer() {
@@ -196,7 +197,7 @@ public class BufferedLexemeReader implements LexemeReader {
 	public void reopen() throws LexemeReaderException {
 	  try {
 	    // we open the file read only
-		  File file = new File( sourceFile);
+		  file = new File( sourceFile);
 		  fileReader = new FileReader( file);
 			initBuffer();
 	  } catch ( FileNotFoundException e) {

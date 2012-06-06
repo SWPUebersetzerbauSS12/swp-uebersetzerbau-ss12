@@ -26,7 +26,7 @@ public class DirectMinimalDfaBuilderTest {
 	@Test
 	public void testBuildMinimalDfa() throws Exception {
 		File rdFile = new File("src/test/resources/def/dfaprovider/test.rd");
-		File sourceFile = new File("src/test/resources/source/dfaprovider/test.fun");
+		String sourceFilename = "src/test/resources/source/dfaprovider/test.fun";
 
 		MinimalDfa<Character, StatePayload> mDfa = null;
 		MinimalDfaBuilder builder = new DirectMinimalDfaBuilder();
@@ -34,7 +34,7 @@ public class DirectMinimalDfaBuilderTest {
 //		mDfa = MinimalDfaProvider.getMinimalDfa(rdFile, builder);
 		mDfa = builder.buildMinimalDfa(rdFile);
 		
-		LexemeReader lexemeReader = new BufferedLexemeReader(sourceFile);
+		LexemeReader lexemeReader = new BufferedLexemeReader(sourceFilename);
 //		LexemeReader lexemeReader = new SimpleLexemeReader(sourceFile);
 		Tokenizer tokenizer = new Tokenizer(lexemeReader, mDfa);
 

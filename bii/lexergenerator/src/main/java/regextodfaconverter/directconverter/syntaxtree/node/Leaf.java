@@ -32,7 +32,7 @@
 
 package regextodfaconverter.directconverter.syntaxtree.node;
 
-import regextodfaconverter.directconverter.syntaxtree.SyntaxTree;
+import regextodfaconverter.directconverter.syntaxtree.ConcreteSyntaxTree;
 
 /**
  * Liefert den Wert eines Blattes des {@link SyntaxTree Syntaxbaumes}.

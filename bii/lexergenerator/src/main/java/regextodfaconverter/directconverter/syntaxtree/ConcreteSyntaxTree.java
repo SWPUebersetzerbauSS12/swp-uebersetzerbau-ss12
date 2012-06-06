@@ -66,33 +66,36 @@ import regextodfaconverter.directconverter.syntaxtree.node.TreeNode;
 import utils.Notification;
 import utils.Test;
 
+
 /**
  * 
  * @author Johannes Dahlke
- *
+ * 
  */
-public class SyntaxTree implements Iterable<TreeNode>, Cloneable {
+public class ConcreteSyntaxTree implements Tree, Cloneable {
 
 	private ArrayList<Character> inputCharacters = null;
 
 	private Stack<TreeNode> nodeStack = null;
-	
+
 	public NewNodeEventHandler onNewNodeEvent = null;
 
 	private TreeNode rootNode = null;
-	
+
 	private SyntaxTreeAttributor annotations = null;
 
 	private Grammar grammar;
 
 
-	public SyntaxTree( ContextFreeGrammar grammar, String expression)
+	public ConcreteSyntaxTree( ContextFreeGrammar grammar, String expression)
 			throws SyntaxTreeException {
 		this( grammar, expression, null);
 	}
-	
+
+
 	/**
-	 * Erweitert die Grammatik für reguläre  Ausdrücke um das Terminatorsymbol.
+	 * Erweitert die Grammatik für reguläre Ausdrücke um das Terminatorsymbol.
+	 * 
 	 * @return
 	 */
 	private Grammar extendGrammar( Grammar grammar) {
@@ -104,8 +107,9 @@ public class SyntaxTree implements Iterable<TreeNode>, Cloneable {
 		extendedGrammar.setStartSymbol( embracingNonterminal);
 		return extendedGrammar;
 	}
-	
-	public SyntaxTree(  ContextFreeGrammar grammar, String expression, NewNodeEventHandler newNodeEventHandler)
+
+
+	public ConcreteSyntaxTree( ContextFreeGrammar grammar, String expression, NewNodeEventHandler newNodeEventHandler)
 			throws SyntaxTreeException {
 		super();
 		this.grammar = extendGrammar( grammar);
@@ -116,47 +120,71 @@ public class SyntaxTree implements Iterable<TreeNode>, Cloneable {
 		buildTree();
 	}
 
+	
+	protected Stack<TreeNode> getNodeStack() {
+		return nodeStack;
+	}
 
 	private void buildTree() {
 		ItemAutomata<Character> itemAutomata = new Lr0ItemAutomata<Character>( (ContextFreeGrammar) grammar);
-		
+
 		itemAutomata.setReduceEventHandler( getReduceEventHandler());
-		
+
 		itemAutomata.setShiftEventHandler( getShiftEventHandler());
 
 		itemAutomata.match( inputCharacters);
-		
+
 		rootNode = nodeStack.peek();
 	}
-	
+
+
+	private PrintHandler getNodePrintHandler() {
+		return new PrintHandler() {
+
+			public String print( Object... params) {
+				String result = "";
+				
+				for ( Object obj : params) {
+					if ( obj instanceof ProductionRule) {
+						ProductionRule reduceRule = (ProductionRule) obj;
+						if ( !result.isEmpty())
+							result += "~";
+						result += reduceRule.getLeftRuleSide().toString();
+					} else if ( obj instanceof Terminal) {
+						if ( !result.isEmpty())
+							result += "~";
+						result += ((Terminal)obj).toString();
+						break;
+					}
+				}
+				return result;
+			}
+		};
+	}
+
 
 	protected ReduceEventHandler getReduceEventHandler() {
 		return new ReduceEventHandler() {
+
+			public Object handle( Object sender, ProductionRule reduceRule) throws Exception {
 			
-			public Object handle( Object sender, Nonterminal nonterminal, int countOfReducedElements, int countOfLeftElementsOnStack) throws Exception {
-			  System.out.println( "reduce to " + nonterminal + ". Reduced elements: " + countOfReducedElements + " Left elements: " + countOfLeftElementsOnStack);
-				
-			  // create new inner node
-			  String nonterminalName = nonterminal.toString();
-				InnerNode newInnerNode = new InnerNode( nonterminalName);
-				
+				// create new inner node
+				InnerNode<ProductionRule> newInnerNode = new InnerNode<ProductionRule>( reduceRule);
+				newInnerNode.setPrintHandler( getNodePrintHandler());
+
 				if ( Test.isAssigned( onNewNodeEvent))
 					onNewNodeEvent.doOnEvent( this, newInnerNode);
-				
+
 				// add childs to the new inner node
-			  for ( int i = 0; i < countOfReducedElements; i++) {
-			  	TreeNode childNode = nodeStack.pop();
-			  	newInnerNode.insertChild( childNode, 0);
-			  	if ( childNode instanceof InnerNode)
-			  	  System.out.println( "pop: " +((InnerNode)childNode).toFullString());
-			  	else
-			  	  System.out.println( "pop: " +childNode);
-			  		
+				int countOfReducedElements = reduceRule.getRightRuleSide().size();
+				for ( int i = 0; i < countOfReducedElements; i++) {
+					TreeNode childNode = nodeStack.pop();
+					newInnerNode.insertChild( childNode, 0);
 				}
-			  
+
 				// push the inner node onto stack
 				nodeStack.push( newInnerNode);
-					
+
 				return null;
 			}
 		};
@@ -167,11 +195,9 @@ public class SyntaxTree implements Iterable<TreeNode>, Cloneable {
 		return new ShiftEventHandler() {
 
 			public Object handle( Object sender, Terminal shiftedTerminal) throws Exception {
-				System.out.println( "shift " + shiftedTerminal);
-				Comparable terminalSymbol = shiftedTerminal.getSymbol();
-				
-				Leaf newLeaf = new Leaf( terminalSymbol);
-				
+				Leaf newLeaf = new Leaf( shiftedTerminal);
+				newLeaf.setPrintHandler( getNodePrintHandler());
+
 				if ( Test.isAssigned( onNewNodeEvent))
 					onNewNodeEvent.doOnEvent( this, newLeaf);
 
@@ -181,30 +207,32 @@ public class SyntaxTree implements Iterable<TreeNode>, Cloneable {
 		};
 	}
 
+
 	private void initTreeSkeleton() {
 		nodeStack = new Stack<TreeNode>();
 	}
-	
+
+
 	private void preprocessInput( String inputString) {
 		inputCharacters = new ArrayList<Character>();
 		for ( Character inputCharacter : inputString.toCharArray()) {
-		  inputCharacters.add( inputCharacter);
+			inputCharacters.add( inputCharacter);
 		}
 	}
-	
-	
+
 
 	public SyntaxTreeAttributor getAnnotations() {
 		return annotations;
 	}
-	
-	
+
+
 	public void setAnnotations( SyntaxTreeAttributor annotations) {
 		this.annotations = annotations;
 	}
-	
+
+
 	public Iterator<TreeNode> iterator() {
-		return new SyntaxTreeIterator( this);
+		return new TreeIterator( this);
 	}
 
 
@@ -212,73 +240,74 @@ public class SyntaxTree implements Iterable<TreeNode>, Cloneable {
 		return rootNode;
 	}
 
-	
+
 	public Collection<Character> getCharacterSet() {
 		Collection<Character> characters = new HashSet<Character>();
 		for ( TreeNode node : this) {
-			if ( Test.isAssigned( node)
-					&& node instanceof Leaf) {
-				Character currentTerminal = (Character)( (Leaf) node).getValue();
+			if ( Test.isAssigned( node) && node instanceof Leaf) {
+				Character currentTerminal = (Character) ( (Leaf) node).getValue();
 			}
 		}
-		return characters; 
+		return characters;
 	}
-	
+
+
 	@Override
 	public Object clone() throws CloneNotSupportedException {
-		
-		SyntaxTree clonedTree = (SyntaxTree) super.clone();
-		
+
+		ConcreteSyntaxTree clonedTree = (ConcreteSyntaxTree) super.clone();
+
 		clonedTree.grammar = this.grammar;
 		clonedTree.rootNode = (TreeNode) this.rootNode.clone();
 		clonedTree.onNewNodeEvent = this.onNewNodeEvent;
-		
+
 		return clonedTree;
 	}
-		
-	
-	public static SyntaxTree compress( SyntaxTree originalTree) {
-		
+
+
+	public static ConcreteSyntaxTree compress( ConcreteSyntaxTree originalTree) {
+
 		// we work on a copy
-		SyntaxTree clonedTree;
+		ConcreteSyntaxTree clonedTree;
 		try {
-			clonedTree = (SyntaxTree) originalTree.clone();
+			clonedTree = (ConcreteSyntaxTree) originalTree.clone();
 		} catch ( CloneNotSupportedException e) {
 			Notification.printDebugException( e);
 			return null;
 		}
-		
+
 		// determine all nodes that can be skipped
 		ArrayList<InnerNode> nodesToSkip = new ArrayList<InnerNode>();
 		for ( TreeNode treeNode : clonedTree) {
 			if ( treeNode instanceof InnerNode) {
 				InnerNode innerTreeNode = (InnerNode) treeNode;
-				if ( innerTreeNode.childCount() == 1 
-						&& Test.isAssigned( innerTreeNode.getParentNode())
-						&& innerTreeNode.getParentNode() instanceof InnerNode) {
+				if ( innerTreeNode.childCount() == 1 && Test.isAssigned( innerTreeNode.getParentNode()) && innerTreeNode.getParentNode() instanceof InnerNode) {
 					nodesToSkip.add( innerTreeNode);
-				} 
+				}
 			}
 		}
-		
-		// remove singles 
+
+		// remove singles
 		for ( InnerNode innerTreeNode : nodesToSkip) {
 			InnerNode innerTreeNodeParent = (InnerNode) innerTreeNode.getParentNode();
 			int parentIndex = innerTreeNodeParent.getIndexOf( innerTreeNode);
 			TreeNode childNode = innerTreeNode.getNodeWithIndex( 0);
+			childNode.insertValues( 0, innerTreeNode.getValues());
 			childNode.setParentNode( innerTreeNodeParent, parentIndex);
 			innerTreeNode.setParentNode( null);
 		}
 		return clonedTree;
 	}
 
-	
+
 	@Override
 	public String toString() {
-		return Test.isAssigned( rootNode) 
-				? (( rootNode instanceof InnerNode) 
-						? ((InnerNode)rootNode).toFullString() 
-						: rootNode.toString()) 
-				: super.toString();
+		return Test.isAssigned( rootNode) ? ( ( rootNode instanceof InnerNode) ? ( (InnerNode) rootNode).toFullString() : rootNode.toString()) : super.toString();
 	}
+
+
+	public Grammar getGrammar() {
+		return grammar;
+	}
+
 }

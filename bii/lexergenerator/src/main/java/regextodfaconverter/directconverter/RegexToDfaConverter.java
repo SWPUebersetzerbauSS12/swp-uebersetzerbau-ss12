@@ -45,7 +45,7 @@ import regextodfaconverter.directconverter.lr0parser.grammar.Grammars;
 import regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
 import regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
 import regextodfaconverter.directconverter.lr0parser.grammar.ProductionSet;
-import regextodfaconverter.directconverter.syntaxtree.SyntaxTree;
+import regextodfaconverter.directconverter.syntaxtree.ConcreteSyntaxTree;
 import regextodfaconverter.directconverter.syntaxtree.SyntaxTreeAttributor;
 import regextodfaconverter.directconverter.syntaxtree.SyntaxTreeException;
 import regextodfaconverter.directconverter.syntaxtree.node.BinaryTreeNode;
@@ -97,9 +97,9 @@ public class RegexToDfaConverter {
 	public static <StatePayloadType extends Serializable> FiniteStateMachine<Character, StatePayloadType> convert( String regex, StatePayloadType payload)
 			throws Exception {
 		try {
-			SyntaxTree syntaxTree = convertRegexToSyntaxTree( regex);
+			ConcreteSyntaxTree syntaxTree = convertRegexToSyntaxTree( regex);
 			
-			System.out.println( SyntaxTree.compress( syntaxTree));
+			System.out.println( ConcreteSyntaxTree.compress( syntaxTree));
 		//TODO	FiniteStateMachine<Character, StatePayloadType> dfa = convertSyntaxTreeToDfa( syntaxTree, payload);
 		//	return dfa;
 			return null;
@@ -116,9 +116,9 @@ public class RegexToDfaConverter {
 	 * @return
 	 * @throws SyntaxTreeException
 	 */
-	private static SyntaxTree convertRegexToSyntaxTree( String regex) throws SyntaxTreeException {
+	private static ConcreteSyntaxTree convertRegexToSyntaxTree( String regex) throws SyntaxTreeException {
 		final SyntaxTreeAttributor syntaxTreeAttributor = new SyntaxTreeAttributor();
-		SyntaxTree syntaxTree = new SyntaxTree( Grammars.getRegexGrammar(), regex, null);
+		ConcreteSyntaxTree syntaxTree = new ConcreteSyntaxTree( Grammars.getRegexGrammar(), regex, null);
 
 		/*		SyntaxTree syntaxTree = new SyntaxTree( Grammars.getRegexGrammar(), regex, new NewNodeEventHandler() {
 
@@ -149,7 +149,7 @@ public class RegexToDfaConverter {
 	 * @throws DirectConverterException
 	 * @throws Exception
 	 */
-	private static <StatePayloadType extends Serializable> FiniteStateMachine<Character, StatePayloadType> convertSyntaxTreeToDfa( SyntaxTree syntaxTree,
+	private static <StatePayloadType extends Serializable> FiniteStateMachine<Character, StatePayloadType> convertSyntaxTreeToDfa( ConcreteSyntaxTree syntaxTree,
 			StatePayloadType payload) throws DirectConverterException {
 		// ensure, that the syntax tree has annotaions
 		if ( Test.isUnassigned( syntaxTree.getAnnotations()))

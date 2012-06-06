@@ -35,7 +35,7 @@ package regextodfaconverter.directconverter.syntaxtree.node;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import regextodfaconverter.directconverter.syntaxtree.SyntaxTree;
+import regextodfaconverter.directconverter.syntaxtree.PrintHandler;
 import utils.Test;
 
 
@@ -52,7 +52,7 @@ public class InnerNode<Value> extends TreeNode<Value> implements Iterable<TreeNo
 	public InnerNode( Value value) {
 		super( value);
 	}
-	
+
 	/**
 	 * Fügt ein Kindobjekt an das Ende der rechten Seite an.
 	 */
@@ -82,7 +82,7 @@ public class InnerNode<Value> extends TreeNode<Value> implements Iterable<TreeNo
 	
 	
 	public String toFullString() {
-		String result = value + ": ";
+		String result = toString() + ": ";
 		String childs = "";
 		for ( TreeNode child : childNodes) {
 			childs += childs.isEmpty() ? "( " : ", ";

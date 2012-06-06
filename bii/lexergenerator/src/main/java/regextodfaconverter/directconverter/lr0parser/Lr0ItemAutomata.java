@@ -56,6 +56,7 @@ import regextodfaconverter.directconverter.lr0parser.grammar.Terminator;
 import regextodfaconverter.directconverter.lr0parser.itemset.Closure;
 import regextodfaconverter.directconverter.lr0parser.itemset.Item;
 import regextodfaconverter.directconverter.lr0parser.itemset.ItemSet;
+import utils.Notification;
 import utils.Test;
 
 /**
@@ -278,9 +279,7 @@ public class Lr0ItemAutomata<Element extends Comparable<Element>> implements Ite
 			  
 			    // notify about reduce action
 			  	if ( Test.isAssigned( reduceEventHandler)) {
-			  		int countOfReducedElements = ((ReduceAction) handler).getReduceRule().getRightRuleSide().size();
-			  		int countOfLeftElements = getSymbolStack().size() -1 -1; // we subtract the terminator symbol and the nonterminal from left side of  production
-			  		reduceEventHandler.handle( this, (Nonterminal) nonterminalToHandle, countOfReducedElements, countOfLeftElements);
+			  	  reduceEventHandler.handle( this, ((ReduceAction) handler).getReduceRule());
 			  	}
 			  	
 			  } else if ( handler instanceof ShiftAction) {			  	
@@ -292,6 +291,7 @@ public class Lr0ItemAutomata<Element extends Comparable<Element>> implements Ite
 			} while ( !accepted);
 			
 		} catch ( Exception e) {
+			Notification.printDebugException( e);
 			return false;
 		}
 		return true;

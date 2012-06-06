@@ -34,9 +34,10 @@
 package regextodfaconverter.directconverter.lr0parser;
 
 import regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
+import regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
 import regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
 
 public interface ReduceEventHandler {
 
-	Object handle( Object sender, Nonterminal nonterminal, int countOfReducedElements, int countOfLeftElementsOnStack) throws Exception;
+	Object handle( Object sender, ProductionRule reduceRule) throws Exception;
 }

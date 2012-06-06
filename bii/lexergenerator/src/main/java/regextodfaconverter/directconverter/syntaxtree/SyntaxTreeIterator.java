@@ -48,16 +48,16 @@ import utils.Test;
  * @author Johannes Dahlke
  *
  */
-class SyntaxTreeIterator implements Iterator<TreeNode> {
+class TreeIterator implements Iterator<TreeNode> {
 	
 	private TreeNode root;
 	private TreeNode currentNode;
 	private ArrayList<TreeNode> visitedNodes = new ArrayList<TreeNode>();
 	
 	
-	public SyntaxTreeIterator( SyntaxTree syntaxTree) {
+	public TreeIterator( Tree tree) {
 		super();
-		root = syntaxTree.getRoot();
+		root = tree.getRoot();
 		currentNode = root; 
 	}
 

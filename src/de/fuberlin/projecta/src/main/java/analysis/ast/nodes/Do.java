@@ -2,7 +2,10 @@ package analysis.ast.nodes;
 
 import analysis.SymbolTableStack;
 
-
+/**
+ * root node of do-while-loop
+ *
+ */
 public class Do extends Statement {
 	public void buildSymbolTable(SymbolTableStack tables) {
 
@@ -10,7 +13,11 @@ public class Do extends Statement {
 
 	@Override
 	public boolean checkSemantics() {
-		// TODO Auto-generated method stub
-		return false;
+		for(int i = 0; i < this.getChildrenCount(); i++){
+			if(!((AbstractSyntaxTree)this.getChild(i)).checkSemantics()){
+				return false;
+			}
+		}
+		return true;
 	}
 }

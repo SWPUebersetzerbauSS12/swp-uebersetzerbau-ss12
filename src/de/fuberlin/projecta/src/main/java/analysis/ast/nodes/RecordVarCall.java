@@ -15,7 +15,7 @@ public class RecordVarCall extends AbstractSyntaxTree {
 
 	@Override
 	public boolean checkSemantics() {
-		// TODO Auto-generated method stub
-		return false;
+		// Any situation where this could be ambiguous???
+		return true;
 	}
 }

@@ -10,7 +10,13 @@ public class IfElse extends Statement {
 
 	@Override
 	public boolean checkSemantics() {
-		// TODO Auto-generated method stub
-		return false;
+		// semantics of if-else-statement is unambiguous
+		// only need to check children
+		for(int i = 0; i < this.getChildrenCount(); i++){
+			if(!((AbstractSyntaxTree)this.getChild(i)).checkSemantics()){
+				return false;
+			}
+		}
+		return true;
 	}
 }

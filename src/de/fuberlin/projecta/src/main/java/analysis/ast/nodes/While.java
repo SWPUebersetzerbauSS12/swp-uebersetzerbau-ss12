@@ -10,7 +10,11 @@ public class While extends Statement {
 
 	@Override
 	public boolean checkSemantics() {
-		// TODO Auto-generated method stub
+		for(int i = 0; i < this.getChildrenCount(); i++){
+			if(!((AbstractSyntaxTree)getChild(i)).checkSemantics()){
+				return false;
+			}
+		}
 		return false;
 	}
 }

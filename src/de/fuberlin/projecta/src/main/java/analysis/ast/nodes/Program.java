@@ -18,9 +18,8 @@ public class Program extends AbstractSyntaxTree {
 
 	@Override
 	public boolean checkSemantics() {
-		for(ISyntaxTree tree : this.getChildren()){
-			AbstractSyntaxTree child = (AbstractSyntaxTree) tree;
-			if (!child.checkSemantics()){
+		for(int i = 0; i < this.getChildrenCount(); i++){
+			if(!((AbstractSyntaxTree)this.getChild(i)).checkSemantics()){
 				return false;
 			}
 		}

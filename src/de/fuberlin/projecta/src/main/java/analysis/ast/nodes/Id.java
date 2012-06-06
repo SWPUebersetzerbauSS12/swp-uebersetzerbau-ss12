@@ -16,6 +16,7 @@ public class Id extends AbstractSyntaxTree {
 
 	@Override
 	public boolean checkSemantics() {
+		//can't have children!
 		return true;
 	}
 }

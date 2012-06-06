@@ -25,16 +25,11 @@ public class BinaryOp extends AbstractSyntaxTree {
 
 	@Override
 	public boolean checkSemantics() {
-		//TODO: check for type safety
 		switch (this.getOp()) {
+		// TODO: think if you can find other cases, where semantics can be wrong/ambiguous
 		case OP_ASSIGN:
-			if(this.getChild(0) instanceof Id){
-				List<ISyntaxTree> children = this.getChildren();
-				for(ISyntaxTree child : children){
-					if(!((AbstractSyntaxTree)child).checkSemantics()){
-						return false;
-					}
-				}
+			if(!(this.getChild(0) instanceof Id)){
+				return false;
 			}
 				
 			break;
@@ -52,7 +47,11 @@ public class BinaryOp extends AbstractSyntaxTree {
 				else return true;
 			}
 		}
-
+		for(int i = 0; i < this.getChildrenCount(); i++){
+			if(!((AbstractSyntaxTree)this.getChild(i)).checkSemantics()){
+				return false;
+			}
+		}
 		return true;
 	}
 }

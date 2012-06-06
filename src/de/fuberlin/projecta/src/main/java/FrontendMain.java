@@ -52,6 +52,11 @@ public class FrontendMain {
 		
 		SemanticAnalyzer analyzer = new SemanticAnalyzer(tree);
 		analyzer.analyze();
+		if(analyzer.getAST().checkSemantics()){
+			System.out.println("Semantics should be correct");
+		}else{
+			System.out.println("Bad semantics!");
+		}
 	}
 
 	public static void main(String[] args) {

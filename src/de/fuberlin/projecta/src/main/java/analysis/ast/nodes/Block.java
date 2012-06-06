@@ -16,9 +16,10 @@ public class Block extends Statement {
 
 	@Override
 	public boolean checkSemantics() {
-		for(ISyntaxTree a : this.getChildren()){
-			if(!((AbstractSyntaxTree)a).checkSemantics())
+		for(int i = 0; i < this.getChildrenCount(); i++){
+			if(!((AbstractSyntaxTree)this.getChild(i)).checkSemantics()){
 				return false;
+			}
 		}
 		return true;
 	}

@@ -14,4 +14,5 @@ public class BasicType extends Type {
 	public void buildSymbolTable(SymbolTableStack tables) {
 
 	}
+	
 }

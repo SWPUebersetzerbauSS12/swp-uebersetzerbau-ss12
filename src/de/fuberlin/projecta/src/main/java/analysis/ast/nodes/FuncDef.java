@@ -8,7 +8,12 @@ public class FuncDef extends AbstractSyntaxTree {
 
 	@Override
 	public boolean checkSemantics() {
-		return false;
+		for(int i = 0; i < this.getChildrenCount(); i++){
+			if(!((AbstractSyntaxTree)this.getChild(i)).checkSemantics()){
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
@@ -24,10 +29,11 @@ public class FuncDef extends AbstractSyntaxTree {
 		EntryType entry = new EntryType(id, type, tmp.getEntries());
 		stack.top().insertEntry(entry);
 
-		// TODO: musn't the parameters be also stored in the block symbolTable???
+		// TODO: musn't the parameters be also stored in the block
+		// symbolTable???
 		if (this.getChildrenCount() == 4)
 			getChild(3).buildSymbolTable(stack); // this is the block, it can
-												 // handle everything itself
+													// handle everything itself
 
 	}
 }

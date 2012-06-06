@@ -20,7 +20,6 @@ public class UnaryOp extends AbstractSyntaxTree {
 
 	@Override
 	public boolean checkSemantics() {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 }

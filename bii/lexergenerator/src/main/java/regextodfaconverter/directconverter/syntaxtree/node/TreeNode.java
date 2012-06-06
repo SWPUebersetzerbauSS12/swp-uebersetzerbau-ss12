@@ -31,6 +31,17 @@ public class TreeNode<Value> implements Cloneable {
 			this.parentNode.removeChild( this);
 		if ( Test.isAssigned( newParentNode))
 			newParentNode.addChild( this);
+		else 
+			parentNode = null;
+	}
+	
+	public void setParentNode( InnerNode newParentNode, int parentIndex) {
+		if ( Test.isAssigned(  this.parentNode))
+			this.parentNode.removeChild( this);
+		if ( Test.isAssigned( newParentNode))
+			newParentNode.insertChild( this, parentIndex);
+		else 
+			parentNode = null;
 	}
 	
 	public boolean isRootNode() {

@@ -209,7 +209,7 @@ public class SyntaxTree implements Iterable<TreeNode>, Cloneable {
 
 
 	public TreeNode getRoot() {
-		return nodeStack.peek();
+		return rootNode;
 	}
 
 	
@@ -231,6 +231,7 @@ public class SyntaxTree implements Iterable<TreeNode>, Cloneable {
 		
 		clonedTree.grammar = this.grammar;
 		clonedTree.rootNode = (TreeNode) this.rootNode.clone();
+		clonedTree.onNewNodeEvent = this.onNewNodeEvent;
 		
 		return clonedTree;
 	}
@@ -263,8 +264,9 @@ public class SyntaxTree implements Iterable<TreeNode>, Cloneable {
 		// remove singles 
 		for ( InnerNode innerTreeNode : nodesToSkip) {
 			InnerNode innerTreeNodeParent = (InnerNode) innerTreeNode.getParentNode();
+			int parentIndex = innerTreeNodeParent.getIndexOf( innerTreeNode);
 			TreeNode childNode = innerTreeNode.getNodeWithIndex( 0);
-			childNode.setParentNode( innerTreeNodeParent);
+			childNode.setParentNode( innerTreeNodeParent, parentIndex);
 			innerTreeNode.setParentNode( null);
 		}
 		return clonedTree;

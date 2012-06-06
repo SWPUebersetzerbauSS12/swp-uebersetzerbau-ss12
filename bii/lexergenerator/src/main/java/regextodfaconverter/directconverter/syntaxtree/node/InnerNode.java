@@ -112,6 +112,10 @@ public class InnerNode<Value> extends TreeNode<Value> implements Iterable<TreeNo
 		}
 		return clonedInnerNode;
 	}
+
+	public int getIndexOf( TreeNode treeNode) {
+		return childNodes.indexOf( treeNode);
+	}
 	
 }
 

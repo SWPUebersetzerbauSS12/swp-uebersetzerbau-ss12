@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import utils.Notification;
+import utils.Test;
 
 
 public class SimpleLexemeReader implements LexemeReader {
@@ -46,7 +47,7 @@ public class SimpleLexemeReader implements LexemeReader {
 	private long lexemeBeginMarker;
 	private String sourceFile;
 	
-	public SimpleLexemeReader( String SourceFile) throws LexemeReaderException {
+	public SimpleLexemeReader( String sourceFile) throws LexemeReaderException {
 		this.sourceFile = sourceFile;
 		reopen();
 	}
@@ -94,6 +95,8 @@ public class SimpleLexemeReader implements LexemeReader {
 	
 	public void reopen() throws LexemeReaderException {
 	  try {
+	  	if ( Test.isAssigned( file))
+	  		file.close();
 			// we open the file read only
 			file = new RandomAccessFile( sourceFile, "r");
 			lexemeBeginMarker = file.getFilePointer();

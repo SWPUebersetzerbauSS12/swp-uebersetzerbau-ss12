@@ -159,7 +159,10 @@ public class BufferedLexemeReader implements LexemeReader {
 		    // otherwise return the readed char
 		  result = readedChar;
 
-		forwardPosition++;
+		// do not move over the end
+		if ( result != SpecialChars.CHAR_EOF) 
+			forwardPosition++;
+		
 		return result;	
 	}
 

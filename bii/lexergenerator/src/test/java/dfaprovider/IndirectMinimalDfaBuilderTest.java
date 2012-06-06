@@ -11,6 +11,7 @@ import tokenmatcher.Token;
 import tokenmatcher.Tokenizer;
 import bufferedreader.BufferedLexemeReader;
 import bufferedreader.LexemeReader;
+import bufferedreader.SimpleLexemeReader;
 
 /**
  * Test-Klasse für die IndirectMinimalDfaBuilder-Klasse.
@@ -35,7 +36,7 @@ public class IndirectMinimalDfaBuilderTest {
 		mDfa = builder.buildMinimalDfa(rdFile);
 		
 		LexemeReader lexemeReader = new BufferedLexemeReader(sourceFile);
-//		LexemeReader lexemeReader = new SimpleLexemeReader(sourceFile);
+//		LexemeReader lexemeReader = new SimpleLexemeReader("src/test/resources/source/dfaprovider/test.fun");
 		Tokenizer tokenizer = new Tokenizer(lexemeReader, mDfa);
 
 		Token currentToken;

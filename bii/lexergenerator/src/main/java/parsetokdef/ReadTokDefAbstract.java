@@ -40,7 +40,9 @@ import java.util.List;
 import java.util.Stack;
 
 import tokenmatcher.attributes.Attribute;
+import tokenmatcher.attributes.ParseDoubleAttribute;
 import tokenmatcher.attributes.StringAttribute;
+import tokenmatcher.attributes.ParseStringAttribute;
 import utils.IRule;
 
 public abstract class ReadTokDefAbstract {
@@ -150,12 +152,16 @@ public abstract class ReadTokDefAbstract {
 		// if there are only three elements, there could be a function call like
 		// parseInt() as value defined
 		if (tokenAttributes.length == 3) {
-			if (tokenAttributes[2].matches(",.*parseInt\\(\\s*.*"))
-					return new StringAttribute("parseInt()");
-			if (tokenAttributes[2].matches(",.*parseDouble\\(\\s*.*"))
-				return new StringAttribute("parseDouble()");
+
+			if (tokenAttributes[2].matches(",.*parseInt\\(\\s*.*")) {
+				return new ParseStringAttribute();
+			}
+
+			if (tokenAttributes[2].matches(",.*parseDouble\\(\\s*.*")) {
+				return new ParseDoubleAttribute();
+			}
 			if (tokenAttributes[2].matches(",.*parseString\\(\\s*.*"))
-				return new StringAttribute("parseString()");
+				return new ParseStringAttribute();
 		}
 
 		// something went totally wrong

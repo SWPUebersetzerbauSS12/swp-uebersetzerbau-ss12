@@ -30,7 +30,7 @@ public class RegexToDfaTest {
 			//	.convert( "(a|b)*abb", new regextodfaconverter.fsm.StatePayload( "OP", new StringAttribute( "LE")));
 
 
-		LexemeReader lexemeReader = new BufferedLexemeReader(new File("src/test/resources/source/tokenmatcher.testrelop.fun"));// new SimpleLexemeReader(
+		LexemeReader lexemeReader = new BufferedLexemeReader("src/test/resources/source/tokenmatcher.testrelop.fun");// new SimpleLexemeReader(
 		System.out.println(fsm);
 				System.out.println();
 		assert fsm.isDeterministic();

@@ -159,7 +159,7 @@ public class Lexergen implements Lexergenerator {
 		}
 
 		try {
-			_tokenizer = new Tokenizer(new BufferedLexemeReader(sourceProgramFile),
+			_tokenizer = new Tokenizer(new BufferedLexemeReader(sourceProgramFile.getAbsolutePath()),
 					mDfa);
 		} catch (Exception e) {
 			throw new LexergeneratorException("Fehler beim Aufbau des Tokenizers: "

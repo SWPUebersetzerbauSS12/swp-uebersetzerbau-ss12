@@ -43,12 +43,12 @@ import regextodfaconverter.directconverter.syntaxtree.node.TreeNode;
 import utils.Test;
 
 /**
- * Traversiert den Syntaxbaum von links nach rechts und von unten nach oben . 
+ * Traversiert einen Baum aus TreeNode-Elementen von links nach rechts und von unten nach oben . 
  * 
  * @author Johannes Dahlke
  *
  */
-class TreeIterator implements Iterator<TreeNode> {
+public class TreeIterator implements Iterator<TreeNode> {
 	
 	private TreeNode root;
 	private TreeNode currentNode;

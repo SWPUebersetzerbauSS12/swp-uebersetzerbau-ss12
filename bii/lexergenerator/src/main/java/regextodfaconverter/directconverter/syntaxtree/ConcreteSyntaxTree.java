@@ -94,22 +94,6 @@ public class ConcreteSyntaxTree implements Tree, Cloneable {
 	}
 
 
-	/**
-	 * Erweitert die Grammatik für reguläre Ausdrücke um das Terminatorsymbol.
-	 * 
-	 * @return
-	 */
-	private Grammar extendGrammar( Grammar grammar) {
-		Grammar extendedGrammar = grammar;
-		Nonterminal embracingNonterminal = new Nonterminal();
-		Terminal<Character> terminator = new Terminal<Character>( RegexSpecialChars.TERMINATOR);
-		ProductionSet productions = new ProductionSet();
-		extendedGrammar.addProduction( new ProductionRule( embracingNonterminal, extendedGrammar.getStartSymbol(), terminator));
-		extendedGrammar.setStartSymbol( embracingNonterminal);
-		return extendedGrammar;
-	}
-
-
 	public ConcreteSyntaxTree( ContextFreeGrammar grammar, String expression, NewNodeEventHandler newNodeEventHandler)
 			throws Exception {
 		this( grammar, expression, newNodeEventHandler, true);
@@ -118,11 +102,10 @@ public class ConcreteSyntaxTree implements Tree, Cloneable {
 	public ConcreteSyntaxTree( ContextFreeGrammar grammar, String expression, NewNodeEventHandler newNodeEventHandler, Boolean directBuild)
 			throws Exception {
 		super();
-		this.grammar = extendGrammar( grammar);
+		this.grammar = grammar;
 		this.onNewNodeEvent = newNodeEventHandler;
-		String terminizedExpression = "(" + expression + ")" + RegexSpecialChars.TERMINATOR;
 		initTreeSkeleton();
-		preprocessInput( terminizedExpression);
+		preprocessInput( expression);
 		if ( directBuild)
 		  buildTree();
 	}

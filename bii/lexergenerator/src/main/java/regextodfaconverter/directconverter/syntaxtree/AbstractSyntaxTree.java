@@ -1,12 +1,8 @@
 package regextodfaconverter.directconverter.syntaxtree;
 
-import java.util.Iterator;
-
-import regextodfaconverter.directconverter.EventHandler;
 import regextodfaconverter.directconverter.lr0parser.ReduceEventHandler;
 import regextodfaconverter.directconverter.lr0parser.ShiftEventHandler;
 import regextodfaconverter.directconverter.lr0parser.grammar.ContextFreeGrammar;
-import regextodfaconverter.directconverter.lr0parser.grammar.Grammar;
 import regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
 import regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
 import regextodfaconverter.directconverter.syntaxtree.node.InnerNode;
@@ -43,7 +39,7 @@ public class AbstractSyntaxTree extends ConcreteSyntaxTree {
 			
 				// create the map contains attributes of this node
 				AttributesMap thisAttributesMap = new AttributesMap();
-				rootAttributesMap = thisAttributesMap;
+				rootAttributesMap = thisAttributesMap;;
 
 				// create new inner node
 				InnerNode<AttributesMap> newInnerNode = new InnerNode<AttributesMap>( thisAttributesMap);

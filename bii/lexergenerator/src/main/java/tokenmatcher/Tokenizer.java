@@ -123,7 +123,7 @@ public class Tokenizer implements LexerToParserInterface {
 				Attribute attribute = payload.getAttribute();
 				Object attributeValue = attribute.lexemToValue( currentLexem);
 				// TODO: convert lexem to corresponding value
-				Token recognisedToken = new Token( tokenType, attribute, currentLine, currentPositionInLine);
+				Token recognisedToken = new Token( tokenType, attributeValue, currentLine, currentPositionInLine);
 
 				// gelesenenes Lexem akzeptieren
 				lexemeReader.accept();

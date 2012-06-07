@@ -41,6 +41,7 @@ import java.util.Stack;
 
 import tokenmatcher.attributes.Attribute;
 import tokenmatcher.attributes.ParseDoubleAttribute;
+import tokenmatcher.attributes.ParseIntAttribute;
 import tokenmatcher.attributes.StringAttribute;
 import tokenmatcher.attributes.ParseStringAttribute;
 import utils.IRule;
@@ -154,7 +155,7 @@ public abstract class ReadTokDefAbstract {
 		if (tokenAttributes.length == 3) {
 
 			if (tokenAttributes[2].matches(",.*parseInt\\(\\s*.*")) {
-				return new ParseStringAttribute();
+				return new ParseIntAttribute();
 			}
 
 			if (tokenAttributes[2].matches(",.*parseDouble\\(\\s*.*")) {

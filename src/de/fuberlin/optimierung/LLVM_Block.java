@@ -1,8 +1,6 @@
 package de.fuberlin.optimierung;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-
+import java.util.*;
 import de.fuberlin.optimierung.commands.*;
 
 class LLVM_Block implements ILLVM_Block {
@@ -33,8 +31,7 @@ class LLVM_Block implements ILLVM_Block {
 	// Kompletter Code des Blocks als String
 	private String blockCode;
 	
-	HashMap<String, ILLVM_Node> DAG_Hash = new HashMap<String, ILLVM_Node>();
-	LinkedList<ILLVM_Node> DAG = new LinkedList<ILLVM_Node>();
+	HashMap<String, LinkedList<ILLVM_Command>> commonex = new HashMap<String, LinkedList<ILLVM_Command>>();
 
 	public LLVM_Block(String blockCode, LLVM_Function function) {
 		
@@ -43,19 +40,73 @@ class LLVM_Block implements ILLVM_Block {
 		System.out.println(blockCode + "\n*****************\n");
 		
 		this.createCommands();
-		
-		this.createDAG();
-
+		this.optimizeBlock();
 	}
 
 	public void optimizeBlock() {
-
+		this.removeCommonExpressions();
 	}
 
-	private void createDAG() {
-		for (ILLVM_Command i = firstCommand; i != null; i=i.getSuccessor()){
-			DAG.add(new LLVM_Node(i, DAG_Hash));
+	private void removeCommonExpressions() {
+		List<String> whitelist = new ArrayList<String>();
+		whitelist.add(LLVM_Operation.ADD.toString());
+		whitelist.add(LLVM_Operation.MUL.toString());
+		whitelist.add(LLVM_Operation.DIV.toString());
+		whitelist.add(LLVM_Operation.SUB.toString());
+		
+		for (ILLVM_Command i = this.firstCommand; i != null; i=i.getSuccessor()){
+			// Nur Kommandos aus der Whitelist optimieren
+			if (!whitelist.contains(i.getOperation().name())) continue;
+			
+			if (commonex.containsKey(i.getOperation().name())){
+				// Kommando-Hash existiert
+				boolean matched = false;
+				LinkedList<ILLVM_Command> commands = commonex.get(i.getOperation().name());
+				for (ILLVM_Command command : commands){
+					if (matchCommands(i, command)){
+						// gleiches Kommando gefunden
+						// ersetze aktuelles Kommando mit Bestehendem
+						matched = true;
+						System.out.println("same command at " + command.getTarget().getName() + ", command replaced : " + i.toString());
+						i.setOperation(LLVM_Operation.ADD);
+						i.getOperands().get(0).setName(command.getTarget().getName());
+						i.getOperands().get(1).setName("0");	
+					}
+				}
+				if (!matched){
+					// Kein übereinstimmendes Kommando gefunden
+					// füge aktuelles Kommando zum Kommando-Hash hinzu
+					commands.add(i);
+					commonex.put(i.getOperation().name(), commands);
+				}
+			}
+			else{
+				// Kommando-Hash existiert nicht
+				LinkedList<ILLVM_Command> tmp = new LinkedList<ILLVM_Command>();
+				tmp.add(i);
+				commonex.put(i.getOperation().name(), tmp);
+			}
 		}
+	}
+	
+	private boolean matchCommands(ILLVM_Command com1, ILLVM_Command com2){
+		int i = 0;
+		// Gleichviele Parameter?
+		if (com1.getOperands().size() != com2.getOperands().size()) return false;
+		// Gleiche Operation?
+		if (com1.getOperation() != com2.getOperation()) return false;
+		// Gleiche Parameter?
+		for (LLVM_Parameter para1 : com1.getOperands()){
+			LLVM_Parameter para2 = com2.getOperands().get(i);
+			if (para1.getType() == para2.getType() && para1.getName().equals(para2.getName())){
+				// Nothing
+			}else{
+				// Parameter matchen nicht
+				return false;
+			}
+			i++;
+		}
+		return true;
 	}
 	
 	/*

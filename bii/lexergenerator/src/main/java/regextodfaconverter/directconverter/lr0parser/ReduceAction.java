@@ -33,6 +33,7 @@
 package regextodfaconverter.directconverter.lr0parser;
 
 
+import regextodfaconverter.directconverter.EventHandler;
 import regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
 import regextodfaconverter.directconverter.lr0parser.grammar.RuleElement;
 import regextodfaconverter.directconverter.lr0parser.grammar.RuleElementSequenz;

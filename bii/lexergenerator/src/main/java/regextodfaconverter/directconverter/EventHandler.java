@@ -30,7 +30,7 @@
  *
  */
 
-package regextodfaconverter.directconverter.lr0parser;
+package regextodfaconverter.directconverter;
 
 public interface EventHandler {
 

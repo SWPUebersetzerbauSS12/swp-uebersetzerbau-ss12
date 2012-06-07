@@ -33,6 +33,7 @@
 package regextodfaconverter.directconverter.lr0parser;
 
 
+import regextodfaconverter.directconverter.EventHandler;
 import regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
 import regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
 import regextodfaconverter.directconverter.lr0parser.itemset.Closure;

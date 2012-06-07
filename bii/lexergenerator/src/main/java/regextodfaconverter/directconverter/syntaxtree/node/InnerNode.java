@@ -61,6 +61,12 @@ public class InnerNode<Value> extends TreeNode<Value> implements Iterable<TreeNo
     childNodes.add( childNode);
 	}
 	
+	public void addChilds( TreeNode ... childNodes) {
+		for ( TreeNode childNode : childNodes) {
+			addChild( childNode);
+		}
+	}
+
 	public void insertChild( TreeNode childNode, int index) {
 		childNode.parentNode = this;
 		childNodes.add( index, childNode);

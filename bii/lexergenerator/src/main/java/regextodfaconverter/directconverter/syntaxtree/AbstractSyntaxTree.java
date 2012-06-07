@@ -2,6 +2,7 @@ package regextodfaconverter.directconverter.syntaxtree;
 
 import java.util.Iterator;
 
+import regextodfaconverter.directconverter.EventHandler;
 import regextodfaconverter.directconverter.lr0parser.ReduceEventHandler;
 import regextodfaconverter.directconverter.lr0parser.ShiftEventHandler;
 import regextodfaconverter.directconverter.lr0parser.grammar.ContextFreeGrammar;
@@ -17,19 +18,21 @@ import utils.Test;
 
 public class AbstractSyntaxTree extends ConcreteSyntaxTree {
 	
-	private SyntaxDirectedTranslation sdtTable;
+	private SyntaxDirectedDefinition sddTable;
+	
+	private AttributesMap rootAttributesMap;
 
-	public AbstractSyntaxTree( ContextFreeGrammar grammar, SyntaxDirectedTranslation sdtTable, String expression)
-			throws SyntaxTreeException {
-    super( grammar, expression);
-    this.sdtTable = sdtTable;
+	public AbstractSyntaxTree( ContextFreeGrammar grammar, SyntaxDirectedDefinition sddTable, String expression)
+			throws Exception {
+    this( grammar, sddTable, expression, null);
 	}
 	
 	
-	public AbstractSyntaxTree( ContextFreeGrammar grammar, SyntaxDirectedTranslation sdtTable, String expression, NewNodeEventHandler newNodeEventHandler)
-			throws SyntaxTreeException {
-    super( grammar, expression, newNodeEventHandler);
-    this.sdtTable = sdtTable;
+	public AbstractSyntaxTree( ContextFreeGrammar grammar, final SyntaxDirectedDefinition sddTable, String expression, NewNodeEventHandler newNodeEventHandler)
+			throws Exception {
+    super( grammar, expression, newNodeEventHandler, false);
+		this.sddTable = sddTable;
+    this.buildTree();
 	}
 	
 	
@@ -40,13 +43,14 @@ public class AbstractSyntaxTree extends ConcreteSyntaxTree {
 			
 				// create the map contains attributes of this node
 				AttributesMap thisAttributesMap = new AttributesMap();
+				rootAttributesMap = thisAttributesMap;
 
 				// create new inner node
 				InnerNode<AttributesMap> newInnerNode = new InnerNode<AttributesMap>( thisAttributesMap);
 				// newInnerNode.setPrintHandler( getNodePrintHandler());
 
 				// get the semantic rules defined for given rule to reduce
-			  SemanticRules semanticRules = sdtTable.get( reduceRule);
+			  SemanticRules semanticRules = sddTable.get( reduceRule);
 				
 			  
 			  // add childs to the new inner node
@@ -107,6 +111,10 @@ public class AbstractSyntaxTree extends ConcreteSyntaxTree {
 	}
 	
 	
+	
+	public AttributesMap getRootAttributesMap() {
+		return rootAttributesMap;
+	}
 		
 
 }

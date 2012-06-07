@@ -32,6 +32,8 @@
 
 package regextodfaconverter.directconverter.lr0parser;
 
+import regextodfaconverter.directconverter.EventHandler;
+
 
 public class AcceptAction<Element extends Comparable<Element>> extends Action<Element> implements EventHandler {
 

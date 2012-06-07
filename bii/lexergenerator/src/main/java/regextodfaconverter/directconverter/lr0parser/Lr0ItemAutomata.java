@@ -45,6 +45,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.ArrayBlockingQueue;
 
+import regextodfaconverter.directconverter.EventHandler;
 import regextodfaconverter.directconverter.lr0parser.grammar.ContextFreeGrammar;
 import regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
 import regextodfaconverter.directconverter.lr0parser.grammar.ProductionMap;

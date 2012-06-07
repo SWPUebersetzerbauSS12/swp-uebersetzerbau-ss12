@@ -42,6 +42,7 @@ import java.util.Iterator;
 import java.util.Stack;
 import java.util.concurrent.ArrayBlockingQueue;
 
+import regextodfaconverter.directconverter.EventHandler;
 import regextodfaconverter.directconverter.RegexSpecialChars;
 import regextodfaconverter.directconverter.lr0parser.ItemAutomata;
 import regextodfaconverter.directconverter.lr0parser.Lr0ItemAutomata;
@@ -88,7 +89,7 @@ public class ConcreteSyntaxTree implements Tree, Cloneable {
 
 
 	public ConcreteSyntaxTree( ContextFreeGrammar grammar, String expression)
-			throws SyntaxTreeException {
+			throws Exception {
 		this( grammar, expression, null);
 	}
 
@@ -110,22 +111,28 @@ public class ConcreteSyntaxTree implements Tree, Cloneable {
 
 
 	public ConcreteSyntaxTree( ContextFreeGrammar grammar, String expression, NewNodeEventHandler newNodeEventHandler)
-			throws SyntaxTreeException {
+			throws Exception {
+		this( grammar, expression, newNodeEventHandler, true);
+	}
+
+	public ConcreteSyntaxTree( ContextFreeGrammar grammar, String expression, NewNodeEventHandler newNodeEventHandler, Boolean directBuild)
+			throws Exception {
 		super();
 		this.grammar = extendGrammar( grammar);
 		this.onNewNodeEvent = newNodeEventHandler;
 		String terminizedExpression = "(" + expression + ")" + RegexSpecialChars.TERMINATOR;
 		initTreeSkeleton();
 		preprocessInput( terminizedExpression);
-		buildTree();
+		if ( directBuild)
+		  buildTree();
 	}
-
+	
 	
 	protected Stack<TreeNode> getNodeStack() {
 		return nodeStack;
 	}
 
-	private void buildTree() {
+	protected void buildTree() {
 		ItemAutomata<Character> itemAutomata = new Lr0ItemAutomata<Character>( (ContextFreeGrammar) grammar);
 
 		itemAutomata.setReduceEventHandler( getReduceEventHandler());

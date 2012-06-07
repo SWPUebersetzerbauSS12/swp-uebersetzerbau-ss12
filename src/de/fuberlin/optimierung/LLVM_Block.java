@@ -232,9 +232,9 @@ class LLVM_Block implements ILLVM_Block {
 	private boolean labelCheck(String label) {
 		
 		if(label.charAt(0) == ';') {
-			String[] splitedLabel = label.split("[:;]");
-			this.label = "%"+splitedLabel[2].trim();
-			this.label_line = label;
+			//String[] splitedLabel = label.split("[:;]");
+			//this.label = "%"+splitedLabel[2].trim();
+			//this.label_line = label;
 			return true;
 		}else{
 			String[] splitedLabel = label.split(":");

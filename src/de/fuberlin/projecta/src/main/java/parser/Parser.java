@@ -353,6 +353,20 @@ public class Parser implements IParser {
 		// stmt__
 		table.setEntry(NonTerminal.stmt__, TokenType.ID,
 				"stmt__ ::= bool OP_SEMIC");
+		table.setEntry(NonTerminal.stmt__, TokenType.INT_LITERAL,
+				"stmt__ ::= bool OP_SEMIC");
+		table.setEntry(NonTerminal.stmt__, TokenType.REAL_LITERAL,
+				"stmt__ ::= bool OP_SEMIC");
+		table.setEntry(NonTerminal.stmt__, TokenType.STRING_LITERAL,
+				"stmt__ ::= bool OP_SEMIC");
+		table.setEntry(NonTerminal.stmt__, TokenType.BOOL_LITERAL,
+				"stmt__ ::= bool OP_SEMIC");
+		table.setEntry(NonTerminal.stmt__, TokenType.OP_NOT,
+				"stmt__ ::= bool OP_SEMIC");
+		table.setEntry(NonTerminal.stmt__, TokenType.OP_MINUS,
+				"stmt__ ::= bool OP_SEMIC");
+		table.setEntry(NonTerminal.stmt__, TokenType.LPAREN,
+				"stmt__ ::= bool OP_SEMIC");
 		table.setEntry(NonTerminal.stmt__, TokenType.OP_SEMIC,
 				"stmt__ ::= OP_SEMIC");
 

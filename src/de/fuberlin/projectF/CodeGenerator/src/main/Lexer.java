@@ -268,24 +268,32 @@ public class Lexer {
 				newToken.setOp2("" + line[6].length());
 			}
 
-			// Additionen
+			// Expression Int
 			else if (line[2].contentEquals("add")
-					|| line[2].contentEquals("fadd")) {
+					|| line[2].contentEquals("sub")
+					|| line[2].contentEquals("mul")
+					|| line[2].contentEquals("sdiv")) {
 				// Type: ADDITION
-				newToken.setType(TokenType.Addition);
+				newToken.setType(TokenType.ExpressionInt);
 				newToken.setTarget(line[0]);
-				newToken.setTypeTarget(line[3]);
+				newToken.setTypeTarget(line[2]);
 				newToken.setOp1(line[4]);
 				newToken.setOp2(line[5]);
 			}
-			// Subtraktionen
-			else if (line[2].contentEquals("sub")) {
-				newToken.setType(TokenType.Subtraction);
+			
+			// Expression Double
+			else if (line[2].contentEquals("fadd")
+					|| line[2].contentEquals("fsub")
+					|| line[2].contentEquals("fmul")
+					|| line[2].contentEquals("fdiv")) {
+				// Type: ADDITION
+				newToken.setType(TokenType.ExpressionDouble);
 				newToken.setTarget(line[0]);
-				newToken.setTypeTarget(line[3]);
+				newToken.setTypeTarget(line[2]);
 				newToken.setOp1(line[4]);
 				newToken.setOp2(line[5]);
 			}
+	
 			// Wert aus Speicher lesen
 			else if (line[2].contentEquals("load")) {
 				newToken.setType(TokenType.Load);

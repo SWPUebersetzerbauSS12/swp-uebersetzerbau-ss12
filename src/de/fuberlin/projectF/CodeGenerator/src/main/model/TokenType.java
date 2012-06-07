@@ -2,8 +2,6 @@ package main.model;
 
 public enum TokenType {
 	TypeDefinition,
-	Addition,
-	Subtraction,
 	Load,
 	Allocation,
 	Definition,
@@ -17,4 +15,6 @@ public enum TokenType {
 	Compare,
 	Label,
 	Branch,
+	ExpressionInt,
+	ExpressionDouble,
 }

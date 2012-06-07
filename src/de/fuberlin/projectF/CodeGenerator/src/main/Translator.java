@@ -141,7 +141,7 @@ public class Translator {
 				mem.newVirtualVar(tok.getTarget(), tok.getOp1());
 				break;
 
-			case Addition:
+			case ExpressionInt:
 				res = mem.getFreeRegister();
 				if(res == null) {
 					if(!freeUnusedRegister(tokenNumber)) {
@@ -159,15 +159,31 @@ public class Translator {
 				else
 					op2 = "$" + tok.getOp2();
 
-				movl(op1, res.getFullName(), "Addition");
-				addl(op2, res.getFullName(),
-						tok.getOp1() + " + " + tok.getOp2());
-
+				movl(op1, res.getFullName(), "Expression");
+				if(tok.getTypeTarget().equals("add"))
+					addl(op2, res.getFullName(), tok.getOp1() + " + " + tok.getOp2());
+				else if(tok.getTypeTarget().equals("sub"))
+					subl(op2, res.getFullName(), tok.getOp1() + " - " + tok.getOp2());
+				else if(tok.getTypeTarget().equals("mul"))
+					imull(op2, res.getFullName(), tok.getOp1() + " * " + tok.getOp2());
+				else if(tok.getTypeTarget().equals("sdiv")) {
+					//division arbeitet mit festen registern in unserem fall EDX-EAX / Wert
+					//Beispielcode:
+					//movl -4(%ebp), %eax
+					//xorl %edx,%edx
+					//idivl -8(%ebp)
+					
+					//movl()
+					//xorl()
+					//idivl(op2, res.getFullName(), tok.getOp1() + " / " + tok.getOp2());
+				}
+				
+				
 				mem.addRegVar(tok.getTarget(), tok.getTypeTarget(), res);
 
 				break;
 				
-			case Subtraction:
+			/*case Expression:
 				res = mem.getFreeRegister();
 				if(res == null) {
 					if(!freeUnusedRegister(tokenNumber)) {
@@ -187,11 +203,11 @@ public class Translator {
 
 				movl(op1, res.getFullName(), "Subtraction");
 				subl(op2, res.getFullName(),
-						tok.getOp1() + " + " + tok.getOp2());
+						tok.getOp1() + " - " + tok.getOp2());
 
 				mem.addRegVar(tok.getTarget(), tok.getTypeTarget(), res);
 
-				break;
+				break;*/
 				
 			case Label:
 				label(tok.getTarget());
@@ -328,6 +344,11 @@ public class Translator {
 				.append(target).append("\t#").append(comment).append("\n");
 	}
 
+	private void imull(String source, String target, String comment) {
+		sectionText.append("\timull ").append(source).append(", ")
+				.append(target).append("\t#").append(comment).append("\n");
+	}
+	
 	private void subl(String source, String target, String comment) {
 		sectionText.append("\tsubl ").append(source).append(", ")
 				.append(target).append("\t#").append(comment).append("\n");

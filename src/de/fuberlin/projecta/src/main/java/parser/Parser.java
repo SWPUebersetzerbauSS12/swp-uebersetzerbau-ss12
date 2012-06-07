@@ -352,7 +352,7 @@ public class Parser implements IParser {
 
 		// stmt__
 		table.setEntry(NonTerminal.stmt__, TokenType.ID,
-				"stmt__ ::= loc OP_SEMIC");
+				"stmt__ ::= bool OP_SEMIC");
 		table.setEntry(NonTerminal.stmt__, TokenType.OP_SEMIC,
 				"stmt__ ::= OP_SEMIC");
 

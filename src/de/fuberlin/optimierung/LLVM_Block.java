@@ -240,7 +240,7 @@ class LLVM_Block implements ILLVM_Block {
 			
 			if(splitedLabel.length >= 2){
 				this.label = "%"+splitedLabel[0];
-				this.label_line = label;
+				//this.label_line = label;
 				return true;
 			}
 		}

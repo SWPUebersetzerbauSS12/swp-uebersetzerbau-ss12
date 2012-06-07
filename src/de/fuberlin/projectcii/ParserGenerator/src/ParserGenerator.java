@@ -245,7 +245,9 @@ public class ParserGenerator {
 		HashMap<String, Set<String>> followSets = new HashMap<String, Set<String>>();
 		for (String head : Nonterminal) {
 			// String head = p.getHead();
-			followSets.put(head, evalFollowSet(head,grammarMap));
+			Set<String> visitedNonTerminals = new HashSet<String>();
+			
+			followSets.put(head, evalFollowSet(head,grammarMap,visitedNonTerminals));
 		}
 		Printer.printFollowSets(followSets);
 		return followSets;
@@ -259,8 +261,9 @@ public class ParserGenerator {
 	 * @param grammarMap contains the grammar
 	 * @return returns a set with all folloitems of given head
 	 */
-	private Set<String> evalFollowSet(String head,Map<String, Vector<Vector<String>>> grammarMap) {
+	private Set<String> evalFollowSet(String head,Map<String, Vector<Vector<String>>> grammarMap,Set<String> visitedNonTerminals) {
 		
+		visitedNonTerminals.add(head);
 		if (followSets.containsKey(head)) {
 			return followSets.get(head);
 		}
@@ -287,7 +290,7 @@ public class ParserGenerator {
 								HashSet<String> first = new HashSet<String>(firstSetsProductions.get(follow).keySet());
 								// the first set hat epsilon.
 								if (first.contains(Settings.getEPSILON())){
-									if (!currentHead.equals(head)) { fs.addAll(evalFollowSet(currentHead,grammarMap));}
+									if (!currentHead.equals(head)) { fs.addAll(evalFollowSet(currentHead,grammarMap,visitedNonTerminals));}
 									first.remove(Settings.getEPSILON());
 									fs.addAll(first);
 								} else {
@@ -296,9 +299,10 @@ public class ParserGenerator {
 							}
 						}
 						else{
-							if (!currentHead.equals(head)){
+							// check if the symbol has already been visited in the rekursive tree
+							if (!currentHead.equals(head) && !visitedNonTerminals.contains(currentHead)){
 								//  the last symbol
-								fs.addAll(evalFollowSet(currentHead,grammarMap));
+								fs.addAll(evalFollowSet(currentHead,grammarMap,visitedNonTerminals));
 								
 							}
 						}						

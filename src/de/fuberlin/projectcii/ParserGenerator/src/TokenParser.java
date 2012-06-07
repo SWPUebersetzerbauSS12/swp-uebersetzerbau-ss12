@@ -50,8 +50,7 @@ public class TokenParser {
 			System.out.println("accepted");
 		}
 		tree.printTree();
-		tree.CompressSyntaxTree();
-		tree.printTree();
+		//tree.CompressSyntaxTree();
 		return tree;
 	}
 	
@@ -78,7 +77,7 @@ public class TokenParser {
 		}
 		// Check Parsertable for next Step (specifically check if symbol - Token field exists
 		else if(parserTable.keySet().contains(symbol) &&
-			   (parserTable.get(symbol).keySet().contains(Token))){
+			   !(parserTable.get(symbol).get(Token).isEmpty())){
 			String head = symbol;
 			// get ProductionNr in grammar by consulting the parsetable
 			int productionNr = parserTable.get(head).get(Token).firstElement();
@@ -92,11 +91,11 @@ public class TokenParser {
 					tree.addChild(parseToken(Production.elementAt(i),tree));
 				}
 				// add a epsilon childNode to the tree
-				else{
-					SyntaxTree epsilonTree = new SyntaxTree();
-					epsilonTree.setSymbol(Settings.getEPSILON());
-					tree.addChild(epsilonTree);
-				}
+//				else{
+//					SyntaxTree epsilonTree = new SyntaxTree();
+//					epsilonTree.setSymbol(Settings.getEPSILON());
+//					tree.addChild(epsilonTree);
+//				}
 			}
 		}
 		// Token doesn't fit the given grammar

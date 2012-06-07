@@ -1,3 +1,5 @@
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -46,8 +48,9 @@ public class ParserGenerator {
 	 * 
 	 * @param file Path to the grammar file
 	 * @return returns the created parsertable
+	 * @throws IOException 
 	 */
-	public Map<String, HashMap<String,Vector<Integer>>> createParserTable(String file){
+	public Map<String, HashMap<String,Vector<Integer>>> createParserTable(String file) throws IOException{
 		//Read the Grammar from file
 		readGrammar(file);
 		Printer.printGrammar(grammarMap);
@@ -69,6 +72,8 @@ public class ParserGenerator {
 		parserTable = createParserTable();
 		Printer.printParserTable(Terminals,Nonterminal,parserTable);
 		return parserTable;
+		
+		
 	}
 	
 	/**
@@ -89,13 +94,18 @@ public class ParserGenerator {
 		return this.start;
 	}
 	
+	//public boolean parsable_LL1(){
+	//	return this.parsable_LL1(createParserTable());
+	//}
+	
 	/**
 	 * Reads the Grammar from a given file.
 	 * 
 	 * @author Patrick Schlott
 	 * @param file Path to the grammar file
+	 * @throws IOException 
 	 */
-	private void readGrammar(String file){
+	private void readGrammar(String file) throws IOException{
 		GrammarReader gR = new GrammarReader();
 		grammarMap = gR.createGrammar(file,5);
 		
@@ -250,27 +260,32 @@ public class ParserGenerator {
 	 * @return returns a set with all folloitems of given head
 	 */
 	private Set<String> evalFollowSet(String head,Map<String, Vector<Vector<String>>> grammarMap) {
+		
 		if (followSets.containsKey(head)) {
 			return followSets.get(head);
 		}
+		//add "eof" into follow(start symbol)
 		Set<String> fs = new HashSet<String>();
 		if (start.equals(head)) {
 			fs.add(Settings.getEOF());
 		}
-		
+		//
 		for (String currentHead : grammarMap.keySet()) {
 			for (Vector<String> product : grammarMap.get(currentHead)) {
 				for (Iterator<String> itr = product.iterator(); itr.hasNext();) {
 					if (itr.next().equals(head)) {
 						if (itr.hasNext()) {
-							// not last symbol
-							String follow = itr.next();
+							// not last symbol,
+							String follow = itr.next(); //string follow is terminal or nonterminal.
+							//terminal
 							if (Terminals.contains(follow)){
 								fs.add(follow);
 							}
+							// nonterminal
 							else{
+								//get all elements from first set of this nonterminal symbol
 								HashSet<String> first = new HashSet<String>(firstSetsProductions.get(follow).keySet());
-
+								// the first set hat epsilon.
 								if (first.contains(Settings.getEPSILON())){
 									if (!currentHead.equals(head)) { fs.addAll(evalFollowSet(currentHead,grammarMap));}
 									first.remove(Settings.getEPSILON());
@@ -284,6 +299,7 @@ public class ParserGenerator {
 							if (!currentHead.equals(head)){
 								//  the last symbol
 								fs.addAll(evalFollowSet(currentHead,grammarMap));
+								
 							}
 						}						
 						break;
@@ -294,6 +310,14 @@ public class ParserGenerator {
 		return fs;
 	}
 	
+	//private Set<String> getfollowset(String currentHead,
+	//		Map<String, Vector<Vector<String>>> grammarMap2) {
+	//	if (followSets.containsKey(currentHead)) {
+			
+	//	}
+//		return followSets.get(currentHead);
+//	}
+
 	/**
 	 * Evaluates the parsertable.
 	 * 
@@ -350,6 +374,40 @@ public class ParserGenerator {
 	public Map<String, Vector<Vector<String>>> getGrammar() {
 
 		return grammarMap;
+	}
+	/**
+	 * check out if the garmmar is LL(1)-parsable.
+	 * @author Ying Wei
+	 * @param parsertable
+	 * @return boolean
+	 */
+	
+	public boolean parsable_LL1 (Map<String, HashMap<String, Vector<Integer>>> parsertable)  {
+		HashMap<String,Vector<Integer>> parseTableColumn = new HashMap<String,Vector<Integer>>();
+		Vector<Integer> parseTableEntry = new Vector<Integer>();
+		
+		for(String head :Nonterminal){
+			parseTableColumn=parsertable.get(head);
+			
+		}
+		
+		for(String terminal:Terminals){
+						
+			parseTableEntry=parseTableColumn.get(terminal);
+			//check the no. of entries of each terminal
+			if((parseTableEntry.size()==1)){
+				System.out.println();
+				System.out.println("the grammar is parsable for LL(1).  ");
+				System.out.println();
+				return true;
+			}
+			
+		}
+		System.out.println();
+		System.out.println("the grammar is NOT parsable for LL(1), please input a new one...");
+		System.out.println();
+		return false;
+		
 	}
 
 }

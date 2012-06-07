@@ -39,13 +39,18 @@ public class GrammarReader {
 	 * elimination of left-rekursions is fixed at 4 runs after which the Grammar
 	 * is deemed not LL(1)-parsable.
 	 * 
-	 * @author Patrick Schlott
-	 * @param file The path to the file containing the grammar that shall be used.
+	 * @author Patrick Schlott,Ying Wei
+	 * @param NItr defines the Max. no. of the iterations, 
+	 * if more than NItr,the whole grammar will be cleared
 	 * @return The grammar as HashMap where the keys are the heads of the production
 	 * and the values are vectors containing the productions itself. Each production
 	 * is represented as a vector of terminal and nonterminal symbols
+	 *  @throws IOException 
+	 * if there are more times than the defined no. of iterations,or, clear grammar and break out.
+	 * for the whole grammar,if there is no going on productions for the new non-terminal symbol
+	 *  in the front of the productions, then break out and message"LackOfProductions/FileNotFound/Unsupported
 	 */
-	public Map<String, Vector<Vector<String>>> createGrammar(String file,int NItr){
+	public Map<String, Vector<Vector<String>>> createGrammar(String file,int NItr)throws IOException{
 		// Read the file
 		Vector<Productions>grammar=ReadFile(file);
 		Printer.printGrammar(grammar);
@@ -62,17 +67,31 @@ public class GrammarReader {
 		int iteration = 0;
 		grammar=eliminateDirectLeftRekursion(grammar);
 		Printer.printGrammar(grammar);
-		// stop at 4 Iterations, the fifth checks is the grammar is deemed unparsable
-		while (rekursive[0] && iteration < NItr){
+				
+			while(rekursive[0]){
 			rekursive[0] = false;
 			grammar=eliminateIndirectLeftRekursion(grammar,rekursive);
 			grammar=eliminateDirectLeftRekursion(grammar);
 			iteration++;
-		}
-		System.out.println(iteration);
-		// definie first Element in Vector as startsymbol
-		startSymbol = grammar.elementAt(0).getHead();
-		return buildGrammarMap(grammar);
+			if(iteration < NItr){
+			// definie first Element in Vector as startsymbol
+			startSymbol = grammar.elementAt(0).getHead();
+			 }
+			
+			}
+			
+		     if(iteration>=NItr) {
+		    	
+		    System.out.println("the no. of the iterations:"+iteration+" >= Max No. of Iterations "+NItr);
+			System.out.println("Too Many Iterations, it's unparsable with LL(1), please input a right file!!");
+			
+		     grammar.clear();
+		     	
+		     }
+		   
+		   return buildGrammarMap(grammar);
+		    	     	
+		
 	}
 	
 	/**

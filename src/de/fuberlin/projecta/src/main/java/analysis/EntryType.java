@@ -1,6 +1,7 @@
 package analysis;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import lombok.Getter;
@@ -41,49 +42,28 @@ public class EntryType {
 	@Getter
 	private List<EntryType> params;
 
-	/**
-	 * @return true if id, type and parameters equal one another, false
-	 *         otherwise. TODO: please make this much more pretty!
-	 */
 	@Override
 	public boolean equals(Object o) {
-		if (o != null) {
-			if (o instanceof EntryType) {
-				EntryType ot = (EntryType) o;
-
-				if (id.getClass() == ot.getId().getClass()
-						&& type.getClass() == ot.getType().getClass()) {
-					if (type instanceof BasicType) { // is it the same basictype
-														// here??
-						if (((BasicType) type).getType() == ((BasicType) ot
-								.getType()).getType()) {
-							for (int i = 0; i < params.size(); i++) {
-								if (!params.get(i)
-										.equals(ot.getParams().get(i))) {
-									return false;
-								}
-							}
-						} else {
-							return false;
-						}
-					} else { // if its not basic the class must be equal instead
-								// so simply go through the children
-						for (int i = 0; i < params.size(); i++) {
-							if (!params.get(i).equals(ot.getParams().get(i))) {
-								return false;
-							}
-						}
-					}
-					return true;
-				}
-			}
-		}
-		return false;
+		if (this == o)
+			return true;
+		if (!(o instanceof EntryType))
+			return false;
+		EntryType et = (EntryType) o;
+		return this.id == et.id && this.type == et.type && Arrays.equals(this.params.toArray(), et.params.toArray());
 	}
 
-	/**
-	 * debug only ...
-	 */
+	@Override
+	public int hashCode() {
+		int result = id != null ? id.hashCode() : 0;
+		result = 31 * result + (type != null ? type.hashCode() : 0);
+		if (params != null)
+			for (EntryType t : params)
+				result = 31 * result + (t != null ? t.hashCode() : 0);
+		else
+			result = 31 * result + 0;
+		return result;
+	}
+
 	@Override
 	public String toString() {
 		String ret = id + ":" + type.getClass() + ":params(";

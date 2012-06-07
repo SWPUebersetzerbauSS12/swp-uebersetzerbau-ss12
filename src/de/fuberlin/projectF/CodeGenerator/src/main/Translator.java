@@ -173,41 +173,31 @@ public class Translator {
 					//xorl %edx,%edx
 					//idivl -8(%ebp)
 					
+					//Beispielcode: hinter die Funktionen sind noch leer. Nur Beispiel wie es aussehen könnte
+					if(!isRegisterFree(new RegisterAddress(0))) {
+						System.out.println("Register eax is not free");
+						saveRegisterValue(new RegisterAddress(0));
+					}
+					if(!isRegisterFree(new RegisterAddress(3))) {
+						System.out.println("Register edx is not free");
+						saveRegisterValue(new RegisterAddress(3));
+					}
+					
+					//op1 = mem.getAddress(tok.getOp1());
+					movl(op1, new RegisterAddress(0).getFullName(), "");
+					movl(new String("$0"), new RegisterAddress(3).getFullName(), "");
+					
+					//op2 = mem.getAddress(tok.getOp2());
+					idivl(op2);
+					
 					//movl()
 					//xorl()
 					//idivl(op2, res.getFullName(), tok.getOp1() + " / " + tok.getOp2());
-				}
-				
-				
+					res = new RegisterAddress(0);
+				}	
 				mem.addRegVar(tok.getTarget(), tok.getTypeTarget(), res);
 
 				break;
-				
-			/*case Expression:
-				res = mem.getFreeRegister();
-				if(res == null) {
-					if(!freeUnusedRegister(tokenNumber)) {
-						System.out.println("Could'nt free register");
-					}
-					res = mem.getFreeRegister();
-				}
-
-				if (tok.getOp1().startsWith("%"))
-					op1 = mem.getAddress(tok.getOp1());
-				else
-					op1 = "$" + tok.getOp1();
-				if (tok.getOp2().startsWith("%"))
-					op2 = mem.getAddress(tok.getOp2());
-				else
-					op2 = "$" + tok.getOp2();
-
-				movl(op1, res.getFullName(), "Subtraction");
-				subl(op2, res.getFullName(),
-						tok.getOp1() + " - " + tok.getOp2());
-
-				mem.addRegVar(tok.getTarget(), tok.getTypeTarget(), res);
-
-				break;*/
 				
 			case Label:
 				label(tok.getTarget());
@@ -287,7 +277,7 @@ public class Translator {
 				+ mem.getReturnRegister("main").getFullName()
 				+ "\n\tcall exit\n\n");
 	}
-
+	
 	private void data(String label, String type, String value) {
 		sectionData.append(label).append(":\t").append(type).append(" ").append(value).append("\n");
 	}
@@ -344,6 +334,10 @@ public class Translator {
 				.append(target).append("\t#").append(comment).append("\n");
 	}
 
+	private void idivl(String source) {
+		sectionText.append("\tidivl ").append(source).append("\n");
+	}
+	
 	private void imull(String source, String target, String comment) {
 		sectionText.append("\timull ").append(source).append(", ")
 				.append(target).append("\t#").append(comment).append("\n");
@@ -369,6 +363,16 @@ public class Translator {
 			}
 		}
 		return result;
+	}
+	
+	private boolean isRegisterFree(RegisterAddress res) {
+		boolean result = true;
+		
+		return result;
+	}
+	
+	private void saveRegisterValue(RegisterAddress res) {
+		
 	}
 	
 	private int findToken(int start, boolean backwards, TokenType type, String target, String op1, String op2) {

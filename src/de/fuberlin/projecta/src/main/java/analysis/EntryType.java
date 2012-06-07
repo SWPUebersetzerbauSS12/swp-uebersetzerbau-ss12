@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import lombok.Getter;
-import analysis.ast.nodes.BasicType;
 import analysis.ast.nodes.Id;
 import analysis.ast.nodes.Type;
 
@@ -49,7 +48,7 @@ public class EntryType {
 		if (!(o instanceof EntryType))
 			return false;
 		EntryType et = (EntryType) o;
-		return this.id == et.id && this.type == et.type && Arrays.equals(this.params.toArray(), et.params.toArray());
+		return this.id.equals(et.id) && this.type.equals(et.type) && Arrays.equals(this.params.toArray(), et.params.toArray());
 	}
 
 	@Override

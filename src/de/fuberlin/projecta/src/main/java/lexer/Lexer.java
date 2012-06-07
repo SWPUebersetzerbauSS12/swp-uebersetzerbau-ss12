@@ -221,6 +221,10 @@ public class Lexer implements ILexer {
 			is.consumeChars(4);
 			return new Token(TokenType.ELSE, null, this.line, offset);
 		}
+		if(s.equals("v") && is.getNextChars(5).matches("void" + delimiterRegexp)){
+			is.consumeChars(4);
+			return new Token(TokenType.BASIC, BasicTokenType.VOID, this.line, offset);
+		}
 		if (s.equals("w")
 				&& is.getNextChars(6).matches("while" + delimiterRegexp)) {
 			is.consumeChars(5);

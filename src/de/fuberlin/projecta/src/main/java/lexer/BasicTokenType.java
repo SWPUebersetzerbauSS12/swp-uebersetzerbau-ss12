@@ -5,6 +5,7 @@ public enum BasicTokenType {
 	BOOL,
 	INT,
 	REAL,
-	STRING
+	STRING,
+	VOID
 
 }

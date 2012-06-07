@@ -15,6 +15,6 @@ public class While extends Statement {
 				return false;
 			}
 		}
-		return false;
+		return true;
 	}
 }

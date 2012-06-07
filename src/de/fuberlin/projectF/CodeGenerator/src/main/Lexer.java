@@ -1,6 +1,7 @@
 package main;
 
 import java.io.*;
+import java.lang.Number;
 
 import main.model.Token;
 import main.model.TokenType;
@@ -98,9 +99,7 @@ public class Lexer {
 			p2 = line.indexOf(')', p2+1);
 			System.out.println("Found a second one");
 		}
-		System.out.println("P1: " + p1 + " P2: " + p2);
 		line = replaceBetween(line, p1, p2, ' ', (char) 1);
-		System.out.println(line);
 
 		p1 = line.lastIndexOf('[');
 		p2 = line.indexOf(']', p1);
@@ -113,8 +112,6 @@ public class Lexer {
 		p1 = line.indexOf('"');
 		p2 = line.indexOf('"', p1 + 1);
 		line = replaceBetween(line, p1, p2, ' ', (char) 1);
-
-		System.out.println(line);
 
 		tmpSplitLine = line.split(" ");
 
@@ -200,7 +197,12 @@ public class Lexer {
 			newToken.setType(TokenType.Assignment);
 			newToken.setTarget(line[4]);
 			newToken.setTypeTarget(line[3]);
-			newToken.setOp1(line[2]);
+			
+			if(line[1].equals("double"))
+				newToken.setOp1(transformInIEEE(line[2]));
+			else
+				newToken.setOp1(line[2]);
+			
 			newToken.setTypeOp1(line[1]);
 		}
 
@@ -334,6 +336,32 @@ public class Lexer {
 			newToken.setType(TokenType.Undefined);
 
 		return newToken;
+	}
+
+	private String transformInIEEE(String string) {
+		System.out.println("String: " + string);
+		String[] sString = string.split("e");
+		
+		System.out.println(sString[0]);
+		System.out.println(sString[1]);
+		double result = Double.parseDouble(sString[0]);
+		if(sString[1].charAt(0) == '-') {
+			sString[1] = sString[1].substring(1);
+			for(int i = Integer.parseInt(sString[1]); i > 0; i--) {
+				result = result / 10;
+			}
+			
+		} else {
+			sString[1] = sString[1].substring(1);
+			for(int i = Integer.parseInt(sString[1]); i > 0; i--) {
+				result = result * 10;
+			}
+		}
+		//TODO
+		
+		long tmp = Double.doubleToLongBits(result);
+		String tmp2 = Long.toHexString(tmp);
+		return new String("0x" + tmp2.substring(0, 8));
 	}
 
 	private String requote(String string) {

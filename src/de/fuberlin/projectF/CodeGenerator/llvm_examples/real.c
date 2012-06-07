@@ -3,15 +3,10 @@
 int main ()
 {
 	double a;
-	double b;
-	double erg;
 	
-	a = 4.5;
-	b = 3.9;
+	a = 5.78;
 	
-	erg = a + b;
-	
-	printf("%f + %f = %f\n", a, b, erg);
+	printf("%f\n", a);
 	
 	return 0;
 }

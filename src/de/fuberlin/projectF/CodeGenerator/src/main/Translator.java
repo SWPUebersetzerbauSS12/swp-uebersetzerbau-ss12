@@ -167,13 +167,6 @@ public class Translator {
 				else if(tok.getTypeTarget().equals("mul"))
 					imull(op2, res.getFullName(), tok.getOp1() + " * " + tok.getOp2());
 				else if(tok.getTypeTarget().equals("sdiv")) {
-					//division arbeitet mit festen registern in unserem fall EDX-EAX / Wert
-					//Beispielcode:
-					//movl -4(%ebp), %eax
-					//xorl %edx,%edx
-					//idivl -8(%ebp)
-					
-					//Beispielcode: hinter die Funktionen sind noch leer. Nur Beispiel wie es aussehen könnte
 					if(!isRegisterFree(new RegisterAddress(0))) {
 						System.out.println("Register eax is not free");
 						saveRegisterValue(new RegisterAddress(0));
@@ -182,21 +175,56 @@ public class Translator {
 						System.out.println("Register edx is not free");
 						saveRegisterValue(new RegisterAddress(3));
 					}
-					
-					//op1 = mem.getAddress(tok.getOp1());
 					movl(op1, new RegisterAddress(0).getFullName(), "");
 					movl(new String("$0"), new RegisterAddress(3).getFullName(), "");
-					
-					//op2 = mem.getAddress(tok.getOp2());
+
 					idivl(op2);
-					
-					//movl()
-					//xorl()
-					//idivl(op2, res.getFullName(), tok.getOp1() + " / " + tok.getOp2());
 					res = new RegisterAddress(0);
 				}	
 				mem.addRegVar(tok.getTarget(), tok.getTypeTarget(), res);
+				break;
+				
+			case ExpressionDouble:
+				res = mem.getFreeRegister();
+				if(res == null) {
+					if(!freeUnusedRegister(tokenNumber)) {
+						System.out.println("Could'nt free register");
+					}
+					res = mem.getFreeRegister();
+				}
+				
+				if (tok.getOp1().startsWith("%"))
+					op1 = mem.getAddress(tok.getOp1());
+				else
+					op1 = "$" + tok.getOp1();
+				if (tok.getOp2().startsWith("%"))
+					op2 = mem.getAddress(tok.getOp2());
+				else
+					op2 = "$" + tok.getOp2();
 
+				movl(op1, res.getFullName(), "Expression");
+				if(tok.getTypeTarget().equals("add"))
+					addl(op2, res.getFullName(), tok.getOp1() + " + " + tok.getOp2());
+				else if(tok.getTypeTarget().equals("sub"))
+					subl(op2, res.getFullName(), tok.getOp1() + " - " + tok.getOp2());
+				else if(tok.getTypeTarget().equals("mul"))
+					imull(op2, res.getFullName(), tok.getOp1() + " * " + tok.getOp2());
+				else if(tok.getTypeTarget().equals("sdiv")) {
+					if(!isRegisterFree(new RegisterAddress(0))) {
+						System.out.println("Register eax is not free");
+						saveRegisterValue(new RegisterAddress(0));
+					}
+					if(!isRegisterFree(new RegisterAddress(3))) {
+						System.out.println("Register edx is not free");
+						saveRegisterValue(new RegisterAddress(3));
+					}
+					movl(op1, new RegisterAddress(0).getFullName(), "");
+					movl(new String("$0"), new RegisterAddress(3).getFullName(), "");
+
+					idivl(op2);
+					res = new RegisterAddress(0);
+				}	
+				mem.addRegVar(tok.getTarget(), tok.getTypeTarget(), res);
 				break;
 				
 			case Label:
@@ -365,12 +393,14 @@ public class Translator {
 		return result;
 	}
 	
+	//TODO
 	private boolean isRegisterFree(RegisterAddress res) {
 		boolean result = true;
 		
 		return result;
 	}
 	
+	//TODO
 	private void saveRegisterValue(RegisterAddress res) {
 		
 	}

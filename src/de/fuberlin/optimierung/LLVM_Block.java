@@ -14,7 +14,6 @@ class LLVM_Block implements ILLVM_Block {
 
 	// Ursprüngliches Label des Blockes
 	private String label = "";
-	private String label_line = "";
 	
 	// Vorgaenger- und Nachfolgerbloecke
 	// Hieraus entsteht der Flussgraph zwischen den Bloecken
@@ -473,10 +472,6 @@ class LLVM_Block implements ILLVM_Block {
 	public String toString() {
 		
 		String code = "";
-		
-		/*if(!label_line.equals("")){
-			code = label_line+"\n";
-		}*/
 		
 		if(!this.label.matches("%[1-9][0-9]*") && !this.label.equals("")) {
 			code = label.substring(1)+":\n";

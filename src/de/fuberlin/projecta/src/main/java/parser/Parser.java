@@ -47,7 +47,7 @@ public class Parser implements IParser {
 	 * @see parser.IParser#parse()
 	 */
 	@Override
-	public void parse() throws ParseException {
+	public ISyntaxTree parse() throws ParseException {
 		if (table.isAmbigous()) {
 			throw new ParseException(
 					"Parsing table is ambigous! Won't start syntax analysis", null);
@@ -141,6 +141,7 @@ public class Parser implements IParser {
 
 		assert (currentNode != null);
 		parseTree = currentNode;
+		return parseTree;
 	}
 
 	/**

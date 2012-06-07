@@ -8,6 +8,6 @@ public interface IParser {
 	 *
 	 * @throws RuntimeException
 	 */
-	public void parse();
+	public ISyntaxTree parse();
 
 }

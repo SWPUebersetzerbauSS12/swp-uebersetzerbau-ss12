@@ -701,6 +701,45 @@ public class LLVM_Function {
 		}
 	}
 	
+	/**
+	 * Entferne Bloecke, die nur unbedingten Sprungbefehl enthalten
+	 * TODO: in arbeit
+	 */
+	public void deleteEmptyBlocks() {
+		// Gehe Bloecke durch
+		for(ILLVM_Block actualBlock : this.blocks) {
+			// Enthaelt Block nur einen unbedingten Sprungbefehl?
+			if(!actualBlock.isEmpty() && actualBlock.getFirstCommand().
+					getOperation()==LLVM_Operation.BR) {
+				// Block kann geloescht werden
+				ILLVM_Block targetBlock = actualBlock.getNextBlocks().getFirst();
+				String targetBlockName = targetBlock.getLabel();
+				String actualBlockLabel = actualBlock.getLabel();
+				
+				// Gehe Vorgaengerbloecke durch
+				for(ILLVM_Block previousBlock : actualBlock.getPreviousBlocks()) {
+					// Hole Sprungbefehl des Vorgaengerblocks
+					// Dieser muss angepasst werden
+					ILLVM_Command branchCommand = previousBlock.getLastCommand();
+					
+					// Sprung soll zu targetBlock gehen, statt zu actualBlock
+					
+					// Registermap uses anpassen
+					
+					// Passe Flussgraph an:
+					// previousBlock hat actualBlock nicht mehr als Nachfolger,
+					// sondern targetBlock
+					// targetBlock hat previousBlock als Vorgaenger
+				}
+				
+				// Entferne zu loeschenden Block aus Flussgraph
+				actualBlock.deleteBlock();
+				
+			}
+		}
+
+	}
+	
 	/*
 	 * *********************************************************
 	 * *********** Labels zur Ausgabe anpassen *****************

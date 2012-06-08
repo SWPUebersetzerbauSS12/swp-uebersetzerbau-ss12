@@ -13,6 +13,15 @@ public abstract class AbstractSyntaxTree extends Tree {
 	 */
 	@Getter
 	SymbolTable table;
+	
+	public SymbolTable getHigherTable(){
+		while(getParent() != null){
+			if(((AbstractSyntaxTree)getParent()).getTable() != null){
+				return ((AbstractSyntaxTree)getParent()).getTable();
+			}
+		}
+		return null;
+	}
 
 	public AbstractSyntaxTree() {
 		super(null);
@@ -40,6 +49,11 @@ public abstract class AbstractSyntaxTree extends Tree {
 	public boolean equals(Object object) {
 		if (object != null) {
 			if (object.getClass() == this.getClass()) {
+				if(this instanceof BasicType){
+					if(((BasicType) this).getType() != ((BasicType) object).getType()){
+						return false;
+					}
+				}
 				ISyntaxTree ot = (ISyntaxTree) object;
 				if (getChildrenCount() == ot.getChildrenCount()) {
 					for (int i = 0; i < getChildrenCount(); i++) {

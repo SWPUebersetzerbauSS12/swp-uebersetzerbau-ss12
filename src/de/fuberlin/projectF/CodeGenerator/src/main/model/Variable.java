@@ -1,55 +1,85 @@
 package main.model;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Variable {
 	String type;
 	public String name;
 	LinkedList<Address> addresses;
+	ArrayList<RegisterAddress> regAddresses;
+	ArrayList<StackAddress> stackAddresses;
 	int size;
 
 	public Variable() {
-		this("undefined","");
+		this("undefined", "");
 	}
 
-	public Variable(String type, int size, int stackAddress, String name) {
-		this(type, name);
-		this.size = size;
+	public Variable(String type, String name) {
+		this.type = type;
 		this.name = name;
-		addresses.add(new StackAddress(stackAddress));
+		regAddresses = new ArrayList<RegisterAddress>();
+		stackAddresses = new ArrayList<StackAddress>();
 	}
-	
+
 	public Variable(String type, int size, String name) {
 		this(type, name);
 		this.size = size;
 		this.name = name;
 	}
 
-	public Variable(String type, RegisterAddress sum, String name) {
+	// Konstruktor für neue Variable mit impliziter Stackadresse
+	public Variable(String type, int size, int stackAddress, String name) {
 		this(type, name);
-		
+		this.size = size;
+		this.name = name;
+		stackAddresses.add(new StackAddress(stackAddress));
+	}
+
+	// Kons. für neue Variable mit Registeradresse
+	public Variable(String type, RegisterAddress reg, String name) {
+		this(type, name);
+
 		if (this.type.equals("i32"))
 			this.size = 4;
 		else
 			this.size = 4;
-		addresses.add(sum);
+		regAddresses.add(reg);
 	}
 
-	public Variable(String type, String name) {
-		this.type = type;
-		this.name = name;
-		addresses = new LinkedList<Address>();
+	public void addStackAddress(StackAddress stackAddress) {
+		stackAddresses.add(stackAddress);
 	}
-
+	
 	public int getSize() {
 		return size;
 	}
-	
+
 	public void setSize(int size) {
 		this.size = size;
 	}
 
 	public String getAddress() {
-		return addresses.getFirst().getFullName();
+		if (!regAddresses.isEmpty()) return getRegAddress().getFullName();
+		return stackAddresses.get(0).getFullName();
 	}
+
+	public RegisterAddress getRegAddress() {
+		return regAddresses.get(0);
+	}
+
+	public boolean onlyInReg() {
+		return stackAddresses.size() == 0;
+	}
+	
+	public boolean onStack(){
+		return !stackAddresses.isEmpty();
+	}
+
+	public boolean inReg(int i) {
+		for (RegisterAddress r : regAddresses) if (r.regNumber == i) return true;
+		return false;
+	}
+
+	
 }

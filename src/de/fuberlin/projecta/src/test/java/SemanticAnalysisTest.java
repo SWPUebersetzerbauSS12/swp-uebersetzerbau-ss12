@@ -32,7 +32,7 @@ public class SemanticAnalysisTest {
 	
 	@Test
 	public void testValidFunctionDef() {
-		final String code = "def int foo() { int a;} def int foo(int a) {}";
+		final String code = "def void foo(int a){int b;} def void foo(real a){int b;}";
 		analyze(code);
 	}
 	

@@ -1,6 +1,7 @@
 package main;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import main.model.Token.Parameter;
 
@@ -27,7 +28,7 @@ public class Translator {
 		for (Token tok : code) {
 			String op1, op2;
 			RegisterAddress res;
-			
+
 			switch (tok.getType()) {
 			case Definition:
 				// Neuen Variablenkontext anlegen
@@ -49,35 +50,36 @@ public class Translator {
 				break;
 
 			case Return:
-				// Kein Rückgabewert
-				if (tok.getTypeOp1().equals("void"))
+				// Kein Rückgabewert oder bereits in %eax
+				if (tok.getTypeOp1().equals("void")
+						|| mem.inReg(tok.getOp1(), 0))
 					break;
 				// Variable zurückgeben
-				res = mem.getFreeRegister();
-				if(res == null) {
-					if(!freeUnusedRegister(tokenNumber)) {
-						System.out.println("Could'nt free register");
-					}
-					res = mem.getFreeRegister();
-				}
-				mem.setReturnRegister(res);
 				if (tok.getOp1().startsWith("%")) {
-					
-					movl(mem.getAddress(tok.getOp1()), res.getFullName(),
-							"Return value");	
+					movl(mem.getAddress(tok.getOp1()), "%eax", "Return value");
 				}
 				// Fester Wert
 				else
-					movl("$" + tok.getOp1(), res.getFullName(), "Return Value");
+					movl("$" + tok.getOp1(), "%eax", "Return Value");
 				break;
 
 			case DefinitionEnd:
 				sectionText.append("\tleave\n");
 				sectionText.append("\tret\n\n");
 				break;
-				
+
 			case Call:
 				String function = tok.getOp1().substring(1);
+				// Variablen, die nur in Registern sind, auf dem Stack speichern
+				List<Variable> regVars = mem.getRegVariables(true);
+				for (Variable var : regVars) {
+					mem.regToStack(var);
+					// Stackpointer verschieben
+					subl("$" + String.valueOf(var.getSize()), "%esp",
+							"Move var to stack");
+				}
+				// Alle Register sind nun frei und werden möglicherweise in der
+				// Aufgerufenen Funktion verwendet.
 				// Parameter auf den Stack legen
 				if (tok.getParameterCount() > 0) {
 					for (int i = tok.getParameterCount() - 1; i >= 0; i--) {
@@ -88,7 +90,7 @@ public class Translator {
 						else
 							operand = "$" + p.getOperand();
 						System.out.println(operand);
-						if(operand.charAt(1) == '@')
+						if (operand.charAt(1) == '@')
 							operand = "$" + operand.substring(3);
 						pushl(operand, "Parameter " + p.getOperand());
 					}
@@ -97,9 +99,10 @@ public class Translator {
 				call(function);
 
 				// Rückgabe speichern
-				if(mem.getReturnRegister(function) != null)
+				if (!tok.getTypeTarget().equals("void")) {
 					mem.addRegVar(tok.getTarget(), tok.getTypeTarget(),
-									mem.getReturnRegister(function));
+							mem.getFreeRegister(0));
+				}
 				// Parameter löschen
 				for (int i = 0; i < tok.getParameterCount(); i++) {
 					Parameter p = tok.getParameter(i);
@@ -121,19 +124,26 @@ public class Translator {
 				String target = mem.getAddress(tok.getTarget());
 				String source;
 				// Zuweisung Variable
-				if (mem.onStack(tok.getOp1()) && mem.onStack(tok.getTarget())) {
+				System.out.println(tok.getOp1() + " " + tok.getTarget());
+
+				// Zuweisung Zahl
+				if (!tok.getOp1().startsWith("%"))
+					movl("$" + tok.getOp1(), target,
+							"Assignment " + tok.getTarget());
+				// Variable (Stack -> Stack)
+				else if (mem.onStack(tok.getOp1())
+						&& mem.onStack(tok.getTarget())) {
 					RegisterAddress tmp = mem.getFreeRegister();
 					movl(mem.getAddress(tok.getOp1()), tmp.getFullName(),
 							"Copy assignment");
 					movl(tmp.getFullName(), target,
 							tok.getTarget() + tok.getOp1());
 					mem.freeRegister(tmp);
-				} else if (tok.getOp1().startsWith("%")) {
+					// Variable
+				} else {
 					source = mem.getAddress(tok.getOp1());
 					movl(source, target, "Assignment " + tok.getTarget());
-				} else
-					movl("$" + tok.getOp1(), target,
-							"Assignment " + tok.getTarget());
+				}
 
 				break;
 
@@ -143,13 +153,13 @@ public class Translator {
 
 			case ExpressionInt:
 				res = mem.getFreeRegister();
-				if(res == null) {
-					if(!freeUnusedRegister(tokenNumber)) {
+				if (res == null) {
+					if (!freeUnusedRegister(tokenNumber)) {
 						System.out.println("Could'nt free register");
 					}
 					res = mem.getFreeRegister();
 				}
-				
+
 				if (tok.getOp1().startsWith("%"))
 					op1 = mem.getAddress(tok.getOp1());
 				else
@@ -160,39 +170,43 @@ public class Translator {
 					op2 = "$" + tok.getOp2();
 
 				movl(op1, res.getFullName(), "Expression");
-				if(tok.getTypeTarget().equals("add"))
-					addl(op2, res.getFullName(), tok.getOp1() + " + " + tok.getOp2());
-				else if(tok.getTypeTarget().equals("sub"))
-					subl(op2, res.getFullName(), tok.getOp1() + " - " + tok.getOp2());
-				else if(tok.getTypeTarget().equals("mul"))
-					imull(op2, res.getFullName(), tok.getOp1() + " * " + tok.getOp2());
-				else if(tok.getTypeTarget().equals("sdiv")) {
-					if(!isRegisterFree(new RegisterAddress(0))) {
+				if (tok.getTypeTarget().equals("add"))
+					addl(op2, res.getFullName(),
+							tok.getOp1() + " + " + tok.getOp2());
+				else if (tok.getTypeTarget().equals("sub"))
+					subl(op2, res.getFullName(),
+							tok.getOp1() + " - " + tok.getOp2());
+				else if (tok.getTypeTarget().equals("mul"))
+					imull(op2, res.getFullName(),
+							tok.getOp1() + " * " + tok.getOp2());
+				else if (tok.getTypeTarget().equals("sdiv")) {
+					if (!isRegisterFree(new RegisterAddress(0))) {
 						System.out.println("Register eax is not free");
 						saveRegisterValue(new RegisterAddress(0));
 					}
-					if(!isRegisterFree(new RegisterAddress(3))) {
+					if (!isRegisterFree(new RegisterAddress(3))) {
 						System.out.println("Register edx is not free");
 						saveRegisterValue(new RegisterAddress(3));
 					}
 					movl(op1, new RegisterAddress(0).getFullName(), "");
-					movl(new String("$0"), new RegisterAddress(3).getFullName(), "");
+					movl(new String("$0"),
+							new RegisterAddress(3).getFullName(), "");
 
 					idivl(op2);
 					res = new RegisterAddress(0);
-				}	
+				}
 				mem.addRegVar(tok.getTarget(), tok.getTypeTarget(), res);
 				break;
-				
+
 			case ExpressionDouble:
 				res = mem.getFreeRegister();
-				if(res == null) {
-					if(!freeUnusedRegister(tokenNumber)) {
+				if (res == null) {
+					if (!freeUnusedRegister(tokenNumber)) {
 						System.out.println("Could'nt free register");
 					}
 					res = mem.getFreeRegister();
 				}
-				
+
 				if (tok.getOp1().startsWith("%"))
 					op1 = mem.getAddress(tok.getOp1());
 				else
@@ -203,42 +217,47 @@ public class Translator {
 					op2 = "$" + tok.getOp2();
 
 				movl(op1, res.getFullName(), "Expression");
-				if(tok.getTypeTarget().equals("add"))
-					addl(op2, res.getFullName(), tok.getOp1() + " + " + tok.getOp2());
-				else if(tok.getTypeTarget().equals("sub"))
-					subl(op2, res.getFullName(), tok.getOp1() + " - " + tok.getOp2());
-				else if(tok.getTypeTarget().equals("mul"))
-					imull(op2, res.getFullName(), tok.getOp1() + " * " + tok.getOp2());
-				else if(tok.getTypeTarget().equals("sdiv")) {
-					if(!isRegisterFree(new RegisterAddress(0))) {
+				if (tok.getTypeTarget().equals("add"))
+					addl(op2, res.getFullName(),
+							tok.getOp1() + " + " + tok.getOp2());
+				else if (tok.getTypeTarget().equals("sub"))
+					subl(op2, res.getFullName(),
+							tok.getOp1() + " - " + tok.getOp2());
+				else if (tok.getTypeTarget().equals("mul"))
+					imull(op2, res.getFullName(),
+							tok.getOp1() + " * " + tok.getOp2());
+				else if (tok.getTypeTarget().equals("sdiv")) {
+					if (!isRegisterFree(new RegisterAddress(0))) {
 						System.out.println("Register eax is not free");
 						saveRegisterValue(new RegisterAddress(0));
 					}
-					if(!isRegisterFree(new RegisterAddress(3))) {
+					if (!isRegisterFree(new RegisterAddress(3))) {
 						System.out.println("Register edx is not free");
 						saveRegisterValue(new RegisterAddress(3));
 					}
 					movl(op1, new RegisterAddress(0).getFullName(), "");
-					movl(new String("$0"), new RegisterAddress(3).getFullName(), "");
+					movl(new String("$0"),
+							new RegisterAddress(3).getFullName(), "");
 
 					idivl(op2);
 					res = new RegisterAddress(0);
-				}	
+				}
 				mem.addRegVar(tok.getTarget(), tok.getTypeTarget(), res);
 				break;
-				
+
 			case Label:
 				label(tok.getTarget());
 				break;
+
 			case Compare:
 				res = mem.getFreeRegister();
-				if(res == null) {
-					if(!freeUnusedRegister(tokenNumber)) {
+				if (res == null) {
+					if (!freeUnusedRegister(tokenNumber)) {
 						System.out.println("Could'nt free register");
 					}
 					res = mem.getFreeRegister();
 				}
-				
+
 				if (tok.getOp1().startsWith("%"))
 					op1 = mem.getAddress(tok.getOp1());
 				else
@@ -247,52 +266,54 @@ public class Translator {
 					op2 = mem.getAddress(tok.getOp2());
 				else
 					op2 = "$" + tok.getOp2();
-				
+
 				movl(op1, res.getFullName(), "Compare");
 				cmpl(op2, res.getFullName());
-				
+
 				mem.addRegVar(tok.getOp1(), tok.getTypeOp1(), res);
 				break;
-			
+
 			case Branch:
-				if(tok.getOp1().isEmpty()) 
+				if (tok.getOp1().isEmpty())
 					jmp("label_" + tok.getOp2().substring(1));
 				else {
 					int result;
-					result = findToken(tokenNumber, true, TokenType.Compare, null, null, null);
-					System.out.println("last compare was in token #" + result + " -> " + code.get(result).getTypeTarget());
-					if(code.get(result).getTypeTarget().equals("eq")) {
+					result = findToken(tokenNumber, true, TokenType.Compare,
+							null, null, null);
+					System.out.println("last compare was in token #" + result
+							+ " -> " + code.get(result).getTypeTarget());
+					if (code.get(result).getTypeTarget().equals("eq")) {
 						je("label_" + tok.getOp1().substring(1));
 						jmp("label_" + tok.getOp2().substring(1));
 					}
-					if(code.get(result).getTypeTarget().equals("ne")) {
+					if (code.get(result).getTypeTarget().equals("ne")) {
 						jne("label_" + tok.getOp1().substring(1));
 						jmp("label_" + tok.getOp2().substring(1));
 					}
-					if(code.get(result).getTypeTarget().equals("slt")) {
+					if (code.get(result).getTypeTarget().equals("slt")) {
 						jl("label_" + tok.getOp1().substring(1));
 						jmp("label_" + tok.getOp2().substring(1));
 					}
-					if(code.get(result).getTypeTarget().equals("sgt")) {
+					if (code.get(result).getTypeTarget().equals("sgt")) {
 						jg("label_" + tok.getOp1().substring(1));
 						jmp("label_" + tok.getOp2().substring(1));
 					}
-					if(code.get(result).getTypeTarget().equals("sle")) {
+					if (code.get(result).getTypeTarget().equals("sle")) {
 						jle("label_" + tok.getOp1().substring(1));
 						jmp("label_" + tok.getOp2().substring(1));
 					}
-					if(code.get(result).getTypeTarget().equals("sge")) {
+					if (code.get(result).getTypeTarget().equals("sge")) {
 						jge("label_" + tok.getOp1().substring(1));
 						jmp("label_" + tok.getOp2().substring(1));
 					}
 				}
 				break;
-				
+
 			case String:
 				data(tok.getTarget().substring(2), ".ascii", tok.getOp1());
-				
+
 				System.out.println("Size: " + tok.getOp2());
-				
+
 				mem.addHeapVar(tok.getTarget(), 5);
 
 			default:
@@ -302,51 +323,52 @@ public class Translator {
 		}
 
 		sectionText.append(".globl _start\n_start:\n\tcall main\n" + "\tpushl "
-				+ mem.getReturnRegister("main").getFullName()
-				+ "\n\tcall exit\n\n");
+				+ "%eax" + "\n\tcall exit\n\n");
 	}
-	
+
 	private void data(String label, String type, String value) {
-		sectionData.append(label).append(":\t").append(type).append(" ").append(value).append("\n");
+		sectionData.append(label).append(":\t").append(type).append(" ")
+				.append(value).append("\n");
 	}
-	
+
 	private void je(String label) {
 		sectionText.append("\tje ").append(label).append("\n");
 	}
-	
+
 	private void jne(String label) {
 		sectionText.append("\tjne ").append(label).append("\n");
 	}
-	
+
 	private void jl(String label) {
 		sectionText.append("\tjl ").append(label).append("\n");
 	}
-	
+
 	private void jg(String label) {
 		sectionText.append("\tjg ").append(label).append("\n");
 	}
-	
+
 	private void jle(String label) {
 		sectionText.append("\tjle ").append(label).append("\n");
 	}
-	
+
 	private void jge(String label) {
 		sectionText.append("\tjge ").append(label).append("\n");
 	}
-	
+
 	private void jmp(String label) {
 		sectionText.append("\tjmp ").append(label).append("\n");
 	}
-	
+
 	private void cmpl(String source, String target) {
-		sectionText.append("\tcmpl ").append(source).append(", ").append(target).append("\t\t\t#Label ")
-				.append("\n");
+		sectionText.append("\tcmpl ").append(source).append(", ")
+				.append(target).append("\t\t\t#Label ").append("\n");
 	}
+
 	private void label(String name) {
 		sectionText.append("label_").append(name).append(":\t\t\t#Label ")
 				.append(name).append("\n");
 	}
-	
+
 	private void call(String name) {
 		sectionText.append("\tcall ").append(name).append("\t#Call ")
 				.append(name).append("\n");
@@ -365,12 +387,12 @@ public class Translator {
 	private void idivl(String source) {
 		sectionText.append("\tidivl ").append(source).append("\n");
 	}
-	
+
 	private void imull(String source, String target, String comment) {
 		sectionText.append("\timull ").append(source).append(", ")
 				.append(target).append("\t#").append(comment).append("\n");
 	}
-	
+
 	private void subl(String source, String target, String comment) {
 		sectionText.append("\tsubl ").append(source).append(", ")
 				.append(target).append("\t#").append(comment).append("\n");
@@ -380,46 +402,47 @@ public class Translator {
 		sectionText.append("\taddl ").append(source).append(", ")
 				.append(target).append("\t#").append(comment).append("\n");
 	}
-	
+
 	private boolean freeUnusedRegister(int tokenNumber) {
 		boolean result = false;
-		for(int i = 0; i < 6; i++) {
+		for (int i = 0; i < 6; i++) {
 			Variable tmp = mem.getVarFromReg(i);
-			if(findToken(tokenNumber, false, null, null, tmp.name, tmp.name) == 0) {
+			if (findToken(tokenNumber, false, null, null, tmp.name, tmp.name) == 0) {
 				mem.freeRegister(new RegisterAddress(i));
 				result = true;
 			}
 		}
 		return result;
 	}
-	
-	//TODO
+
+	// TODO
 	private boolean isRegisterFree(RegisterAddress res) {
 		boolean result = true;
-		
+
 		return result;
 	}
-	
-	//TODO
+
+	// TODO
 	private void saveRegisterValue(RegisterAddress res) {
-		
+
 	}
-	
-	private int findToken(int start, boolean backwards, TokenType type, String target, String op1, String op2) {
-		for(int i = start; i < code.size() && i >= 0;) {
-			if(type != null)
-				if(code.get(i).getType() == type)
+
+	private int findToken(int start, boolean backwards, TokenType type,
+			String target, String op1, String op2) {
+		for (int i = start; i < code.size() && i >= 0;) {
+			if (type != null)
+				if (code.get(i).getType() == type)
 					return i;
-			if(target != null)
-				if(code.get(i).getTarget().equals(target))
+			if (target != null)
+				if (code.get(i).getTarget().equals(target))
 					return i;
-			if(op1 != null)
-				if(code.get(i).getOp1().equals(op1))
+			if (op1 != null)
+				if (code.get(i).getOp1().equals(op1))
 					return i;
-			if(op2 != null)
-				if(code.get(i).getOp2().equals(op2))
+			if (op2 != null)
+				if (code.get(i).getOp2().equals(op2))
 					return i;
-			if(backwards)
+			if (backwards)
 				i--;
 			else
 				i++;

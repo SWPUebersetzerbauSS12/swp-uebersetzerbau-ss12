@@ -1,6 +1,7 @@
 package main;
 
 import java.util.HashMap;
+import java.util.List;
 
 import main.model.RegisterAddress;
 import main.model.Variable;
@@ -35,6 +36,11 @@ public class MemoryManager {
 	public Variable newStackVar(String name, String type) {
 		return current.newStackVar(name, type);
 	}
+	
+	public void regToStack(Variable var)
+	{
+		current.regToStack(var);
+	}
 
 	public String getAddress(String name) {
 		System.out.println(current.get(name));
@@ -49,8 +55,8 @@ public class MemoryManager {
 		return current.getFreeRegister();
 	}
 
-	public void addRegVar(String name, String type, RegisterAddress sum) {
-		current.addRegVar(name, type, sum);
+	public void addRegVar(String name, String type, RegisterAddress reg) {
+		current.addRegVar(name, type, reg);
 
 	}
 
@@ -58,22 +64,9 @@ public class MemoryManager {
 		current.addStackVar(name, type, stackAddress);
 	}
 
-	public void setReturnRegister(RegisterAddress ret) {
-		current.setReturnRegister(ret);
-
-	}
-
-	public RegisterAddress getReturnRegister(String function) {
-		if(contexts.get(function) == null)
-			return null;
-		return contexts.get(function).getReturnRegister();
-	}
-
 	public boolean onStack(String name) {
-		if (current.containsKey(name))
-			return current.get(name).getAddress().endsWith(")");
-		else
-			return false;
+		if (heap.containsKey(name)) return false;
+		return current.onStack(name);
 	}
 
 	public void freeRegister(RegisterAddress tmp) {
@@ -82,5 +75,22 @@ public class MemoryManager {
 	
 	public Variable getVarFromReg(int regNumber) {
 		return current.getVarFromReg(regNumber);
+	}
+	
+	public boolean registerInUse(int i) {
+		return current.registerInUse(i);
+	}
+	
+	public List<Variable> getRegVariables(boolean exclusive){
+		return current.getRegVariables(exclusive);
+	}
+
+	public boolean inReg(String name, int regNumber) {
+		if (heap.containsKey(name)) return false;
+		return current.inReg(name, regNumber);
+	}
+
+	public RegisterAddress getFreeRegister(int i) {
+		return current.getFreeRegister(i);
 	}
 }

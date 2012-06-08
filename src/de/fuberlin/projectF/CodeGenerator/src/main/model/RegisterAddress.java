@@ -9,6 +9,10 @@ public class RegisterAddress extends Address {
 	}
 
 	public String getName() {
+		return "regNumber";
+	}
+
+	public String getFullName() {
 		switch (regNumber) {
 		case 0:
 			return "%eax";
@@ -22,12 +26,7 @@ public class RegisterAddress extends Address {
 			return "%edi";
 		default:
 			return "%esi";
-
 		}
-	}
-
-	public String getFullName() {
-		return this.getName();
 	}
 
 	public String getType() {

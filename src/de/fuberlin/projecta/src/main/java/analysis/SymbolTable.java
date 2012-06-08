@@ -6,10 +6,7 @@ import java.util.List;
 import analysis.ast.nodes.Id;
 import analysis.ast.nodes.Type;
 
-/**
- * @author Christian Cikryt
- */
-public class SymbolTable{
+public class SymbolTable {
 
 	private List<EntryType> entries;
 
@@ -24,14 +21,17 @@ public class SymbolTable{
 	 * @param name
 	 * @param entry
 	 */
-	public void updateEntry(EntryType value) throws SemanticException {
-		// TODO: currently not implemented
-		throw new SemanticException("currently not implemented, sry");
+	public void updateEntry(EntryType entry) throws SemanticException {
+		try {
+			entries.remove(lookupIndex(entry.getId()));
+		} catch (SemanticException e) {
+			insertEntry(entry);
+		}
 	}
 
 	public void insertEntry(Id id, Type type, List<EntryType> params)
 			throws SemanticException {
-		
+
 		if (lookup(id.getValue(), params) == null) {
 			entries.add(new EntryType(id, type, params));
 		} else {
@@ -58,7 +58,8 @@ public class SymbolTable{
 		} else {
 			throw new SemanticException(entry.getId()
 					+ " is already registered in this symbolTable. "
-					+ "You may want to update instead. 3" + lookup(entry.getId(), entry.getParams()) + ":" + entry);
+					+ "You may want to update instead. 3"
+					+ lookup(entry.getId(), entry.getParams()) + ":" + entry);
 		}
 	}
 
@@ -102,13 +103,22 @@ public class SymbolTable{
 				} else {
 					found = false;
 				}
-				if(found) ret = entry;
+				if (found)
+					ret = entry;
 			}
 		}
 		return ret;
 	}
 
-	
+	private int lookupIndex(String name) throws SemanticException {
+		for (int i = 0; i < entries.size(); i++) {
+			if (entries.get(i).getId().equals(name)) {
+				return i;
+			}
+		}
+		throw new SemanticException("No entry found for id " + name);
+	}
+
 	public List<EntryType> getEntries() {
 		return entries;
 	}

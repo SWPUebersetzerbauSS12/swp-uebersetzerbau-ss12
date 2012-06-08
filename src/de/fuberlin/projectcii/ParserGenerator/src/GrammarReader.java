@@ -68,30 +68,24 @@ public class GrammarReader {
 		grammar=eliminateDirectLeftRekursion(grammar);
 		Printer.printGrammar(grammar);
 				
-			while(rekursive[0]){
+		while (rekursive[0] && iteration < NItr){
 			rekursive[0] = false;
 			grammar=eliminateIndirectLeftRekursion(grammar,rekursive);
 			grammar=eliminateDirectLeftRekursion(grammar);
 			iteration++;
-			if(iteration < NItr){
+		}
+		if(iteration < NItr){
 			// definie first Element in Vector as startsymbol
 			startSymbol = grammar.elementAt(0).getHead();
-			 }
-			
-			}
-			
-		     if(iteration>=NItr) {
-		    	
-		    System.out.println("the no. of the iterations:"+iteration+" >= Max No. of Iterations "+NItr);
+		}
+		else{
+			System.out.println("the no. of the iterations:"+iteration+" >= Max No. of Iterations "+NItr);
 			System.out.println("Too Many Iterations, it's unparsable with LL(1), please input a right file!!");
-			
-		     grammar.clear();
-		     	
-		     }
-		   
-		   return buildGrammarMap(grammar);
-		    	     	
+			grammar.clear();
+		}
 		
+		return buildGrammarMap(grammar);
+
 	}
 	
 	/**

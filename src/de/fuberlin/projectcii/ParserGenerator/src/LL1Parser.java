@@ -22,7 +22,7 @@ public class LL1Parser {
 	public void getSyntaxTree(){
 		
 		if(pG.parsable_LL1(pG.getParseTable())){
-		TokenParser tP = new TokenParser(pG.getParseTable(),pG.getGrammar(),pG.getStartSymbol());
+			TokenParser tP = new TokenParser(pG.getParseTable(),pG.getGrammar(),pG.getStartSymbol());
 		tP.parseTokenStream();
 		}
 	}

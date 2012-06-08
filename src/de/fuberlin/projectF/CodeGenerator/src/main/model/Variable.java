@@ -36,7 +36,7 @@ public class Variable {
 		stackAddresses.add(new StackAddress(stackAddress));
 	}
 
-	// Kons. für neue Variable mit Registeradresse
+	// Konstruktor für neue Variable mit Registeradresse
 	public Variable(String type, RegisterAddress reg, String name) {
 		this(type, name);
 
@@ -50,7 +50,7 @@ public class Variable {
 	public void addStackAddress(StackAddress stackAddress) {
 		stackAddresses.add(stackAddress);
 	}
-	
+
 	public int getSize() {
 		return size;
 	}
@@ -60,7 +60,8 @@ public class Variable {
 	}
 
 	public String getAddress() {
-		if (!regAddresses.isEmpty()) return getRegAddress().getFullName();
+		if (!regAddresses.isEmpty())
+			return getRegAddress().getFullName();
 		return stackAddresses.get(0).getFullName();
 	}
 
@@ -71,15 +72,16 @@ public class Variable {
 	public boolean onlyInReg() {
 		return stackAddresses.size() == 0;
 	}
-	
-	public boolean onStack(){
+
+	public boolean onStack() {
 		return !stackAddresses.isEmpty();
 	}
 
 	public boolean inReg(int i) {
-		for (RegisterAddress r : regAddresses) if (r.regNumber == i) return true;
+		for (RegisterAddress r : regAddresses)
+			if (r.regNumber == i)
+				return true;
 		return false;
 	}
 
-	
 }

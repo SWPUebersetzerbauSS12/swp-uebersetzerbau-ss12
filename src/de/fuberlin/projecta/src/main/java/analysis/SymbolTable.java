@@ -23,7 +23,7 @@ public class SymbolTable {
 	 */
 	public void updateEntry(EntryType entry) throws SemanticException {
 		try {
-			entries.remove(lookupIndex(entry.getId()));
+			entries.set(lookupIndex(entry.getId()), entry);
 		} catch (SemanticException e) {
 			insertEntry(entry);
 		}

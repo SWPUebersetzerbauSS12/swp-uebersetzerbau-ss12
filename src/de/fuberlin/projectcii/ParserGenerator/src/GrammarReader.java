@@ -50,9 +50,9 @@ public class GrammarReader {
 	 * for the whole grammar,if there is no going on productions for the new non-terminal symbol
 	 *  in the front of the productions, then break out and message"LackOfProductions/FileNotFound/Unsupported
 	 */
-	public Map<String, Vector<Vector<String>>> createGrammar(String file,int NItr)throws IOException{
+	public Map<String, Vector<Vector<String>>> createGrammar(int NItr)throws IOException{
 		// Read the file
-		Vector<Productions>grammar=ReadFile(file);
+		Vector<Productions>grammar=ReadFile();
 		Printer.printGrammar(grammar);
 		// Perform Leftfactorisation
 		grammar=combineLeftFactorization(grammar);
@@ -96,14 +96,14 @@ public class GrammarReader {
 	 * @param file The path to the file containing the grammar that shall be used.
 	 * @return The grammar as a Vector of Productions	 
 	 */
-	private Vector<Productions> ReadFile(String file){
+	private Vector<Productions> ReadFile(){
 		
 		//Vector the nonterminals are saved to
 		Vector<Productions> grammar = new Vector<Productions>();
 		
 		// Read File
 		try {
-		    BufferedReader in = new BufferedReader(new FileReader(file));
+		    BufferedReader in = new BufferedReader(new FileReader(Settings.getGRAMMAR_PATH()));
 		    
 		    ReadingState state;
 		    String line;

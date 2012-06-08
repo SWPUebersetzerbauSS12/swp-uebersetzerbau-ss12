@@ -5,12 +5,10 @@ public class LL1Parser {
 	
 	private ParserGenerator pG;
 	
-	public LL1Parser(String file) throws IOException{
+	public LL1Parser() throws IOException{
 		Settings.initalize();
 		pG = new ParserGenerator();
-		pG.createParserTable("language.txt");
-		
-		
+		pG.initialize();
 	}
 	
 /*

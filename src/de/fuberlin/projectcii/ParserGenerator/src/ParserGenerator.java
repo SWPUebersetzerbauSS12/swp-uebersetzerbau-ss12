@@ -50,9 +50,9 @@ public class ParserGenerator {
 	 * @return returns the created parsertable
 	 * @throws IOException 
 	 */
-	public Map<String, HashMap<String,Vector<Integer>>> createParserTable(String file) throws IOException{
+	public Map<String, HashMap<String,Vector<Integer>>> initialize () throws IOException{
 		//Read the Grammar from file
-		readGrammar(file);
+		readGrammar();
 		Printer.printGrammar(grammarMap);
 		fillTerminalNonterminal();
 		
@@ -105,9 +105,9 @@ public class ParserGenerator {
 	 * @param file Path to the grammar file
 	 * @throws IOException 
 	 */
-	private void readGrammar(String file) throws IOException{
+	private void readGrammar() throws IOException{
 		GrammarReader gR = new GrammarReader();
-		grammarMap = gR.createGrammar(file,5);
+		grammarMap = gR.createGrammar(5);
 		
 		start = gR.getStartSymbol();
 	}

@@ -30,8 +30,14 @@
  *
  */
 
-package regextodfaconverter.directconverter;
+package regextodfaconverter.directconverter.regex;
 
+
+/**
+ * 
+ * @author Johannes Dahlke
+ *
+ */
 public class RegexSpecialChars {
 
 	public static final char REGEX_ALTERNATIVE_CHAR = '|';

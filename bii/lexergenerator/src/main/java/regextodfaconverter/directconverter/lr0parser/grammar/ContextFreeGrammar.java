@@ -41,6 +41,11 @@ import java.util.Set;
 import utils.Sets;
 import utils.Test;
 
+/**
+ * 
+ * @author Johannes Dahlke
+ *
+ */
 public class ContextFreeGrammar extends ProductionMap implements Grammar {
 
 	private Nonterminal startSymbol = null;

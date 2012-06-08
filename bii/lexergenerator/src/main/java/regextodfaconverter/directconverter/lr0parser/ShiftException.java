@@ -32,6 +32,12 @@
 
 package regextodfaconverter.directconverter.lr0parser;
 
+
+/**
+ * 
+ * @author Johannes Dahlke
+ *
+ */
 public class ShiftException extends Exception {
 	
 	public ShiftException() {

@@ -38,7 +38,11 @@ import java.util.List;
 
 import utils.Test;
 
-
+/**
+ * 
+ * @author Johannes Dahlke
+ *
+ */
 public class ProductionMap extends HashMap<Nonterminal, HashSet<RuleElementSequenz>> {
 	
 		

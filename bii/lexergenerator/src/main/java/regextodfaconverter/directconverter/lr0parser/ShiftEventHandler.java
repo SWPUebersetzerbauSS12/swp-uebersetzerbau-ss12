@@ -34,6 +34,12 @@ package regextodfaconverter.directconverter.lr0parser;
 
 import regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
 
+
+/**
+ * 
+ * @author Johannes Dahlke
+ *
+ */
 public interface ShiftEventHandler {
 
 	

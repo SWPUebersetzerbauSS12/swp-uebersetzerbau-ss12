@@ -37,6 +37,12 @@ import regextodfaconverter.directconverter.EventHandler;
 import regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
 import regextodfaconverter.directconverter.lr0parser.itemset.Closure;
 
+/**
+ * 
+ * @author Johannes Dahlke
+ *
+ * @param <Element>
+ */
 public class ShiftAction<Element extends Comparable<Element>> extends Action<Element> implements EventHandler {
 
 	private Closure toClosure;

@@ -35,6 +35,11 @@ package regextodfaconverter.directconverter.lr0parser.grammar;
 import utils.Test;
 
 
+/**
+ * 
+ * @author Johannes Dahlke
+ *
+ */
 public class Nonterminal extends RuleElement {
 	
 	private String name = null;

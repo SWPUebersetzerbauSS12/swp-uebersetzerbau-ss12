@@ -39,6 +39,12 @@ import java.util.Stack;
 import regextodfaconverter.directconverter.lr0parser.grammar.RuleElement;
 import regextodfaconverter.directconverter.lr0parser.itemset.Closure;
 
+/**
+ * 
+ * @author Johannes Dahlke
+ *
+ * @param <Element>
+ */
 public interface ItemAutomataInterior<Element extends Comparable<Element>> {
 
 	Stack<RuleElement> getSymbolStack();

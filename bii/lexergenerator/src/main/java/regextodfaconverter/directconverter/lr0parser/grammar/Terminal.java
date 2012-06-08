@@ -35,6 +35,12 @@ package regextodfaconverter.directconverter.lr0parser.grammar;
 import utils.Test;
 
 
+/**
+ * 
+ * @author Johannes Dahlke
+ *
+ * @param <Symbol>
+ */
 public class Terminal<Symbol extends Comparable<Symbol>> extends RuleElement {
 	
 	private Symbol symbol;

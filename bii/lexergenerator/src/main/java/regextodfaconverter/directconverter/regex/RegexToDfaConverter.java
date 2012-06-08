@@ -30,7 +30,7 @@
  *
  */
 
-package regextodfaconverter.directconverter;
+package regextodfaconverter.directconverter.regex;
 
 import java.io.ObjectInputStream.GetField;
 import java.io.Serializable;
@@ -39,6 +39,7 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import regextodfaconverter.ConvertExecption;
+import regextodfaconverter.directconverter.DirectConverterException;
 import regextodfaconverter.directconverter.lr0parser.grammar.ContextFreeGrammar;
 import regextodfaconverter.directconverter.lr0parser.grammar.Grammar;
 import regextodfaconverter.directconverter.lr0parser.grammar.Grammars;
@@ -46,20 +47,21 @@ import regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
 import regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
 import regextodfaconverter.directconverter.lr0parser.grammar.ProductionSet;
 import regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
+import regextodfaconverter.directconverter.regex.operatortree.RegexOperatorTree;
+import regextodfaconverter.directconverter.regex.operatortree.TerminalNode;
 import regextodfaconverter.directconverter.syntaxtree.AbstractSyntaxTree;
 import regextodfaconverter.directconverter.syntaxtree.AttributesMap;
 import regextodfaconverter.directconverter.syntaxtree.ConcreteSyntaxTree;
 import regextodfaconverter.directconverter.syntaxtree.SemanticRule;
 import regextodfaconverter.directconverter.syntaxtree.SemanticRules;
 import regextodfaconverter.directconverter.syntaxtree.SyntaxDirectedDefinition;
-import regextodfaconverter.directconverter.syntaxtree.SyntaxTreeAttributor;
 import regextodfaconverter.directconverter.syntaxtree.SyntaxTreeException;
-import regextodfaconverter.directconverter.syntaxtree.node.BinaryTreeNode;
-import regextodfaconverter.directconverter.syntaxtree.node.BinaryTreeNodeCollection;
-import regextodfaconverter.directconverter.syntaxtree.node.BinaryTreeNodeSet;
 import regextodfaconverter.directconverter.syntaxtree.node.InnerNode;
+import regextodfaconverter.directconverter.syntaxtree.node.Leaf;
 import regextodfaconverter.directconverter.syntaxtree.node.NewNodeEventHandler;
 import regextodfaconverter.directconverter.syntaxtree.node.TreeNode;
+import regextodfaconverter.directconverter.syntaxtree.node.TreeNodeCollection;
+import regextodfaconverter.directconverter.syntaxtree.node.TreeNodeSet;
 import regextodfaconverter.fsm.FiniteStateMachine;
 import regextodfaconverter.fsm.State;
 import tokenmatcher.StatePayload;
@@ -108,19 +110,11 @@ public class RegexToDfaConverter {
 	public static <StatePayloadType extends Serializable> FiniteStateMachine<Character, StatePayloadType> convert( String regex, StatePayloadType payload)
 			throws Exception {
 		try {
-			ConcreteSyntaxTree syntaxTree = convertRegexToSyntaxTree( regex);
-
-			
-			System.out.println( ConcreteSyntaxTree.compress( syntaxTree));
-			
-			
-			RegexOperatorTree regexTree = new RegexOperatorTree( regex);
-			for ( TreeNode treeNode : regexTree) {
-				System.out.println( treeNode);
-			}			
-		//TODO	FiniteStateMachine<Character, StatePayloadType> dfa = convertSyntaxTreeToDfa( syntaxTree, payload);
-		//	return dfa;
-			return null;
+			RegexOperatorTree regexTree = convertRegexToTree( regex);
+			System.out.println( regex);
+		  FiniteStateMachine<Character, StatePayloadType> dfa = convertRegexTreeToDfa( regexTree, payload);
+		  System.out.println(dfa);
+			return dfa;
 		} catch ( Exception e) {
 			Notification.printDebugException( e);
 			throw new Exception( "Cannot convert regex to DFA.");
@@ -134,27 +128,12 @@ public class RegexToDfaConverter {
 	 * @return
 	 * @throws Exception 
 	 */
-	private static ConcreteSyntaxTree convertRegexToSyntaxTree( String regex) throws Exception {
-		final SyntaxTreeAttributor syntaxTreeAttributor = new SyntaxTreeAttributor();
-		ConcreteSyntaxTree syntaxTree = new ConcreteSyntaxTree( Grammars.getRegexGrammar(), regex, null);
-
-		/*		SyntaxTree syntaxTree = new SyntaxTree( Grammars.getRegexGrammar(), regex, new NewNodeEventHandler() {
-
-			public void doOnEvent( Object sender, BinaryTreeNode node) {
-				syntaxTreeAttributor.nullable( node);
-				syntaxTreeAttributor.firstpos( node);
-				syntaxTreeAttributor.lastpos( node);
-			}
-		});
-
-		// calc followpos
-		syntaxTreeAttributor.resetFollowPositions();
-		for ( BinaryTreeNode node : syntaxTree) {
-			syntaxTreeAttributor.followpos( node);
+	private static RegexOperatorTree convertRegexToTree( String regex) throws Exception {
+		RegexOperatorTree regexTree = new RegexOperatorTree( regex);
+		for ( TreeNode treeNode : regexTree) {
+			System.out.println( treeNode);
 		}
-		syntaxTree.setAnnotations( syntaxTreeAttributor);
-*/
-		return syntaxTree;
+		return regexTree;
 	}
 
 
@@ -167,26 +146,21 @@ public class RegexToDfaConverter {
 	 * @throws DirectConverterException
 	 * @throws Exception
 	 */
-	private static <StatePayloadType extends Serializable> FiniteStateMachine<Character, StatePayloadType> convertSyntaxTreeToDfa( ConcreteSyntaxTree syntaxTree,
+	private static <StatePayloadType extends Serializable> FiniteStateMachine<Character, StatePayloadType> convertRegexTreeToDfa( RegexOperatorTree regexTree,
 			StatePayloadType payload) throws DirectConverterException {
-		// ensure, that the syntax tree has annotaions
-		if ( Test.isUnassigned( syntaxTree.getAnnotations()))
-			throw new DirectConverterException( "Cannot convert syntax tree to DFA. Missing annotations.");
-
 		try {
-			SyntaxTreeAttributor annotations = syntaxTree.getAnnotations();
+			
+			HashMap<TreeNodeCollection, State<Character, StatePayloadType>> unhandledStates = new HashMap<TreeNodeCollection, State<Character, StatePayloadType>>();
 
-			HashMap<BinaryTreeNodeCollection, State<Character, StatePayloadType>> unhandledStates = new HashMap<BinaryTreeNodeCollection, State<Character, StatePayloadType>>();
-
-			HashMap<BinaryTreeNodeCollection, State<Character, StatePayloadType>> handledStates = new HashMap<BinaryTreeNodeCollection, State<Character, StatePayloadType>>();
+			HashMap<TreeNodeCollection, State<Character, StatePayloadType>> handledStates = new HashMap<TreeNodeCollection, State<Character, StatePayloadType>>();
 
 			FiniteStateMachine<Character, StatePayloadType> dfa = new FiniteStateMachine<Character, StatePayloadType>();
 
 			// add start state as unhandled
-			unhandledStates.put( annotations.firstpos( syntaxTree.getRoot()), dfa.getInitialState());
+			unhandledStates.put( regexTree.getFirstPositions().get( regexTree.getRoot()), dfa.getInitialState());
 
 			State<Character, StatePayloadType> currentState;
-			BinaryTreeNodeCollection currentCollection;
+			TreeNodeCollection currentCollection;
 			while ( !unhandledStates.isEmpty()) {
 				// get the next unhandled state ...
 				currentCollection = unhandledStates.keySet().iterator().next();
@@ -195,17 +169,17 @@ public class RegexToDfaConverter {
 				// ... and mark it as handled
 				handledStates.put( currentCollection, currentState);
 
-				HashMap<Character, BinaryTreeNodeCollection> stateCandidates = new HashMap<Character, BinaryTreeNodeCollection>();
+				HashMap<Character, TreeNodeCollection> stateCandidates = new HashMap<Character, TreeNodeCollection>();
 				Character currentTerminalCharacter;
 
-				for ( Character currentCharacterOfCharSet : syntaxTree.getCharacterSet()) {
-
-					BinaryTreeNodeCollection followPositionsOfTerminal = new BinaryTreeNodeSet();
-					for ( BinaryTreeNode node : currentCollection) {
-						if ( node.nodeValue instanceof Terminal) {
-							Character terminalNodeCharacter = ( (Terminal) node.nodeValue).getValue();
+				for ( Leaf leafNode : regexTree.getLeafSet()) {
+					Character currentCharacterOfCharSet = (Character) leafNode.getValue();
+					TreeNodeCollection followPositionsOfTerminal = new TreeNodeSet();
+					for ( TreeNode node : currentCollection) {
+						if ( node instanceof TerminalNode) {
+							Character terminalNodeCharacter = ( (TerminalNode) node).getValue();
 							if ( terminalNodeCharacter == currentCharacterOfCharSet) {
-								followPositionsOfTerminal.addAll( annotations.followpos( node));
+								followPositionsOfTerminal.addAll( regexTree.getFollowPositions().get( node));
 							}
 						}
 					}
@@ -227,7 +201,7 @@ public class RegexToDfaConverter {
 						// setze Übergang
 						dfa.addTransition( targetState, currentCharacterOfCharSet);
 						// und ggf. als Endzustand
-						if ( followPositionsOfTerminal.contains( syntaxTree.getTerminatorNode())) {
+						if ( followPositionsOfTerminal.contains( regexTree.getTerminatorNode())) {
 							targetState.setFinite( true);
 							targetState.setPayload( payload);
 						}

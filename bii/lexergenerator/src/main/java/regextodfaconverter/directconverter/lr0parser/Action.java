@@ -35,7 +35,12 @@ package regextodfaconverter.directconverter.lr0parser;
 import regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
 import regextodfaconverter.directconverter.lr0parser.itemset.Closure;
 
-
+/**
+ * 
+ * @author Johannes Dahlke
+ *
+ * @param <Element>
+ */
 public abstract class Action<Element extends Comparable<Element>> {
 	
 	protected ItemAutomataInterior<Element> itemAutomata;

@@ -37,6 +37,11 @@ import regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
 import regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
 import regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
 
+/**
+ * 
+ * @author Johannes Dahlke
+ *
+ */
 public interface ReduceEventHandler {
 
 	Object handle( Object sender, ProductionRule reduceRule) throws Exception;

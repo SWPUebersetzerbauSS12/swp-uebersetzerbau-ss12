@@ -35,6 +35,11 @@ package regextodfaconverter.directconverter.lr0parser.grammar;
 import java.util.List;
 
 
+/**
+ * 
+ * @author Johannes Dahlke
+ *
+ */
 public interface RuleElementSequenz extends List<RuleElement> {
 
 }

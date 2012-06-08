@@ -8,6 +8,7 @@ import bufferedreader.BufferedLexemeReader;
 import bufferedreader.LexemeReader;
 
 import regextodfaconverter.MinimalDfa;
+import regextodfaconverter.directconverter.regex.RegexToDfaConverter;
 import regextodfaconverter.fsm.FiniteStateMachine;
 import tokenmatcher.StatePayload;
 import tokenmatcher.Token;
@@ -25,14 +26,12 @@ public class RegexToDfaTest {
 		Notification.enableDebugPrinting();
 		
 		FiniteStateMachine<Character, ? extends StatePayload> fsm = new RegexToDfaConverter()
-		.convert( "a.a+a*", new regextodfaconverter.fsm.StatePayload( "OP", new StringAttribute( "LE")));
+		.convert( "(a+b)*.a.b.b", new regextodfaconverter.fsm.StatePayload( "OP", new StringAttribute( "LE")));
 			//	.convert( "<=|<>|<<|<", new regextodfaconverter.fsm.StatePayload( "OP", new StringAttribute( "LE")));
 			//	.convert( "(a|b)*abb", new regextodfaconverter.fsm.StatePayload( "OP", new StringAttribute( "LE")));
 
 
-		LexemeReader lexemeReader = new BufferedLexemeReader("src/test/resources/source/tokenmatcher.testrelop.fun");// new SimpleLexemeReader(
-		System.out.println(fsm);
-				System.out.println();
+		LexemeReader lexemeReader = new BufferedLexemeReader("src/test/resources/source/tokenmatcher/regex.fun");// new SimpleLexemeReader(
 		assert fsm.isDeterministic();
 		System.out.println( fsm.isDeterministic());
 		System.out.println(new MinimalDfa( fsm));

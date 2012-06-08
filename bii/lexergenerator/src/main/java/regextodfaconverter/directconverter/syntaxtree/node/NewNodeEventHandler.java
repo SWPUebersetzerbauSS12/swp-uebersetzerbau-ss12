@@ -32,7 +32,11 @@
 
 package regextodfaconverter.directconverter.syntaxtree.node;
 
-
+/**
+ * 
+ * @author Johannes Dahlke
+ *
+ */
 public interface NewNodeEventHandler {
   
   void doOnEvent( Object sender, TreeNode node);

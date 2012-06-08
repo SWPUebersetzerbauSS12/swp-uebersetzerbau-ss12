@@ -35,57 +35,70 @@ package regextodfaconverter.directconverter.syntaxtree.node;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import regextodfaconverter.directconverter.syntaxtree.PrintHandler;
-import utils.Test;
-
-
 /**
- * Liefert den Wert für einen inneren Knoten in dem {@link SyntaxTree Syntaxbaum}.
  * 
  * @author Johannes Dahlke
  *
+ * @param <Value>
  */
-public class InnerNode<Value> extends TreeNode<Value> implements Iterable<TreeNode> {	
-  
+public abstract class InnerNode<Value> extends TreeNode<Value> implements Iterable<TreeNode> {
+	
 	private ArrayList<TreeNode> childNodes = new ArrayList<TreeNode>();
 	
 	public InnerNode( Value value) {
 		super( value);
 	}
-
+	
+	public InnerNode( Value value, Value ... values) {
+		super( value, values);
+	}
+	
+	public InnerNode( InnerNode parentNode, Value value, Value ... values) {
+		super( parentNode, value, values);
+	}
+	
+	protected abstract boolean canAddChild( TreeNode childNode);
+	
 	/**
 	 * Fügt ein Kindobjekt an das Ende der rechten Seite an.
 	 */
-	public void addChild( TreeNode childNode) {
-		childNode.parentNode = this;
-    childNodes.add( childNode);
+	public boolean addChild( TreeNode childNode) {
+		if ( canAddChild( childNode)) {
+			childNode.parentNode = this;
+			childNodes.add( childNode);
+			return true;
+		} 
+		return false;
 	}
-	
-	public void addChilds( TreeNode ... childNodes) {
-		for ( TreeNode childNode : childNodes) {
-			addChild( childNode);
-		}
-	}
-
-	public void insertChild( TreeNode childNode, int index) {
-		childNode.parentNode = this;
-		childNodes.add( index, childNode);
-	}
-	
 	
 	public boolean removeChild( TreeNode childNode) {
 		return childNodes.remove( childNode);
 	}
 	
-	public TreeNode getNodeWithIndex( int index) {
-		return childNodes.get( index);
+	public TreeNode removeChildWithIndex( int index) {
+		return childNodes.remove( index);
+	}
+	
+	public boolean insertChild( TreeNode childNode, int index) {
+		if ( canAddChild( childNode)) {
+		  childNode.parentNode = this;
+		  childNodes.add( index, childNode);
+		  return true;
+		}
+		return false;
 	}
 	
 	public int childCount() {
 		return childNodes.size();
 	}
 	
+	public TreeNode getNodeWithIndex( int index) {
+		return childNodes.get( index);
+	}
 	
+	public int getIndexOf( TreeNode treeNode) {
+		return childNodes.indexOf( treeNode);
+	}
 	
 	public String toFullString() {
 		String result = toString() + ": ";
@@ -106,7 +119,6 @@ public class InnerNode<Value> extends TreeNode<Value> implements Iterable<TreeNo
 		return childNodes.iterator();
 	}
 	
-	
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		
@@ -119,9 +131,4 @@ public class InnerNode<Value> extends TreeNode<Value> implements Iterable<TreeNo
 		return clonedInnerNode;
 	}
 
-	public int getIndexOf( TreeNode treeNode) {
-		return childNodes.indexOf( treeNode);
-	}
-	
 }
-

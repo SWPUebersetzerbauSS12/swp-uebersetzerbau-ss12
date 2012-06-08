@@ -30,15 +30,23 @@
  *
  */
 
-package regextodfaconverter.directconverter.syntaxtree.node;
+package regextodfaconverter.directconverter.regex.operatortree;
 
 
 
 /**
- * Basisklasse zur Wertspeicherung in den Knoten des ({@link SyntaxTree Syntaxbaumes})
+ * Operatortyp für einen inneren {@link Knoten Operator} im {@link SyntaxTree Syntaxbaum}.
  * 
  * @author Johannes Dahlke
  *
  */
-public class NodeValue {
+public enum OperatorType {
+	CONCATENATION,
+	ALTERNATIVE,
+	REPETITION;
+	
+	
+	public boolean isBinary() {
+		return !this.equals( REPETITION);
+	}
 }

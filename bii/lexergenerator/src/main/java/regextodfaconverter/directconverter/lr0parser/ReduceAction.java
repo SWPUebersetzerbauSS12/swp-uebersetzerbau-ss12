@@ -40,6 +40,12 @@ import regextodfaconverter.directconverter.lr0parser.grammar.RuleElementSequenz;
 import regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
 import regextodfaconverter.directconverter.lr0parser.itemset.Closure;
 
+/**
+ * 
+ * @author Johannes Dahlke
+ *
+ * @param <Element>
+ */
 public class ReduceAction<Element extends Comparable<Element>> extends Action<Element> implements EventHandler {
 
 	private ProductionRule reduceRule;

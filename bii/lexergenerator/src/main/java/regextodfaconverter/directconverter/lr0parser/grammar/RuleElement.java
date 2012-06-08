@@ -33,6 +33,11 @@
 package regextodfaconverter.directconverter.lr0parser.grammar;
 
 
+/**
+ * 
+ * @author Johannes Dahlke
+ *
+ */
 public abstract class RuleElement implements Comparable<RuleElement> {
 
 }

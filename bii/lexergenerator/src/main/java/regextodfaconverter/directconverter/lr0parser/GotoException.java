@@ -32,6 +32,11 @@
 
 package regextodfaconverter.directconverter.lr0parser;
 
+/**
+ * 
+ * @author Johannes Dahlke
+ *
+ */
 public class GotoException extends Exception {
 	
 	public GotoException() {

@@ -34,6 +34,10 @@ package regextodfaconverter.directconverter.lr0parser.itemset;
 
 import java.util.HashSet;
 
-
+/**
+ * 
+ * @author Johannes Dahlke
+ *
+ */
 public class ItemSet extends HashSet<Item> {
 }

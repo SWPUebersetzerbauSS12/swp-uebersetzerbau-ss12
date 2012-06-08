@@ -32,7 +32,11 @@
 
 package regextodfaconverter.directconverter.syntaxtree;
 
-
+/**
+ * 
+ * @author Johannes Dahlke
+ *
+ */
 public class SyntaxTreeException extends Exception {
 	
 	

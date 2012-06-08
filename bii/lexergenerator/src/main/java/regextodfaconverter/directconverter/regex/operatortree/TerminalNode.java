@@ -30,23 +30,20 @@
  *
  */
 
-package regextodfaconverter.directconverter.syntaxtree.node;
+package regextodfaconverter.directconverter.regex.operatortree;
 
-
+import regextodfaconverter.directconverter.syntaxtree.node.Leaf;
 
 /**
- * Operatortyp für einen inneren {@link Knoten Operator} im {@link SyntaxTree Syntaxbaum}.
+ * Repräsentiert ein Terminal des regulären Ausdruckes in dem Operatorbaum
  * 
  * @author Johannes Dahlke
  *
  */
-public enum OperatorType {
-	CONCATENATION,
-	ALTERNATIVE,
-	REPETITION;
+public class TerminalNode extends Leaf<Character> {	
 	
-	
-	public boolean isBinary() {
-		return !this.equals( REPETITION);
+	public TerminalNode( Character value) {
+		super( value);
 	}
+		
 }

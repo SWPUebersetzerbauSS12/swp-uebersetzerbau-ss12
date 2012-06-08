@@ -37,7 +37,11 @@ import regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
 import regextodfaconverter.directconverter.lr0parser.grammar.RuleElement;
 import regextodfaconverter.directconverter.lr0parser.grammar.RuleElementSequenz;
 
-
+/**
+ * 
+ * @author Johannes Dahlke
+ *
+ */
 public class Item extends ProductionRule {
 
 	private int analysePosition = 0;

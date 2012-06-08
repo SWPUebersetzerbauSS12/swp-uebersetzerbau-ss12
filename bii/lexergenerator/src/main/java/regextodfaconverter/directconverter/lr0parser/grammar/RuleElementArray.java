@@ -34,6 +34,11 @@ package regextodfaconverter.directconverter.lr0parser.grammar;
 
 import java.util.ArrayList;
 
+/**
+ * 
+ * @author Johannes Dahlke
+ *
+ */
 public class RuleElementArray extends ArrayList<RuleElement> implements RuleElementSequenz {
 	
 	public RuleElementArray() {

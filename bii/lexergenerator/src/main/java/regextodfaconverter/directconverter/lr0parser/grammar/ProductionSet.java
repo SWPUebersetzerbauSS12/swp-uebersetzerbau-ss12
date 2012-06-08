@@ -37,6 +37,11 @@ import java.util.HashSet;
 import utils.Test;
 
 
+/**
+ * 
+ * @author Johannes Dahlke
+ *
+ */
 public class ProductionSet extends HashSet<ProductionRule> {
 	
 	public boolean IsLeftSideUnique() {

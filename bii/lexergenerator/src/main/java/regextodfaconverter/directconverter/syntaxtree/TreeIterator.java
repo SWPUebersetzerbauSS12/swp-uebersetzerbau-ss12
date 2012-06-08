@@ -35,7 +35,6 @@ package regextodfaconverter.directconverter.syntaxtree;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import regextodfaconverter.directconverter.syntaxtree.node.BinaryTreeNode;
 import regextodfaconverter.directconverter.syntaxtree.node.InnerNode;
 import regextodfaconverter.directconverter.syntaxtree.node.Leaf;
 import regextodfaconverter.directconverter.syntaxtree.node.TreeNode;

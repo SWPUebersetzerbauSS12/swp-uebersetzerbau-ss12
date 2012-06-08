@@ -30,31 +30,64 @@
  *
  */
 
-package regextodfaconverter.directconverter.syntaxtree.node;
 
+package regextodfaconverter.directconverter.regex.operatortree;
 
 /**
- * Liefert den Wert eines Blattes des {@link SyntaxTree Syntaxbaumes}.
  * 
  * @author Johannes Dahlke
  *
  */
-public class Terminal extends NodeValue {	
+public class RepetitionRange {
+
+	private static final Integer MIN_VALUE = 0;
+	private static final Integer MAX_VALUE = Integer.MAX_VALUE;
 	
-	private Character value;
 	
-	public Terminal( Character value) {
+	private Integer lowerBound = MIN_VALUE;
+	private Integer upperBound = MAX_VALUE;
+	 
+	
+	public RepetitionRange() {
 		super();
-		this.value = value;
 	}
 	
-	public Character getValue() {
+	public RepetitionRange( int lowerBound, int upperBound) {
+		super();
+		setLowerBound( lowerBound);
+		setUpperBound( upperBound);
+	}
+	
+	private int ensureValidRangeValue( Integer value) {
+		if ( value < MIN_VALUE)
+			value = MIN_VALUE;
+		if ( value > MAX_VALUE)
+			value = MAX_VALUE;
 		return value;
+	}
+	
+	public void setLowerBound( int lowerBound) {
+		this.lowerBound = ensureValidRangeValue( lowerBound);
+	}
+	
+	
+	public void setUpperBound( int upperBound) {
+		this.upperBound = ensureValidRangeValue( upperBound);
+	}
+	
+	
+	public int getLowerBound() {
+		return lowerBound;
+	}
+	
+	
+	public int getUpperBound() {
+		return upperBound;
 	}
 	
 	@Override
 	public String toString() {
-		return value + "";
+		return "[" + lowerBound.toString() + ".." + upperBound.toString()+"]";
 	}
 	
 }

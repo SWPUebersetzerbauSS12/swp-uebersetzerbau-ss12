@@ -34,7 +34,11 @@ package regextodfaconverter.directconverter.lr0parser.grammar;
 
 import utils.Test;
 
-
+/**
+ * 
+ * @author Johannes Dahlke
+ *
+ */
 public class EmptyString extends Terminal  {
 	
 	

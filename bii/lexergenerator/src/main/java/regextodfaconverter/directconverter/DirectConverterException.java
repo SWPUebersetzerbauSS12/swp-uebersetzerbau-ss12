@@ -34,7 +34,7 @@ package regextodfaconverter.directconverter;
 
 /**
  * 
- * @author 
+ * @author Johannes Dahlke
  *
  */
 public class DirectConverterException extends Exception {

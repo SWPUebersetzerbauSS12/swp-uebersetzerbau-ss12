@@ -42,6 +42,12 @@ import java.util.Set;
 
 import utils.Test;
 
+
+/**
+ * 
+ * @author Johannes Dahlke
+ *
+ */
 public class ProductionRule implements Iterable<RuleElement> {
 
 	private Nonterminal leftRuleSide;

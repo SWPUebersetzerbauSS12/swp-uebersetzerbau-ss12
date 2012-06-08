@@ -30,11 +30,39 @@
  *
  */
 
-package regextodfaconverter.directconverter.syntaxtree.node;
+package regextodfaconverter.directconverter.regex.operatortree;
 
-import java.util.Collection;
+import regextodfaconverter.directconverter.syntaxtree.node.BinaryInnerNode;
 
 
 
-public interface BinaryTreeNodeCollection extends Collection<BinaryTreeNode> {
+/**
+ * Stellt einen binären inneren Operatorknoten in einem {@link Tree Baum} dar.
+ * 
+ * @author Johannes Dahlke
+ *
+ */
+public class OperatorNode extends BinaryInnerNode<OperatorType> {	
+  
+	private Object payload = null;
+	
+	public OperatorNode( OperatorType operatorType) {
+		super( operatorType);
+	}
+	
+	public OperatorNode( OperatorType operatorType, Object payload) {
+		super( operatorType);
+		this.payload = payload;
+	}
+	
+	public OperatorType getOperatorType() {
+		return getValue();
+	}
+	
+	@Override
+	public String toString() {
+		return getValue().toString();
+	}
+	
 }
+

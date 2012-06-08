@@ -43,7 +43,6 @@ import java.util.Stack;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import regextodfaconverter.directconverter.EventHandler;
-import regextodfaconverter.directconverter.RegexSpecialChars;
 import regextodfaconverter.directconverter.lr0parser.ItemAutomata;
 import regextodfaconverter.directconverter.lr0parser.Lr0ItemAutomata;
 import regextodfaconverter.directconverter.lr0parser.ReduceEventHandler;
@@ -55,13 +54,12 @@ import regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
 import regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
 import regextodfaconverter.directconverter.lr0parser.grammar.ProductionSet;
 import regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
-import regextodfaconverter.directconverter.syntaxtree.node.BinaryTreeNode;
+import regextodfaconverter.directconverter.regex.RegexSpecialChars;
+import regextodfaconverter.directconverter.regex.operatortree.OperatorType;
 import regextodfaconverter.directconverter.syntaxtree.node.InnerNode;
 import regextodfaconverter.directconverter.syntaxtree.node.Leaf;
 import regextodfaconverter.directconverter.syntaxtree.node.NewNodeEventHandler;
-import regextodfaconverter.directconverter.syntaxtree.node.NodeValue;
-import regextodfaconverter.directconverter.syntaxtree.node.Operator;
-import regextodfaconverter.directconverter.syntaxtree.node.OperatorType;
+import regextodfaconverter.directconverter.syntaxtree.node.ScalableInnerNode;
 import regextodfaconverter.directconverter.syntaxtree.node.TreeNode;
 
 import utils.Notification;
@@ -82,8 +80,6 @@ public class ConcreteSyntaxTree implements Tree, Cloneable {
 	public NewNodeEventHandler onNewNodeEvent = null;
 
 	private TreeNode rootNode = null;
-
-	private SyntaxTreeAttributor annotations = null;
 
 	private Grammar grammar;
 
@@ -159,7 +155,7 @@ public class ConcreteSyntaxTree implements Tree, Cloneable {
 			public Object handle( Object sender, ProductionRule reduceRule) throws Exception {
 			
 				// create new inner node
-				InnerNode<ProductionRule> newInnerNode = new InnerNode<ProductionRule>( reduceRule);
+				InnerNode<ProductionRule> newInnerNode = new ScalableInnerNode<ProductionRule>( reduceRule);
 				newInnerNode.setPrintHandler( getNodePrintHandler());
 
 				if ( Test.isAssigned( onNewNodeEvent))
@@ -211,16 +207,6 @@ public class ConcreteSyntaxTree implements Tree, Cloneable {
 	}
 
 
-	public SyntaxTreeAttributor getAnnotations() {
-		return annotations;
-	}
-
-
-	public void setAnnotations( SyntaxTreeAttributor annotations) {
-		this.annotations = annotations;
-	}
-
-
 	public Iterator<TreeNode> iterator() {
 		return new TreeIterator( this);
 	}
@@ -228,17 +214,6 @@ public class ConcreteSyntaxTree implements Tree, Cloneable {
 
 	public TreeNode getRoot() {
 		return rootNode;
-	}
-
-
-	public Collection<Character> getCharacterSet() {
-		Collection<Character> characters = new HashSet<Character>();
-		for ( TreeNode node : this) {
-			if ( Test.isAssigned( node) && node instanceof Leaf) {
-				Character currentTerminal = (Character) ( (Leaf) node).getValue();
-			}
-		}
-		return characters;
 	}
 
 
@@ -298,6 +273,17 @@ public class ConcreteSyntaxTree implements Tree, Cloneable {
 
 	public Grammar getGrammar() {
 		return grammar;
+	}
+
+
+	public Collection<Leaf> getLeafSet() {
+		Collection<Leaf> leafSet = new HashSet<Leaf>();
+		for ( TreeNode node : this) {
+			if ( Test.isAssigned( node) && node instanceof Leaf) {
+				leafSet.add( (Leaf) node); 
+			}
+		}
+		return leafSet;
 	}
 
 }

@@ -30,15 +30,15 @@
  *
  */
 
-package regextodfaconverter.directconverter;
+package regextodfaconverter.directconverter.syntaxtree.node;
+
+import java.util.Collection;
+
 
 /**
  * 
  * @author Johannes Dahlke
  *
  */
-public interface EventHandler {
-
-	
-	Object handle( Object sender) throws Exception;
+public interface TreeNodeCollection extends Collection<TreeNode> {
 }

@@ -32,31 +32,14 @@
 
 package regextodfaconverter.directconverter.syntaxtree.node;
 
+import java.util.HashSet;
 
 
 /**
- * Liefert den Wert für einen inneren Knoten in dem {@link SyntaxTree Syntaxbaum}.
  * 
  * @author Johannes Dahlke
  *
  */
-public class Operator extends NodeValue {	
-  
-	private OperatorType operatorType;
-	
-	public Operator( OperatorType operatorType) {
-		super();
-		this.operatorType = operatorType;
-	}
-	
-	public OperatorType getOperatorType() {
-		return operatorType;
-	}
-	
-	@Override
-	public String toString() {
-		return operatorType.toString();
-	}
-	
-}
+public class TreeNodeSet extends HashSet<TreeNode> implements TreeNodeCollection {
 
+}

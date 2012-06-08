@@ -32,10 +32,40 @@
 
 package regextodfaconverter.directconverter.syntaxtree.node;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import regextodfaconverter.directconverter.syntaxtree.PrintHandler;
+import utils.Test;
 
 
+/**
+ * Stellt einen inneren Knoten in einem {@link Tree Baum} dar.
+ * Der innere Knoten kann beliebig viele Kinder haben.
+ * 
+ * @author Johannes Dahlke
+ *
+ */
+public class ScalableInnerNode<Value> extends InnerNode<Value> {	
 
-public class BinaryTreeNodeSet extends HashSet<BinaryTreeNode> implements BinaryTreeNodeCollection {
+	public ScalableInnerNode( Value value) {
+		super( value);
+	}
 
+	
+	public void addChilds( TreeNode ... childNodes) {
+		for ( TreeNode childNode : childNodes) {
+			addChild( childNode);
+		}
+	}
+
+
+	@Override
+	protected boolean canAddChild( TreeNode childNode) {
+		return true; // there are no constraints
+	}
+
+
+	
 }
+

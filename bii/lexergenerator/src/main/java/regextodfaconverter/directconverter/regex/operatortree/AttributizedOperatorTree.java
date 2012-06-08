@@ -30,15 +30,30 @@
  *
  */
 
-package regextodfaconverter.directconverter;
+
+package regextodfaconverter.directconverter.regex.operatortree;
+
+import java.util.HashMap;
+
+import regextodfaconverter.directconverter.syntaxtree.node.TreeNode;
+import regextodfaconverter.directconverter.syntaxtree.node.TreeNodeCollection;
 
 /**
  * 
  * @author Johannes Dahlke
  *
  */
-public interface EventHandler {
-
+public interface AttributizedOperatorTree {
 	
-	Object handle( Object sender) throws Exception;
+	HashMap<TreeNode, TreeNodeCollection> getFirstPositions();
+	
+	
+	HashMap<TreeNode, TreeNodeCollection> getFollowPositions();
+	
+	
+	HashMap<TreeNode, TreeNodeCollection> getLastPositions();
+	
+	
+	HashMap<TreeNode, Boolean> getNullables();
+
 }

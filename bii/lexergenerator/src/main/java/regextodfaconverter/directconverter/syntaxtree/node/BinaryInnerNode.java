@@ -36,12 +36,84 @@ import utils.Test;
 
 
 /**
- * Stellt einen Konten des {@link SyntaxTree Syntaxbaumes} dar.
+ * Stellt einen binären inneren Knoten in einem {@link Tree Baum} dar.
+ * Ein binärer Knoten hat zwei  Kinder.
  * 
  * @author Johannes Dahlke
  *
  */
-public class BinaryTreeNode {
+public class BinaryInnerNode<Value> extends InnerNode<Value> {
+	
+	private Leaf leftDummyNode = new Leaf<Value>( null);
+	private Leaf rightDummyNode = new Leaf<Value>( null);
+	
+	public BinaryInnerNode( Value value) {
+		this( value, null, null);
+	}
+	
+	public BinaryInnerNode( Value value, TreeNode leftChildNode, TreeNode rightChildNode) {
+		this( null, value, leftChildNode, rightChildNode);
+	}
+	
+	public BinaryInnerNode( BinaryInnerNode parentNode, Value value, TreeNode leftChildNode, TreeNode rightChildNode) {
+		super( parentNode, value);
+		setLeftChildNode( leftChildNode);
+		setRightChildNode( rightChildNode);
+	}
+	
+
+
+
+	public void setRightChildNode( TreeNode rightChildNode) {
+		if ( Test.isUnassigned( rightChildNode))
+			rightChildNode = rightDummyNode;
+		if ( childCount() == 0)
+			setLeftChildNode( null);
+		insertChild( rightChildNode, 1);
+	}
+
+	public void setLeftChildNode( TreeNode leftChildNode) {
+		if ( Test.isUnassigned( leftChildNode))
+			leftChildNode = leftDummyNode;
+		insertChild( leftChildNode, 0);	
+	}
+	
+	public TreeNode getRightChildNode() {
+		if ( childCount() >= 2)
+			return getNodeWithIndex( 1);
+		// otherwise
+		return null;
+	}
+
+	public TreeNode getLeftChildNode() {
+		if ( childCount() >= 1)
+			return getNodeWithIndex( 0);
+		// otherwise
+		return null;
+	}
+	
+	@Deprecated // use setLeftCildNode etc. instead
+	@Override
+	public boolean insertChild( TreeNode childNode, int index) {
+		if ( index <= 0)
+			index = 0;
+		if ( index >= 1)
+			index = 1;
+		if ( childCount() > index)
+			super.removeChildWithIndex( index);
+		return super.insertChild( childNode, index);
+	}
+
+	@Override
+	protected boolean canAddChild( TreeNode childNode) {
+		return true; // there are no constraints
+	}
+
+
+	
+}
+/* OLD VERSION
+public class BinaryTreeNode extends  {
 	
 	private static int leafCounter = 0;
   private int position; 
@@ -84,3 +156,4 @@ public class BinaryTreeNode {
 		return position;
 	}
 }
+*/

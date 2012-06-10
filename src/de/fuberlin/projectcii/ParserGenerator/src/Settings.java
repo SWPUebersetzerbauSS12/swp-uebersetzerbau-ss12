@@ -1,17 +1,18 @@
+package de.fuberlin.projectcii.ParserGenerator.src;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
 
 public class Settings {
-
+	private static String SettingsFilePath = "settings.ini";
 	private static String EOF;
 	private static String EPSILON;
 	private static String GRAMMAR_PATH;
 	
-	public static void initalize(){
+	public static void initalize() throws IOException{
 		try {
-		    BufferedReader in = new BufferedReader(new FileReader("settings.ini"));
+		    BufferedReader in = new BufferedReader(new FileReader(SettingsFilePath));
 		    
 		    String line;
 		    while ((line = in.readLine()) != null) {
@@ -32,6 +33,7 @@ public class Settings {
 		    }
 		    in.close();
 		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 

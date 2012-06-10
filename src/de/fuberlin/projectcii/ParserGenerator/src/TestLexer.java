@@ -1,4 +1,4 @@
-
+package de.fuberlin.projectcii.ParserGenerator.src;
 public class TestLexer {
 
 	private String[] Stream = {"id","+","id","*","id","eof"};

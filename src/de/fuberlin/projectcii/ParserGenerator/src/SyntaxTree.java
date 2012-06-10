@@ -1,8 +1,10 @@
+package de.fuberlin.projectcii.ParserGenerator.src;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
-import extern.ISyntaxTree;
+import de.fuberlin.projectcii.ParserGenerator.src.extern.ISyntaxTree;
+import de.fuberlin.projectcii.ParserGenerator.src.extern.IToken;
 
 
 /**
@@ -16,8 +18,16 @@ public class SyntaxTree implements ISyntaxTree {
 	
 	private List<ISyntaxTree> children = new LinkedList<ISyntaxTree>();
 	private SyntaxTree parent;
-	//TODO change to IToken
+	private IToken token;
 	private String symbol;
+	
+	public SyntaxTree() {
+	}
+	
+	public SyntaxTree(IToken token,String symbol) {
+		this.symbol = symbol;
+		this.token = token;
+	}
 
 	@Override
 	public void setParent(ISyntaxTree tree) {
@@ -106,6 +116,10 @@ public class SyntaxTree implements ISyntaxTree {
 	
 	//---------------------
 	// End of Interface Methodes
+	
+	public IToken getToken() {
+		return this.token;
+	}
 	
 	private void printChild(ISyntaxTree node,int level,boolean first){
 		

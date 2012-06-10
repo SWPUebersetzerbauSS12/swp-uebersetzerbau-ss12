@@ -1,14 +1,22 @@
-import java.io.IOException;
+package de.fuberlin.projectcii.ParserGenerator.src;
+
+import de.fuberlin.projectcii.ParserGenerator.src.extern.ILexer;
 
 
 public class LL1Parser {
 	
 	private ParserGenerator pG;
 	
-	public LL1Parser() throws IOException{
-		Settings.initalize();
-		pG = new ParserGenerator();
-		pG.initialize();
+	public LL1Parser(){
+		try{
+			Settings.initalize();
+			pG = new ParserGenerator();
+			pG.initialize();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 /*
@@ -17,11 +25,16 @@ public class LL1Parser {
  * @author Ying Wei
  * */
 
-	public void getSyntaxTree(){
-		
-		if(pG.parsable_LL1(pG.getParseTable())){
-			TokenParser tP = new TokenParser(pG.getParseTable(),pG.getGrammar(),pG.getStartSymbol());
-		tP.parseTokenStream();
+	public void getParserTree(ILexer lexer){
+		try{
+			if(pG.parsable_LL1(pG.getParseTable())){
+				TokenParser tP = new TokenParser(lexer, pG.getParseTable(),pG.getGrammar(),pG.getStartSymbol());
+				tP.parseTokenStream();
+			}			
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
 		}
 	}
 }

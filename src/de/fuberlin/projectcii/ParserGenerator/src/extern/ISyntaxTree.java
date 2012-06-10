@@ -1,77 +1,76 @@
-package extern;
+package de.fuberlin.projectcii.ParserGenerator.src.extern;
 
 import java.util.List;
 
+//import analysis.SymbolTableStack;
+
 /**
-* Using composite pattern as tree data-structure. Leafs are indicated by a
-* childCount of 0.
-*/
+ * Using composite pattern as tree data-structure. Leafs are indicated by a
+ * childCount of 0.
+ */
 public interface ISyntaxTree {
 
-public void setParent(ISyntaxTree tree);
+	public void setParent(ISyntaxTree tree);
 
-public ISyntaxTree getParent();
+	public ISyntaxTree getParent();
 
-public void addChild(ISyntaxTree tree);
+	public void addChild(ISyntaxTree tree);
 
-// TODO change returnvalue back to IToken 
+	//public Symbol getSymbol();
+	public String getSymbol();
 
-public String getSymbol();
+	/**
+	 * @return the number of children
+	 */
+	public int getChildrenCount();
 
-/**
-* @return the number of children
-*/
-public int getChildrenCount();
+	/**
+	 * @param i
+	 *            child index
+	 * @return the i'th child of current node, null if none is existing.
+	 */
+	public ISyntaxTree getChild(int i);
 
-/**
-* @param i
-* child index
-* @return the i'th child of current node, null if none is existing.
-*/
-public ISyntaxTree getChild(int i);
+	/**
+	 * @return The desired attribute. Null if none is found.
+	 */
 
-/**
-* @return The desired attribute. Null if none is found.
-*/
+	public List<ISyntaxTree> getChildrenByName(String name);
 
-public List<ISyntaxTree> getChildrenByName(String name);
+	/**
+	 * Changes the value of the attribute
+	 * 
+	 * @param name
+	 *            the attribute's name
+	 * @param value
+	 *            the value to change the attribute to.
+	 * @return True if change was successful, False otherwise.
+	 */
+	public boolean setAttribute(String name, Object value);
 
-/**
-* Changes the value of the attribute
-*
-* @param name
-* the attribute's name
-* @param value
-* the value to change the attribute to.
-* @return True if change was successful, False otherwise.
-*/
-public boolean setAttribute(String name, Object value);
+	public Object getAttribute(String name);
 
-public Object getAttribute(String name);
+	/**
+	 * Adds a new attribute to the nodes attribute collection, if this name is
+	 * not already inserted.
+	 * 
+	 * @param name
+	 *            the attribute's name to insert.
+	 * @return True if add was successful, False otherwise.
+	 */
+	public boolean addAttribute(String name);
 
-/**
-* Adds a new attribute to the nodes attribute collection, if this name is
-* not already inserted.
-*
-* TODO: Do we need this?
-*
-* @param name
-* the attribute's name to insert.
-* @return True if add was successful, False otherwise.
-*/
-public boolean addAttribute(String name);
+	/**
+	 * 
+	 * @return a list of all children to this node (might be empty)
+	 * 
+	 */
+	public List<ISyntaxTree> getChildren();
 
-/**
-*
-* @return a list of all children to this node (might be empty)
-*
-*/
-public List<ISyntaxTree> getChildren();
+	/**
+	 * This should be used in order to build the SymbolTable.
+	 */
+	//public void buildSymbolTable(SymbolTableStack tables);
 
-/**
-* Semantic rules !
-*/
-//public void run(SymbolTableStack tables);
-
-public void printTree();
+	public void printTree();
 }

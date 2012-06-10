@@ -37,9 +37,10 @@ public class TokenParser {
 	
 	/**
 	 * 
-	 * @author Patrick Schlott
+	 * @author Patrick Schlott, Ying Wei
 	 *
 	 * @return SyntaxTree The Parsetree created by parsing the Tokenstream
+	 * @throws RuntimeException No 'EOF' too much symbols
 	 */
 	public SyntaxTree parseTokenStream(){
 		Token = lexer.getNextToken();
@@ -48,6 +49,8 @@ public class TokenParser {
 		// accept if all Token have been parsed
 		if (Token.equals(Settings.getEOF())){
 			System.out.println("accepted");
+		}else{
+			throw new RuntimeException("Too Much Symbols, No 'EOF'");
 		}
 		tree.printTree();
 		//tree.CompressSyntaxTree();
@@ -58,11 +61,12 @@ public class TokenParser {
 	 * 
 	 * Parses the actual Tokenstream and creates a SyntaxTree from it
 	 * 
-	 * @author Patrick Schlott
+	 * @author Patrick Schlott, Ying Wei
 	 *
 	 * @param symbol The terminal or nonterminal that is next on the imaginary stack
 	 * @param parent The Node that was reduced to the given symbol
 	 * @return SyntaxTree The SyntaxTree created by paring the Tokenstream
+	 * @throws RuntimeException if it could not be found fixed productions 
 	 */
 	private SyntaxTree parseToken(String symbol,SyntaxTree parent){
 		
@@ -100,7 +104,8 @@ public class TokenParser {
 		}
 		// Token doesn't fit the given grammar
 		else{
-			System.out.println("ERROR!");
+			throw new RuntimeException("Token doesen't fit the given grammar");
+			
 		}
 	return tree;
 	}

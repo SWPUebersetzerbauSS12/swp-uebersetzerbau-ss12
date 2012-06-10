@@ -52,7 +52,11 @@ public class ParserGenerator {
 	 */
 	public Map<String, HashMap<String,Vector<Integer>>> initialize () throws IOException{
 		//Read the Grammar from file
+		
 		readGrammar();
+		
+			
+		
 		Printer.printGrammar(grammarMap);
 		fillTerminalNonterminal();
 		

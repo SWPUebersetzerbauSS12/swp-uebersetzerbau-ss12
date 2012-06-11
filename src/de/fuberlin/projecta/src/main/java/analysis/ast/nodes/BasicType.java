@@ -23,7 +23,7 @@ public class BasicType extends Type {
 			ret += "i32";
 			break;
 		case REAL:
-			ret += "i64";
+			ret += "double";
 			break;
 		case STRING:
 			ret += "i8*";

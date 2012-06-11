@@ -35,8 +35,6 @@ public class SymbolTableStack {
 
 	/**
 	 * Push a new symbol table on top of the stack
-	 * 
-	 * @param Table
 	 */
 	public void push() {
 		stack.push(new SymbolTable());
@@ -52,10 +50,8 @@ public class SymbolTableStack {
 	public boolean isEmpty(){
 		return stack.isEmpty();
 	}
-	
-	/**
-	 * Please implement this
-	 */
+
+	@Override
 	public String toString(){
 		return stack.toString();
 	}

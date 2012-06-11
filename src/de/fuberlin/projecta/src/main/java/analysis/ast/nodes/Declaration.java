@@ -25,6 +25,9 @@ public class Declaration extends AbstractSyntaxTree {
 
 	@Override
 	public String genCode() {
-		return null;
+		String ret = "";
+		ret += "%" + ((Id) getChild(1)).genCode() + " = alloca "
+				+ ((Type) getChild(0)).genCode();
+		return ret;
 	}
 }

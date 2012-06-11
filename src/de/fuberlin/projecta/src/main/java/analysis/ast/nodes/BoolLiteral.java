@@ -1,9 +1,8 @@
 package analysis.ast.nodes;
 
-import analysis.SymbolTableStack;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.val;
+import analysis.SymbolTableStack;
 
 @AllArgsConstructor
 public class BoolLiteral extends Statement {

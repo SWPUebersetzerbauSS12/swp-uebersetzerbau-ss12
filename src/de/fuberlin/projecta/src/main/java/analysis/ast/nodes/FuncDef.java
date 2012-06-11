@@ -46,7 +46,7 @@ public class FuncDef extends AbstractSyntaxTree {
 	public String genCode() {
 		String ret = "define " + ((Type) getChild(0)).genCode() + " @"
 				+ ((Id) getChild(1)).genCode() + "("
-				+ ((Params) getChild(2)).genCode() + ") nounwind uwtable { "
+				+ ((Params) getChild(2)).genCode() + ") nounwind uwtable { \n"
 				+ ((Block) getChild(3)).genCode() + " }";
 		return ret;
 	}

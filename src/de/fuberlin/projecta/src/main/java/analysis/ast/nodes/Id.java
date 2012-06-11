@@ -22,7 +22,6 @@ public class Id extends AbstractSyntaxTree {
 
 	@Override
 	public String genCode() {
-		// TODO Auto-generated method stub
-		return null;
+		return value;
 	}
 }

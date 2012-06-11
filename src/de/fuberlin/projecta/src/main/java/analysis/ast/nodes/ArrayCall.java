@@ -16,4 +16,10 @@ public class ArrayCall extends AbstractSyntaxTree {
 	public boolean checkSemantics() {
 		return true;
 	}
+
+	@Override
+	public String genCode() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

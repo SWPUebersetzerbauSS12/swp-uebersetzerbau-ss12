@@ -60,12 +60,6 @@ public class FrontendMain {
 			System.out.println("Bad semantics!");
 		}
 		
-		//Print Symbol Table that should have been constructed by now...
-		SymbolTableStack stack = analyzer.getTables();
-		while(!stack.isEmpty()){
-			SymbolTable top = stack.pop();
-			System.out.println(top);
-		}
 	}
 
 	public static void main(String[] args) {

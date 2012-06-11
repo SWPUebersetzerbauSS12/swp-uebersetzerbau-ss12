@@ -18,4 +18,10 @@ public class RecordVarCall extends AbstractSyntaxTree {
 		// Any situation where this could be ambiguous???
 		return true;
 	}
+
+	@Override
+	public String genCode() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

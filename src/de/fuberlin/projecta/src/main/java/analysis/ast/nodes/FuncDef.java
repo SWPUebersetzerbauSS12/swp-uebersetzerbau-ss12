@@ -36,4 +36,10 @@ public class FuncDef extends AbstractSyntaxTree {
 													// handle everything itself
 
 	}
+
+	@Override
+	public String genCode() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

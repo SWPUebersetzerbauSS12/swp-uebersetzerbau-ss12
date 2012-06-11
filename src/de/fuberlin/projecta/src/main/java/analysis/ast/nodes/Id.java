@@ -19,4 +19,10 @@ public class Id extends AbstractSyntaxTree {
 		//can't have children!
 		return true;
 	}
+
+	@Override
+	public String genCode() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

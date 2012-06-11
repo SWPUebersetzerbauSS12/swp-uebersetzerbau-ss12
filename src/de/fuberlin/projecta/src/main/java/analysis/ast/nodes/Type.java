@@ -11,4 +11,8 @@ public class Type extends AbstractSyntaxTree {
 	public boolean checkSemantics() {
 		return true;
 	}
+	
+	public String genCode(){
+		return null;
+	}
 }

@@ -5,9 +5,11 @@ import java.util.List;
 
 import analysis.ast.nodes.Id;
 import analysis.ast.nodes.Type;
+import lombok.Getter;
 
 public class SymbolTable {
 
+	@Getter
 	private List<EntryType> entries;
 
 	public SymbolTable() {
@@ -17,8 +19,7 @@ public class SymbolTable {
 	/**
 	 * Updates the entry associated with name. If it is not contained yet it
 	 * gets added, otherwise the current value will be overridden.
-	 * 
-	 * @param name
+	 *
 	 * @param entry
 	 */
 	public void updateEntry(EntryType entry) throws SemanticException {
@@ -117,10 +118,6 @@ public class SymbolTable {
 			}
 		}
 		throw new SemanticException("No entry found for id " + name);
-	}
-
-	public List<EntryType> getEntries() {
-		return entries;
 	}
 
 	@Override

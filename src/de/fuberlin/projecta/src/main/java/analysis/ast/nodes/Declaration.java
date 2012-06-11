@@ -25,7 +25,6 @@ public class Declaration extends AbstractSyntaxTree {
 
 	@Override
 	public String genCode() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

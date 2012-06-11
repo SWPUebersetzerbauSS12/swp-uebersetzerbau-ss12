@@ -24,10 +24,8 @@ public class Program extends AbstractSyntaxTree {
 		}
 		return true;
 	}
-
-	@Override
-	public String genCode() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
+	/*
+	 * GenCode already implemented by AbstractSyntaxTree
+	 */
 }

@@ -38,9 +38,8 @@ public class GrammarReader {
 	 * the Grammar is deemed not LL(1)-parsable.
 	 * 
 	 * @author Patrick Schlott,Ying Wei
-	 * @param NItr
-	 *            defines the Max. no. of the iterations, if more than NItr,the
-	 *            whole grammar will be cleared
+	 * @param NItr The maximum number of iterations for clearing Leftrekursions,
+	 *             if more iterations are needes, the whole grammar will be cleared
 	 * @return The grammar as HashMap where the keys are the heads of the
 	 *         production and the values are vectors containing the productions
 	 *         itself. Each production is represented as a vector of terminal

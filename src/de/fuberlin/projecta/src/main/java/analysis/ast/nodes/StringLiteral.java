@@ -21,7 +21,6 @@ public class StringLiteral extends Statement {
 
 	@Override
 	public String genCode() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.value + "\\00";
 	}
 }

@@ -5,6 +5,7 @@ import parser.ISyntaxTree;
 import parser.Symbol;
 import parser.Tree;
 import analysis.SymbolTable;
+import analysis.SymbolTableStack;
 
 public abstract class AbstractSyntaxTree extends Tree {
 
@@ -30,6 +31,11 @@ public abstract class AbstractSyntaxTree extends Tree {
 	public AbstractSyntaxTree(Symbol symbol) {
 		super(symbol);
 	}
+	
+	/**
+	 * Method for building the SymbolTables that the nodes should implement 
+	 **/
+	public abstract void buildSymbolTable(SymbolTableStack tables);
 
 	/**
 	 * 

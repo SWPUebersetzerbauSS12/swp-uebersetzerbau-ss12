@@ -2,8 +2,6 @@ package parser;
 
 import java.util.List;
 
-import analysis.SymbolTableStack;
-
 /**
  * Using composite pattern as tree data-structure. Leafs are indicated by a
  * childCount of 0.
@@ -65,11 +63,6 @@ public interface ISyntaxTree {
 	 * 
 	 */
 	public List<ISyntaxTree> getChildren();
-
-	/**
-	 * This should be used in order to build the SymbolTable.
-	 */
-	public void buildSymbolTable(SymbolTableStack tables);
 
 	public void printTree();
 }

@@ -7,7 +7,6 @@ import java.util.Map.Entry;
 
 import lombok.Getter;
 import utils.StringUtils;
-import analysis.SymbolTableStack;
 import analysis.ast.nodes.AbstractSyntaxTree;
 import analysis.ast.nodes.BasicType;
 import analysis.ast.nodes.BinaryOp;
@@ -147,11 +146,6 @@ public class Tree implements ISyntaxTree {
 
 	public List<ISyntaxTree> getChildren() {
 		return children;
-	}
-
-	@Override
-	public void buildSymbolTable(SymbolTableStack tables) {
-		// empty, this should be filled by AST nodes
 	}
 
 	@Override

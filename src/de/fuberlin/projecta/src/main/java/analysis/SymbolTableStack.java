@@ -48,4 +48,15 @@ public class SymbolTableStack {
 	public int size() {
 		return stack.size();
 	}
+	
+	public boolean isEmpty(){
+		return stack.isEmpty();
+	}
+	
+	/**
+	 * Please implement this
+	 */
+	public String toString(){
+		return stack.toString();
+	}
 }

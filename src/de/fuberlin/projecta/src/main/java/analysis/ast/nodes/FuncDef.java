@@ -23,7 +23,7 @@ public class FuncDef extends AbstractSyntaxTree {
 
 		stack.push();
 		// these are parameters
-		getChild(2).buildSymbolTable(stack);
+		((AbstractSyntaxTree)getChild(2)).buildSymbolTable(stack);
 
 		SymbolTable tmp = stack.pop();
 		EntryType entry = new EntryType(id, type, tmp.getEntries());
@@ -32,7 +32,7 @@ public class FuncDef extends AbstractSyntaxTree {
 		// TODO: musn't the parameters be also stored in the block
 		// symbolTable???
 		if (this.getChildrenCount() == 4)
-			getChild(3).buildSymbolTable(stack); // this is the block, it can
+			((AbstractSyntaxTree)getChild(3)).buildSymbolTable(stack); // this is the block, it can
 													// handle everything itself
 
 	}

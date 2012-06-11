@@ -42,6 +42,7 @@ public class SemanticAnalyzer {
 	private static final String LAttribute = "LAttribute";
 
 	private ISyntaxTree parseTree;
+	@Getter
 	private SymbolTableStack tables;
 	@Getter
 	private AbstractSyntaxTree AST;

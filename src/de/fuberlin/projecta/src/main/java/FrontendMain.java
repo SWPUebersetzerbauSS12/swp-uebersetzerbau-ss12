@@ -1,6 +1,8 @@
 import java.io.File;
 
 import analysis.SemanticAnalyzer;
+import analysis.SymbolTable;
+import analysis.SymbolTableStack;
 
 import lexer.ILexer;
 import lexer.Lexer;
@@ -56,6 +58,13 @@ public class FrontendMain {
 			System.out.println("Semantics should be correct");
 		}else{
 			System.out.println("Bad semantics!");
+		}
+		
+		//Print Symbol Table that should have been constructed by now...
+		SymbolTableStack stack = analyzer.getTables();
+		while(!stack.isEmpty()){
+			SymbolTable top = stack.pop();
+			System.out.println(top);
 		}
 	}
 

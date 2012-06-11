@@ -41,7 +41,13 @@ public abstract class AbstractSyntaxTree extends Tree {
 	 * Code generation
 	 **/
 
-	public abstract String genCode();
+	public String genCode(){
+		String out = "";
+		for (int i=0; i < getChildrenCount();i++){
+			out += ((AbstractSyntaxTree)getChild(i)).genCode() + "\n";
+		}
+		return out;
+	}
 
 	/**
 	 * 

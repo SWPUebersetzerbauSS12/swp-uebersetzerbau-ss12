@@ -31,7 +31,12 @@ public class Params extends AbstractSyntaxTree {
 
 	@Override
 	public String genCode() {
-		// TODO Auto-generated method stub
-		return null;
+		String ret = "";
+		for(int i = 0; i < getChildrenCount(); i+= 2){
+			ret += ((Type)getChild(i)).genCode() + " %" + ((Id)getChild(i+1)).genCode() + ", ";
+		}
+		// strip trailing comma
+		ret = ret.substring(0, ret.length() -2);
+		return ret;
 	}
 }

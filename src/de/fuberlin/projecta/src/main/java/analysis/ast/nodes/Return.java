@@ -15,7 +15,6 @@ public class Return extends Statement {
 
 	@Override
 	public String genCode() {
-		// TODO Auto-generated method stub
-		return null;
+		return "ret %" + ((AbstractSyntaxTree)getChild(0)).genCode();
 	}
 }

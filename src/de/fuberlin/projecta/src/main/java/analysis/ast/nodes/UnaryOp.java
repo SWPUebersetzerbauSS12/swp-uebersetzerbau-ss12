@@ -16,6 +16,7 @@ public class UnaryOp extends AbstractSyntaxTree {
 	
 	public void buildSymbolTable(SymbolTableStack tables) {
 		//Is this correct? first child is type, second id?
+		//Yep, this should be correct xD
 		tables.top().insertEntry((Id) getChild(1), (Type) getChild(0));
 	}
 

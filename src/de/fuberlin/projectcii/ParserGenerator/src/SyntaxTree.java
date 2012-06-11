@@ -16,46 +16,78 @@ import de.fuberlin.projectcii.ParserGenerator.src.extern.IToken;
  */
 public class SyntaxTree implements ISyntaxTree {
 	
+	//All children of the current Node
 	private List<ISyntaxTree> children = new LinkedList<ISyntaxTree>();
+	//The parent of the current Node (NULL if root)
 	private SyntaxTree parent;
+	//Token for the current Node
 	private IToken token;
+	//Symbol of the current Node
 	private String symbol;
 	
+	/**
+	 * Default Constructor
+	 */
 	public SyntaxTree() {
 	}
 	
+	/**
+	 * Sets the Token and the Symbol
+	 * 
+	 * @param token
+	 * @param symbol
+	 */
 	public SyntaxTree(IToken token,String symbol) {
 		this.symbol = symbol;
 		this.token = token;
 	}
 
+	/**
+	 * Sets the parent
+	 * @param tree The parent Node of the current Node
+	 */
 	@Override
 	public void setParent(ISyntaxTree tree) {
 		this.parent = (SyntaxTree)tree;
 	}
 
+	/**
+	 * Getter for parent Node
+	 * @return parent Node
+	 */
 	@Override
 	public ISyntaxTree getParent() {
 		return this.parent;
 	}
 
+	/**
+	 * Adds a new child to the current node
+	 * 
+	 * @param tree Child of the current node
+	 */
 	@Override
 	public void addChild(ISyntaxTree tree) {
 		this.children.add((SyntaxTree)tree);
 	}
 
+	/**
+	 * @return Returns the number of childs this Node has
+	 */
 	@Override
 	public int getChildrenCount() {
 		return this.children.size();
 	}
 
+	/**
+	 * @return Returns child at a given position
+	 */
 	@Override
 	public ISyntaxTree getChild(int i) {
 		return children.get(i);
 	}
 
 	/**
-	 * Returns list of children with this name
+	 * @return Returns list of children with this name
 	 */
 	@Override
 	public List<ISyntaxTree> getChildrenByName(String name) {

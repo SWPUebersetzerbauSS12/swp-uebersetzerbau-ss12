@@ -3,7 +3,14 @@ package de.fuberlin.projectcii.ParserGenerator.src;
 import de.fuberlin.projectcii.ParserGenerator.src.extern.ILexer;
 import de.fuberlin.projectcii.ParserGenerator.src.extern.ISyntaxTree;
 
-
+/**
+ * 
+ * LL1 Parser for a given TokenStream. The Parser uses the Grammar defined in
+ * the Settings.ini file
+ * 
+ * @author Patrick Schlott
+ *
+ */
 public class LL1Parser {
 	
 	private ParserGenerator pG;

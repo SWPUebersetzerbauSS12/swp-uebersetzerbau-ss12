@@ -146,7 +146,7 @@ public class ParserGenerator {
 		return firstSet;		
 	}
 	
-	/***
+	/**
 	 * Evaluates the firstset of a given Nonterminal regarding to a grammarMap.
 	 * 
 	 * @author Christoph Schroeder
@@ -305,14 +305,6 @@ public class ParserGenerator {
 		}
 		return fs;
 	}
-	
-	//private Set<String> getfollowset(String currentHead,
-	//		Map<String, Vector<Vector<String>>> grammarMap2) {
-	//	if (followSets.containsKey(currentHead)) {
-			
-	//	}
-//		return followSets.get(currentHead);
-//	}
 
 	/**
 	 * Evaluates the parsertable.

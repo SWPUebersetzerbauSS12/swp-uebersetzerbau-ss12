@@ -21,7 +21,6 @@ public class RealLiteral extends Statement {
 
 	@Override
 	public String genCode() {
-		// TODO Auto-generated method stub
-		return null;
+		return "double " + this.value;
 	}
 }

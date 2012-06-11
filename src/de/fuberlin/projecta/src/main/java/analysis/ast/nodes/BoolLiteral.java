@@ -3,6 +3,7 @@ package analysis.ast.nodes;
 import analysis.SymbolTableStack;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.val;
 
 @AllArgsConstructor
 public class BoolLiteral extends Statement {
@@ -22,7 +23,6 @@ public class BoolLiteral extends Statement {
 
 	@Override
 	public String genCode() {
-		// TODO Auto-generated method stub
-		return null;
+		return "i8 " + ((this.value)?"1":"0");
 	}
 }

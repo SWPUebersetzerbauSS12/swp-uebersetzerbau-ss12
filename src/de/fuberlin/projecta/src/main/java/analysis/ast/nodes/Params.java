@@ -17,12 +17,12 @@ public class Params extends AbstractSyntaxTree {
 
 	@Override
 	public boolean checkSemantics() {
-		for(int i = 0; i < this.getChildrenCount(); i++){
+		for (int i = 0; i < this.getChildrenCount(); i++) {
 			if (this.getChild(i) instanceof BasicType
 					&& ((BasicType) this.getChild(i)).getType() == BasicTokenType.VOID) {
 				return false;
 			}
-			if(!((AbstractSyntaxTree)this.getChild(i)).checkSemantics()){
+			if (!((AbstractSyntaxTree) this.getChild(i)).checkSemantics()) {
 				return false;
 			}
 		}
@@ -32,11 +32,16 @@ public class Params extends AbstractSyntaxTree {
 	@Override
 	public String genCode() {
 		String ret = "";
-		for(int i = 0; i < getChildrenCount(); i+= 2){
-			ret += ((Type)getChild(i)).genCode() + " %" + ((Id)getChild(i+1)).genCode() + ", ";
+		boolean atLeastOne = false;
+		for (int i = 0; i < getChildrenCount(); i += 2) {
+			atLeastOne = true;
+			ret += ((Type) getChild(i)).genCode() + " %"
+					+ ((Id) getChild(i + 1)).genCode() + ", ";
 		}
-		// strip trailing comma
-		ret = ret.substring(0, ret.length() -2);
+		if (atLeastOne) {
+			// strip trailing comma
+			ret = ret.substring(0, ret.length() - 2);
+		}
 		return ret;
 	}
 }

@@ -182,4 +182,9 @@ public class Tree implements ISyntaxTree {
 		}
 		return false;
 	}
+
+	@Override
+	public ISyntaxTree removeChild(int i) {
+		return children.remove(i);
+	}
 }

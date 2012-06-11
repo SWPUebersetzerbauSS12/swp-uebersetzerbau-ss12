@@ -15,6 +15,8 @@ public interface ISyntaxTree {
 	public void addChild(ISyntaxTree tree);
 
 	public Symbol getSymbol();
+	
+	public ISyntaxTree removeChild(int i);
 
 	/**
 	 * @return the number of children

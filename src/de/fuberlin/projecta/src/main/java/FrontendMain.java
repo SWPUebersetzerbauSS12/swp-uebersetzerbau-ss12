@@ -59,6 +59,7 @@ public class FrontendMain {
 		}else{
 			System.out.println("Bad semantics!");
 		}
+		System.out.println(analyzer.getAST().genCode());
 		
 	}
 

@@ -20,16 +20,16 @@ public class BasicType extends Type {
 		String ret = "";
 		switch (type) {
 		case INT:
-			ret += "i32, align 4";
+			ret += "i32";
 			break;
 		case REAL:
-			ret += "i64, align 8";
+			ret += "i64";
 			break;
 		case STRING:
-			ret += "i8*, align 1";
+			ret += "i8*";
 			break;
 		case BOOL:
-			ret += "i8, align 1";
+			ret += "i8";
 			break;
 		}
 		return ret;

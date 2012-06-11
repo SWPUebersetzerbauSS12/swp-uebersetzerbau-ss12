@@ -13,4 +13,10 @@ public class Print extends Statement {
 		// TODO Auto-generated method stub
 		return true;
 	}
+
+	@Override
+	public String genCode() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

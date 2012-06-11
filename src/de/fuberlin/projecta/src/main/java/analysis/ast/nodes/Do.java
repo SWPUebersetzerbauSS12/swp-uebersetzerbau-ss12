@@ -20,4 +20,10 @@ public class Do extends Statement {
 		}
 		return true;
 	}
+
+	@Override
+	public String genCode() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

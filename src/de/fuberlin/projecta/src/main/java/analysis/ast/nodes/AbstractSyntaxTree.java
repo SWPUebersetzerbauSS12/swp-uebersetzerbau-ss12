@@ -14,11 +14,11 @@ public abstract class AbstractSyntaxTree extends Tree {
 	 */
 	@Getter
 	SymbolTable table;
-	
-	public SymbolTable getHigherTable(){
-		while(getParent() != null){
-			if(((AbstractSyntaxTree)getParent()).getTable() != null){
-				return ((AbstractSyntaxTree)getParent()).getTable();
+
+	public SymbolTable getHigherTable() {
+		while (getParent() != null) {
+			if (((AbstractSyntaxTree) getParent()).getTable() != null) {
+				return ((AbstractSyntaxTree) getParent()).getTable();
 			}
 		}
 		return null;
@@ -31,11 +31,17 @@ public abstract class AbstractSyntaxTree extends Tree {
 	public AbstractSyntaxTree(Symbol symbol) {
 		super(symbol);
 	}
-	
+
 	/**
-	 * Method for building the SymbolTables that the nodes should implement 
+	 * Method for building the SymbolTables that the nodes should implement
 	 **/
 	public abstract void buildSymbolTable(SymbolTableStack tables);
+
+	/**
+	 * Code generation
+	 **/
+
+	public abstract String genCode();
 
 	/**
 	 * 
@@ -55,8 +61,9 @@ public abstract class AbstractSyntaxTree extends Tree {
 	public boolean equals(Object object) {
 		if (object != null) {
 			if (object.getClass() == this.getClass()) {
-				if(this instanceof BasicType){
-					if(((BasicType) this).getType() != ((BasicType) object).getType()){
+				if (this instanceof BasicType) {
+					if (((BasicType) this).getType() != ((BasicType) object)
+							.getType()) {
 						return false;
 					}
 				}

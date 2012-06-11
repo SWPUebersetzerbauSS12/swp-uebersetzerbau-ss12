@@ -1,18 +1,15 @@
 import java.io.File;
 
-import analysis.SemanticAnalyzer;
-import analysis.SymbolTable;
-import analysis.SymbolTableStack;
-
 import lexer.ILexer;
 import lexer.Lexer;
 import lexer.io.FileCharStream;
 import lexer.io.ICharStream;
 import lexer.io.StringCharStream;
 import parser.ISyntaxTree;
-import parser.Parser;
 import parser.ParseException;
+import parser.Parser;
 import utils.IOUtils;
+import analysis.SemanticAnalyzer;
 
 public class FrontendMain {
 

@@ -1,13 +1,10 @@
 package lexer;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import java.util.HashMap;
+
 import lombok.Getter;
 
-@AllArgsConstructor
-public
-@Data
-class Token implements IToken {
+public class Token implements IToken {
 
 	/**
 	 * Get the real type of this token (used internally only)
@@ -15,10 +12,30 @@ class Token implements IToken {
 	@Getter
 	private TokenType internalType;
 
+	@Getter
 	private Object attribute;
 
+	@Getter
 	private int lineNumber;
+	@Getter
 	private int offset;
+
+	private HashMap<TokenType, String> mapping = new HashMap<TokenType, String>();
+
+	public Token(TokenType internalType, Object attribute, int lineNumber,
+			int offset) {
+		this.internalType = internalType;
+		this.attribute = attribute;
+		this.lineNumber = lineNumber;
+		this.offset = offset;
+
+		initMapping();
+	}
+
+	@Override
+	public String getText() {
+		return mapping.get(internalType);
+	}
 
 	@Override
 	public String getType() {
@@ -29,6 +46,47 @@ class Token implements IToken {
 	public String toString() {
 		return "<" + internalType + ", " + attribute + ", " + lineNumber + ", "
 				+ offset + ">";
+	}
+
+	private void initMapping() {
+		mapping.put(TokenType.OP_LE, "<");
+		mapping.put(TokenType.OP_LE, "<=");
+		mapping.put(TokenType.OP_EQ, "==");
+		mapping.put(TokenType.OP_NE, "!=");
+		mapping.put(TokenType.OP_GT, ">");
+		mapping.put(TokenType.OP_GE, ">=");
+		mapping.put(TokenType.OP_OR, "||");
+		mapping.put(TokenType.OP_AND, "&&");
+		mapping.put(TokenType.OP_NOT, "!");
+		mapping.put(TokenType.OP_ADD, "+");
+		mapping.put(TokenType.OP_MINUS, "-");
+		mapping.put(TokenType.OP_MUL, "*");
+		mapping.put(TokenType.OP_DIV, "/");
+		mapping.put(TokenType.OP_ASSIGN, "=");
+		mapping.put(TokenType.OP_COMMA, ",");
+		mapping.put(TokenType.OP_DOT, ".");
+		mapping.put(TokenType.OP_SEMIC, ";");
+		mapping.put(TokenType.IF, "if");
+		mapping.put(TokenType.THEN, "then");
+		mapping.put(TokenType.ELSE, "else");
+		mapping.put(TokenType.WHILE, "while");
+		mapping.put(TokenType.DO, "do");
+		mapping.put(TokenType.BREAK, "break");
+		mapping.put(TokenType.RETURN, "return");
+		mapping.put(TokenType.PRINT, "print");
+		mapping.put(TokenType.DEF, "def");
+		mapping.put(TokenType.BASIC, "basic");
+		mapping.put(TokenType.RECORD, "record");
+		mapping.put(TokenType.ID, "id");
+		mapping.put(TokenType.STRING_LITERAL, "string");
+		mapping.put(TokenType.INT_LITERAL, "num");
+		mapping.put(TokenType.LPAREN, "(");
+		mapping.put(TokenType.RPAREN, ")");
+		mapping.put(TokenType.LBRACKET, "[");
+		mapping.put(TokenType.RBRACKET, "]");
+		mapping.put(TokenType.LBRACE, "{");
+		mapping.put(TokenType.RBRACE, "}");
+		mapping.put(TokenType.EOF, "eof");
 	}
 
 }

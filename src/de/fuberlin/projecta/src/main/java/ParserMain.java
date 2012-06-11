@@ -5,8 +5,8 @@ import lexer.Lexer;
 import lexer.io.FileCharStream;
 import lexer.io.ICharStream;
 import lexer.io.StringCharStream;
-import parser.Parser;
 import parser.ParseException;
+import parser.Parser;
 import utils.IOUtils;
 
 public class ParserMain {
@@ -39,7 +39,11 @@ public class ParserMain {
 		try {
 			parser.parse();
 		} catch (ParseException e) {
-			System.out.println(e.getMessage() + " (error at line: " + e.getLineNumber() + ", column: " + e.getOffset() + ")");
+			System.out.println(e.getMessage() +
+					" (error at line: " + e.getLineNumber() +
+					", column: " + e.getOffset() +
+					", token: \"" + e.getText() + "\")"
+			);
 			System.out.println("Details:\n" + e.getDetails());
 			System.out.println("Trace:");
 			e.printStackTrace();

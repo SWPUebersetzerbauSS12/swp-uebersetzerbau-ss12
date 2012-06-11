@@ -123,7 +123,7 @@ public class Parser implements IParser {
 						}
 					}
 				} else if (prod.trim().equals("")) {
-					throw new ParseException("Didn't expect token: " + token.getType(), 
+					throw new ParseException("Didn't expect token",
 							"Syntax error: No rule in parsing table (Stack: "
 									+ peek + ", token: " + token + ")", token);
 				} else {

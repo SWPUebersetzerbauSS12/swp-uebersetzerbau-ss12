@@ -44,4 +44,10 @@ public class ParseException extends RuntimeException {
 		return -1;
 	}
 
+	public String getText() {
+		if (token != null)
+			return token.getText();
+		return "";
+	}
+
 }

@@ -359,6 +359,8 @@ class LLVM_Block implements ILLVM_Block {
 					return new LLVM_LogicCommand(cmd, LLVM_Operation.XOR, predecessor, this, comment);
 				}else if (cmd[2].compareTo("load") == 0){
 					return new LLVM_LoadCommand(cmd, LLVM_Operation.LOAD, predecessor, this, comment);
+				}else if (cmd[2].compareTo("call") == 0 || cmd[3].compareTo("call") == 0){
+					return new LLVM_CallCommand(cmd, LLVM_Operation.CALL, predecessor, this, comment);
 				}else if (cmd[2].compareTo("icmp") == 0){
 					if (cmd[3].compareTo("eq") == 0){
 						return new LLVM_IcmpCommand(cmd, LLVM_Operation.ICMP_EQ, predecessor, this, comment);

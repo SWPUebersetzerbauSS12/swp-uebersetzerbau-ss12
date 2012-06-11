@@ -735,6 +735,10 @@ public class LLVM_Function {
 				// Entferne zu loeschenden Block aus Flussgraph
 				actualBlock.deleteBlock();
 				
+				// Entferne zu loeschenden Block aus this.blocks
+				this.blocks.remove(actualBlock);
+				this.numberBlocks--;
+				
 			}
 		}
 

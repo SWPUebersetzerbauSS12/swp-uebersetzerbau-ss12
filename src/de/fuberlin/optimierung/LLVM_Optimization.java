@@ -52,6 +52,9 @@ class LLVM_Optimization implements ILLVM_Optimization {
 			// Globale Lebendigkeitsanalyse fuer Store, Load
 			tmp.globalLiveVariableAnalysis();
 			
+			// CommonExpressions
+			tmp.removeCommonExpressions();
+			
 			tmp.updateUnnamedLabelNames();
 			
 			// Optimierte Ausgabe
@@ -99,8 +102,6 @@ class LLVM_Optimization implements ILLVM_Optimization {
 		}catch(Exception e){
 			System.err.println(e.getMessage());
 		}
-		
-		
 	}
 	
 	private void readCodeFromFile(String fileName){

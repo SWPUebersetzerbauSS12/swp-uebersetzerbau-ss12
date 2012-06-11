@@ -1,8 +1,17 @@
 package de.fuberlin.optimierung;
 
 import java.util.*;
+
 import de.fuberlin.optimierung.commands.*;
 
+/**
+ * @author kargerb
+ *
+ */
+/**
+ * @author kargerb
+ *
+ */
 class LLVM_Block implements ILLVM_Block {
 	
 	// Funktion, zu der der Block gehoert
@@ -43,11 +52,16 @@ class LLVM_Block implements ILLVM_Block {
 	}
 
 	public void optimizeBlock() {
-		this.removeCommonExpressions();
 	}
-
-	private void removeCommonExpressions() {
+	
+	/**
+	 * Löscht alle doppelten Befehle in einem Block
+	 * Bei Änderungen wird ConstantPropagation aufgerufen
+	 * Doppelte Befehle werden nur überprüft, falls in Whitelist
+	 */
+	public void removeCommonExpressions() {
 		List<String> whitelist = new ArrayList<String>();
+		LinkedList<ILLVM_Command> changed = new LinkedList<ILLVM_Command>();
 		whitelist.add(LLVM_Operation.ADD.toString());
 		whitelist.add(LLVM_Operation.MUL.toString());
 		whitelist.add(LLVM_Operation.DIV.toString());
@@ -67,9 +81,12 @@ class LLVM_Block implements ILLVM_Block {
 						// ersetze aktuelles Kommando mit Bestehendem
 						matched = true;
 						System.out.println("same command at " + command.getTarget().getName() + ", command replaced : " + i.toString());
+						this.function.getRegisterMap().deleteCommand(i);
 						i.setOperation(LLVM_Operation.ADD);
 						i.getOperands().get(0).setName(command.getTarget().getName());
-						i.getOperands().get(1).setName("0");	
+						i.getOperands().get(1).setName("0");
+						this.function.getRegisterMap().addCommand(i);
+						changed.add(i);
 					}
 				}
 				if (!matched){
@@ -86,6 +103,7 @@ class LLVM_Block implements ILLVM_Block {
 				commonex.put(i.getOperation().name(), tmp);
 			}
 		}
+		this.function.constantPropagation(changed);
 	}
 	
 	private boolean matchCommands(ILLVM_Command com1, ILLVM_Command com2){

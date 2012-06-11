@@ -105,8 +105,10 @@ public class LLVM_Function {
 								p.setName(nextUnnamed);
 								// Ersetze in allen Verwendungen durch nextUnnamed
 								LinkedList<ILLVM_Command> uses = this.registerMap.getUses(name);
-								for(ILLVM_Command u : uses) {
-									this.changeOperandName(u, name, nextUnnamed);
+								if (uses != null){
+									for(ILLVM_Command u : uses) {
+										this.changeOperandName(u, name, nextUnnamed);
+									}
 								}
 							}
 							
@@ -322,7 +324,22 @@ public class LLVM_Function {
 		}
 	}
 	
-
+	/*
+	 * *********************************************************
+	 * *********** CommonExpressions ***************************
+	 * *********************************************************
+	 */
+	
+	/**
+	 * Löscht alle doppelten Befehle in einem Block
+	 */
+	public void removeCommonExpressions (){
+		for (ILLVM_Block block : blocks){
+			block.removeCommonExpressions();
+		}
+	}
+	
+	
 	/*
 	 * *********************************************************
 	 * *********** Folding / Propagation ***********************
@@ -477,7 +494,7 @@ public class LLVM_Function {
 		}
 	}
 	
-	private void constantFolding(LinkedList<ILLVM_Command> cmds) {
+	public void constantFolding(LinkedList<ILLVM_Command> cmds) {
 		
 		LinkedList<ILLVM_Command> changed_cmds = new LinkedList<ILLVM_Command>();
 		
@@ -493,7 +510,7 @@ public class LLVM_Function {
 		}
 	}
 	
-	private void constantPropagation(LinkedList<ILLVM_Command> cmds) {
+	public void constantPropagation(LinkedList<ILLVM_Command> cmds) {
 		
 		LinkedList<ILLVM_Command> changed_cmds = new LinkedList<ILLVM_Command>();
 		

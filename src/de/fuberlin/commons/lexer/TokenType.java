@@ -1,4 +1,4 @@
-package lexer;
+package de.fuberlin.commons.lexer;
 
 /**
  * Special token types for the 'Lammbock' language defined in an enum. 

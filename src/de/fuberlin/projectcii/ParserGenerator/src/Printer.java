@@ -238,16 +238,19 @@ public class Printer {
 			
 			// root elements
 			Document doc = docBuilder.newDocument();
-			Element root = doc.createElement("ParseTree");
+			String tagName = node.getSymbol();
+			if (tagName.startsWith("<")){
+				tagName = tagName.substring(1, tagName.length()-1);
+			}
+			Element root = doc.createElement(tagName);
 			doc.appendChild(root);
 			
 			for (ISyntaxTree child:node.getChildren()){
-				String tagName = child.getSymbol();
+				tagName = child.getSymbol();
 				if (tagName.startsWith("<")){
 					tagName = tagName.substring(1, tagName.length()-1);
 				}
 				Element childNode;
-				System.out.println(tagName);
 				if (child.getChildrenCount() == 0){
 					childNode = doc.createElement("LEAF");
 					root.appendChild(childNode);
@@ -287,7 +290,6 @@ public class Printer {
 			if (tagName.startsWith("<")){
 				tagName = tagName.substring(1, tagName.length()-1);
 			}
-			System.out.println(tagName);
 			Element childNode;
 			if (child.getChildrenCount() == 0){
 				childNode = doc.createElement("LEAF");

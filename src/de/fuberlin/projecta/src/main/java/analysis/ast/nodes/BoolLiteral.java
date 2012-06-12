@@ -1,12 +1,14 @@
 package analysis.ast.nodes;
 
-import lombok.AllArgsConstructor;
 import analysis.SymbolTableStack;
 
-@AllArgsConstructor
 public class BoolLiteral extends Statement {
 	
 	private boolean value;
+	
+	public BoolLiteral(boolean value) {
+		this.value = value;
+	}
 	
 	@Override
 	public void buildSymbolTable(SymbolTableStack stack){

@@ -1,12 +1,14 @@
 package analysis.ast.nodes;
 
 import analysis.SymbolTableStack;
-import lombok.AllArgsConstructor;
 
-@AllArgsConstructor
 public class RealLiteral extends Statement {
 	
 	private double value;
+	
+	public RealLiteral(double value){
+		this.value = value;
+	}
 	
 	public void buildSymbolTable(SymbolTableStack tables) {
 

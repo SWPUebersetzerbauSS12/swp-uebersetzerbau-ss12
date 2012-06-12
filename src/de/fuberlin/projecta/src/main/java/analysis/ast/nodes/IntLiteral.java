@@ -1,12 +1,14 @@
 package analysis.ast.nodes;
 
 import analysis.SymbolTableStack;
-import lombok.AllArgsConstructor;
 
-@AllArgsConstructor
 public class IntLiteral extends Statement {
 	
 	private int value;
+	
+	public IntLiteral(int value){
+		this.value = value;
+	}
 	
 	public void buildSymbolTable(SymbolTableStack tables) {
 

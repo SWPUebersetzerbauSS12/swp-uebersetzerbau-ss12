@@ -1,14 +1,16 @@
 package analysis.ast.nodes;
 
 import lexer.BasicTokenType;
-import lombok.AllArgsConstructor;
 import analysis.SymbolTableStack;
 
-@AllArgsConstructor
 public class BasicType extends Type {
 
 	BasicTokenType type;
 
+	public BasicType(BasicTokenType t){
+		this.type = t;
+	}
+	
 	public void buildSymbolTable(SymbolTableStack tables) {
 
 	}

@@ -1,12 +1,14 @@
 package analysis.ast.nodes;
 
-import lombok.AllArgsConstructor;
 import analysis.SymbolTableStack;
 
-@AllArgsConstructor
 public class Id extends AbstractSyntaxTree {
 	
 	private String value;
+	
+	public Id(String value){
+		this.value = value;
+	}
 	
 	public void buildSymbolTable(SymbolTableStack tables) {
 

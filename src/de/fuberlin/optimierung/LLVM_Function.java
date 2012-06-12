@@ -360,6 +360,11 @@ public class LLVM_Function {
 					op2.setName("0");
 						
 					return true;
+				}else if(op1.getType() == LLVM_ParameterType.REGISTER && op2.getType() == LLVM_ParameterType.INTEGER){
+					int iOP2 = Integer.parseInt(op2.getName());
+					if(iOP2 == 0){
+						return true;
+					}
 				}
 			}catch(NumberFormatException e){
 				// no numbers
@@ -370,12 +375,11 @@ public class LLVM_Function {
 			LLVM_Parameter op2 = operands.get(1);
 			
 			try{
-				int iOP1 = Integer.parseInt(op1.getName());
-				int iOP2 = Integer.parseInt(op2.getName());
-				boolean result = false;
-				
-				//if(iOP2 != 0){
-				
+				if(op1.getType() == LLVM_ParameterType.INTEGER && op2.getType() == LLVM_ParameterType.INTEGER){
+					int iOP1 = Integer.parseInt(op1.getName());
+					int iOP2 = Integer.parseInt(op2.getName());
+					boolean result = false;
+					
 					switch(cmd.getOperation()){
 					case ICMP_EQ :
 						result = iOP1 == iOP2;
@@ -413,7 +417,7 @@ public class LLVM_Function {
 					op2.setName("0");
 					
 					return true;
-				//}
+				}
 			}catch(NumberFormatException e){
 				// no numbers
 			}
@@ -423,11 +427,10 @@ public class LLVM_Function {
 			LLVM_Parameter op2 = operands.get(1);
 			
 			try{
-				int iOP1 = Integer.parseInt(op1.getName());
-				int iOP2 = Integer.parseInt(op2.getName());
-				boolean result = false;
-				
-				//if(iOP2 != 0){
+				if(op1.getType() == LLVM_ParameterType.INTEGER && op2.getType() == LLVM_ParameterType.INTEGER){
+					int iOP1 = Integer.parseInt(op1.getName());
+					int iOP2 = Integer.parseInt(op2.getName());
+					boolean result = false;
 					
 					switch(cmd.getOperation()){
 					case AND :
@@ -445,7 +448,7 @@ public class LLVM_Function {
 					op2.setName("0");
 					
 					return true;
-				//}
+				}
 			}catch(NumberFormatException e){
 				// no numbers
 			}

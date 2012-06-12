@@ -721,7 +721,6 @@ public class LLVM_Function {
 	
 	/**
 	 * Entferne Bloecke, die nur unbedingten Sprungbefehl enthalten
-	 * TODO: zu testen
 	 */
 	public void deleteEmptyBlocks() {
 		// Gehe Bloecke durch
@@ -761,6 +760,9 @@ public class LLVM_Function {
 				
 				// Entferne zu loeschenden Block aus Flussgraph
 				actualBlock.deleteBlock();
+				
+				// Entferne Sprungbefehl aus entferntem Block aus Registermap
+				this.registerMap.deleteCommand(actualBlock.getFirstCommand());
 				
 				// Entferne zu loeschenden Block aus this.blocks
 				this.blocks.remove(actualBlock);

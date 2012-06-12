@@ -56,7 +56,7 @@ class LLVM_Optimization implements ILLVM_Optimization {
 			tmp.removeCommonExpressions();
 			
 			// Entferne Bloecke, die nur unbedingten Sprungbefehl enthalten
-			// tmp.deleteEmptyBlocks();
+			tmp.deleteEmptyBlocks();
 			
 			// Optimierte Ausgabe
 			tmp.updateUnnamedLabelNames();
@@ -138,12 +138,12 @@ class LLVM_Optimization implements ILLVM_Optimization {
 	public static void main(String args[]) {
 
 		ILLVM_Optimization optimization = new LLVM_Optimization();
-		String optimizedCode = optimization.optimizeCodeFromFile("input/llvm_test.llvm");
+		//String optimizedCode = optimization.optimizeCodeFromFile("input/llvm_test.llvm");
 		//String optimizedCode = optimization.optimizeCodeFromFile("input/llvm_constant_folding1");
 		//String optimizedCode = optimization.optimizeCodeFromFile("input/llvm_cf_prop_deadb");
 		//String optimizedCode = optimization.optimizeCodeFromFile("input/llvm_lebendigkeit_global1");
 		//String optimizedCode = optimization.optimizeCodeFromFile("input/llvm_dag");
-		//String optimizedCode = optimization.optimizeCodeFromFile("input/llvm_dead_block");
+		String optimizedCode = optimization.optimizeCodeFromFile("input/llvm_dead_block");
 		System.out.println(optimizedCode);
 	}
 

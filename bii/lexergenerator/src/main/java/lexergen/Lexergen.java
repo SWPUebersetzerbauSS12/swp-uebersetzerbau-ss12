@@ -35,6 +35,7 @@ package lexergen;
 import java.io.File;
 
 import bufferedreader.BufferedLexemeReader;
+import bufferedreader.LexemeReaderException;
 
 import dfaprovider.DirectMinimalDfaBuilder;
 import dfaprovider.IndirectMinimalDfaBuilder;
@@ -137,8 +138,8 @@ public class Lexergen implements Lexergenerator {
 		_sourceProgramFile = sourceProgramFile;
 		_builderType = builderType;
 		_errorCorrectionMode = errorCorrectionMode;
-		//TODO @Johannes: correctionMode einbauen.
-		
+		// TODO @Johannes: correctionMode einbauen.
+
 		MinimalDfaBuilder builder;
 		if (builderType == BuilderType.indirectBuilder) {
 			builder = new IndirectMinimalDfaBuilder();
@@ -159,11 +160,11 @@ public class Lexergen implements Lexergenerator {
 		}
 
 		try {
-			_tokenizer = new Tokenizer(new BufferedLexemeReader(sourceProgramFile.getAbsolutePath()),
-					mDfa);
+			_tokenizer = new Tokenizer(new BufferedLexemeReader(
+					sourceProgramFile.getAbsolutePath()), mDfa);
 		} catch (Exception e) {
-			throw new LexergeneratorException("Fehler beim Aufbau des Tokenizers: "
-					+ e.getMessage());
+			throw new LexergeneratorException(
+					"Fehler beim Aufbau des Tokenizers: " + e.getMessage());
 		}
 	}
 
@@ -221,20 +222,25 @@ public class Lexergen implements Lexergenerator {
 	 * 
 	 * @return Das nächste Token.
 	 */
-	public IToken getNextToken()  throws LexergeneratorException{
+	public IToken getNextToken() throws LexergeneratorException {
 		try {
 			return _tokenizer.getNextToken();
 		} catch (Exception e) {
-			throw new LexergeneratorException("Fehler beim Lesen des nächsten Tokens: "
-					+ e.getMessage());
+			throw new LexergeneratorException(
+					"Fehler beim Lesen des nächsten Tokens: " + e.getMessage());
 		}
 	}
 
 	/**
 	 * Setzt die Position im Quellprogramm auf die Startposition zurück.
 	 */
-	public void reset() {
-		//TODO @Daniel: implementieren.
+	public void reset() throws LexergeneratorException {
+		try {
+			_tokenizer.reset();
+		} catch (LexemeReaderException e) {
+			throw new LexergeneratorException("Fehler beim Zurücksetzen: "
+					+ e.getMessage());
+		}
 	}
 
 }

@@ -132,10 +132,10 @@ public class Lexer implements ILexer {
 						"Malformed real value at line: " + this.line
 								+ " near: " + is.getOffset());
 			}
-			final float value = Float.parseFloat(result);
+			final double value = Double.parseDouble(result);
 			return new Token(TokenType.REAL_LITERAL, value, this.line, is.getOffset());
 		}
-		final float value = Float.parseFloat(result);
+		final double value = Double.parseDouble(result);
 		return new Token(TokenType.REAL_LITERAL, value, this.line, is.getOffset());
 	}
 

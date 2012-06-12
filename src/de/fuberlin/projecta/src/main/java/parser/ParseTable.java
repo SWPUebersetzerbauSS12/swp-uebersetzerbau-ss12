@@ -1,13 +1,11 @@
 package parser;
 
 import lexer.TokenType;
-import lombok.Getter;
 
 public class ParseTable {
 
 	private static final char DELIM = '#';
 
-	@Getter
 	private boolean isAmbigous;
 
 	private NonTerminal[] nonTerminals;
@@ -87,6 +85,10 @@ public class ParseTable {
 			}
 		}
 		return null;
+	}
+
+	public boolean isAmbigous() {
+		return isAmbigous;
 	}
 
 }

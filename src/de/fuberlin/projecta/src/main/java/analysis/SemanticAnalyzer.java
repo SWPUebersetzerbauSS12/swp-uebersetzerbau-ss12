@@ -2,7 +2,6 @@ package analysis;
 
 import lexer.BasicTokenType;
 import lexer.TokenType;
-import lombok.Getter;
 import parser.ISyntaxTree;
 import parser.NonTerminal;
 import parser.Parser;
@@ -42,9 +41,9 @@ public class SemanticAnalyzer {
 	private static final String LAttribute = "LAttribute";
 
 	private ISyntaxTree parseTree;
-	@Getter
+	
 	private SymbolTableStack tables;
-	@Getter
+	
 	private AbstractSyntaxTree AST;
 
 	public SemanticAnalyzer(ISyntaxTree tree) {
@@ -420,5 +419,13 @@ public class SemanticAnalyzer {
 	 */
 	private void parseTreeForRemoval() {
 		// TODO: think about how to smartly encode disallowed trees
+	}
+
+	public SymbolTableStack getTables() {
+		return tables;
+	}
+
+	public AbstractSyntaxTree getAST() {
+		return AST;
 	}
 }

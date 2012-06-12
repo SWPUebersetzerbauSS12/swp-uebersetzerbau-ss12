@@ -1,13 +1,11 @@
 package analysis.ast.nodes;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import analysis.SymbolTableStack;
 
 @AllArgsConstructor
 public class BoolLiteral extends Statement {
 	
-	@Getter
 	private boolean value;
 	
 	@Override
@@ -23,5 +21,9 @@ public class BoolLiteral extends Statement {
 	@Override
 	public String genCode() {
 		return "i8 " + ((this.value)?"1":"0");
+	}
+	
+	public boolean getValue(){
+		return this.value;
 	}
 }

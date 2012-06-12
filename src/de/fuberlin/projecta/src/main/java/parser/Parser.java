@@ -6,8 +6,6 @@ import lexer.ILexer;
 import lexer.IToken;
 import lexer.SyntaxErrorException;
 import lexer.TokenType;
-import lombok.Getter;
-import lombok.Setter;
 
 public class Parser implements IParser {
 
@@ -17,11 +15,8 @@ public class Parser implements IParser {
 	private ParseTable table;
 	private Stack<Symbol> stack = new Stack<Symbol>();
 
-	@Getter
-	@Setter
 	private boolean debugEnabled = false;
 
-	@Getter
 	private ISyntaxTree parseTree;
 
 	public Parser() {
@@ -771,6 +766,18 @@ public class Parser implements IParser {
 		table.setEntry(NonTerminal.args_, TokenType.RPAREN, "args_ ::= EPSILON");
 		table.setEntry(NonTerminal.args_, TokenType.OP_COMMA,
 				"args_ ::= OP_COMMA args");
+	}
+
+	public boolean isDebugEnabled() {
+		return debugEnabled;
+	}
+
+	public void setDebugEnabled(boolean debugEnabled) {
+		this.debugEnabled = debugEnabled;
+	}
+
+	public ISyntaxTree getParseTree() {
+		return parseTree;
 	}
 
 }

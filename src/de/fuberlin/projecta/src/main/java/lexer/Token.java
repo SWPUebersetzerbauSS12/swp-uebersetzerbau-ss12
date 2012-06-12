@@ -2,22 +2,17 @@ package lexer;
 
 import java.util.HashMap;
 
-import lombok.Getter;
-
 public class Token implements IToken {
 
 	/**
 	 * Get the real type of this token (used internally only)
 	 */
-	@Getter
 	private TokenType internalType;
 
-	@Getter
 	private Object attribute;
 
-	@Getter
 	private int lineNumber;
-	@Getter
+	
 	private int offset;
 
 	private HashMap<TokenType, String> mapping = new HashMap<TokenType, String>();
@@ -87,6 +82,26 @@ public class Token implements IToken {
 		mapping.put(TokenType.LBRACE, "{");
 		mapping.put(TokenType.RBRACE, "}");
 		mapping.put(TokenType.EOF, "eof");
+	}
+
+	public TokenType getInternalType() {
+		return internalType;
+	}
+
+	public Object getAttribute() {
+		return attribute;
+	}
+
+	public int getLineNumber() {
+		return lineNumber;
+	}
+
+	public int getOffset() {
+		return offset;
+	}
+
+	public HashMap<TokenType, String> getMapping() {
+		return mapping;
 	}
 
 }

@@ -5,12 +5,14 @@ import java.util.List;
 
 import analysis.ast.nodes.Id;
 import analysis.ast.nodes.Type;
-import lombok.Getter;
 
 public class SymbolTable {
 
-	@Getter
 	private List<EntryType> entries;
+
+	public List<EntryType> getEntries() {
+		return entries;
+	}
 
 	public SymbolTable() {
 		entries = new ArrayList<EntryType>();

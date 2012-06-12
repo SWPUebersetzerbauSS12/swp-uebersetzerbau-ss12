@@ -2,12 +2,10 @@ package analysis.ast.nodes;
 
 import analysis.SymbolTableStack;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 @AllArgsConstructor
 public class IntLiteral extends Statement {
 	
-	@Getter
 	private int value;
 	
 	public void buildSymbolTable(SymbolTableStack tables) {
@@ -22,5 +20,9 @@ public class IntLiteral extends Statement {
 	@Override
 	public String genCode() {
 		return "i32 " + this.value;
+	}
+	
+	public int getValue(){
+		return this.value;
 	}
 }

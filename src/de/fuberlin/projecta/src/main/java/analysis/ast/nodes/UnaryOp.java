@@ -1,13 +1,11 @@
 package analysis.ast.nodes;
 
 import lexer.TokenType;
-import lombok.Getter;
 import analysis.SymbolTableStack;
 
 
 public class UnaryOp extends AbstractSyntaxTree {
 	
-	@Getter
 	TokenType op;
 	
 	public UnaryOp(TokenType op){
@@ -29,5 +27,9 @@ public class UnaryOp extends AbstractSyntaxTree {
 	public String genCode() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public TokenType getOp() {
+		return this.op;
 	}
 }

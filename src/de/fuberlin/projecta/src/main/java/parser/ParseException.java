@@ -1,13 +1,10 @@
 package parser;
 
 import lexer.IToken;
-import lombok.Getter;
 
 public class ParseException extends RuntimeException {
 
-	@Getter
 	private IToken token;
-	@Getter
 	private String details;
 
 	private static final long serialVersionUID = 1976621175796612561L;
@@ -48,6 +45,14 @@ public class ParseException extends RuntimeException {
 		if (token != null)
 			return token.getText();
 		return "";
+	}
+
+	public IToken getToken() {
+		return token;
+	}
+
+	public String getDetails() {
+		return details;
 	}
 
 }

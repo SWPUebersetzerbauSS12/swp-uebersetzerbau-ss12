@@ -2,13 +2,10 @@ package lexer.io;
 
 import java.io.IOException;
 
-import lombok.Getter;
 import utils.IOUtils;
 
 public class FileCharStream implements ICharStream {
 
-	@Getter
-	private String path;
 	private StringCharStream stream = null;
 
 	/**
@@ -21,7 +18,6 @@ public class FileCharStream implements ICharStream {
 	 *            Path to file
 	 */
 	public FileCharStream(String path) {
-		this.path = path;
 
 		String data;
 		try {

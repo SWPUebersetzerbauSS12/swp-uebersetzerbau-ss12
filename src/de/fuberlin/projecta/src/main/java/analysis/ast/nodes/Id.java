@@ -1,13 +1,11 @@
 package analysis.ast.nodes;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import analysis.SymbolTableStack;
 
 @AllArgsConstructor
 public class Id extends AbstractSyntaxTree {
 	
-	@Getter
 	private String value;
 	
 	public void buildSymbolTable(SymbolTableStack tables) {
@@ -23,5 +21,9 @@ public class Id extends AbstractSyntaxTree {
 	@Override
 	public String genCode() {
 		return value;
+	}
+	
+	public String getValue(){
+		return this.value;
 	}
 }

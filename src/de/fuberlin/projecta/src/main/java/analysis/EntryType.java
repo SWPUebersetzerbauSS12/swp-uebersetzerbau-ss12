@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import lombok.Getter;
 import analysis.ast.nodes.Id;
 import analysis.ast.nodes.Type;
 
@@ -28,17 +27,14 @@ public class EntryType {
 		params = new ArrayList<EntryType>();
 	}
 
-	@Getter
 	private String id;
 
-	@Getter
 	private Type type;
 
 	/**
 	 * This may be an empty list of parameters (for declaring functions with
 	 * same name and return type, but different arguments)
 	 */
-	@Getter
 	private List<EntryType> params;
 
 	@Override
@@ -71,5 +67,17 @@ public class EntryType {
 		}
 		ret += ")";
 		return ret;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public List<EntryType> getParams() {
+		return params;
 	}
 }

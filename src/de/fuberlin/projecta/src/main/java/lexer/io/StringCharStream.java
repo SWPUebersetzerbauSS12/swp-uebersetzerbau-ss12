@@ -1,13 +1,9 @@
 package lexer.io;
 
-import lombok.Getter;
-
 public class StringCharStream implements ICharStream {
 
-	@Getter
 	private String data;
 
-	@Getter
 	private int offset;
 
 	public StringCharStream(String data) {
@@ -36,6 +32,14 @@ public class StringCharStream implements ICharStream {
 
 	public boolean isEmpty() {
 		return data.length() == 0;
+	}
+
+	public String getData() {
+		return data;
+	}
+
+	public int getOffset() {
+		return offset;
 	}
 
 }

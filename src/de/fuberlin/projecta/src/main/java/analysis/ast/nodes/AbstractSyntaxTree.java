@@ -1,6 +1,5 @@
 package analysis.ast.nodes;
 
-import lombok.Getter;
 import parser.ISyntaxTree;
 import parser.Symbol;
 import parser.Tree;
@@ -12,8 +11,11 @@ public abstract class AbstractSyntaxTree extends Tree {
 	/**
 	 * This is the symbolTable of this node. Caution: it may be null!
 	 */
-	@Getter
 	SymbolTable table;
+
+	public SymbolTable getTable() {
+		return table;
+	}
 
 	public SymbolTable getHigherTable() {
 		while (getParent() != null) {
@@ -41,10 +43,10 @@ public abstract class AbstractSyntaxTree extends Tree {
 	 * Code generation
 	 **/
 
-	public String genCode(){
+	public String genCode() {
 		String out = "";
-		for (int i=0; i < getChildrenCount();i++){
-			out += ((AbstractSyntaxTree)getChild(i)).genCode() + "\n";
+		for (int i = 0; i < getChildrenCount(); i++) {
+			out += ((AbstractSyntaxTree) getChild(i)).genCode() + "\n";
 		}
 		return out;
 	}

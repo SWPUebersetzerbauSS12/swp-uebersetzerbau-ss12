@@ -68,5 +68,6 @@ public interface Lexergenerator {
 	/**
 	 * Setzt die Position im Quellprogramm auf die Startposition zurück.
 	 */
-	void reset();
+	void reset() throws LexergeneratorException;
+
 }

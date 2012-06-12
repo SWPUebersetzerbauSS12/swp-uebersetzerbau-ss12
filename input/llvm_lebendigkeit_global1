@@ -1,0 +1,5 @@
+define i32 @main() nounwind readnone {
+	%a = alloca i32, align 4
+	store i32 1, i32* %a, align 4
+	ret i32 0
+}

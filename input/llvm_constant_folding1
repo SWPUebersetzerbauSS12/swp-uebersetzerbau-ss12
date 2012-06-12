@@ -1,0 +1,4 @@
+define i32 @main() nounwind readnone {
+	%a = add nsw i32 5, 5
+	ret i32 %a
+}

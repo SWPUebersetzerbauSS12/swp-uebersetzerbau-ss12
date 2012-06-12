@@ -1,0 +1,23 @@
+@.str = private unnamed_addr constant [3 x i8] c"%i\00", align 1
+
+define i32 @main() nounwind readnone {
+	%a = add nsw i32 5, 0
+	%q = icmp slt i32 %a, 10
+;	%q = add nsw i1 1, 0
+	br i1 %q, label %block2, label %block3
+
+block2:
+	%1 = add nsw i32 1, 0
+	%b = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([3 x i8]* @.str, i32 0, i32 0), i32 %1)
+	br label %block4
+
+block3:
+	%2 = add nsw i32 2, 0
+	%c = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([3 x i8]* @.str, i32 0, i32 0), i32 %2)
+	br label %block4
+
+block4:
+	ret i32 0
+}
+
+declare i32 @printf(i8*, ...)

@@ -10,6 +10,13 @@ public interface IToken {
 	String getType();
 
 	/**
+	 * Return the textual representation of this token
+	 *
+	 * @return Textual representation
+	 */
+	String getText();
+
+	/**
 	 * Get the Token attribute value
 	 * 
 	 * E.g. for a Token of type BOOL this should return an instance of the
@@ -42,4 +49,5 @@ public interface IToken {
 	 * @return End offset
 	 */
 	int getLineNumber();
+
 }

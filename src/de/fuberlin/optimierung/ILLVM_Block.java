@@ -29,6 +29,8 @@ public interface ILLVM_Block {
 	public void removeFromPreviousBlocks(ILLVM_Block block);
 	public void removeFromNextBlocks(ILLVM_Block block);
 	
+	public void removeCommonExpressions ();
+	
 	public boolean isEmpty();
 	public boolean hasPreviousBlocks();
 	

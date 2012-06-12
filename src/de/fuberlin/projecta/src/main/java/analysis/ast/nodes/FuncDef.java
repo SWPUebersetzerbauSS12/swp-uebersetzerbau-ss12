@@ -1,5 +1,6 @@
 package analysis.ast.nodes;
 
+import lexer.BasicTokenType;
 import analysis.EntryType;
 import analysis.SymbolTable;
 import analysis.SymbolTableStack;
@@ -12,6 +13,26 @@ public class FuncDef extends AbstractSyntaxTree {
 			if (!((AbstractSyntaxTree) this.getChild(i)).checkSemantics()) {
 				return false;
 			}
+			// Last child of function definition is always a block
+			int last = this.getChildrenCount() - 1;
+			Block block = (Block) this.getChild(last);
+			int blockChildrenCount = block.getChildrenCount();
+			if (blockChildrenCount > 0) {
+				AbstractSyntaxTree lastStatement = (AbstractSyntaxTree) block.getChild(blockChildrenCount - 1);
+				if (!(lastStatement instanceof Return)) {
+					// We don't have return statement, so just insert one :-)
+					Return r = new Return();
+
+					if (((BasicType) this.getChild(0)).getType() != BasicTokenType.VOID){
+						//TODO: Do this only if last statement is no loop
+						//TODO: If loop, look for return in loop...
+						block.removeChild(blockChildrenCount - 1);
+						r.addChild(lastStatement);
+			        }
+			        block.addChild(r);
+			     }
+			}
+
 		}
 		return true;
 	}

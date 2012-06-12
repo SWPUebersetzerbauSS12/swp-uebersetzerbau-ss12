@@ -8,8 +8,8 @@ import lexer.io.FileCharStream;
 
 import org.junit.Test;
 
-import parser.Parser;
 import parser.ParseException;
+import parser.Parser;
 
 
 public class ParserTest {
@@ -23,9 +23,9 @@ public class ParserTest {
 		assertTrue(sourceFile.canRead());
 
 		Lexer lexer = new Lexer(new FileCharStream(path));
-		Parser parser = new Parser(lexer);
+		Parser parser = new Parser();
 		try {
-			parser.parse();
+			parser.parse(lexer, "");
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}

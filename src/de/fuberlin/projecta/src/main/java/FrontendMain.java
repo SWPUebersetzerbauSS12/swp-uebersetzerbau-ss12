@@ -37,9 +37,9 @@ public class FrontendMain {
 
 	static void run(ICharStream stream) {
 		ILexer lexer = new Lexer(stream);
-		Parser parser = new Parser(lexer);
+		Parser parser = new Parser();
 		try {
-			parser.parse();
+			parser.parse(lexer, "");
 		} catch (ParseException e) {
 			e.printStackTrace();
 			System.err.println("Parser failed.");

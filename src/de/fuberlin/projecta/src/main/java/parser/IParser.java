@@ -1,5 +1,7 @@
 package parser;
 
+import lexer.ILexer;
+
 
 public interface IParser {
 
@@ -8,6 +10,6 @@ public interface IParser {
 	 *
 	 * @throws RuntimeException
 	 */
-	public ISyntaxTree parse();
+	public ISyntaxTree parse(ILexer lexer, String grammar);
 
 }

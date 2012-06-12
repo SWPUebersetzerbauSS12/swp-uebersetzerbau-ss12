@@ -2,6 +2,8 @@ package parser;
 
 import java.util.List;
 
+import lexer.IToken;
+
 /**
  * Using composite pattern as tree data-structure. Leafs are indicated by a
  * childCount of 0.
@@ -58,6 +60,11 @@ public interface ISyntaxTree {
 	 * @return True if add was successful, False otherwise.
 	 */
 	public boolean addAttribute(String name);
+
+	/**
+	 * @return Token iff node is a leaf, else null
+	 */
+	public IToken getToken();
 
 	/**
 	 * 

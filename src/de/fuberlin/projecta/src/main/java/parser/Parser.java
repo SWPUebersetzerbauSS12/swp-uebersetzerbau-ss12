@@ -24,9 +24,7 @@ public class Parser implements IParser {
 	@Getter
 	private ISyntaxTree parseTree;
 
-	public Parser(ILexer lexer) {
-		this.lexer = lexer;
-
+	public Parser() {
 		table = new ParseTable(NonTerminal.values(), TokenType.values());
 		try {
 			fillParseTable();
@@ -47,7 +45,9 @@ public class Parser implements IParser {
 	 * @see parser.IParser#parse()
 	 */
 	@Override
-	public ISyntaxTree parse() throws ParseException {
+	public ISyntaxTree parse(ILexer lexer, String grammar) throws ParseException {
+		this.lexer = lexer;
+
 		if (table.isAmbigous()) {
 			throw new ParseException(
 					"Parsing table is ambigous! Won't start syntax analysis", null);

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import lexer.IToken;
 import lombok.Getter;
 import utils.StringUtils;
 import analysis.ast.nodes.AbstractSyntaxTree;
@@ -18,6 +19,9 @@ public class Tree implements ISyntaxTree {
 
 	@Getter
 	private final Symbol symbol;
+
+	@Getter
+	private IToken token; // TODO: USE THIS!
 
 	private final ArrayList<ISyntaxTree> children = new ArrayList<ISyntaxTree>();
 	private HashMap<String, Object> attributes;

@@ -12,9 +12,9 @@ public class SemanticAnalysisTest {
 
 	public static void analyze(String code) {
 		Lexer lexer = new Lexer(new StringCharStream(code));
-		Parser parser = new Parser(lexer);
+		Parser parser = new Parser();
 		try {
-			parser.parse();
+			parser.parse(lexer, "");
 		} catch (ParseException e) {
 			e.printStackTrace();
 			assertTrue(false);

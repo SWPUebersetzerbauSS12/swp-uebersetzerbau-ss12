@@ -35,9 +35,9 @@ public class ParserMain {
 
 	static void parse(ICharStream stream) {
 		ILexer lexer = new Lexer(stream);
-		Parser parser = new Parser(lexer);
+		Parser parser = new Parser();
 		try {
-			parser.parse();
+			parser.parse(lexer, "");
 		} catch (ParseException e) {
 			System.out.println(e.getMessage() +
 					" (error at line: " + e.getLineNumber() +

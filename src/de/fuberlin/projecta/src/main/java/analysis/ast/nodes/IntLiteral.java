@@ -21,7 +21,6 @@ public class IntLiteral extends Statement {
 
 	@Override
 	public String genCode() {
-		// TODO Auto-generated method stub
-		return null;
+		return "i32 " + this.value;
 	}
 }

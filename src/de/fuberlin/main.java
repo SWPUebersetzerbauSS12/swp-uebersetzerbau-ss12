@@ -1,3 +1,5 @@
+package de.fu-berlin;
+
 import de.fu-berlin.optimierung;
 import de.fu-berlin.optimierung.*;
 

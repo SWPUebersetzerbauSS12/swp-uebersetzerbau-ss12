@@ -731,7 +731,7 @@ public class LLVM_Function {
 					getOperation()==LLVM_Operation.BR) {
 				// Block kann geloescht werden
 				ILLVM_Block targetBlock = actualBlock.getNextBlocks().getFirst();
-				String targetBlockName = targetBlock.getLabel();
+				String targetBlockLabel = targetBlock.getLabel();
 				String actualBlockLabel = actualBlock.getLabel();
 				
 				// Gehe Vorgaengerbloecke durch
@@ -740,14 +740,23 @@ public class LLVM_Function {
 					// Dieser muss angepasst werden
 					ILLVM_Command branchCommand = previousBlock.getLastCommand();
 					
-					// Sprung soll zu targetBlock gehen, statt zu actualBlock
+					// Befehl aus Registermap austragen
+					this.registerMap.deleteCommand(branchCommand);
 					
-					// Registermap uses anpassen
+					// Sprung soll zu targetBlock gehen, statt zu actualBlock
+					LLVM_Parameter p = branchCommand.getOperands().getFirst();
+					p.setName(targetBlockLabel);
+					
+					// Setze Registermapeintrag neu
+					this.registerMap.addCommand(branchCommand);
 					
 					// Passe Flussgraph an:
 					// previousBlock hat actualBlock nicht mehr als Nachfolger,
 					// sondern targetBlock
 					// targetBlock hat previousBlock als Vorgaenger
+					targetBlock.appendToPreviousBlocks(previousBlock);
+					previousBlock.appendToNextBlocks(targetBlock);
+					previousBlock.removeFromNextBlocks(actualBlock);
 				}
 				
 				// Entferne zu loeschenden Block aus Flussgraph

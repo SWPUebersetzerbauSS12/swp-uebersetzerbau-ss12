@@ -132,6 +132,7 @@ public class SyntaxTree implements ISyntaxTree {
 	 */
 	@Override
 	public void printTree() {
+		Printer.parsetreeToXML(this);
 		System.out.println("-------");
 		printChild(this,0,true);
 	}
@@ -187,7 +188,6 @@ public class SyntaxTree implements ISyntaxTree {
 	 * @author Patrick Schlott
 	 *
 	 */
-	
 	public void CompressSyntaxTree(){
 		
 		boolean newChilds = true;
@@ -211,5 +211,5 @@ public class SyntaxTree implements ISyntaxTree {
 			((SyntaxTree) child).CompressSyntaxTree();
 		}
 	}
-
+	
 }

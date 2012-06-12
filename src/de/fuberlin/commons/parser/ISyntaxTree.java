@@ -1,6 +1,8 @@
-package parser;
+package de.fuberlin.commons.parser;
 
 import java.util.List;
+
+import de.fuberlin.commons.lexer.IToken;
 
 /**
  * Using composite pattern as tree data-structure. Leafs are indicated by a
@@ -14,8 +16,9 @@ public interface ISyntaxTree {
 
 	public void addChild(ISyntaxTree tree);
 
-	public Symbol getSymbol();
-	
+	// TODO: Needs to be resolved
+	//public Symbol getSymbol();
+
 	public ISyntaxTree removeChild(int i);
 
 	/**
@@ -38,7 +41,7 @@ public interface ISyntaxTree {
 
 	/**
 	 * Changes the value of the attribute
-	 * 
+	 *
 	 * @param name
 	 *            the attribute's name
 	 * @param value
@@ -52,7 +55,7 @@ public interface ISyntaxTree {
 	/**
 	 * Adds a new attribute to the nodes attribute collection, if this name is
 	 * not already inserted.
-	 * 
+	 *
 	 * @param name
 	 *            the attribute's name to insert.
 	 * @return True if add was successful, False otherwise.
@@ -60,9 +63,14 @@ public interface ISyntaxTree {
 	public boolean addAttribute(String name);
 
 	/**
-	 * 
+	 * @return Token iff node is a leaf, else null
+	 */
+	public IToken getToken();
+
+	/**
+	 *
 	 * @return a list of all children to this node (might be empty)
-	 * 
+	 *
 	 */
 	public List<ISyntaxTree> getChildren();
 

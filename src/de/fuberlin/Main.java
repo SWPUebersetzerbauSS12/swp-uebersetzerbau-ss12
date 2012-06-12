@@ -1,13 +1,11 @@
-package de.fu-berlin;
+package de.fuberlin;
 
-import de.fu-berlin.optimierung;
-import de.fu-berlin.optimierung.*;
-
+import de.fuberlin.optimierung.*;
 
 
-class main {
+class Main {
 	
-	public static void main(String[] args) {
+	public static void main(String args[]) {
 
 		System.out.println("Hier die Code-Schnipsel einfuegen!");
 

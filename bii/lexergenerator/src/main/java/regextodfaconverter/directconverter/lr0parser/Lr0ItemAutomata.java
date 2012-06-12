@@ -47,11 +47,13 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 import regextodfaconverter.directconverter.EventHandler;
 import regextodfaconverter.directconverter.lr0parser.grammar.ContextFreeGrammar;
+import regextodfaconverter.directconverter.lr0parser.grammar.EmptyString;
 import regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
 import regextodfaconverter.directconverter.lr0parser.grammar.ProductionMap;
 import regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
 import regextodfaconverter.directconverter.lr0parser.grammar.RuleElement;
 import regextodfaconverter.directconverter.lr0parser.grammar.RuleElementSequenz;
+import regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
 import regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
 import regextodfaconverter.directconverter.lr0parser.grammar.Terminator;
 import regextodfaconverter.directconverter.lr0parser.itemset.Closure;
@@ -71,7 +73,7 @@ import utils.Test;
  *
  * @param <Element> der Typ eines Elementes der zu verarbeitenden Eingabe.
  */
-public class Lr0ItemAutomata<Element extends Comparable<Element>> implements ItemAutomata<Element>, ItemAutomataInterior<Element> {
+public class Lr0ItemAutomata<Element extends Symbol> implements ItemAutomata<Element>, ItemAutomataInterior<Element> {
 
 	private HashSet<Closure> closures = new HashSet<Closure>();
 	private Closure currentClosure = null;
@@ -266,11 +268,12 @@ public class Lr0ItemAutomata<Element extends Comparable<Element>> implements Ite
 				currentClosure = closureStack.peek();
 				
 				// we peek the next input element 
-				Terminal terminalToHandle = inputQueue.isEmpty() ? new Terminator() : new Terminal( inputQueue.peek());
-				
+				Terminal terminalToHandle = inputQueue.isEmpty() ? new Terminator() : new Terminal( inputQueue.peek());				
 				handler = parserTable.get( currentClosure).get( terminalToHandle);
+					
 				handler.handle( this);
-			  if ( handler instanceof ReduceAction) {
+			  
+				if ( handler instanceof ReduceAction) {
 			  	currentClosure = closureStack.peek();
 			  	RuleElement nonterminalToHandle = symbolStack.peek();
 			  	// process the goto

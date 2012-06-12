@@ -37,6 +37,7 @@ import regextodfaconverter.directconverter.lr0parser.ReduceEventHandler;
 import regextodfaconverter.directconverter.lr0parser.ShiftEventHandler;
 import regextodfaconverter.directconverter.lr0parser.grammar.ContextFreeGrammar;
 import regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
+import regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
 import regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
 import regextodfaconverter.directconverter.syntaxtree.node.InnerNode;
 import regextodfaconverter.directconverter.syntaxtree.node.Leaf;
@@ -50,19 +51,19 @@ import utils.Test;
  * @author Johannes Dahlke
  *
  */
-public class AbstractSyntaxTree extends ConcreteSyntaxTree {
+public class AbstractSyntaxTree<ExpressionElement extends Symbol> extends ConcreteSyntaxTree<ExpressionElement>  {
 	
 	private SyntaxDirectedDefinition sddTable;
 	
 	private AttributesMap rootAttributesMap;
 
-	public AbstractSyntaxTree( ContextFreeGrammar grammar, SyntaxDirectedDefinition sddTable, String expression)
+	public AbstractSyntaxTree( ContextFreeGrammar grammar, SyntaxDirectedDefinition sddTable, ExpressionElement[] expression)
 			throws Exception {
     this( grammar, sddTable, expression, null);
 	}
 	
 	
-	public AbstractSyntaxTree( ContextFreeGrammar grammar, final SyntaxDirectedDefinition sddTable, String expression, NewNodeEventHandler newNodeEventHandler)
+	public AbstractSyntaxTree( ContextFreeGrammar grammar, final SyntaxDirectedDefinition sddTable, ExpressionElement[] expression, NewNodeEventHandler newNodeEventHandler)
 			throws Exception {
     super( grammar, expression, newNodeEventHandler, false);
 		this.sddTable = sddTable;

@@ -34,6 +34,8 @@ package tokenmatcher;
 
 import tokenmatcher.attributes.Attribute;
 import tokenmatcher.errorhandler.ErrorCorrector;
+import tokenmatcher.errorhandler.ErrorCorrectorException;
+import utils.Notification;
 import bufferedreader.LexemeReader;
 import bufferedreader.LexemeReaderException;
 import bufferedreader.SpecialChars;
@@ -105,12 +107,21 @@ public class Tokenizer implements LexerToParserInterface {
 				continue;
 			}
 
+			// if we read EOF and there is no lexem left
+			if ( SpecialChars.isEOF( currentChar) 
+					&& currentLexem.isEmpty()) {
+				// then skip
+				eofReached = true;
+				break;
+			}
+		  
 			
 			if ( dfa.canChangeStateByElement( currentChar)) {
 				currentLexem += currentChar;
 				dfa.changeStateByElement( currentChar);
-			} else if ( dfa.getCurrentState().isFiniteState()) {
-
+			} else if ( !currentLexem.isEmpty() 
+					&& dfa.getCurrentState().isFiniteState()) {
+				
 				StatePayload payload = dfa.getCurrentState().getPayload();
 
 				// Lesezeiger zurücksetzen um das, was zuviel gelesen wurde.
@@ -162,11 +173,22 @@ public class Tokenizer implements LexerToParserInterface {
 				} else
 				  return recognisedToken;
 				
-			} else if ( SpecialChars.isEOF( currentChar)) {
-				eofReached = true;
-		  } else if ( readMode == ReadMode.READ_NORMAL){
-		  	//errorCorrector.handleMismatch( currentChar, lexemeReader, dfa, currentLine, currentPositionInLine);	
-		  System.err.println( currentChar);
+			} else if ( readMode == ReadMode.READ_NORMAL){
+				// error handling
+				String mismatchMessage = "";
+				try {
+				  mismatchMessage = errorCorrector.handleMismatch( currentChar, lexemeReader, dfa, currentLine, currentPositionInLine);
+				} catch ( ErrorCorrectorException e) {
+				  // then skip
+					Notification.printMismatchMessage( String.format(
+							"Cannot resolve lexem '%s'. Abort lexing.", currentLexem));
+					eofReached = true;
+					break;
+				}
+				// Otherwise, the error corrector has found a solution that solve the problem. 
+				// But first, we let the user know about the conflict by throwing an exception
+				Notification.printMismatchMessage( mismatchMessage);
+				throw new LexemIdentificationException( mismatchMessage);
 		  } else {
 		  	// ignore, cause we scan a comment at the moment
 		  }

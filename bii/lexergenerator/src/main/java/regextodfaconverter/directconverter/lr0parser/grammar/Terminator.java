@@ -44,7 +44,7 @@ public class Terminator extends Terminal  {
 	
 	
 	public Terminator() {
-		super('$');
+		super( new Symbol( '$'));
 	}
 	
 	@Override

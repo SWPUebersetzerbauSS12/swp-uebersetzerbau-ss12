@@ -34,6 +34,7 @@ package regextodfaconverter.directconverter.lr0parser;
 
 
 import regextodfaconverter.directconverter.EventHandler;
+import regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
 import regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
 import regextodfaconverter.directconverter.lr0parser.itemset.Closure;
 
@@ -43,7 +44,7 @@ import regextodfaconverter.directconverter.lr0parser.itemset.Closure;
  *
  * @param <Element>
  */
-public class ShiftAction<Element extends Comparable<Element>> extends Action<Element> implements EventHandler {
+public class ShiftAction<Element extends Symbol> extends Action<Element> implements EventHandler {
 
 	private Closure toClosure;
 	private Terminal<Element> terminalToHandle;

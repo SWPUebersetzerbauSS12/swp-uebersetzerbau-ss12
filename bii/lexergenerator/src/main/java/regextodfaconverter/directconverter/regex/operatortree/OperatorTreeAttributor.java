@@ -32,11 +32,13 @@
 
 package regextodfaconverter.directconverter.regex.operatortree;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
 import regextodfaconverter.directconverter.regex.RegexSpecialChars;
 import regextodfaconverter.directconverter.syntaxtree.SyntaxTreeException;
 import regextodfaconverter.directconverter.syntaxtree.node.TreeNode;
@@ -53,7 +55,7 @@ import utils.Test;
  * @author Johannes Dahlke
  *
  */
-public class OperatorTreeAttributor {
+public class OperatorTreeAttributor<StatePayloadType extends Serializable>  {
 	
 	private HashMap<TreeNode,TreeNodeCollection> followPositions = new HashMap<TreeNode, TreeNodeCollection>();
 	private HashMap<TreeNode,TreeNodeCollection> lastPositions = new HashMap<TreeNode, TreeNodeCollection>();
@@ -65,7 +67,8 @@ public class OperatorTreeAttributor {
 	private boolean calculateNullableForNode( TreeNode node) {
 		if ( node instanceof TerminalNode) {
 		  // \epsilon-Knoten sind per definition true
-			if ( ((TerminalNode)node).getValue() == RegexSpecialChars.EMPTY_STRING)
+			RegularExpressionElement<StatePayloadType> regexElement = (RegularExpressionElement<StatePayloadType>)((TerminalNode)node).getValue();
+			if ( regexElement.getValue() == RegexSpecialChars.EMPTY_STRING)
 				return true;
 			else
 				// Terminale != \epsilon sind nicht nullable
@@ -89,7 +92,8 @@ public class OperatorTreeAttributor {
 	private TreeNodeCollection calculateFirstposForNode( TreeNode node) {
 		// \epsilon-Knoten liefern per definition die leere Menge
 		if ( node instanceof TerminalNode) {
-			if ( ( (TerminalNode) node).getValue() == RegexSpecialChars.EMPTY_STRING)
+			RegularExpressionElement<StatePayloadType>  regexElement = (RegularExpressionElement<StatePayloadType>)((TerminalNode)node).getValue();
+			if ( regexElement.getValue() == RegexSpecialChars.EMPTY_STRING)
 				return new TreeNodeSet();
 			else { // Terminale != \epsilon liefern das aktuelle Element
 				TreeNodeCollection result = new TreeNodeSet();
@@ -123,7 +127,8 @@ public class OperatorTreeAttributor {
 	private TreeNodeCollection calculateLastposForNode( TreeNode node) {
 		// \epsilon-Knoten liefern per definition die leere Menge
 		if ( node instanceof TerminalNode) {
-			if ( ( (TerminalNode) node).getValue() == RegexSpecialChars.EMPTY_STRING)
+			RegularExpressionElement<StatePayloadType> regexElement = (RegularExpressionElement<StatePayloadType>)((TerminalNode)node).getValue();
+			if ( regexElement.getValue() == RegexSpecialChars.EMPTY_STRING)
 				return new TreeNodeSet();
 			else { // Terminale != \epsilon liefern das aktuelle Element
 				TreeNodeCollection result = new TreeNodeSet();
@@ -135,7 +140,7 @@ public class OperatorTreeAttributor {
 			switch ( operatorNode.getOperatorType()) {
 				case ALTERNATIVE: {// Vereinigung der lastpos-Mengen
 					TreeNodeCollection result = lastpos( operatorNode.getLeftChildNode());
-					result = Sets.unionCollections( result, firstpos( operatorNode.getRightChildNode()));
+					result = Sets.unionCollections( result, lastpos( operatorNode.getRightChildNode()));
 					return result;
 				}
 				case CONCATENATION:
@@ -147,7 +152,7 @@ public class OperatorTreeAttributor {
 						return lastpos( operatorNode.getRightChildNode());
 					}
 				default: // REPETITION
-					return firstpos( operatorNode.getLeftChildNode());
+					return lastpos( operatorNode.getLeftChildNode());
 			}
 		}
 	}

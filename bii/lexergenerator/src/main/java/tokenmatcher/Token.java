@@ -119,4 +119,9 @@ public class Token implements IToken {
 	public boolean isEofToken() {
 		return type.equals( "EOF"); 
 	}	
+	
+	@Override
+		public String toString() {
+			return "<" + getType() + ", " + getAttribute().toString() + ">";
+		}
 }

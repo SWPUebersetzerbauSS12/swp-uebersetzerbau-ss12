@@ -41,12 +41,12 @@ import utils.Test;
  *
  * @param <Symbol>
  */
-public class Terminal<Symbol extends Comparable<Symbol>> extends RuleElement {
+public class Terminal<T extends Symbol> extends RuleElement {
 	
-	private Symbol symbol;
+	private T symbol;
 	
 	
-	public Terminal( Symbol symbol) {
+	public Terminal( T symbol) {
 		super();
 		this.symbol = symbol;
 	}
@@ -70,7 +70,7 @@ public class Terminal<Symbol extends Comparable<Symbol>> extends RuleElement {
 	}
 	
 	
-	public Symbol getSymbol() {
+	public T getSymbol() {
 		return symbol;
 	}
 	

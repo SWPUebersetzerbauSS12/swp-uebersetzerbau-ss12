@@ -49,10 +49,10 @@ import regextodfaconverter.directconverter.lr0parser.ReduceEventHandler;
 import regextodfaconverter.directconverter.lr0parser.ShiftEventHandler;
 import regextodfaconverter.directconverter.lr0parser.grammar.ContextFreeGrammar;
 import regextodfaconverter.directconverter.lr0parser.grammar.Grammar;
-import regextodfaconverter.directconverter.lr0parser.grammar.Grammars;
 import regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
 import regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
 import regextodfaconverter.directconverter.lr0parser.grammar.ProductionSet;
+import regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
 import regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
 import regextodfaconverter.directconverter.regex.RegexSpecialChars;
 import regextodfaconverter.directconverter.regex.operatortree.OperatorType;
@@ -71,9 +71,9 @@ import utils.Test;
  * @author Johannes Dahlke
  * 
  */
-public class ConcreteSyntaxTree implements Tree, Cloneable {
+public class ConcreteSyntaxTree<ExpressionElement extends Symbol> implements Tree, Cloneable {
 
-	private ArrayList<Character> inputCharacters = null;
+	private ArrayList<ExpressionElement> inputElements = null;
 
 	private Stack<TreeNode> nodeStack = null;
 
@@ -84,18 +84,18 @@ public class ConcreteSyntaxTree implements Tree, Cloneable {
 	private Grammar grammar;
 
 
-	public ConcreteSyntaxTree( ContextFreeGrammar grammar, String expression)
+	public ConcreteSyntaxTree( ContextFreeGrammar grammar, ExpressionElement[] expression)
 			throws Exception {
 		this( grammar, expression, null);
 	}
 
 
-	public ConcreteSyntaxTree( ContextFreeGrammar grammar, String expression, NewNodeEventHandler newNodeEventHandler)
+	public ConcreteSyntaxTree( ContextFreeGrammar grammar, ExpressionElement[] expression, NewNodeEventHandler newNodeEventHandler)
 			throws Exception {
 		this( grammar, expression, newNodeEventHandler, true);
 	}
 
-	public ConcreteSyntaxTree( ContextFreeGrammar grammar, String expression, NewNodeEventHandler newNodeEventHandler, Boolean directBuild)
+	public ConcreteSyntaxTree( ContextFreeGrammar grammar, ExpressionElement[] expression, NewNodeEventHandler newNodeEventHandler, Boolean directBuild)
 			throws Exception {
 		super();
 		this.grammar = grammar;
@@ -112,14 +112,13 @@ public class ConcreteSyntaxTree implements Tree, Cloneable {
 	}
 
 	protected void buildTree() {
-		ItemAutomata<Character> itemAutomata = new Lr0ItemAutomata<Character>( (ContextFreeGrammar) grammar);
+		ItemAutomata<ExpressionElement> itemAutomata = new Lr0ItemAutomata<ExpressionElement>( (ContextFreeGrammar) grammar);
 
 		itemAutomata.setReduceEventHandler( getReduceEventHandler());
 
 		itemAutomata.setShiftEventHandler( getShiftEventHandler());
-
-		itemAutomata.match( inputCharacters);
-
+ 
+   	itemAutomata.match( inputElements);
 		rootNode = nodeStack.peek();
 	}
 
@@ -199,10 +198,10 @@ public class ConcreteSyntaxTree implements Tree, Cloneable {
 	}
 
 
-	private void preprocessInput( String inputString) {
-		inputCharacters = new ArrayList<Character>();
-		for ( Character inputCharacter : inputString.toCharArray()) {
-			inputCharacters.add( inputCharacter);
+	private void preprocessInput( ExpressionElement[] expression) {
+		inputElements = new ArrayList<ExpressionElement>();
+		for ( ExpressionElement element : expression) {
+			inputElements.add( element);
 		}
 	}
 

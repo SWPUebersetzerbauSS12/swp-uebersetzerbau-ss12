@@ -142,7 +142,7 @@ public class Lexergen implements Lexergenerator {
 		MinimalDfaBuilder builder;
 		if (builderType == BuilderType.indirectBuilder) {
 			builder = new IndirectMinimalDfaBuilder();
-		} else if (builderType == BuilderType.indirectBuilder) {
+		} else if (builderType == BuilderType.directBuilder) {
 			builder = new DirectMinimalDfaBuilder();
 		} else {
 			throw new LexergeneratorException(

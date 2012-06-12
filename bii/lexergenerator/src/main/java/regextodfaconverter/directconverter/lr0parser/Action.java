@@ -32,6 +32,7 @@
 
 package regextodfaconverter.directconverter.lr0parser;
 
+import regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
 import regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
 import regextodfaconverter.directconverter.lr0parser.itemset.Closure;
 
@@ -41,7 +42,7 @@ import regextodfaconverter.directconverter.lr0parser.itemset.Closure;
  *
  * @param <Element>
  */
-public abstract class Action<Element extends Comparable<Element>> {
+public abstract class Action<Element extends Symbol> {
 	
 	protected ItemAutomataInterior<Element> itemAutomata;
 

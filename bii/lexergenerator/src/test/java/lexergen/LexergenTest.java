@@ -19,7 +19,8 @@ public class LexergenTest {
 		File rdFile = new File("src/test/resources/def/lexergen/test.rd");
 		File sourceFile = new File("src/test/resources/source/lexergen/test.fun");
 		
-		Lexergenerator lexergen = new Lexergen(rdFile, sourceFile, BuilderType.indirectBuilder, CorrectionMode.PANIC_MODE, true);		
+	  //Lexergenerator lexergen = new Lexergen(rdFile, sourceFile, BuilderType.indirectBuilder, CorrectionMode.PANIC_MODE, true);		
+		Lexergenerator lexergen = new Lexergen(rdFile, sourceFile, BuilderType.directBuilder, CorrectionMode.PANIC_MODE, true);		
 		IToken currentToken = null;
 		
 		currentToken = lexergen.getNextToken();

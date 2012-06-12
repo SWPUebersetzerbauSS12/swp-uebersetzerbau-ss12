@@ -33,6 +33,7 @@
 package regextodfaconverter.directconverter.lr0parser;
 
 import regextodfaconverter.directconverter.EventHandler;
+import regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
 
 /**
  * 
@@ -40,7 +41,7 @@ import regextodfaconverter.directconverter.EventHandler;
  *
  * @param <Element>
  */
-public class AcceptAction<Element extends Comparable<Element>> extends Action<Element> implements EventHandler {
+public class AcceptAction<Element extends Symbol> extends Action<Element> implements EventHandler {
 
 	public AcceptAction(ItemAutomataInterior<Element> itemAutomata) {
 		super( itemAutomata);

@@ -32,6 +32,7 @@
 
 package regextodfaconverter.directconverter.regex.operatortree;
 
+import regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
 import regextodfaconverter.directconverter.syntaxtree.node.Leaf;
 
 /**
@@ -40,9 +41,9 @@ import regextodfaconverter.directconverter.syntaxtree.node.Leaf;
  * @author Johannes Dahlke
  *
  */
-public class TerminalNode extends Leaf<Character> {	
+public class TerminalNode extends Leaf<Symbol> {	
 	
-	public TerminalNode( Character value) {
+	public TerminalNode( Symbol value) {
 		super( value);
 	}
 		

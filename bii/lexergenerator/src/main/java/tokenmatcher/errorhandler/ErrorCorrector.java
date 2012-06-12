@@ -85,17 +85,19 @@ public class ErrorCorrector {
 	}
 
 
-	private void handleMismatchInPanicMode( Character currentChar,
+	private String handleMismatchInPanicMode( Character currentChar,
 			LexemeReader lexemeReader,
 			DeterministicFiniteAutomata<Character, StatePayload> dfa, int lineNumber,
-			int positionInLine) throws LexemeReaderException {
+			int positionInLine) throws ErrorCorrectorException, LexemeReaderException {
 
+		
 		int skippedChars = 0;
 		dfa.resetToInitialState();
 		while ( !dfa.canChangeStateByElement( currentChar)) {
 			currentChar = lexemeReader.getNextChar();
-			if ( SpecialChars.isEOF( currentChar))
-				break;
+			if ( SpecialChars.isEOF( currentChar)) {
+				throw new ErrorCorrectorException( "Reached end of line without find a solution.");
+			}
 			if ( SpecialChars.isWhiteSpace( currentChar))
 				continue;
 			skippedChars++;
@@ -103,14 +105,16 @@ public class ErrorCorrector {
 
 		lexemeReader.stepBackward( 1);
 		lexemeReader.accept();
-
-		Notification.printMismatchMessage( String.format(
-					"%d characters skipped at line %d at position %d.",
-					skippedChars, lineNumber, positionInLine));
+		
+		String mismatchMessage = String.format(
+				"%d characters skipped at line %d at position %d while error correction in panic mode.",
+				skippedChars, lineNumber, positionInLine);
+		
+		return mismatchMessage;
 	}
 
 
-	private void handleMismatchOnPhraseLevel( Character currentChar,
+	private String handleMismatchOnPhraseLevel( Character currentChar,
 			LexemeReader lexemeReader,
 			DeterministicFiniteAutomata<Character, StatePayload> dfa, int lineNumber,
 			int positionInLine) {
@@ -145,7 +149,10 @@ public class ErrorCorrector {
 
 		default:
 			break;
-	}
+	  }
+		
+		String mismatchMessage = "";
+		return mismatchMessage;
 	}
 
 
@@ -165,16 +172,21 @@ public class ErrorCorrector {
 	 *          die Zeile, in der der Fehler auftritt.
 	 * @param positionInLine
 	 *          die Position in der Zeile, in der der Fehler auftritt.
+	 *          
+	 * @return the mismatch message 
 	 * @throws LexemeReaderException
 	 * @throws EndOfFileException 
 	 */
-	public void handleMismatch( Character currentChar, LexemeReader lexemeReader,
+	public String handleMismatch( Character currentChar, LexemeReader lexemeReader,
 			DeterministicFiniteAutomata<Character, StatePayload> dfa, int lineNumber,
-			int positionInLine) throws LexemeReaderException {
+			int positionInLine) throws ErrorCorrectorException, LexemeReaderException {
 		if ( correctionMode == CorrectionMode.PANIC_MODE)
-			handleMismatchInPanicMode( currentChar, lexemeReader, dfa, lineNumber, positionInLine);
+			return handleMismatchInPanicMode( currentChar, lexemeReader, dfa, lineNumber, positionInLine);
 		else
-			handleMismatchOnPhraseLevel( currentChar, lexemeReader, dfa, lineNumber, positionInLine);
+			return handleMismatchOnPhraseLevel( currentChar, lexemeReader, dfa, lineNumber, positionInLine);
 	}
 
 }
+
+
+

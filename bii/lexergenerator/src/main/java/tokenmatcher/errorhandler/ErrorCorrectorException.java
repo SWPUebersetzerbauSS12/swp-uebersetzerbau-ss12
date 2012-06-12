@@ -30,28 +30,35 @@
  *
  */
 
-package regextodfaconverter.directconverter.lr0parser;
-
-import java.util.List;
-import java.util.Queue;
-import java.util.Stack;
-
-import regextodfaconverter.directconverter.lr0parser.grammar.RuleElement;
-import regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
-import regextodfaconverter.directconverter.lr0parser.itemset.Closure;
+package tokenmatcher.errorhandler;
 
 /**
- * 
+ * Stellt einen Fehler dar, der beim Versuch einen Fehler während der Lexemerkennung zu beheben auftritt.
  * @author Johannes Dahlke
- *
- * @param <Element>
+ * 
  */
-public interface ItemAutomataInterior<Element extends Symbol> {
+public class ErrorCorrectorException extends Exception {
 
-	Stack<RuleElement> getSymbolStack();
-	
-	Stack<Closure> getClosureStack();
-	
-	Queue<Element> getInputQueue();
-	
+	/**
+	 * serialVersionUID
+	 */
+	private static final long serialVersionUID = -8852563819392405779L;
+
+	/**
+	 * Erstellt ein neues ErrorCorrectorException Objekt.
+	 */
+	public ErrorCorrectorException() {
+		super();
+	}
+
+	/**
+	 * Erstellt ein neues ErrorCorrectorException Objekt.
+	 * 
+	 * @param message
+	 *            Die genaue Fehlerbeschreibung.
+	 */
+	public ErrorCorrectorException(String message) {
+		super(message);
+	}
+
 }

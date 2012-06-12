@@ -46,7 +46,7 @@ public class RuleElementArray extends ArrayList<RuleElement> implements RuleElem
 	}
 	
 	
-	public static <T extends Comparable<T>> RuleElementArray toRuleElementArray( T ... ts) {
+	public static <T extends Symbol> RuleElementArray toRuleElementArray( T ... ts) {
 		RuleElementArray result = new RuleElementArray();
 		for ( T t : ts) {
 			result.add( new Terminal<T>( t));

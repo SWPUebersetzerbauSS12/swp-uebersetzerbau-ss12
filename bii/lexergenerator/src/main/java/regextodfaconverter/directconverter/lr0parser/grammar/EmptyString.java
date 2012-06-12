@@ -43,7 +43,7 @@ public class EmptyString extends Terminal  {
 	
 	
 	public EmptyString() {
-		super("ɛ");
+		super( new Symbol('ɛ'));
 	}
 	
 	@Override

@@ -34,9 +34,11 @@ package regextodfaconverter.directconverter.lr0parser;
 
 
 import regextodfaconverter.directconverter.EventHandler;
+import regextodfaconverter.directconverter.lr0parser.grammar.EmptyString;
 import regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
 import regextodfaconverter.directconverter.lr0parser.grammar.RuleElement;
 import regextodfaconverter.directconverter.lr0parser.grammar.RuleElementSequenz;
+import regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
 import regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
 import regextodfaconverter.directconverter.lr0parser.itemset.Closure;
 
@@ -46,7 +48,7 @@ import regextodfaconverter.directconverter.lr0parser.itemset.Closure;
  *
  * @param <Element>
  */
-public class ReduceAction<Element extends Comparable<Element>> extends Action<Element> implements EventHandler {
+public class ReduceAction<Element extends Symbol> extends Action<Element> implements EventHandler {
 
 	private ProductionRule reduceRule;
 	
@@ -60,11 +62,13 @@ public class ReduceAction<Element extends Comparable<Element>> extends Action<El
 		RuleElementSequenz rightReduceRuleSide = reduceRule.getRightRuleSide();
 		for ( int i = rightReduceRuleSide.size(); i > 0; i--) {
 		   itemAutomata.getClosureStack().pop();
-		   RuleElement elementFromStack = itemAutomata.getSymbolStack().pop();
 		   RuleElement reduceRuleElement = rightReduceRuleSide.get( i-1);
-          
-       if ( ! elementFromStack.equals( reduceRuleElement))
-			   throw new ReduceException(String.format("Missing expected element %s while reduce with rule %s. Found instead %s.", reduceRuleElement, reduceRule, elementFromStack));
+		   if ( !( reduceRuleElement instanceof EmptyString)) {
+		     RuleElement elementFromStack = itemAutomata.getSymbolStack().pop();
+		  
+         if ( ! elementFromStack.equals( reduceRuleElement))
+			     throw new ReduceException(String.format("Missing expected element %s while reduce with rule %s. Found instead %s.", reduceRuleElement, reduceRule, elementFromStack));
+		   }
 		}
 		itemAutomata.getSymbolStack().push( reduceRule.getLeftRuleSide());
 		

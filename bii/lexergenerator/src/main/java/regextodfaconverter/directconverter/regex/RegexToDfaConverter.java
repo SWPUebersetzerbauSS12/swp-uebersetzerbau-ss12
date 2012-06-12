@@ -39,15 +39,18 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import regextodfaconverter.ConvertExecption;
+import regextodfaconverter.Regex;
+import regextodfaconverter.RegexInvalidException;
 import regextodfaconverter.directconverter.DirectConverterException;
+import regextodfaconverter.directconverter.PositionToPayloadMap;
 import regextodfaconverter.directconverter.lr0parser.grammar.ContextFreeGrammar;
 import regextodfaconverter.directconverter.lr0parser.grammar.Grammar;
-import regextodfaconverter.directconverter.lr0parser.grammar.Grammars;
 import regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
 import regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
 import regextodfaconverter.directconverter.lr0parser.grammar.ProductionSet;
 import regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
 import regextodfaconverter.directconverter.regex.operatortree.RegexOperatorTree;
+import regextodfaconverter.directconverter.regex.operatortree.RegularExpressionElement;
 import regextodfaconverter.directconverter.regex.operatortree.TerminalNode;
 import regextodfaconverter.directconverter.syntaxtree.AbstractSyntaxTree;
 import regextodfaconverter.directconverter.syntaxtree.AttributesMap;
@@ -65,6 +68,8 @@ import regextodfaconverter.directconverter.syntaxtree.node.TreeNodeSet;
 import regextodfaconverter.fsm.FiniteStateMachine;
 import regextodfaconverter.fsm.State;
 import tokenmatcher.StatePayload;
+import tokenmatcher.attributes.ParseIntAttribute;
+import tokenmatcher.attributes.ParseStringAttribute;
 import utils.Notification;
 import utils.Sets;
 import utils.Test;
@@ -107,19 +112,71 @@ public class RegexToDfaConverter {
 	 * @throws Exception
 	 * 
 	 */
-	public static <StatePayloadType extends Serializable> FiniteStateMachine<Character, StatePayloadType> convert( String regex, StatePayloadType payload)
-			throws Exception {
+	public static FiniteStateMachine<Character, StatePayload> convert( String regex, StatePayload commonPayload)
+			throws DirectConverterException {
+		PositionToPayloadMap<StatePayload> positionToPayloadMap = new PositionToPayloadMap<StatePayload>();
+		return convert( regex, positionToPayloadMap, commonPayload);
+	}
+	
+	public static FiniteStateMachine<Character, StatePayload> convert( RegexToPayloadMap<StatePayload> regexToPayloadMap)
+			throws DirectConverterException {
+		
+		String concatenatedRegex = "";
+		PositionToPayloadMap<StatePayload> positionToPayloadMap = new PositionToPayloadMap<StatePayload>();
+		
+		for ( String regex : regexToPayloadMap.keySet()) {
+			if ( !concatenatedRegex.isEmpty())
+				concatenatedRegex += "|";
+			
+			try {
+				regex = Regex.reduceAndBracketRegex(regex);
+			} catch (RegexInvalidException e) {
+				throw new DirectConverterException(
+						"Der verwendete reguläre Ausdruck '"
+								+ regex
+								+ "' ist ungültig oder verwendet nicht unterstütze Operatoren!");
+			}
+		  concatenatedRegex += regex;
+		  positionToPayloadMap.put( concatenatedRegex.length() -1, regexToPayloadMap.get( regex));  
+   	}
+		return convert( concatenatedRegex, positionToPayloadMap);
+	}
+	
+	public static FiniteStateMachine<Character, StatePayload> convert( String regex, PositionToPayloadMap<StatePayload> positionToPayloadMap)
+			throws DirectConverterException {
+		return convert( regex, positionToPayloadMap, null);
+	}
+	
+	public static FiniteStateMachine<Character, StatePayload> convert( String regex, PositionToPayloadMap<StatePayload> positionToPayloadMap,  StatePayload commonPayload)
+			throws DirectConverterException {
+		
+		int regexLength = regex.length();
+		
+		RegularExpressionElement[] regularExpression = new RegularExpressionElement[regexLength];
+		for ( int i = 0; i < regexLength; i++) {
+			regularExpression[i] = new RegularExpressionElement( regex.charAt( i), positionToPayloadMap.get( i));
+		}
+		
+		return convert( regularExpression, commonPayload);
+	}
+	
+	
+	public static FiniteStateMachine<Character, StatePayload> convert( RegularExpressionElement<StatePayload>[] regularExpression, StatePayload commonPayload)
+			throws DirectConverterException {
 		try {
-			RegexOperatorTree regexTree = convertRegexToTree( regex);
-			System.out.println( regex);
-		  FiniteStateMachine<Character, StatePayloadType> dfa = convertRegexTreeToDfa( regexTree, payload);
-		  System.out.println(dfa);
-			return dfa;
+			RegexOperatorTree regexTree = convertRegexToTree( regularExpression);
+			FiniteStateMachine<Character, StatePayload> dfa = convertRegexTreeToDfa( regexTree, commonPayload);
+		  return dfa;
 		} catch ( Exception e) {
 			Notification.printDebugException( e);
-			throw new Exception( "Cannot convert regex to DFA.");
+			String regexExpression = "";
+			for ( RegularExpressionElement<StatePayload> regularExpressionElement : regularExpression) {
+				regexExpression += regularExpressionElement.getValue();
+			}
+			throw new DirectConverterException( String.format( "Cannot convert regex '%s' to DFA.", regularExpression));
 		}
 	}
+	
 	
 
 	/**
@@ -128,11 +185,8 @@ public class RegexToDfaConverter {
 	 * @return
 	 * @throws Exception 
 	 */
-	private static RegexOperatorTree convertRegexToTree( String regex) throws Exception {
-		RegexOperatorTree regexTree = new RegexOperatorTree( regex);
-		for ( TreeNode treeNode : regexTree) {
-			System.out.println( treeNode);
-		}
+	private static RegexOperatorTree convertRegexToTree( RegularExpressionElement[] regularExpression) throws Exception {
+		RegexOperatorTree regexTree = new RegexOperatorTree( regularExpression);
 		return regexTree;
 	}
 
@@ -146,20 +200,21 @@ public class RegexToDfaConverter {
 	 * @throws DirectConverterException
 	 * @throws Exception
 	 */
-	private static <StatePayloadType extends Serializable> FiniteStateMachine<Character, StatePayloadType> convertRegexTreeToDfa( RegexOperatorTree regexTree,
-			StatePayloadType payload) throws DirectConverterException {
+	private static FiniteStateMachine<Character, StatePayload> convertRegexTreeToDfa( RegexOperatorTree<StatePayload> regexTree, StatePayload commonPayload) throws DirectConverterException {
 		try {
 			
-			HashMap<TreeNodeCollection, State<Character, StatePayloadType>> unhandledStates = new HashMap<TreeNodeCollection, State<Character, StatePayloadType>>();
+			HashMap<TreeNodeCollection, State<Character, StatePayload>> unhandledStates = new HashMap<TreeNodeCollection, State<Character, StatePayload>>();
 
-			HashMap<TreeNodeCollection, State<Character, StatePayloadType>> handledStates = new HashMap<TreeNodeCollection, State<Character, StatePayloadType>>();
+			HashMap<TreeNodeCollection, State<Character, StatePayload>> handledStates = new HashMap<TreeNodeCollection, State<Character, StatePayload>>();
 
-			FiniteStateMachine<Character, StatePayloadType> dfa = new FiniteStateMachine<Character, StatePayloadType>();
+			FiniteStateMachine<Character, StatePayload> dfa = new FiniteStateMachine<Character, StatePayload>();
 
 			// add start state as unhandled
 			unhandledStates.put( regexTree.getFirstPositions().get( regexTree.getRoot()), dfa.getInitialState());
 
-			State<Character, StatePayloadType> currentState;
+			StatePayload currentStatePayload = null;
+			
+			State<Character, StatePayload> currentState;
 			TreeNodeCollection currentCollection;
 			while ( !unhandledStates.isEmpty()) {
 				// get the next unhandled state ...
@@ -173,25 +228,45 @@ public class RegexToDfaConverter {
 				Character currentTerminalCharacter;
 
 				for ( Leaf leafNode : regexTree.getLeafSet()) {
-					Character currentCharacterOfCharSet = (Character) leafNode.getValue();
+					RegularExpressionElement<StatePayload> currentRegexElement = (RegularExpressionElement<StatePayload> ) leafNode.getValue();
 					TreeNodeCollection followPositionsOfTerminal = new TreeNodeSet();
 					for ( TreeNode node : currentCollection) {
 						if ( node instanceof TerminalNode) {
-							Character terminalNodeCharacter = ( (TerminalNode) node).getValue();
-							if ( terminalNodeCharacter == currentCharacterOfCharSet) {
+							RegularExpressionElement terminalNodeRegexElement = (RegularExpressionElement)((TerminalNode)node).getValue();
+						//	System.out.println( terminalNodeRegexElement + " <> " + currentRegexElement);
+							if ( terminalNodeRegexElement.equalsTotally( currentRegexElement)) {
 								followPositionsOfTerminal.addAll( regexTree.getFollowPositions().get( node));
 							}
 						}
 					}
 
 					// if set not empty, then add set to states
-					State<Character, StatePayloadType> targetState = null;
+					State<Character, StatePayload> targetState = null;
+			//		System.out.println( "followpos EMPTY?: " +currentRegexElement.getValue() + "  " + followPositionsOfTerminal.isEmpty() + "   "  + followPositionsOfTerminal);
+					
 					if ( !followPositionsOfTerminal.isEmpty()) {
-						if ( !handledStates.containsKey( followPositionsOfTerminal) && !unhandledStates.containsKey( followPositionsOfTerminal)) {
-							targetState = new State<Character, StatePayloadType>();
+						
+						// setze Übergang-spezifischen Payload 
+						currentStatePayload = Test.isAssigned( currentRegexElement.getPayload()) ? currentRegexElement.getPayload() : null; 
+						// Oder falls keiner definiert, dann den allgemeinen Payload, sofern es sich um das Ende handelt
+						if ( Test.isUnassigned( currentStatePayload)
+								&& followPositionsOfTerminal.contains( regexTree.getTerminatorNode()))						
+							currentStatePayload = commonPayload;
+						
+						
+						if ( Test.isAssigned( currentStatePayload)) {
+							// BEGIN: Modification of Algorithm of Glushkov / McNaughton and Yamada 
+							// Why? To provide to return more than one payload element (matching more than one word in one dfa)
+							targetState = new State<Character, StatePayload>();
+							// we do not put it to unhandledStates
+							// setze Folgezustand finite
+							targetState.setFinite( true);
+							// and set payload
+							targetState.setPayload( currentStatePayload);
+						  // END: Modification of Algorithm of Glushkov / McNaughton and Yamada 
+						} else if ( !handledStates.containsKey( followPositionsOfTerminal) && !unhandledStates.containsKey( followPositionsOfTerminal)) {
+							targetState = new State<Character, StatePayload>();
 							unhandledStates.put( followPositionsOfTerminal, targetState);
-							System.out.println( currentCharacterOfCharSet + " : " + followPositionsOfTerminal);
-
 						} else if ( handledStates.containsKey( followPositionsOfTerminal)) {
 							targetState = handledStates.get( followPositionsOfTerminal);
 						} else {
@@ -199,13 +274,8 @@ public class RegexToDfaConverter {
 						}
 
 						// setze Übergang
-						dfa.addTransition( targetState, currentCharacterOfCharSet);
-						// und ggf. als Endzustand
-						if ( followPositionsOfTerminal.contains( regexTree.getTerminatorNode())) {
-							targetState.setFinite( true);
-							targetState.setPayload( payload);
-						}
-
+						dfa.addTransition( targetState, currentRegexElement.getValue());
+					
 					}
 
 				}
@@ -224,29 +294,5 @@ public class RegexToDfaConverter {
 	}
 
 
-	private static <StatePayloadType extends Serializable> FiniteStateMachine<Character, StatePayloadType> unifyDfa(
-			FiniteStateMachine<Character, StatePayloadType> destinationMachine, FiniteStateMachine<Serializable, Serializable>... sourceMachines) throws Exception {
-		// ensure, that the syntax tree has annotaions
-		if ( Test.isUnassigned( sourceMachines))
-			return destinationMachine;
-		else if ( Test.isUnassigned( destinationMachine)) {
-			throw new ConvertExecption( "Cannot unify the deterministic automats, cause there is no destination automata specified.");
-		} else if ( !destinationMachine.isDeterministic()) {
-			throw new ConvertExecption( "Cannot unify the deterministic automats. The destination automata is not deterministic.");
-		} else {
-			for ( FiniteStateMachine<Serializable, Serializable> sourceMachine : sourceMachines) {
-				if ( !sourceMachine.isDeterministic()) {
-					throw new ConvertExecption( "Cannot unify the deterministic automats. One of the source automats is not deterministic.");
-				}
-
-				// now we can start to merge the states of the automats
-				/*
-				 * for ( FiniteStateMachine<Serializable, Serializable> sourceMachine :
-				 * sourceMachines) { sourceMachine.getCurrentState(). }
-				 */
-			}
-
-		}
-		return destinationMachine;
-	}
+	
 }

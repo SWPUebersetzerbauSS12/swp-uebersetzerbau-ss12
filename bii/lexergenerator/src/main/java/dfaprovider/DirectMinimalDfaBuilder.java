@@ -33,9 +33,21 @@
 package dfaprovider;
 
 import java.io.File;
+import java.util.ArrayList;
 
+import parsetokdef.LexTokDef;
+import parsetokdef.ReadTokDefAbstract;
+
+import regextodfaconverter.ConvertExecption;
 import regextodfaconverter.MinimalDfa;
+import regextodfaconverter.RegexToNfaConverter;
+import regextodfaconverter.directconverter.DirectConverterException;
+import regextodfaconverter.directconverter.regex.RegexToDfaConverter;
+import regextodfaconverter.directconverter.regex.RegexToPayloadMap;
+import regextodfaconverter.fsm.FiniteStateMachine;
 import tokenmatcher.StatePayload;
+import utils.IRule;
+import utils.Notification;
 
 /**
  * Stellt einen MinimalDFA-Builder dar, der den DFA über den direkten Weg von
@@ -68,7 +80,56 @@ public class DirectMinimalDfaBuilder implements MinimalDfaBuilder {
 					+ regularDefinitionFile.getAbsolutePath()
 					+ "'zu den regulären Definitionen exisitiert nicht!");
 		}
-		// TODO: buildMinimalDfa implementieren.
-		return null;
+
+
+	  RegexToDfaConverter converter = new RegexToDfaConverter();
+		
+	  RegexToPayloadMap<StatePayload> regexToPayloadMap = new RegexToPayloadMap<StatePayload>();
+	  
+		StatePayload payload = null;
+		String regex = "";
+		FiniteStateMachine<Character, StatePayload> fsm = null;
+
+		// Informationen aus *.rd-Datei auslesen.
+		ReadTokDefAbstract rtd = null;
+
+		try {
+			rtd = new LexTokDef(regularDefinitionFile);
+		} catch (Exception e) {
+			throw new MinimalDfaBuilderException(
+					"Fehler beim auslesen der Definitions-Datei: "
+							+ e.getMessage());
+		}
+		
+		int counter = 0;
+		for (IRule irule : rtd.getRules()) {
+			counter++;
+			payload = new regextodfaconverter.fsm.StatePayload(
+					irule.getTokenType(), irule.getTokenValue(), counter * (-1));
+			regex = irule.getRegexp();
+			regexToPayloadMap.put( regex, payload);
+		}
+
+		// Aus allen regex einen vereinigten Dfa erstellen
+		try {
+			fsm = RegexToDfaConverter.convert( regexToPayloadMap);
+		} catch (DirectConverterException e) {
+			Notification.printDebugException( e);
+			throw new MinimalDfaBuilderException(
+					"Der reguläre Ausdruck kann nicht in einen Automaten umgewandelt werden: "
+							+ e.getMessage());
+		}
+		
+		MinimalDfa<Character, StatePayload> mDfa = null;
+		try {
+			mDfa = new MinimalDfa<Character, StatePayload>(fsm);
+		} catch (ConvertExecption e) {
+			throw new MinimalDfaBuilderException(
+					"Fehler beim Erstellen des minimalen DFA's: "
+							+ e.getMessage());
+		}
+
+		return mDfa;
 	}
+
 }

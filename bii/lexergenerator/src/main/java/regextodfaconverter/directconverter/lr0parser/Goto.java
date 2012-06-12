@@ -35,6 +35,7 @@ package regextodfaconverter.directconverter.lr0parser;
 
 import regextodfaconverter.directconverter.EventHandler;
 import regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
+import regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
 import regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
 import regextodfaconverter.directconverter.lr0parser.itemset.Closure;
 
@@ -44,7 +45,7 @@ import regextodfaconverter.directconverter.lr0parser.itemset.Closure;
  *
  * @param <Element>
  */
-public class Goto<Element extends Comparable<Element>> implements EventHandler {
+public class Goto<Element extends Symbol> implements EventHandler {
 
 	private Closure toClosure;
 	private Nonterminal nonterminalToHandle;

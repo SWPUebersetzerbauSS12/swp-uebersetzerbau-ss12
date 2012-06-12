@@ -23,13 +23,13 @@ public class GrammarTest {
 		Nonterminal T = new Nonterminal( "T");
 		Nonterminal U = new Nonterminal( "U");
 		Nonterminal V = new Nonterminal( "V");
-		Terminal<Character> a = new Terminal<Character>( 'a');
+		Terminal<Symbol> a = new Terminal<Symbol>( new Symbol( 'a'));
 	
-		Terminal<Character> leftBracket = new Terminal<Character>( '(');
-		Terminal<Character> rightBracket = new Terminal<Character>( ')');
-		Terminal<Character> opKleeneClosure = new Terminal<Character>( '*');
-		Terminal<Character> opAlternative = new Terminal<Character>( '+');
-		Terminal<Character> opConcatenation = new Terminal<Character>( '.');
+		Terminal<Symbol> leftBracket = new Terminal<Symbol>( new Symbol( '('));
+		Terminal<Symbol> rightBracket = new Terminal<Symbol>( new Symbol( ')'));
+		Terminal<Symbol> opKleeneClosure = new Terminal<Symbol>(  new Symbol( '*'));
+		Terminal<Symbol> opAlternative = new Terminal<Symbol>(  new Symbol( '+'));
+		Terminal<Symbol> opConcatenation = new Terminal<Symbol>(  new Symbol( '.'));
 		
 		ProductionSet productions = new ProductionSet();
 		productions.add( new ProductionRule(R, R, opAlternative, S));

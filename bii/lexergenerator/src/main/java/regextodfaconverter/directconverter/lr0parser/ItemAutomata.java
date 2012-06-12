@@ -37,6 +37,7 @@ import java.util.Queue;
 import java.util.Stack;
 
 import regextodfaconverter.directconverter.lr0parser.grammar.RuleElement;
+import regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
 import regextodfaconverter.directconverter.lr0parser.itemset.Closure;
 
 /**
@@ -45,7 +46,7 @@ import regextodfaconverter.directconverter.lr0parser.itemset.Closure;
  *
  * @param <Element>
  */
-public interface ItemAutomata<Element extends Comparable<Element>> {
+public interface ItemAutomata<Element extends Symbol> {
 
 	boolean match( List<Element> input);
 		

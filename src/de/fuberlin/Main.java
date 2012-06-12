@@ -1,6 +1,6 @@
 package de.fuberlin;
 
-import de.fuberlin.optimierung.*;
+import de.fuberlin.optimierung.LLVM_Optimization;
 
 
 class Main {
@@ -18,7 +18,7 @@ class Main {
 		 *	input:	String llvm_code
 		 *	output:	String optimized_llvm_code
 		 */
-		ILLVM_Optimization llvm_optimizer = new LLVM_Optimization();
+		LLVM_Optimization llvm_optimizer = new LLVM_Optimization();
 
 		String optimized_llvm_code = llvm_optimizer.optimizeCodeFromString(llvm_code);	// Muss angepasst werden
 		//--------------------------

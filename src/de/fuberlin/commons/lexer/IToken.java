@@ -1,4 +1,4 @@
-package lexer;
+package de.fuberlin.commons.lexer;
 
 public interface IToken {
 

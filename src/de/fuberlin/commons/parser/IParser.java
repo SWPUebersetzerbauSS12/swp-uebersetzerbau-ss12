@@ -1,4 +1,4 @@
-package parser;
+package de.fuberlin.commons.parser;
 
 
 public interface IParser {

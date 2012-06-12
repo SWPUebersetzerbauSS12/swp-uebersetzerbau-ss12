@@ -55,6 +55,9 @@ class LLVM_Optimization implements ILLVM_Optimization {
 			// CommonExpressions
 			tmp.removeCommonExpressions();
 			
+			// Entferne Bloecke, die nur unbedingten Sprungbefehl enthalten
+			// tmp.deleteEmptyBlocks();
+			
 			// Optimierte Ausgabe
 			tmp.updateUnnamedLabelNames();
 			outputLLVM += tmp.toString();

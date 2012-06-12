@@ -721,7 +721,7 @@ public class LLVM_Function {
 	
 	/**
 	 * Entferne Bloecke, die nur unbedingten Sprungbefehl enthalten
-	 * TODO: in arbeit
+	 * TODO: zu testen
 	 */
 	public void deleteEmptyBlocks() {
 		// Gehe Bloecke durch

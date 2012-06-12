@@ -36,7 +36,10 @@ public class LexerMain {
 		try {
 			do {
 				t = lexer.getNextToken();
+				if(t.getAttribute() != null)
+				System.out.println(t.getAttribute().getClass().toString());
 				System.out.println(t);
+				
 			} while (!t.getType().equals("EOF"));
 		} catch (SyntaxErrorException e) {
 			System.out.println(e.getMessage());

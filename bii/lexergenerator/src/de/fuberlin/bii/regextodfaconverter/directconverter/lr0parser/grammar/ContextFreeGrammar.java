@@ -38,8 +38,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import utils.Sets;
-import utils.Test;
+import de.fuberlin.bii.utils.Sets;
+import de.fuberlin.bii.utils.Test;
 
 /**
  * 

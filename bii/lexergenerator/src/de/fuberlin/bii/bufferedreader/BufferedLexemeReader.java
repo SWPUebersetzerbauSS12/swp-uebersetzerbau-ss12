@@ -37,7 +37,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-import utils.Notification;
+import de.fuberlin.bii.utils.Notification;
 
 /**
  * Eingabeleser arbeitet mit einem Pufferpaar und Wächtern 

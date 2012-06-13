@@ -40,8 +40,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import regextodfaconverter.MinimalDfa;
-import tokenmatcher.StatePayload;
+import de.fuberlin.bii.regextodfaconverter.MinimalDfa;
+import de.fuberlin.bii.tokenmatcher.StatePayload;
 
 /**
  * Stellt einen Wrapper für die Parameter<Character, StatePayload> dar, der vom

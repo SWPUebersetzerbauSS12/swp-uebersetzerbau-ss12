@@ -1,6 +1,6 @@
 package de.fuberlin.bii.utils;
 
-import tokenmatcher.attributes.Attribute;
+import de.fuberlin.bii.tokenmatcher.attributes.Attribute;
 
 public interface IRule {
 	

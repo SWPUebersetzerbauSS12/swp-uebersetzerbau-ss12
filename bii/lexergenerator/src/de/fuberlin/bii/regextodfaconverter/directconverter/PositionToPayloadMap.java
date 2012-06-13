@@ -1,4 +1,4 @@
-package regextodfaconverter.directconverter;
+package de.fuberlin.bii.regextodfaconverter.directconverter;
 
 import java.util.HashMap;
 

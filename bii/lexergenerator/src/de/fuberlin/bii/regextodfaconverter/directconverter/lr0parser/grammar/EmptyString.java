@@ -32,7 +32,7 @@
 
 package de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar;
 
-import utils.Test;
+import de.fuberlin.bii.utils.Test;
 
 /**
  * 

@@ -35,10 +35,10 @@ package de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.itemset;
 import java.util.HashMap;
 import java.util.List;
 
-import regextodfaconverter.directconverter.lr0parser.grammar.ProductionMap;
-import regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
-import regextodfaconverter.directconverter.lr0parser.grammar.RuleElement;
-import utils.Test;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.ProductionMap;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.RuleElement;
+import de.fuberlin.bii.utils.Test;
 
 
 /**

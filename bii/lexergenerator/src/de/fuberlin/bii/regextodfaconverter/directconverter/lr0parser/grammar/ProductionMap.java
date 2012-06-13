@@ -34,9 +34,8 @@ package de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 
-import utils.Test;
+import de.fuberlin.bii.utils.Test;
 
 /**
  * 

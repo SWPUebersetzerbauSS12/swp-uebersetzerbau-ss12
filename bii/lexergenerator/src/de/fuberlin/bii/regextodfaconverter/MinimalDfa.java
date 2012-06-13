@@ -30,14 +30,14 @@
  *
  */
 
-package regextodfaconverter;
+package de.fuberlin.bii.regextodfaconverter;
 
 import java.io.Serializable;
 import java.util.Collection;
 
-import regextodfaconverter.fsm.FiniteStateMachine;
-import tokenmatcher.DeterministicFiniteAutomata;
-import tokenmatcher.State;
+import de.fuberlin.bii.regextodfaconverter.fsm.FiniteStateMachine;
+import de.fuberlin.bii.tokenmatcher.DeterministicFiniteAutomata;
+import de.fuberlin.bii.tokenmatcher.State;
 
 /**
  * Adapter zur Anpassung an das DFA Interface des TokenMatchers. Garantiert,

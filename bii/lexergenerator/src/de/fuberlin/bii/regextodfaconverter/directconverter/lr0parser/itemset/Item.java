@@ -32,10 +32,10 @@
 
 package de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.itemset;
 
-import regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
-import regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
-import regextodfaconverter.directconverter.lr0parser.grammar.RuleElement;
-import regextodfaconverter.directconverter.lr0parser.grammar.RuleElementSequenz;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.RuleElement;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.RuleElementSequenz;
 
 /**
  * 

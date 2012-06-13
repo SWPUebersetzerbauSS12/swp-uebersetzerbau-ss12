@@ -35,8 +35,8 @@ package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import regextodfaconverter.directconverter.syntaxtree.PrintHandler;
-import utils.Test;
+import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.PrintHandler;
+import de.fuberlin.bii.utils.Test;
 
 
 /**

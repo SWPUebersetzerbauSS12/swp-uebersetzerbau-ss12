@@ -32,7 +32,7 @@
 
 package de.fuberlin.bii.regextodfaconverter.directconverter.regex.operatortree;
 
-import regextodfaconverter.directconverter.syntaxtree.node.BinaryInnerNode;
+import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.BinaryInnerNode;
 
 
 

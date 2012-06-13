@@ -39,8 +39,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import utils.IRule;
-import utils.Rule;
+import de.fuberlin.bii.utils.IRule;
+import de.fuberlin.bii.utils.Rule;
 
 /**
  * 

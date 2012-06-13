@@ -34,10 +34,10 @@ package de.fuberlin.bii.dfaprovider;
 
 import java.io.File;
 
-import parsetokdef.TokenDefinitionException;
+import de.fuberlin.bii.parsetokdef.TokenDefinitionException;
 
-import regextodfaconverter.MinimalDfa;
-import tokenmatcher.StatePayload;
+import de.fuberlin.bii.regextodfaconverter.MinimalDfa;
+import de.fuberlin.bii.tokenmatcher.StatePayload;
 
 /**
  * Stellt einen MinimalDFA-Builder dar.

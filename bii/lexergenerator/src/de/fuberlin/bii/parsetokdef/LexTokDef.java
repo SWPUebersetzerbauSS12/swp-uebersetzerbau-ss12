@@ -39,8 +39,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import utils.IRule;
-import utils.Rule;
+import de.fuberlin.bii.utils.IRule;
+import de.fuberlin.bii.utils.Rule;
 
 public class LexTokDef extends ReadTokDefAbstract {
 

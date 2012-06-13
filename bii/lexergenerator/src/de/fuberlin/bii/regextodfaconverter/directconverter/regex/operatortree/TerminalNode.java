@@ -32,8 +32,8 @@
 
 package de.fuberlin.bii.regextodfaconverter.directconverter.regex.operatortree;
 
-import regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
-import regextodfaconverter.directconverter.syntaxtree.node.Leaf;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
+import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.Leaf;
 
 /**
  * Repräsentiert ein Terminal des regulären Ausdruckes in dem Operatorbaum

@@ -37,8 +37,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import regextodfaconverter.directconverter.syntaxtree.PrintHandler;
-import utils.Test;
+import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.PrintHandler;
+import de.fuberlin.bii.utils.Test;
 
 
 /**

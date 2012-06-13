@@ -35,19 +35,19 @@ package de.fuberlin.bii.dfaprovider;
 import java.io.File;
 import java.util.ArrayList;
 
-import parsetokdef.LexTokDef;
-import parsetokdef.ReadTokDefAbstract;
+import de.fuberlin.bii.parsetokdef.LexTokDef;
+import de.fuberlin.bii.parsetokdef.ReadTokDefAbstract;
 
-import regextodfaconverter.ConvertExecption;
-import regextodfaconverter.MinimalDfa;
-import regextodfaconverter.RegexToNfaConverter;
-import regextodfaconverter.directconverter.DirectConverterException;
-import regextodfaconverter.directconverter.regex.RegexToDfaConverter;
-import regextodfaconverter.directconverter.regex.RegexToPayloadMap;
-import regextodfaconverter.fsm.FiniteStateMachine;
-import tokenmatcher.StatePayload;
-import utils.IRule;
-import utils.Notification;
+import de.fuberlin.bii.regextodfaconverter.ConvertExecption;
+import de.fuberlin.bii.regextodfaconverter.MinimalDfa;
+import de.fuberlin.bii.regextodfaconverter.RegexToNfaConverter;
+import de.fuberlin.bii.regextodfaconverter.directconverter.DirectConverterException;
+import de.fuberlin.bii.regextodfaconverter.directconverter.regex.RegexToDfaConverter;
+import de.fuberlin.bii.regextodfaconverter.directconverter.regex.RegexToPayloadMap;
+import de.fuberlin.bii.regextodfaconverter.fsm.FiniteStateMachine;
+import de.fuberlin.bii.tokenmatcher.StatePayload;
+import de.fuberlin.bii.utils.IRule;
+import de.fuberlin.bii.utils.Notification;
 
 /**
  * Stellt einen MinimalDFA-Builder dar, der den DFA über den direkten Weg von
@@ -104,7 +104,7 @@ public class DirectMinimalDfaBuilder implements MinimalDfaBuilder {
 		int counter = 0;
 		for (IRule irule : rtd.getRules()) {
 			counter++;
-			payload = new regextodfaconverter.fsm.StatePayload(
+			payload = new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload(
 					irule.getTokenType(), irule.getTokenValue(), counter * (-1));
 			regex = irule.getRegexp();
 			regexToPayloadMap.put( regex, payload);

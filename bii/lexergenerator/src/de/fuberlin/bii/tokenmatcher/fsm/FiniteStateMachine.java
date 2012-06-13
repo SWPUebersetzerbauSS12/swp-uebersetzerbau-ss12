@@ -32,8 +32,8 @@
 
 package de.fuberlin.bii.tokenmatcher.fsm;
 
-import tokenmatcher.fsm.State;
-import utils.Test;
+import de.fuberlin.bii.tokenmatcher.fsm.State;
+import de.fuberlin.bii.utils.Test;
 
 
 /**

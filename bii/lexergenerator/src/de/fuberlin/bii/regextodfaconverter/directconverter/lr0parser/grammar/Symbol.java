@@ -1,8 +1,6 @@
 package de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar;
 
-import regextodfaconverter.directconverter.regex.operatortree.RegularExpressionElement;
-import tokenmatcher.StatePayload;
-import utils.Test;
+import de.fuberlin.bii.utils.Test;
 
 
 public class Symbol<Value extends Comparable<Value>, Payload> implements Comparable<Symbol<Value,Payload>>{

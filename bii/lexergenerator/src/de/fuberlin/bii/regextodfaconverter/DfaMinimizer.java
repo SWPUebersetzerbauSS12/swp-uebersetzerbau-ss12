@@ -30,11 +30,11 @@
  *
  */
 
-package regextodfaconverter;
+package de.fuberlin.bii.regextodfaconverter;
 
 import java.io.Serializable;
 
-import regextodfaconverter.fsm.FiniteStateMachine;
+import de.fuberlin.bii.regextodfaconverter.fsm.FiniteStateMachine;
 
 /**
  * Stellt einen Konverter dar, der aus aus einem deterministischen endlichen

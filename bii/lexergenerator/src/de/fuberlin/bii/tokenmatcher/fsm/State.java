@@ -32,7 +32,6 @@
 
 package de.fuberlin.bii.tokenmatcher.fsm;
 
-import utils.Test;
 
 
 /**

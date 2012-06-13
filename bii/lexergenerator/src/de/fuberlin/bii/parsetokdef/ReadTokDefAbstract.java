@@ -39,12 +39,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
-import tokenmatcher.attributes.Attribute;
-import tokenmatcher.attributes.ParseDoubleAttribute;
-import tokenmatcher.attributes.ParseIntAttribute;
-import tokenmatcher.attributes.StringAttribute;
-import tokenmatcher.attributes.ParseStringAttribute;
-import utils.IRule;
+import de.fuberlin.bii.tokenmatcher.attributes.Attribute;
+import de.fuberlin.bii.tokenmatcher.attributes.ParseDoubleAttribute;
+import de.fuberlin.bii.tokenmatcher.attributes.ParseIntAttribute;
+import de.fuberlin.bii.tokenmatcher.attributes.ParseStringAttribute;
+import de.fuberlin.bii.tokenmatcher.attributes.StringAttribute;
+import de.fuberlin.bii.utils.IRule;
 
 public abstract class ReadTokDefAbstract {
 	protected List<IRule> rules;

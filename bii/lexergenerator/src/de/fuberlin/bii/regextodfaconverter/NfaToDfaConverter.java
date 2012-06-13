@@ -30,7 +30,7 @@
  *
  */
 
-package regextodfaconverter;
+package de.fuberlin.bii.regextodfaconverter;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -39,10 +39,10 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.UUID;
 
-import regextodfaconverter.fsm.FiniteStateMachine;
-import regextodfaconverter.fsm.State;
-import regextodfaconverter.fsm.StatePayload;
-import regextodfaconverter.fsm.Transition;
+import de.fuberlin.bii.regextodfaconverter.fsm.FiniteStateMachine;
+import de.fuberlin.bii.regextodfaconverter.fsm.State;
+import de.fuberlin.bii.regextodfaconverter.fsm.StatePayload;
+import de.fuberlin.bii.regextodfaconverter.fsm.Transition;
 
 /**
  * Stellt einen Konverter dar, der aus einem nichtdeterministischen endlichen

@@ -36,8 +36,8 @@ package de.fuberlin.bii.bufferedreader;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import utils.Notification;
-import utils.Test;
+import de.fuberlin.bii.utils.Notification;
+import de.fuberlin.bii.utils.Test;
 
 
 public class SimpleLexemeReader implements LexemeReader {

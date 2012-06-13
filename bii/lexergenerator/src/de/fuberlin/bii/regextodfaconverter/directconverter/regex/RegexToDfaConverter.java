@@ -32,46 +32,23 @@
 
 package de.fuberlin.bii.regextodfaconverter.directconverter.regex;
 
-import java.io.ObjectInputStream.GetField;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 
-import de.fuberlin.bii.regextodfaconverter.ConvertExecption;
 import de.fuberlin.bii.regextodfaconverter.Regex;
 import de.fuberlin.bii.regextodfaconverter.RegexInvalidException;
 import de.fuberlin.bii.regextodfaconverter.directconverter.DirectConverterException;
 import de.fuberlin.bii.regextodfaconverter.directconverter.PositionToPayloadMap;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.ContextFreeGrammar;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Grammar;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.ProductionSet;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
 import de.fuberlin.bii.regextodfaconverter.directconverter.regex.operatortree.RegexOperatorTree;
 import de.fuberlin.bii.regextodfaconverter.directconverter.regex.operatortree.RegularExpressionElement;
 import de.fuberlin.bii.regextodfaconverter.directconverter.regex.operatortree.TerminalNode;
-import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.AbstractSyntaxTree;
-import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.AttributesMap;
-import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.ConcreteSyntaxTree;
-import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.SemanticRule;
-import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.SemanticRules;
-import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.SyntaxDirectedDefinition;
-import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.SyntaxTreeException;
-import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.InnerNode;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.Leaf;
-import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.NewNodeEventHandler;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeNode;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeNodeCollection;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeNodeSet;
 import de.fuberlin.bii.regextodfaconverter.fsm.FiniteStateMachine;
 import de.fuberlin.bii.regextodfaconverter.fsm.State;
 import de.fuberlin.bii.tokenmatcher.StatePayload;
-import de.fuberlin.bii.tokenmatcher.attributes.ParseIntAttribute;
-import de.fuberlin.bii.tokenmatcher.attributes.ParseStringAttribute;
 import de.fuberlin.bii.utils.Notification;
-import de.fuberlin.bii.utils.Sets;
 import de.fuberlin.bii.utils.Test;
 
 

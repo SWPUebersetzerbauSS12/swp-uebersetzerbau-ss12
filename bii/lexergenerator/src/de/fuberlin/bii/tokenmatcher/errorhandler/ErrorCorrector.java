@@ -34,13 +34,13 @@ package de.fuberlin.bii.tokenmatcher.errorhandler;
 
 import java.util.Collection;
 
-import tokenmatcher.DeterministicFiniteAutomata;
-import tokenmatcher.LexemIdentificationException;
-import tokenmatcher.StatePayload;
-import utils.Notification;
-import bufferedreader.LexemeReader;
-import bufferedreader.LexemeReaderException;
-import bufferedreader.SpecialChars;
+import de.fuberlin.bii.tokenmatcher.DeterministicFiniteAutomata;
+import de.fuberlin.bii.tokenmatcher.LexemIdentificationException;
+import de.fuberlin.bii.tokenmatcher.StatePayload;
+import de.fuberlin.bii.utils.Notification;
+import de.fuberlin.bii.bufferedreader.LexemeReader;
+import de.fuberlin.bii.bufferedreader.LexemeReaderException;
+import de.fuberlin.bii.bufferedreader.SpecialChars;
 
 /**
  * 

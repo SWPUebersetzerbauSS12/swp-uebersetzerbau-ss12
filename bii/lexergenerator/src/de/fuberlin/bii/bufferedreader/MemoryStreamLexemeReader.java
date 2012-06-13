@@ -35,10 +35,8 @@ package de.fuberlin.bii.bufferedreader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 
-import utils.Notification;
-import utils.Test;
+import de.fuberlin.bii.utils.Notification;
 
 public class MemoryStreamLexemeReader implements LexemeReader {
 	

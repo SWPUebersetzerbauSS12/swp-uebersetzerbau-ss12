@@ -46,9 +46,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import regextodfaconverter.MinimalDfa;
-import tokenmatcher.StatePayload;
-import utils.Notification;
+import de.fuberlin.bii.regextodfaconverter.MinimalDfa;
+import de.fuberlin.bii.tokenmatcher.StatePayload;
+import de.fuberlin.bii.utils.Notification;
 
 /**
  * Stellt einen minimalen DFA-Provider dar, der minimale DFA's, auf Basis (von

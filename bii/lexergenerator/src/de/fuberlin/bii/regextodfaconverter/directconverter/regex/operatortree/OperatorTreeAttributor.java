@@ -38,16 +38,16 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
-import regextodfaconverter.directconverter.regex.RegexSpecialChars;
-import regextodfaconverter.directconverter.syntaxtree.SyntaxTreeException;
-import regextodfaconverter.directconverter.syntaxtree.node.TreeNode;
-import regextodfaconverter.directconverter.syntaxtree.node.TreeNode;
-import regextodfaconverter.directconverter.syntaxtree.node.TreeNodeCollection;
-import regextodfaconverter.directconverter.syntaxtree.node.TreeNodeSet;
-import regextodfaconverter.directconverter.syntaxtree.node.Leaf;
-import utils.Sets;
-import utils.Test;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
+import de.fuberlin.bii.regextodfaconverter.directconverter.regex.RegexSpecialChars;
+import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.SyntaxTreeException;
+import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeNode;
+import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeNode;
+import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeNodeCollection;
+import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeNodeSet;
+import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.Leaf;
+import de.fuberlin.bii.utils.Sets;
+import de.fuberlin.bii.utils.Test;
 
 
 /**

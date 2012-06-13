@@ -32,7 +32,7 @@
 
 package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node;
 
-import utils.Test;
+import de.fuberlin.bii.utils.Test;
 
 
 /**

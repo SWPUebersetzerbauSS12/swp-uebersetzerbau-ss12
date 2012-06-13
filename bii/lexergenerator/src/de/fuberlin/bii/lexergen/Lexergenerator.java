@@ -34,7 +34,7 @@ package de.fuberlin.bii.lexergen;
 
 import java.io.File;
 
-import parser.IToken;
+import de.fuberlin.bii.parser.IToken;
 
 /**
  * Stellt die Schnittstelle eines Lexergenerators dar.

@@ -34,19 +34,19 @@ package de.fuberlin.bii.lexergen;
 
 import java.io.File;
 
-import bufferedreader.BufferedLexemeReader;
-import bufferedreader.LexemeReaderException;
+import de.fuberlin.bii.bufferedreader.BufferedLexemeReader;
+import de.fuberlin.bii.bufferedreader.LexemeReaderException;
 
-import dfaprovider.DirectMinimalDfaBuilder;
-import dfaprovider.IndirectMinimalDfaBuilder;
-import dfaprovider.MinimalDfaBuilder;
-import dfaprovider.MinimalDfaProvider;
+import de.fuberlin.bii.dfaprovider.DirectMinimalDfaBuilder;
+import de.fuberlin.bii.dfaprovider.IndirectMinimalDfaBuilder;
+import de.fuberlin.bii.dfaprovider.MinimalDfaBuilder;
+import de.fuberlin.bii.dfaprovider.MinimalDfaProvider;
 
-import parser.IToken;
-import regextodfaconverter.MinimalDfa;
-import tokenmatcher.StatePayload;
-import tokenmatcher.Tokenizer;
-import tokenmatcher.errorhandler.ErrorCorrector.CorrectionMode;
+import de.fuberlin.bii.parser.IToken;
+import de.fuberlin.bii.regextodfaconverter.MinimalDfa;
+import de.fuberlin.bii.tokenmatcher.StatePayload;
+import de.fuberlin.bii.tokenmatcher.Tokenizer;
+import de.fuberlin.bii.tokenmatcher.errorhandler.ErrorCorrector.CorrectionMode;
 
 /**
  * Stellt einen Lexergenerator (mit Namen "Lexergen") dar.

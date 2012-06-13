@@ -30,7 +30,7 @@
  *
  */
 
-package regextodfaconverter;
+package de.fuberlin.bii.regextodfaconverter;
 
 /**
  * Stellt einen Fehler dar, der beim Konvertieren eines regulären Ausdrucks in

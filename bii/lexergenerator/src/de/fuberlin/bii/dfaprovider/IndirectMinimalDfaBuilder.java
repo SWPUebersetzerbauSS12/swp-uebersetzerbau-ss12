@@ -35,15 +35,15 @@ package de.fuberlin.bii.dfaprovider;
 import java.io.File;
 import java.util.ArrayList;
 
-import parsetokdef.LexTokDef;
-import parsetokdef.ReadTokDefAbstract;
-import parsetokdef.TokenDefinitionException;
-import regextodfaconverter.ConvertExecption;
-import regextodfaconverter.MinimalDfa;
-import regextodfaconverter.RegexToNfaConverter;
-import regextodfaconverter.fsm.FiniteStateMachine;
-import tokenmatcher.StatePayload;
-import utils.IRule;
+import de.fuberlin.bii.parsetokdef.LexTokDef;
+import de.fuberlin.bii.parsetokdef.ReadTokDefAbstract;
+import de.fuberlin.bii.parsetokdef.TokenDefinitionException;
+import de.fuberlin.bii.regextodfaconverter.ConvertExecption;
+import de.fuberlin.bii.regextodfaconverter.MinimalDfa;
+import de.fuberlin.bii.regextodfaconverter.RegexToNfaConverter;
+import de.fuberlin.bii.regextodfaconverter.fsm.FiniteStateMachine;
+import de.fuberlin.bii.tokenmatcher.StatePayload;
+import de.fuberlin.bii.utils.IRule;
 
 /**
  * Stellt einen MinimalDFA-Builder dar, der den DFA über den indirekten Weg von
@@ -101,7 +101,7 @@ public class IndirectMinimalDfaBuilder implements MinimalDfaBuilder {
 		int counter = 0;
 		for (IRule irule : rtd.getRules()) {
 			counter++;
-			payload = new regextodfaconverter.fsm.StatePayload(
+			payload = new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload(
 					irule.getTokenType(), irule.getTokenValue(), counter * (-1));
 			regex = irule.getRegexp();
 			

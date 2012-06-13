@@ -34,8 +34,7 @@ package de.fuberlin.bii.tokenmatcher.fsm;
 
 import java.util.HashMap;
 
-import tokenmatcher.fsm.State;
-import utils.Test;
+import de.fuberlin.bii.utils.Test;
 
 
 

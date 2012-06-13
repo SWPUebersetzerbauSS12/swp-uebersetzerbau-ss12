@@ -1,0 +1,77 @@
+package de.fuberlin.projecta;
+
+import java.io.File;
+
+import de.fuberlin.projecta.analysis.SemanticAnalyzer;
+import de.fuberlin.projecta.lexer.ILexer;
+import de.fuberlin.projecta.lexer.Lexer;
+import de.fuberlin.projecta.lexer.io.FileCharStream;
+import de.fuberlin.projecta.lexer.io.ICharStream;
+import de.fuberlin.projecta.lexer.io.StringCharStream;
+import de.fuberlin.projecta.parser.ISyntaxTree;
+import de.fuberlin.projecta.parser.ParseException;
+import de.fuberlin.projecta.parser.Parser;
+import de.fuberlin.projecta.utils.IOUtils;
+
+public class FrontendMain {
+
+	static void readStdin() {
+		String data = IOUtils.readMultilineStringFromStdin();
+		run(new StringCharStream(data));
+	}
+
+	static void readFile(String path) {
+		File sourceFile = new File(path);
+		if (!sourceFile.exists()) {
+			System.out.println("File does not exist.");
+			return;
+		}
+
+		if (!sourceFile.canRead()) {
+			System.out.println("File is not readable");
+		}
+
+		assert (sourceFile.exists());
+		assert (sourceFile.canRead());
+
+		run(new FileCharStream(path));
+	}
+
+	static void run(ICharStream stream) {
+		ILexer lexer = new Lexer(stream);
+		Parser parser = new Parser();
+		try {
+			parser.parse(lexer, "");
+		} catch (ParseException e) {
+			e.printStackTrace();
+			System.err.println("Parser failed.");
+			return;
+		}
+		
+		ISyntaxTree tree = parser.getParseTree();
+		//parser.printParseTree();
+		
+		SemanticAnalyzer analyzer = new SemanticAnalyzer(tree);
+		analyzer.analyze();
+		if(analyzer.getAST().checkSemantics()){
+			System.out.println("Semantics should be correct");
+		}else{
+			System.out.println("Bad semantics!");
+		}
+		System.out.println(analyzer.getAST().genCode());
+		
+	}
+
+	public static void main(String[] args) {
+		if (args.length == 0) {
+			System.out.println("Reading from stdin. Exit with new line and Ctrl+D.");
+			readStdin();
+		} else if (args.length == 1) {
+			final String path = args[0];
+			readFile(path);
+		} else {
+			System.out.println("Wrong number of parameters.");
+		}
+
+	}
+}

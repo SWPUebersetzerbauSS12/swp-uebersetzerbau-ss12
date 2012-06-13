@@ -1,2 +1,0 @@
-<A> ::= <A> test c | <A> b c | x y | <B> <A> x | <B> y
-<B> ::= <A>

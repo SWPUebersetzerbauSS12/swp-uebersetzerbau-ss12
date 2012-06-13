@@ -124,6 +124,7 @@ public class TokenParser {
 		
 		// Leaf(Terminal) reached. Get next Token to continue parsing with
 		if (symbol.equals(TokenTerminal)){
+		    tree.setToken(Token);
 			getNextToken();
 		}
 		// Check Parsertable for next Step (specifically check if symbol - Token field exists

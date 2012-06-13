@@ -22,7 +22,7 @@ public class SyntaxTree implements ISyntaxTree {
 	//The parent of the current Node (NULL if root)
 	private SyntaxTree parent;
 	//Token for the current Node
-	private IToken token;
+	private IToken token = null;
 	//Symbol of the current Node
 	private String symbol;
 	
@@ -51,6 +51,7 @@ public class SyntaxTree implements ISyntaxTree {
 	public void setParent(ISyntaxTree tree) {
 		this.parent = (SyntaxTree)tree;
 	}
+
 
 	/**
 	 * Getter for parent Node
@@ -219,5 +220,10 @@ public class SyntaxTree implements ISyntaxTree {
 			((SyntaxTree) child).CompressSyntaxTree();
 		}
 	}
+	
+	   
+    public void setToken(IToken token){
+        this.token = token;
+    }
 	
 }

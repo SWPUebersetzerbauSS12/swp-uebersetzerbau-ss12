@@ -15,6 +15,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -247,23 +248,7 @@ public class Printer {
 			Element root = doc.createElement(tagName);
 			doc.appendChild(root);
 			
-			for (ISyntaxTree child:node.getChildren()){
-				tagName = ((SyntaxTree)child).getSymbol();
-				if (tagName.startsWith("<")){
-					tagName = tagName.substring(1, tagName.length()-1);
-				}
-				Element childNode;
-				if (child.getChildrenCount() == 0){
-					childNode = doc.createElement("LEAF");
-					root.appendChild(childNode);
-				}
-				else{
-					childNode = doc.createElement(tagName);
-					root.appendChild(childNode);
-					doc = childrenToXML(child, childNode, doc);
-				}
-				
-			}
+			doc = childrenToXML(node, root, doc);
 			
 			// write the content into xml file
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -295,7 +280,28 @@ public class Printer {
 			}
 			Element childNode;
 			if (child.getChildrenCount() == 0){
-				childNode = doc.createElement("LEAF");
+				childNode = doc.createElement("TOKEN");
+				Attr symbolAttr = doc.createAttribute("symbol");
+                symbolAttr.setValue(tagName);
+                childNode.setAttributeNode(symbolAttr);
+                if (child.getToken() != null){
+                    Attr typeAttr = doc.createAttribute("type");
+                    typeAttr.setValue(child.getToken().getType());
+                    childNode.setAttributeNode(typeAttr);
+                
+                    Attr attributeAttr = doc.createAttribute("attribute");
+                    attributeAttr.setValue("not Implemented");
+                    childNode.setAttributeNode(attributeAttr);
+                    
+                    Attr lNAttr = doc.createAttribute("LineNumber");
+                    lNAttr.setValue(String.valueOf(child.getToken().getLineNumber()));
+                    childNode.setAttributeNode(lNAttr);
+                    
+                    Attr offAttr = doc.createAttribute("Offset");
+                    offAttr.setValue(String.valueOf(child.getToken().getOffset()));
+                    childNode.setAttributeNode(offAttr);
+                }
+                
 				parentNode.appendChild(childNode);
 			}
 			else{

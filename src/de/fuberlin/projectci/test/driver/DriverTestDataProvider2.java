@@ -6,9 +6,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.fuberlin.commons.util.LogFactory;
-import de.fuberlin.projectci.extern.ILexer;
-import de.fuberlin.projectci.extern.ISyntaxTree;
-import de.fuberlin.projectci.extern.IToken;
+import de.fuberlin.commons.lexer.ILexer;
+import de.fuberlin.commons.parser.ISyntaxTree;
+import de.fuberlin.commons.lexer.IToken;
 import de.fuberlin.projectci.extern.lexer.Lexer;
 import de.fuberlin.projectci.extern.lexer.io.StringCharStream;
 import de.fuberlin.projectci.grammar.BNFParsingErrorException;

@@ -3,9 +3,10 @@ package de.fuberlin.projectci.test.driver;
 import java.util.logging.Logger;
 
 import de.fuberlin.commons.util.LogFactory;
-import de.fuberlin.projectci.extern.ILexer;
-import de.fuberlin.projectci.extern.ISyntaxTree;
-import de.fuberlin.projectci.extern.IToken;
+import de.fuberlin.commons.lexer.ILexer;
+import de.fuberlin.commons.lexer.TokenType;
+import de.fuberlin.commons.parser.ISyntaxTree;
+import de.fuberlin.commons.lexer.IToken;
 import de.fuberlin.projectci.grammar.Grammar;
 import de.fuberlin.projectci.grammar.NonTerminalSymbol;
 import de.fuberlin.projectci.grammar.Production;
@@ -73,12 +74,12 @@ public class DriverTestDataProvider1 implements DriverTestDataProvider{
 		
 		SyntaxTreeNode e=new SyntaxTreeNode(new NonTerminalSymbol("E")); 
 		SyntaxTreeNode t=new SyntaxTreeNode(new NonTerminalSymbol("T")); 
-		t.addTree(new SyntaxTreeNode(new TerminalSymbol("id")));
-		t.addTree(new SyntaxTreeNode(new TerminalSymbol("*")));
-		t.addTree(new SyntaxTreeNode(new TerminalSymbol("id")));
-		e.addTree(t);
-		e.addTree(new SyntaxTreeNode(new TerminalSymbol("+")));
-		e.addTree(new SyntaxTreeNode(new TerminalSymbol("id")));
+		t.addChild(new SyntaxTreeNode(new TerminalSymbol("id")));
+		t.addChild(new SyntaxTreeNode(new TerminalSymbol("*")));
+		t.addChild(new SyntaxTreeNode(new TerminalSymbol("id")));
+		e.addChild(t);
+		e.addChild(new SyntaxTreeNode(new TerminalSymbol("+")));
+		e.addChild(new SyntaxTreeNode(new TerminalSymbol("id")));
 		
 		return e;
 	}
@@ -181,12 +182,12 @@ public class DriverTestDataProvider1 implements DriverTestDataProvider{
 		parseTable.getGotoTableForState(s7).setGotoForNonTerminalSymbol(new Goto(s10), nts2);
 
 		lexer=new DummyLexer();
-		((DummyLexer)lexer).addToken(IToken.TokenType.ID, null);
-		((DummyLexer)lexer).addToken(IToken.TokenType.OP_MUL, null);
-		((DummyLexer)lexer).addToken(IToken.TokenType.ID, null);
-		((DummyLexer)lexer).addToken(IToken.TokenType.OP_ADD, null);
-		((DummyLexer)lexer).addToken(IToken.TokenType.ID, null);
-		((DummyLexer)lexer).addToken(IToken.TokenType.EOF, null);
+		((DummyLexer)lexer).addToken(TokenType.ID, null);
+		((DummyLexer)lexer).addToken(TokenType.OP_MUL, null);
+		((DummyLexer)lexer).addToken(TokenType.ID, null);
+		((DummyLexer)lexer).addToken(TokenType.OP_ADD, null);
+		((DummyLexer)lexer).addToken(TokenType.ID, null);
+		((DummyLexer)lexer).addToken(TokenType.EOF, null);
 	}
 
 }

@@ -4,10 +4,11 @@ import java.util.Stack;
 import java.util.logging.Logger;
 
 import de.fuberlin.commons.util.LogFactory;
-import de.fuberlin.projectci.extern.ILexer;
-import de.fuberlin.projectci.extern.ISyntaxTree;
-import de.fuberlin.projectci.extern.IToken;
-import de.fuberlin.projectci.extern.IToken.TokenType;
+import de.fuberlin.commons.lexer.ILexer;
+import de.fuberlin.commons.parser.ISyntaxTree;
+//import de.fuberlin.projectci.extern.IToken;
+//import de.fuberlin.projectci.extern.IToken.TokenType;
+import de.fuberlin.commons.lexer.IToken;
 import de.fuberlin.projectci.extern.lexer.Token;
 import de.fuberlin.projectci.grammar.Grammar;
 import de.fuberlin.projectci.grammar.NonTerminalSymbol;
@@ -38,7 +39,7 @@ public class Driver {
 		stateStack.push(parseTable.getInitialState());
 		IToken currentToken=readNextToken(lexer);
 //		tokenStack.push(currentToken);
-		TerminalSymbol currentTerminalSymbol=new TerminalSymbol(currentToken.getType().terminalSymbol());
+		TerminalSymbol currentTerminalSymbol=new TerminalSymbol(currentToken.getType());
 		
 		while(true){			
 			State currentState=stateStack.peek();
@@ -50,7 +51,7 @@ public class Driver {
 				stateStack.push(targetState);
 				tokenStack.push(currentToken);
 				currentToken=readNextToken(lexer);				
-				currentTerminalSymbol=new TerminalSymbol(currentToken.getType().terminalSymbol());
+				currentTerminalSymbol=new TerminalSymbol(currentToken.getType());
 				
 			}
 			else if (currentAction instanceof ReduceAction){
@@ -98,7 +99,8 @@ public class Driver {
 					// TODO Prüfen, ob dies die richtige Art und Weise ist um einen ε-Übergang herzustellen
 					// (Der Syntaxbaum für ein einfaches Programm sah jedenfalls richtig aus...)
 					storedToken=currentToken;
-					currentToken=new Token(TokenType.EPSILON, null, currentToken.getLineNumber(), currentToken.getOffset());
+					// FIXME TokenType.EPSILON gibt es nicht mehr, wurde durch null ersetzt
+					currentToken=new Token(null, null, currentToken.getLineNumber(), currentToken.getOffset());
 					currentTerminalSymbol=Grammar.EPSILON;
 //					if (!tokenStack.isEmpty()){
 //						tokenStack.pop();

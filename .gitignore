@@ -12,8 +12,9 @@
 
 # java
 *.class
+/bin
 
 # project-specific
 .metadata/
 target/
-.classpath
+/.settings

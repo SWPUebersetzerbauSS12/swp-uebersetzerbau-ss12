@@ -1,27 +1,20 @@
 package de.fuberlin.bii.regextodfaconverter.directconverter;
 
-import java.io.File;
-
 import org.junit.Assert;
 import org.junit.Test;
 
-import bufferedreader.BufferedLexemeReader;
-import bufferedreader.LexemeReader;
-
-import regextodfaconverter.MinimalDfa;
-import regextodfaconverter.directconverter.regex.RegexSpecialChars;
-import regextodfaconverter.directconverter.regex.RegexToDfaConverter;
-import regextodfaconverter.directconverter.regex.RegexToPayloadMap;
-import regextodfaconverter.directconverter.regex.operatortree.RegularExpressionElement;
-import regextodfaconverter.fsm.FiniteStateMachine;
-import regextodfaconverter.fsm.StatePayload;
-import tokenmatcher.LexemIdentificationException;
-import tokenmatcher.Token;
-import tokenmatcher.Tokenizer;
-import utils.Notification;
-import tokenmatcher.attributes.ParseIntAttribute;
-import tokenmatcher.attributes.ParseStringAttribute;
-import tokenmatcher.attributes.StringAttribute;
+import de.fuberlin.bii.bufferedreader.BufferedLexemeReader;
+import de.fuberlin.bii.bufferedreader.LexemeReader;
+import de.fuberlin.bii.regextodfaconverter.MinimalDfa;
+import de.fuberlin.bii.regextodfaconverter.directconverter.regex.RegexToDfaConverter;
+import de.fuberlin.bii.regextodfaconverter.directconverter.regex.RegexToPayloadMap;
+import de.fuberlin.bii.regextodfaconverter.fsm.FiniteStateMachine;
+import de.fuberlin.bii.tokenmatcher.LexemIdentificationException;
+import de.fuberlin.bii.tokenmatcher.Token;
+import de.fuberlin.bii.tokenmatcher.Tokenizer;
+import de.fuberlin.bii.tokenmatcher.attributes.ParseIntAttribute;
+import de.fuberlin.bii.tokenmatcher.attributes.ParseStringAttribute;
+import de.fuberlin.bii.utils.Notification;
 
 
 public class RegexToDfaTest {
@@ -31,11 +24,11 @@ public class RegexToDfaTest {
 		
 		Notification.enableDebugPrinting();
 		
-		RegexToPayloadMap<tokenmatcher.StatePayload> regexToPayloadMap = new RegexToPayloadMap<tokenmatcher.StatePayload>();
-		regexToPayloadMap.put( "(1|2)*3", new regextodfaconverter.fsm.StatePayload( "NUM", new ParseIntAttribute()));
-		regexToPayloadMap.put( "c(1|2)*3", new regextodfaconverter.fsm.StatePayload( "OP", new ParseStringAttribute()));
+		RegexToPayloadMap<de.fuberlin.bii.tokenmatcher.StatePayload> regexToPayloadMap = new RegexToPayloadMap<de.fuberlin.bii.tokenmatcher.StatePayload>();
+		regexToPayloadMap.put( "(1|2)*3", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "NUM", new ParseIntAttribute()));
+		regexToPayloadMap.put( "c(1|2)*3", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "OP", new ParseStringAttribute()));
 				
-		FiniteStateMachine<Character, ? extends tokenmatcher.StatePayload> fsm = new RegexToDfaConverter()
+		FiniteStateMachine<Character, ? extends de.fuberlin.bii.tokenmatcher.StatePayload> fsm = new RegexToDfaConverter()
 		.convert( regexToPayloadMap);
 
 		LexemeReader lexemeReader = new BufferedLexemeReader("src/test/resources/source/tokenmatcher/regex.fun");// new SimpleLexemeReader(
@@ -50,11 +43,11 @@ public class RegexToDfaTest {
 		
 		Notification.enableDebugPrinting();
 		
-		RegexToPayloadMap<tokenmatcher.StatePayload> regexToPayloadMap = new RegexToPayloadMap<tokenmatcher.StatePayload>();
-		regexToPayloadMap.put( "(1|2)*3", new regextodfaconverter.fsm.StatePayload( "NUM", new ParseIntAttribute()));
-		regexToPayloadMap.put( "c(1|2)*3", new regextodfaconverter.fsm.StatePayload( "ID", new ParseStringAttribute()));
+		RegexToPayloadMap<de.fuberlin.bii.tokenmatcher.StatePayload> regexToPayloadMap = new RegexToPayloadMap<de.fuberlin.bii.tokenmatcher.StatePayload>();
+		regexToPayloadMap.put( "(1|2)*3", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "NUM", new ParseIntAttribute()));
+		regexToPayloadMap.put( "c(1|2)*3", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "ID", new ParseStringAttribute()));
 				
-		FiniteStateMachine<Character, ? extends tokenmatcher.StatePayload> fsm = new RegexToDfaConverter()
+		FiniteStateMachine<Character, ? extends de.fuberlin.bii.tokenmatcher.StatePayload> fsm = new RegexToDfaConverter()
 		.convert( regexToPayloadMap);
 
 		LexemeReader lexemeReader = new BufferedLexemeReader("src/test/resources/source/tokenmatcher/regex.fun");// new SimpleLexemeReader(

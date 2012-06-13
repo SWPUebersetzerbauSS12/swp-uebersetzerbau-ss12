@@ -5,13 +5,12 @@ import java.io.File;
 import org.junit.Assert;
 import org.junit.Test;
 
-import regextodfaconverter.MinimalDfa;
-import tokenmatcher.StatePayload;
-import tokenmatcher.Token;
-import tokenmatcher.Tokenizer;
-import bufferedreader.BufferedLexemeReader;
-import bufferedreader.LexemeReader;
-import bufferedreader.SimpleLexemeReader;
+import de.fuberlin.bii.bufferedreader.BufferedLexemeReader;
+import de.fuberlin.bii.bufferedreader.LexemeReader;
+import de.fuberlin.bii.regextodfaconverter.MinimalDfa;
+import de.fuberlin.bii.tokenmatcher.StatePayload;
+import de.fuberlin.bii.tokenmatcher.Token;
+import de.fuberlin.bii.tokenmatcher.Tokenizer;
 
 /**
  * Test-Klasse für die IndirectMinimalDfaBuilder-Klasse.

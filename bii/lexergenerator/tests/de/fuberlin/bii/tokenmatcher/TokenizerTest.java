@@ -6,22 +6,23 @@ import java.util.ArrayList;
 import org.junit.Assert;
 import org.junit.Test;
 
-import regextodfaconverter.MinimalDfa;
-import regextodfaconverter.NfaToDfaConverter;
-import regextodfaconverter.fsm.FiniteStateMachine;
-import regextodfaconverter.fsm.State;
-import tokenmatcher.StatePayload;
-import tokenmatcher.Token;
-import tokenmatcher.TokenType;
-import tokenmatcher.Tokenizer;
-import tokenmatcher.attributes.ParseStringAttribute;
-import tokenmatcher.attributes.StringAttribute;
-import bufferedreader.*;
+import de.fuberlin.bii.regextodfaconverter.MinimalDfa;
+import de.fuberlin.bii.regextodfaconverter.NfaToDfaConverter;
+import de.fuberlin.bii.regextodfaconverter.fsm.FiniteStateMachine;
+import de.fuberlin.bii.regextodfaconverter.fsm.State;
+import de.fuberlin.bii.tokenmatcher.StatePayload;
+import de.fuberlin.bii.tokenmatcher.Token;
+import de.fuberlin.bii.tokenmatcher.TokenType;
+import de.fuberlin.bii.tokenmatcher.Tokenizer;
+import de.fuberlin.bii.tokenmatcher.attributes.ParseStringAttribute;
+import de.fuberlin.bii.tokenmatcher.attributes.StringAttribute;
+import de.fuberlin.bii.bufferedreader.*;
 
 /**
  * Test-Klasse für die Tokenizer-Klasse.
- * @author  Johannes Dahlke
- *
+ * 
+ * @author Johannes Dahlke
+ * 
  */
 public class TokenizerTest {
 
@@ -31,31 +32,35 @@ public class TokenizerTest {
 	@Test
 	public void testGetNextToken() throws Exception {
 		String sourceFilename = "src/test/resources/source/tokenmatcher/testrelop.fun";
-		
+
 		FiniteStateMachine<Character, StatePayload> fsm = generateRelopFSM();
 		fsm.union(generateCommentFSM());
 		NfaToDfaConverter<Character, StatePayload> nfaToDfaConverter = new NfaToDfaConverter<Character, StatePayload>();
 		fsm = nfaToDfaConverter.convertToDfa(fsm);
 
 		LexemeReader lexemeReader = new BufferedLexemeReader(sourceFilename);
-//		LexemeReader lexemeReader = new SimpleLexemeReader(sourceFile);
+		// LexemeReader lexemeReader = new SimpleLexemeReader(sourceFile);
 
-		Tokenizer tokenizer = new Tokenizer(lexemeReader, new MinimalDfa<Character, StatePayload>(fsm));
+		Tokenizer tokenizer = new Tokenizer(lexemeReader,
+				new MinimalDfa<Character, StatePayload>(fsm));
 
 		Token currentToken;
 		String tokenString;
-		String[] tokensToFind = {"<OP, LE>", "<OP, LT>", "<OP, NE>", "<OP, LT>", "<OP, NE>", "<OP, LT>", "<OP, NE>", "<OP, LE>", "<OP, LT>", "<OP, LT>"};
+		String[] tokensToFind = { "<OP, LE>", "<OP, LT>", "<OP, NE>",
+				"<OP, LT>", "<OP, NE>", "<OP, LT>", "<OP, NE>", "<OP, LE>",
+				"<OP, LT>", "<OP, LT>" };
 		int i = 0;
-		while ( !Token.isEofToken( currentToken = tokenizer.getNextToken())) {
-			tokenString = "<" + currentToken.getType() + ", " + currentToken.getAttribute().toString() + ">";
+		while (!Token.isEofToken(currentToken = tokenizer.getNextToken())) {
+			tokenString = "<" + currentToken.getType() + ", "
+					+ currentToken.getAttribute().toString() + ">";
 			Assert.assertEquals(tokensToFind[i], tokenString);
 			System.out.println(tokenString);
 			i++;
 		}
-		
+
 		Assert.assertEquals(i, tokensToFind.length);
 	}
-	
+
 	/**
 	 * Erstellt einen Automaten für Wörter, die gültige Zahlen darstellen.
 	 * 
@@ -115,8 +120,8 @@ public class TokenizerTest {
 
 			state1 = fsm.getCurrentState();
 			state2 = new State<Character, StatePayload>(
-					new regextodfaconverter.fsm.StatePayload("ID",
-							new ParseStringAttribute()), true);
+					new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload(
+							"ID", new ParseStringAttribute()), true);
 
 			ArrayList<Character> validChars = new ArrayList<Character>();
 			for (char c = 'a'; c <= 'z'; c++) {
@@ -156,11 +161,12 @@ public class TokenizerTest {
 
 			state2 = new State<Character, StatePayload>();
 			state3 = new State<Character, StatePayload>(
-					new regextodfaconverter.fsm.StatePayload("COMMENT", new StringAttribute( "LINE"),
-							0), true);
+					new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload(
+							"COMMENT", new StringAttribute("LINE"), 0), true);
 			state4 = new State<Character, StatePayload>(
-					new regextodfaconverter.fsm.StatePayload("COMMENT",
-							new StringAttribute( "BLOCK_BEGIN"), 0), true);
+					new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload(
+							"COMMENT", new StringAttribute("BLOCK_BEGIN"), 0),
+					true);
 
 			fsm.addTransition(state1, state2, '/');
 			fsm.addTransition(state2, state3, '/');
@@ -168,32 +174,35 @@ public class TokenizerTest {
 
 			state5 = new State<Character, StatePayload>();
 			state6 = new State<Character, StatePayload>(
-					new regextodfaconverter.fsm.StatePayload("COMMENT",
-							new StringAttribute( "BLOCK_END"), 0), true);
+					new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload(
+							"COMMENT", new StringAttribute("BLOCK_END"), 0),
+					true);
 
 			fsm.addTransition(state1, state5, '*');
 			fsm.addTransition(state5, state6, '/');
 
 			state7 = new State<Character, StatePayload>();
 			state8 = new State<Character, StatePayload>(
-					new regextodfaconverter.fsm.StatePayload("COMMENT",
-							new StringAttribute ( "BLOCK_BEGIN"), 0), true);
+					new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload(
+							"COMMENT", new StringAttribute("BLOCK_BEGIN"), 0),
+					true);
 
 			fsm.addTransition(state1, state7, '{');
 			fsm.addTransition(state7, state8, '-');
 
 			state9 = new State<Character, StatePayload>();
 			state10 = new State<Character, StatePayload>(
-					new regextodfaconverter.fsm.StatePayload("COMMENT",
-							new StringAttribute( "BLOCK_END"), 0), true);
+					new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload(
+							"COMMENT", new StringAttribute("BLOCK_END"), 0),
+					true);
 
 			fsm.addTransition(state1, state9, '-');
 			fsm.addTransition(state9, state10, '}');
 
 			state11 = new State<Character, StatePayload>();
 			state12 = new State<Character, StatePayload>(
-					new regextodfaconverter.fsm.StatePayload("COMMENT", new StringAttribute( "LINE"),
-							0), true);
+					new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload(
+							"COMMENT", new StringAttribute("LINE"), 0), true);
 
 			fsm.addTransition(state1, state11, '-');
 			fsm.addTransition(state11, state12, '-');
@@ -218,14 +227,14 @@ public class TokenizerTest {
 
 			state1 = fsm.getCurrentState();
 			state2 = new State<Character, StatePayload>(
-					new regextodfaconverter.fsm.StatePayload("OP", new StringAttribute( "LT"), 0),
-					true);
+					new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload(
+							"OP", new StringAttribute("LT"), 0), true);
 			state3 = new State<Character, StatePayload>(
-					new regextodfaconverter.fsm.StatePayload("OP", new StringAttribute( "LE"), 0),
-					true);
+					new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload(
+							"OP", new StringAttribute("LE"), 0), true);
 			state4 = new State<Character, StatePayload>(
-					new regextodfaconverter.fsm.StatePayload("OP", new StringAttribute( "NE"), 0),
-					true);
+					new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload(
+							"OP", new StringAttribute("NE"), 0), true);
 
 			fsm.addTransition(state1, state2, '<');
 			fsm.addTransition(state2, state3, '=');

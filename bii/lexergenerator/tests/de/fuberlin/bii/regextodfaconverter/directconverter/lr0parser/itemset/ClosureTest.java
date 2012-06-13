@@ -1,25 +1,14 @@
 package de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.itemset;
 
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Set;
-
 import junit.framework.Assert;
 
 import org.junit.Test;
 
-
-import regextodfaconverter.MinimalDfa;
-import regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
-import regextodfaconverter.directconverter.lr0parser.grammar.RuleElement;
-import regextodfaconverter.directconverter.lr0parser.grammar.RuleElementArray;
-import regextodfaconverter.directconverter.lr0parser.grammar.RuleElementSequenz;
-import regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
-import regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
-import regextodfaconverter.fsm.FiniteStateMachine;
-import tokenmatcher.StatePayload;
-import tokenmatcher.Token;
-import tokenmatcher.Tokenizer;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.RuleElementArray;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.RuleElementSequenz;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
 
 
 public class ClosureTest {

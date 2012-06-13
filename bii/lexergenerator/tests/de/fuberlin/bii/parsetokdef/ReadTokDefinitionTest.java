@@ -6,8 +6,8 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import tokenmatcher.attributes.Attribute;
-import utils.IRule;
+import de.fuberlin.bii.tokenmatcher.attributes.Attribute;
+import de.fuberlin.bii.utils.IRule;
 
 /**
  * Test-Klasse für die ReadTokDefinition-Klasse.

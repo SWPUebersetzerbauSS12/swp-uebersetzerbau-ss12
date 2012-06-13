@@ -1,25 +1,14 @@
 package de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
 
-import regextodfaconverter.directconverter.PositionToPayloadMap;
-import regextodfaconverter.directconverter.lr0parser.grammar.ContextFreeGrammar;
-import regextodfaconverter.directconverter.lr0parser.grammar.GrammarTest;
-import regextodfaconverter.directconverter.lr0parser.grammar.Grammars;
-import regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
-import regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
-import regextodfaconverter.directconverter.lr0parser.grammar.ProductionSet;
-import regextodfaconverter.directconverter.lr0parser.grammar.RuleElementArray;
-import regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
-import regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
-import regextodfaconverter.directconverter.regex.operatortree.RegularExpressionElement;
-import regextodfaconverter.fsm.StatePayload;
-import tokenmatcher.attributes.StringAttribute;
-import utils.Notification;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.ContextFreeGrammar;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Grammars;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
+import de.fuberlin.bii.utils.Notification;
 
 public class ItemAutomataTest {
 

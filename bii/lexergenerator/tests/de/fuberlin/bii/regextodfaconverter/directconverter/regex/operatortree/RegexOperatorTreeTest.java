@@ -1,12 +1,8 @@
 package de.fuberlin.bii.regextodfaconverter.directconverter.regex.operatortree;
 
-import static org.junit.Assert.*;
 import junit.framework.Assert;
 
 import org.junit.Test;
-
-import regextodfaconverter.directconverter.PositionToPayloadMap;
-import tokenmatcher.StatePayload;
 
 
 public class RegexOperatorTreeTest {

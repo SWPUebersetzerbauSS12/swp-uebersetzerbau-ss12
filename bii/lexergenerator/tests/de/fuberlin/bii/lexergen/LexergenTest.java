@@ -5,9 +5,8 @@ import java.io.File;
 import org.junit.Assert;
 import org.junit.Test;
 
-import parser.IToken;
-
-import tokenmatcher.errorhandler.ErrorCorrector.CorrectionMode;
+import de.fuberlin.bii.parser.IToken;
+import de.fuberlin.bii.tokenmatcher.errorhandler.ErrorCorrector.CorrectionMode;
 
 public class LexergenTest {
 	

@@ -6,13 +6,6 @@ import java.util.Set;
 import org.junit.Test;
 
 
-import regextodfaconverter.MinimalDfa;
-import regextodfaconverter.fsm.FiniteStateMachine;
-import tokenmatcher.StatePayload;
-import tokenmatcher.Token;
-import tokenmatcher.Tokenizer;
-
-
 public class GrammarTest {
 
 	public static ContextFreeGrammar getRegexGrammar() {

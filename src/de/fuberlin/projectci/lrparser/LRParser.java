@@ -26,6 +26,14 @@ public class LRParser implements IParser {
 	
 	private Grammar grammar;
 	private ParseTable parseTable;
+	
+	// TODO Konstruktoren evtl ganz weglassen und in z.B. parse Methode überprüfen, 
+	// ob erzeugte Grammatik die selbe ist wie die zuvor benutzte und dann das Erstellen
+	// der Parsetabelle weglassen
+	public LRParser() {
+		grammar = null;
+		parseTable = null;
+	}
 
 	public LRParser(File grammarFile) throws BNFParsingErrorException, InvalidGrammarException {
 		

@@ -248,7 +248,7 @@ public class Printer {
 			doc.appendChild(root);
 			
 			for (ISyntaxTree child:node.getChildren()){
-				tagName = currNode.getSymbol();
+				tagName = ((SyntaxTree)child).getSymbol();
 				if (tagName.startsWith("<")){
 					tagName = tagName.substring(1, tagName.length()-1);
 				}

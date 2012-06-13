@@ -4,7 +4,7 @@ public class LLVM_Parameter {
 
 	private String typeString;		// Bsp: "i32"
 	private LLVM_ParameterType type;		// Bsp: REGISTER
-	private String name;	// Bsp: %i 
+	private String name;	// Bsp: %i
 	
 	public LLVM_Parameter(String name, String typeString) {
 		

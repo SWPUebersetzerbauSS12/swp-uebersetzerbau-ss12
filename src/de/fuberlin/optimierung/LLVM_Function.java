@@ -847,8 +847,10 @@ public class LLVM_Function {
 								p.setName(nextUnnamed);
 								// Ersetze in allen Verwendungen durch nextUnnamed
 								LinkedList<ILLVM_Command> uses = this.registerMap.getUses(name);
-								for(ILLVM_Command u : uses) {
-									this.changeOperandName(u, name, nextUnnamed);
+								if(uses!=null) {
+									for(ILLVM_Command u : uses) {
+										this.changeOperandName(u, name, nextUnnamed);
+									}
 								}
 							}
 							

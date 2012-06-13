@@ -15,29 +15,31 @@ import de.fuberlin.bii.utils.IRule;
  * @author Benjamin Weißenfels
  */
 public class LexTokDefTest {
-	
+
 	/**
 	 * Test of readFile method, of class ReadTokDefinition.
 	 */
 	@Test
 	public void testReadFile() throws Exception {
-		File rdFile = new File("src/test/resources/def/parsetokdef/test.rd");
+		File rdFile = new File(
+				"tests/resources/de/fuberlin/bii/def/parsetokdef/test.rd");
 		ReadTokDefAbstract instance = new LexTokDef(rdFile);
 		instance.readFile(rdFile);
 	}
 
 	@Test
 	public void testRegex() throws Exception {
-		File rdFile = new File("src/test/resources/def/parsetokdef/test.rd");
+		File rdFile = new File(
+				"tests/resources/de/fuberlin/bii/def/parsetokdef/test.rd");
 		List<IRule> rules = new LexTokDef(rdFile).getRules();
-		
+
 		String tokenType = rules.get(0).getTokenType();
 		Attribute tokenValue = rules.get(0).getTokenValue();
 		String tokenRegex = rules.get(0).getRegexp();
 		Assert.assertEquals("BRACKET", tokenType);
 		Assert.assertEquals("(", tokenValue.toString());
 		Assert.assertEquals("\\(", tokenRegex);
-		
+
 		tokenType = rules.get(5).getTokenType();
 		tokenValue = rules.get(5).getTokenValue();
 		Assert.assertEquals("OP", tokenType);

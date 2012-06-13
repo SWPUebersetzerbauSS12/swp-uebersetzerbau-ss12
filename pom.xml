@@ -24,7 +24,7 @@
 		</resources>
 		<testResources>
 			<testResource>
-				<directory>tests/testresources/</directory>
+				<directory>tests/resources/</directory>
 			</testResource>
 		</testResources>
 	</build>

@@ -1,17 +1,19 @@
 package de.fuberlin.projectcii.ParserGenerator.src;
 
-import de.fuberlin.projectcii.ParserGenerator.src.extern.ILexer;
-import de.fuberlin.projectcii.ParserGenerator.src.extern.ISyntaxTree;
+import de.fuberlin.commons.lexer.ILexer;
+import de.fuberlin.commons.parser.IParser;
+import de.fuberlin.commons.parser.ISyntaxTree;
+
 
 /**
  * 
  * LL1 Parser for a given TokenStream. The Parser uses the Grammar defined in
  * the Settings.ini file
  * 
- * @author Patrick Schlott
+ * @author Patrick Schlott, Christoph Schröder
  *
  */
-public class LL1Parser {
+public class LL1Parser implements IParser {
 	
 	private ParserGenerator pG;
 	
@@ -27,15 +29,18 @@ public class LL1Parser {
 		}
 	}
 	
-/**
- * This Methode creates a ParserTree from the parsergenerators data
- * and a given Lexer.
- * Decides whether parsing can be done based on the parsergenerators Parsertable
- * @author Ying Wei, Patrick Schlott
- * @param lexer The Lexer used as input for the parser.
- * @return ISyntaxTree The ParseTree;
- * */
-	public ISyntaxTree getParserTree(ILexer lexer){
+
+
+	/**
+	 * This Methode creates a ParserTree from the parsergenerators data
+	 * and a given Lexer.
+	 * Decides whether parsing can be done based on the parsergenerators Parsertable
+	 * @author Ying Wei, Patrick Schlott, Christoph Schröder
+	 * @param lexer The Lexer used as input for the parser.
+	 * @return ISyntaxTree The ParseTree;
+	 * */
+	@Override
+	public ISyntaxTree parse(ILexer lexer, String grammar) {
 		ISyntaxTree parsetree = new SyntaxTree();
 		try{
 			if(pG.parsable_LL1(pG.getParseTable())){

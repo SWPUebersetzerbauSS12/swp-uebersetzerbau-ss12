@@ -1,6 +1,6 @@
 package de.fuberlin.projectcii.ParserGenerator.src.extern.lexer;
 
-import de.fuberlin.projectcii.ParserGenerator.src.extern.ILexer;
+import de.fuberlin.commons.lexer.ILexer;
 import de.fuberlin.projectcii.ParserGenerator.src.extern.lexer.io.ICharStream;
 
 public class Lexer implements ILexer {

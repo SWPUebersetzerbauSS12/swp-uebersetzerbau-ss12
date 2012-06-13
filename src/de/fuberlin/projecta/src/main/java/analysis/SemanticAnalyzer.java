@@ -347,28 +347,28 @@ public class SemanticAnalyzer {
 			switch (t) {
 			case BASIC:
 				BasicTokenType type = (BasicTokenType) tree
-						.getAttribute(Parser.TokenValue);
+						.getAttribute(Parser.TOKEN_VALUE);
 				insertNode.addChild(new BasicType(type));
 				return;
 			case INT_LITERAL:
 				insertNode.addChild(new IntLiteral((Integer) tree
-						.getAttribute(Parser.TokenValue)));
+						.getAttribute(Parser.TOKEN_VALUE)));
 				return;
 			case STRING_LITERAL:
 				insertNode.addChild(new StringLiteral((String) tree
-						.getAttribute(Parser.TokenValue)));
+						.getAttribute(Parser.TOKEN_VALUE)));
 				return;
 			case REAL_LITERAL:
 				insertNode.addChild(new RealLiteral((Double) tree
-						.getAttribute(Parser.TokenValue)));
+						.getAttribute(Parser.TOKEN_VALUE)));
 				return;
 			case BOOL_LITERAL:
 				insertNode.addChild(new BoolLiteral((Boolean) tree
-						.getAttribute(Parser.TokenValue)));
+						.getAttribute(Parser.TOKEN_VALUE)));
 				return;
 			case ID:
 				insertNode.addChild(new Id((String) tree
-						.getAttribute(Parser.TokenValue)));
+						.getAttribute(Parser.TOKEN_VALUE)));
 				return;
 			default:// everything, which has no class member in its node uses
 					// the default.

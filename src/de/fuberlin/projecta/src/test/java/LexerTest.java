@@ -42,21 +42,20 @@ public class LexerTest {
 
 		ArrayList<Token> tokenList = tokenize(source);
 
-		assertEquals(tokenList.get(0).getInternalType(), TokenType.INT_LITERAL);
-		assertEquals((Integer) (tokenList.get(0).getAttribute()), (Integer) 23);
+		assertEquals(TokenType.INT_LITERAL, tokenList.get(0).getInternalType());
+		assertEquals(23, tokenList.get(0).getAttribute());
 
-		assertEquals(tokenList.get(1).getInternalType(), TokenType.REAL_LITERAL);
-		assertEquals((Float) (tokenList.get(1).getAttribute()), (Float) 3.14f);
-		assertEquals(tokenList.get(2).getInternalType(), TokenType.OP_ADD);
-		assertEquals(tokenList.get(3).getInternalType(), TokenType.REAL_LITERAL);
-		assertEquals((Float) (tokenList.get(3).getAttribute()), (Float) 2.f);
+		assertEquals(TokenType.REAL_LITERAL, tokenList.get(1).getInternalType());
+		assertEquals(3.14f, tokenList.get(1).getAttribute());
+		assertEquals(TokenType.OP_ADD, tokenList.get(2).getInternalType());
+		assertEquals(TokenType.REAL_LITERAL, tokenList.get(3).getInternalType());
+		assertEquals(2.f, tokenList.get(3).getAttribute());
 
-		assertEquals(tokenList.get(4).getInternalType(), TokenType.REAL_LITERAL);
-		assertEquals((Float) (tokenList.get(4).getAttribute()), (Float) 22e4f);
+		assertEquals(TokenType.REAL_LITERAL, tokenList.get(4).getInternalType());
+		assertEquals(22e4f, tokenList.get(4).getAttribute());
 
-		assertEquals(tokenList.get(5).getInternalType(), TokenType.REAL_LITERAL);
-		assertEquals((Float) (tokenList.get(5).getAttribute()),
-				(Float) 31.4e-1f);
+		assertEquals(TokenType.REAL_LITERAL, tokenList.get(5).getInternalType());
+		assertEquals(31.4e-1f, tokenList.get(5).getAttribute());
 	}
 
 	@Test

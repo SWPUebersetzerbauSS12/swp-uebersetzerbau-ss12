@@ -9,9 +9,7 @@ import lexer.TokenType;
 
 public class Parser implements IParser {
 
-	public final static String TokenValue = "TokenValue";
-
-	private ILexer lexer;
+	public final static String TOKEN_VALUE = "TokenValue";
 	private ParseTable table;
 	private Stack<Symbol> stack = new Stack<Symbol>();
 
@@ -36,12 +34,10 @@ public class Parser implements IParser {
 
 	/**
 	 * TODO: Error handling
-	 * 
-	 * @see parser.IParser#parse()
 	 */
 	@Override
 	public ISyntaxTree parse(ILexer lexer, String grammar) throws ParseException {
-		this.lexer = lexer;
+		ILexer lexer1 = lexer;
 
 		if (table.isAmbigous()) {
 			throw new ParseException(
@@ -79,9 +75,9 @@ public class Parser implements IParser {
 				TokenType terminal = peek.asTerminal();
 				if (terminal == TokenType.valueOf(token.getType())) {
 					ISyntaxTree node = new Tree(new Symbol(terminal));
-					node.addAttribute(TokenValue);
+					node.addAttribute(TOKEN_VALUE);
 					final boolean success = node.setAttribute(
-							TokenValue, token.getAttribute());
+							TOKEN_VALUE, token.getAttribute());
 					assert (success);
 					currentNode.addChild(node);
 					try {

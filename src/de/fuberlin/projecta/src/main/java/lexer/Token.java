@@ -100,8 +100,27 @@ public class Token implements IToken {
 		return offset;
 	}
 
-	public HashMap<TokenType, String> getMapping() {
-		return mapping;
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Token token = (Token) o;
+
+		if (lineNumber != token.lineNumber) return false;
+		if (offset != token.offset) return false;
+		if (attribute != null ? !attribute.equals(token.attribute) : token.attribute != null) return false;
+		if (internalType != token.internalType) return false;
+
+		return true;
 	}
 
+	@Override
+	public int hashCode() {
+		int result = internalType != null ? internalType.hashCode() : 0;
+		result = 31 * result + (attribute != null ? attribute.hashCode() : 0);
+		result = 31 * result + lineNumber;
+		result = 31 * result + offset;
+		return result;
+	}
 }

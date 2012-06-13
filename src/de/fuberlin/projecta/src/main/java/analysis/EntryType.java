@@ -55,7 +55,7 @@ public class EntryType {
 			for (EntryType t : params)
 				result = 31 * result + (t != null ? t.hashCode() : 0);
 		else
-			result = 31 * result + 0;
+			result = 31 * result;
 		return result;
 	}
 

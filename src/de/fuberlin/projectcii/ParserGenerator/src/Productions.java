@@ -1,7 +1,7 @@
 package de.fuberlin.projectcii.ParserGenerator.src;
 import java.util.Vector;
 
-/* 
+/** 
  * Representation of Nonterminals and there respective Productions
  * as head and rump
  * nonterminals are represented as <N> terminals as T
@@ -17,17 +17,20 @@ public class Productions {
 	//The rump as Productions of Strings
     public Vector < Vector<String> > productions;
 
+    /**
+     * @param head Name of the Nonterminal
+     */
     public Productions (String head){
         this.head = head;
         productions = new Vector<Vector<String>>();
     }
-    /*
+    /**
      * Getter for field head
      */
     public String getHead(){
     	return head;
     }
-    /*
+    /**
      * Inserts a new production to the rump
      */
     public void InsertProduction (Vector<String> production) {

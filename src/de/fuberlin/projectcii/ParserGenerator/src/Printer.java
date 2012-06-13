@@ -1,9 +1,24 @@
 package de.fuberlin.projectcii.ParserGenerator.src;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import java.util.Map.Entry;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import de.fuberlin.projectcii.ParserGenerator.src.extern.ISyntaxTree;
 
 /**
  * Debugging Class to visualize the current status of the used Datastructures
@@ -213,5 +228,79 @@ public class Printer {
 			System.out.println("First(" + fs.getKey() + ") = " + fs.getValue().keySet());
 		}
 		System.out.println("-----------");
+	}
+	
+	static public void parsetreeToXML(ISyntaxTree node){
+		
+		try{
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			
+			// root elements
+			Document doc = docBuilder.newDocument();
+			String tagName = node.getSymbol();
+			if (tagName.startsWith("<")){
+				tagName = tagName.substring(1, tagName.length()-1);
+			}
+			Element root = doc.createElement(tagName);
+			doc.appendChild(root);
+			
+			for (ISyntaxTree child:node.getChildren()){
+				tagName = child.getSymbol();
+				if (tagName.startsWith("<")){
+					tagName = tagName.substring(1, tagName.length()-1);
+				}
+				Element childNode;
+				if (child.getChildrenCount() == 0){
+					childNode = doc.createElement("LEAF");
+					root.appendChild(childNode);
+				}
+				else{
+					childNode = doc.createElement(tagName);
+					root.appendChild(childNode);
+					doc = childrenToXML(child, childNode, doc);
+				}
+				
+			}
+			
+			// write the content into xml file
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource source = new DOMSource(doc);
+			StreamResult result = new StreamResult(new File("parseTree.xml"));
+	 
+			// Output to console for testing
+			// StreamResult result = new StreamResult(System.out);
+	 
+			transformer.transform(source, result);
+	 
+			System.out.println("File saved!");
+		}
+		catch (ParserConfigurationException pce) {
+			pce.printStackTrace();
+		} catch (TransformerException tfe) {
+			tfe.printStackTrace();
+	  }
+	}
+	
+	static private Document childrenToXML(ISyntaxTree node, Element parentNode, Document doc){
+		
+		for (ISyntaxTree child:node.getChildren()){
+			String tagName = child.getSymbol();
+			if (tagName.startsWith("<")){
+				tagName = tagName.substring(1, tagName.length()-1);
+			}
+			Element childNode;
+			if (child.getChildrenCount() == 0){
+				childNode = doc.createElement("LEAF");
+				parentNode.appendChild(childNode);
+			}
+			else{
+				childNode = doc.createElement(tagName);
+				doc = childrenToXML(child, childNode, doc);
+				parentNode.appendChild(childNode);
+			}
+		}
+		return doc;
 	}
 }

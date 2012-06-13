@@ -1,4 +1,4 @@
-package lexergen;
+package de.fuberlin.bii.lexergen;
 
 import java.io.File;
 

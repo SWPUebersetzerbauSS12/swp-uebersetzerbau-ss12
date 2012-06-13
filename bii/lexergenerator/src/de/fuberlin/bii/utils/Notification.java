@@ -30,7 +30,7 @@
  *
  */
 
-package utils;
+package de.fuberlin.bii.utils;
 
 /**
  * Die Klasse stellt vorgefertigte Meldungen zur Verfügung.

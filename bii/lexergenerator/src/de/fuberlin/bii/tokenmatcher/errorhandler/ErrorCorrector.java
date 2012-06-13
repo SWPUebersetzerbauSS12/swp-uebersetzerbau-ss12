@@ -30,7 +30,7 @@
  *
  */
 
-package tokenmatcher.errorhandler;
+package de.fuberlin.bii.tokenmatcher.errorhandler;
 
 import java.util.Collection;
 

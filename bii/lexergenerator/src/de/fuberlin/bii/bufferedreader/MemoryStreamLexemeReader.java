@@ -30,7 +30,7 @@
  *
  */
 
-package bufferedreader;
+package de.fuberlin.bii.bufferedreader;
 
 import java.io.File;
 import java.io.FileReader;

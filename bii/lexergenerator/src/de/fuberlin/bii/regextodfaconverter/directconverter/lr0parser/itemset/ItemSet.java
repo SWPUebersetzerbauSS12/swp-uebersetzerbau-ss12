@@ -30,7 +30,7 @@
  *
  */
 
-package regextodfaconverter.directconverter.lr0parser.itemset;
+package de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.itemset;
 
 import java.util.HashSet;
 

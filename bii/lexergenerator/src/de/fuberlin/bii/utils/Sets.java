@@ -30,7 +30,7 @@
  *
  */
 
-package utils;
+package de.fuberlin.bii.utils;
 
 import java.util.ArrayList;
 import java.util.Collection;

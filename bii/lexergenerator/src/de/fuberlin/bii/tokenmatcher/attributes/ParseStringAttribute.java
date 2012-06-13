@@ -30,7 +30,7 @@
  *
  */
 
-package tokenmatcher.attributes;
+package de.fuberlin.bii.tokenmatcher.attributes;
 
 /**
  * Klasse für String-Attribute, deren Wert 

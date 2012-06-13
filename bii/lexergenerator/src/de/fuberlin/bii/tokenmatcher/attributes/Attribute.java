@@ -31,7 +31,7 @@
  */
 
 
-package tokenmatcher.attributes;
+package de.fuberlin.bii.tokenmatcher.attributes;
 
 import java.io.Serializable;
 

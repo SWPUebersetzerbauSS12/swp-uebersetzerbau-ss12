@@ -30,7 +30,7 @@
  *
  */
 
-package tokenmatcher.errorhandler;
+package de.fuberlin.bii.tokenmatcher.errorhandler;
 
 /**
  * Stellt einen Fehler dar, der beim Versuch einen Fehler während der Lexemerkennung zu beheben auftritt.

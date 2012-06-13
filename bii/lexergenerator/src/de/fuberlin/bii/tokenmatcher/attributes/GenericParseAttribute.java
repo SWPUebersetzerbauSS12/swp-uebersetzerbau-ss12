@@ -30,7 +30,7 @@
  *
  */
 
-package tokenmatcher.attributes;
+package de.fuberlin.bii.tokenmatcher.attributes;
 
 /**
  * Generische Basisklasse für Attribute, deren Wert 

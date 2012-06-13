@@ -30,7 +30,7 @@
  *
  */
 
-package parsetokdef;
+package de.fuberlin.bii.parsetokdef;
 
 /**
  * 

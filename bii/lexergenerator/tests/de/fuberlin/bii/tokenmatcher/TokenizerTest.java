@@ -1,4 +1,4 @@
-package tokenmatcher;
+package de.fuberlin.bii.tokenmatcher;
 
 import java.io.File;
 import java.util.ArrayList;

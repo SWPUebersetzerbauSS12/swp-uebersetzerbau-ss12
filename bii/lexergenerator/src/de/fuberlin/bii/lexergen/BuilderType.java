@@ -30,7 +30,7 @@
  *
  */
 
-package lexergen;
+package de.fuberlin.bii.lexergen;
 
 /**
  * Stellt die Methoden zur DFA-Erstellung dar.

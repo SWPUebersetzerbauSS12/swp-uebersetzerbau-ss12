@@ -30,7 +30,7 @@
  *
  */
 
-package bufferedreader;
+package de.fuberlin.bii.bufferedreader;
 
 public class SpecialChars {
 

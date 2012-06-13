@@ -1,4 +1,4 @@
-package regextodfaconverter.directconverter.regex.operatortree;
+package de.fuberlin.bii.regextodfaconverter.directconverter.regex.operatortree;
 
 import static org.junit.Assert.*;
 import junit.framework.Assert;

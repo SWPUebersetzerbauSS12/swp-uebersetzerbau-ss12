@@ -30,7 +30,7 @@
  *
  */
 
-package dfaprovider;
+package de.fuberlin.bii.dfaprovider;
 
 import java.io.File;
 

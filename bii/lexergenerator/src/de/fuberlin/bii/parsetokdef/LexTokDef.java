@@ -30,7 +30,7 @@
  *
  */
 
-package parsetokdef;
+package de.fuberlin.bii.parsetokdef;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -30,7 +30,7 @@
  *
  */
 
-package regextodfaconverter.directconverter.lr0parser.grammar;
+package de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar;
 
 import java.util.ArrayList;
 

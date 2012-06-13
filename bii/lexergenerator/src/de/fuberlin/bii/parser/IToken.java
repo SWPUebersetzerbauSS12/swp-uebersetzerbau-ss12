@@ -32,7 +32,7 @@
  *
  */
 
-package parser;
+package de.fuberlin.bii.parser;
 
 public interface IToken {
 

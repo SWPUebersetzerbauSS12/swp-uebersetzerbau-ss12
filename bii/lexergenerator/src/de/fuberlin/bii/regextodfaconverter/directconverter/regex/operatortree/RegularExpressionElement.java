@@ -1,4 +1,4 @@
-package regextodfaconverter.directconverter.regex.operatortree;
+package de.fuberlin.bii.regextodfaconverter.directconverter.regex.operatortree;
 
 import regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
 import tokenmatcher.StatePayload;

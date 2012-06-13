@@ -30,7 +30,7 @@
  *
  */
 
-package tokenmatcher.fsm;
+package de.fuberlin.bii.tokenmatcher.fsm;
 
 import tokenmatcher.fsm.State;
 import utils.Test;

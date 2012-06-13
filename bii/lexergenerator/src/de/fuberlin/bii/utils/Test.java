@@ -30,7 +30,7 @@
  *
  */
 
-package utils;
+package de.fuberlin.bii.utils;
 
 public class Test {
 

@@ -30,7 +30,7 @@
  *
  */
 
-package lexergen;
+package de.fuberlin.bii.lexergen;
 
 /**
  * Stellt einen Fehler dar, der bei der Verwendung einer Lexergeneratorklasse

@@ -30,7 +30,7 @@
  *
  */
 
-package dfaprovider;
+package de.fuberlin.bii.dfaprovider;
 
 /**
  * Stellt einen Fehler dar, der auftritt, wenn der MinimalDfaBuilder beim Erstellungsprozess des DFAs scheitert.

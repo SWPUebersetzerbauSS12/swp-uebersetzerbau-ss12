@@ -1,4 +1,4 @@
-package dfaprovider;
+package de.fuberlin.bii.dfaprovider;
 
 import static org.junit.Assert.fail;
 

@@ -30,7 +30,7 @@
  *
  */
 
-package dfaprovider;
+package de.fuberlin.bii.dfaprovider;
 
 /**
  * Stellt einen Fehler dar, der auftritt, wenn im {@link MinimalDfaProvider} ein

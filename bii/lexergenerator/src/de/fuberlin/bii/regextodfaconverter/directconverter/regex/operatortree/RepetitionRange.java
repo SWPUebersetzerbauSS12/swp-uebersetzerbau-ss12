@@ -31,7 +31,7 @@
  */
 
 
-package regextodfaconverter.directconverter.regex.operatortree;
+package de.fuberlin.bii.regextodfaconverter.directconverter.regex.operatortree;
 
 /**
  * 

@@ -30,7 +30,7 @@
  *
  */
 
-package regextodfaconverter.fsm.excpetions;
+package de.fuberlin.bii.regextodfaconverter.fsm.excpetions;
 
 /**
  * Stellt einen Fehler dar, der auftritt, wenn versucht wird mit einem Zustand

@@ -30,7 +30,7 @@
  *
  */
 
-package regextodfaconverter.directconverter.syntaxtree.node;
+package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node;
 
 import regextodfaconverter.directconverter.syntaxtree.ConcreteSyntaxTree;
 

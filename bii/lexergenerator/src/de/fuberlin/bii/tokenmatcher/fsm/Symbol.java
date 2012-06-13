@@ -30,7 +30,7 @@
  *
  */
 
-package tokenmatcher.fsm;
+package de.fuberlin.bii.tokenmatcher.fsm;
 
 /**
  * Ein Symbol vereint eine Sequenz an Zeichen, mit der in der 

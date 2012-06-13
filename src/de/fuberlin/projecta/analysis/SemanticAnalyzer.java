@@ -339,7 +339,6 @@ public class SemanticAnalyzer {
 				for (ISyntaxTree tmp : tree.getChildren()) {
 					toAST(tmp, insertNode);
 				}
-				return;
 			}
 
 		} else if (tree.getSymbol().isTerminal()) {
@@ -372,7 +371,6 @@ public class SemanticAnalyzer {
 				return;
 			default:// everything, which has no class member in its node uses
 					// the default.
-				return;
 			}
 		} else if (tree.getSymbol().isReservedTerminal()) {
 			Reserved res = tree.getSymbol().asReservedTerminal();

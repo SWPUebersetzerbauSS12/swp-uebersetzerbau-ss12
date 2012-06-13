@@ -8,4 +8,4 @@ public enum NonTerminal {
 	join_, equality, equality_, rel, rel_, expr, expr_,
 	term, term_, unary, factor, factor_, optargs, args,
 	args_
-};
+}

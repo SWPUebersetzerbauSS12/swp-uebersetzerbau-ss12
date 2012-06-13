@@ -37,7 +37,6 @@ public class Parser implements IParser {
 	 */
 	@Override
 	public ISyntaxTree parse(ILexer lexer, String grammar) throws ParseException {
-		ILexer lexer1 = lexer;
 
 		if (table.isAmbigous()) {
 			throw new ParseException(

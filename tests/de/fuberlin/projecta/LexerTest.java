@@ -50,16 +50,16 @@ public class LexerTest {
 		assertEquals(23, tokenList.get(0).getAttribute());
 
 		assertEquals(TokenType.REAL_LITERAL, tokenList.get(1).getInternalType());
-		assertEquals(3.14f, tokenList.get(1).getAttribute());
+		assertEquals(3.14d, tokenList.get(1).getAttribute());
 		assertEquals(TokenType.OP_ADD, tokenList.get(2).getInternalType());
 		assertEquals(TokenType.REAL_LITERAL, tokenList.get(3).getInternalType());
-		assertEquals(2.f, tokenList.get(3).getAttribute());
+		assertEquals(2.d, tokenList.get(3).getAttribute());
 
 		assertEquals(TokenType.REAL_LITERAL, tokenList.get(4).getInternalType());
-		assertEquals(22e4f, tokenList.get(4).getAttribute());
+		assertEquals(22e4d, tokenList.get(4).getAttribute());
 
 		assertEquals(TokenType.REAL_LITERAL, tokenList.get(5).getInternalType());
-		assertEquals(31.4e-1f, tokenList.get(5).getAttribute());
+		assertEquals(31.4e-1d, tokenList.get(5).getAttribute());
 	}
 
 	@Test
@@ -68,13 +68,11 @@ public class LexerTest {
 
 		ArrayList<Token> tokenList = tokenize(source);
 
-		assertEquals(tokenList.get(0).getInternalType(), TokenType.BOOL_LITERAL);
-		assertEquals((Boolean) (tokenList.get(0).getAttribute()),
-				(Boolean) true);
+		assertEquals(TokenType.BOOL_LITERAL, tokenList.get(0).getInternalType());
+		assertEquals(true, tokenList.get(0).getAttribute());
 
-		assertEquals(tokenList.get(2).getInternalType(), TokenType.BOOL_LITERAL);
-		assertEquals((Boolean) (tokenList.get(2).getAttribute()),
-				(Boolean) false);
+		assertEquals(TokenType.BOOL_LITERAL, tokenList.get(2).getInternalType());
+		assertEquals(false, tokenList.get(2).getAttribute());
 	}
 
 	@Test

@@ -3,8 +3,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
-import de.fuberlin.projectcii.ParserGenerator.src.extern.ILexer;
-import de.fuberlin.projectcii.ParserGenerator.src.extern.IToken;
+import de.fuberlin.commons.lexer.ILexer;
+import de.fuberlin.commons.lexer.IToken;
+
 
 /**
  * 
@@ -159,7 +160,7 @@ public class TokenParser {
 	/**
 	 * Helping method while IToken has not the value of Symbols as they are defined in grammar
 	 * 
-	 * @author Christoph Schröder
+	 * @author Christoph Schrï¿½der
 	 */
 	private void getNextToken() {
 		Token = lexer.getNextToken();

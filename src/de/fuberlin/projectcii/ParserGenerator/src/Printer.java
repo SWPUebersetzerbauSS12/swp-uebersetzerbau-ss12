@@ -18,7 +18,9 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import de.fuberlin.projectcii.ParserGenerator.src.extern.ISyntaxTree;
+import de.fuberlin.commons.parser.ISyntaxTree;
+
+
 
 /**
  * Debugging Class to visualize the current status of the used Datastructures
@@ -221,7 +223,7 @@ public class Printer {
 	/**
 	 * Use this Function to view the FirstSetProductions inside the ParserGenerator.
 	 * 
-	 * @author Christoph Schröder, Patrick Schlott
+	 * @author Christoph Schrï¿½der, Patrick Schlott
 	 */
 	static public void printFirstSetsProductions(Map<String, HashMap<String,Integer>> firstSetsProductions) {
 		for (Entry<String, HashMap<String,Integer>> fs : firstSetsProductions.entrySet()) {
@@ -231,14 +233,14 @@ public class Printer {
 	}
 	
 	static public void parsetreeToXML(ISyntaxTree node){
-		
+		SyntaxTree currNode = (SyntaxTree)node;
 		try{
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 			
 			// root elements
 			Document doc = docBuilder.newDocument();
-			String tagName = node.getSymbol();
+			String tagName = currNode.getSymbol();
 			if (tagName.startsWith("<")){
 				tagName = tagName.substring(1, tagName.length()-1);
 			}
@@ -246,7 +248,7 @@ public class Printer {
 			doc.appendChild(root);
 			
 			for (ISyntaxTree child:node.getChildren()){
-				tagName = child.getSymbol();
+				tagName = currNode.getSymbol();
 				if (tagName.startsWith("<")){
 					tagName = tagName.substring(1, tagName.length()-1);
 				}
@@ -286,7 +288,8 @@ public class Printer {
 	static private Document childrenToXML(ISyntaxTree node, Element parentNode, Document doc){
 		
 		for (ISyntaxTree child:node.getChildren()){
-			String tagName = child.getSymbol();
+			SyntaxTree currNode = (SyntaxTree)child;
+			String tagName = currNode.getSymbol();
 			if (tagName.startsWith("<")){
 				tagName = tagName.substring(1, tagName.length()-1);
 			}

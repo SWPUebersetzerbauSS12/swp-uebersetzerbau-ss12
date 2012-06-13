@@ -3,8 +3,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
-import de.fuberlin.projectcii.ParserGenerator.src.extern.ISyntaxTree;
-import de.fuberlin.projectcii.ParserGenerator.src.extern.IToken;
+import de.fuberlin.commons.lexer.IToken;
+import de.fuberlin.commons.parser.ISyntaxTree;
+
 
 
 /**
@@ -95,7 +96,8 @@ public class SyntaxTree implements ISyntaxTree {
 			List<ISyntaxTree> childrenByName = new LinkedList<ISyntaxTree>();
 			
 			for (ISyntaxTree child: children){
-				if (child.getSymbol().equals(name)){
+				SyntaxTree currNode = (SyntaxTree)child;
+				if (currNode.getSymbol().equals(name)){
 					childrenByName.add(child);
 				}
 			}
@@ -126,6 +128,12 @@ public class SyntaxTree implements ISyntaxTree {
 
 		return this.children;
 	}
+	
+	@Override
+	public ISyntaxTree removeChild(int i) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	/**
 	 * shows the Tree in readable (horizontal) form
@@ -138,6 +146,14 @@ public class SyntaxTree implements ISyntaxTree {
 	}
 
 	@Override
+	public IToken getToken() {
+		return this.token;
+	}
+	
+	
+	//---------------------
+	// End of Interface Methodes
+	
 	public String getSymbol() {
 		return this.symbol;
 	}
@@ -146,22 +162,14 @@ public class SyntaxTree implements ISyntaxTree {
 		this.symbol=symbol;
 	}
 	
-	
-	//---------------------
-	// End of Interface Methodes
-	
-	public IToken getToken() {
-		return this.token;
-	}
-	
 	private void printChild(ISyntaxTree node,int level,boolean first){
-		
+		SyntaxTree currNode = (SyntaxTree)node;
 		if (!first){
 			for(int i=0;i<level;i++){
 				System.out.print("\t");
 			}
 		}
-		System.out.print(node.getSymbol()+"\t");
+		System.out.print(currNode.getSymbol()+"\t");
 		first = true;
 		for (ISyntaxTree child: node.getChildren()){
 			if (child.getChildren().size() > 0){
@@ -174,7 +182,7 @@ public class SyntaxTree implements ISyntaxTree {
 						System.out.print("\t");
 					}
 				}
-				System.out.print(child.getSymbol());
+				System.out.print(currNode.getSymbol());
 				System.out.println("");
 				first = false;
 			}

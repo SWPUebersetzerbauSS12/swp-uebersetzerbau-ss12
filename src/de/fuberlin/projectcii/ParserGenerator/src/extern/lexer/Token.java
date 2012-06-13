@@ -1,6 +1,7 @@
 package de.fuberlin.projectcii.ParserGenerator.src.extern.lexer;
 
-import de.fuberlin.projectcii.ParserGenerator.src.extern.IToken;
+import de.fuberlin.commons.lexer.IToken;
+
 
 /*import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -56,6 +57,12 @@ public class Token implements IToken {
 	public int getLineNumber() {
 		// TODO Auto-generated method stub
 		return lineNumber;
+	}
+
+	@Override
+	public String getText() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

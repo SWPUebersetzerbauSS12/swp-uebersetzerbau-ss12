@@ -1,4 +1,4 @@
-package de.fuberlin.commons.lexer;
+package de.fuberlin.projectcii.ParserGenerator.src.extern;
 
 public interface ILexer {
 

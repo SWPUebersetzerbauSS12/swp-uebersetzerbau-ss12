@@ -1,4 +1,4 @@
-package de.fuberlin.commons.lexer;
+package de.fuberlin.projectcii.ParserGenerator.src.extern;
 
 public interface IToken {
 
@@ -8,13 +8,6 @@ public interface IToken {
 	 * @return Token type
 	 */
 	String getType();
-
-	/**
-	 * Return the textual representation of this token
-	 *
-	 * @return Textual representation
-	 */
-	String getText();
 
 	/**
 	 * Get the Token attribute value
@@ -49,5 +42,4 @@ public interface IToken {
 	 * @return End offset
 	 */
 	int getLineNumber();
-
 }

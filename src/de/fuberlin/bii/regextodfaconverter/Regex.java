@@ -57,7 +57,9 @@ public class Regex {
 	 * Das erste Zeichen aus dem ASCII Zeichensatz, das im Alphabet enthalten
 	 * sein soll.
 	 */
-	private static int FIRST_ASCII_CHAR = 0;
+	private static int FIRST_ASCII_CHAR = 4; 
+	// Die ersten vier Zeichen werden von dem direkten DFA-Übersetzter als Hilfzeichen benötigt und können daher nicht verwendet werden.
+	// Der indirekte Weg unterstützt theoretisch das vollständige Alphabet.
 	/**
 	 * Das letzte Zeichen aus dem ASCII Zeichensatz, das im Alphabet enthalten
 	 * sein soll.

@@ -32,24 +32,20 @@
 
 package de.fuberlin.bii.tokenmatcher;
 
-import de.fuberlin.bii.parser.IToken;
 import de.fuberlin.bii.utils.Test;
-
-
-
+import de.fuberlin.commons.lexer.IToken;
 
 public class Token implements IToken {
-// TODO: resolve conflict with given interface IToken
+	// TODO: resolve conflict with given interface IToken
 
 	private String type;
 	private Object attribute;
 	private int line;
 	private int offset;
-	
-	private static Token eofToken = new Token( "EOF", 0, 0);
 
-	
-	public Token( String type, Object attribute, int  line, int offset) {
+	private static Token eofToken = new Token("EOF", 0, 0);
+
+	public Token(String type, Object attribute, int line, int offset) {
 		super();
 		this.type = type;
 		this.attribute = attribute;
@@ -57,7 +53,7 @@ public class Token implements IToken {
 		this.offset = offset;
 	}
 
-	public Token( String type, int  line, int offset) {
+	public Token(String type, int line, int offset) {
 		super();
 		this.type = type;
 		this.line = line;
@@ -67,16 +63,16 @@ public class Token implements IToken {
 	public String getType() {
 		return type;
 	}
-	
-	public <E extends Enum<E>> E tryGetTypeAsEnum( Class<E> enumClass) throws IllegalArgumentException, NullPointerException {
-    return Enum.valueOf( enumClass, type);
+
+	public <E extends Enum<E>> E tryGetTypeAsEnum(Class<E> enumClass)
+			throws IllegalArgumentException, NullPointerException {
+		return Enum.valueOf(enumClass, type);
 	}
-	
+
 	public Object getAttribute() {
 		return attribute;
 	}
 
-	
 	public String getAttributeAsString() {
 		return attribute.toString();
 	}
@@ -85,42 +81,43 @@ public class Token implements IToken {
 		return offset;
 	}
 
-
 	public int getLineNumber() {
-      return line;
+		return line;
 	}
-	
-	
-	public static boolean isTokenLineComment( Token token) {
-		return "COMMENT".equalsIgnoreCase( token.getType()) &&
-			   "LINE".equalsIgnoreCase( token.getAttributeAsString());
+
+	public static boolean isTokenLineComment(Token token) {
+		return "COMMENT".equalsIgnoreCase(token.getType())
+				&& "LINE".equalsIgnoreCase(token.getAttributeAsString());
 	}
-	
-	public static boolean isTokenStartingBlockComment( Token token) {
-		return "COMMENT".equalsIgnoreCase( token.getType()) &&
-			   "BLOCK_BEGIN".equalsIgnoreCase( token.getAttributeAsString());
+
+	public static boolean isTokenStartingBlockComment(Token token) {
+		return "COMMENT".equalsIgnoreCase(token.getType())
+				&& "BLOCK_BEGIN".equalsIgnoreCase(token.getAttributeAsString());
 	}
-	
-	public static boolean isTokenEndingBlockComment( Token token) {
-		return "COMMENT".equalsIgnoreCase( token.getType()) &&
-			   "BLOCK_END".equalsIgnoreCase( token.getAttributeAsString());
+
+	public static boolean isTokenEndingBlockComment(Token token) {
+		return "COMMENT".equalsIgnoreCase(token.getType())
+				&& "BLOCK_END".equalsIgnoreCase(token.getAttributeAsString());
 	}
-	
-	
+
 	public static Token getEofToken() {
-		return eofToken; 
+		return eofToken;
 	}
-	
-	public static boolean isEofToken( Token token) {
-		return Test.isAssigned( token) && token.type.equals( "EOF"); 
+
+	public static boolean isEofToken(Token token) {
+		return Test.isAssigned(token) && token.type.equals("EOF");
 	}
-	
+
 	public boolean isEofToken() {
-		return type.equals( "EOF"); 
-	}	
-	
+		return type.equals("EOF");
+	}
+
 	@Override
-		public String toString() {
-			return "<" + getType() + ", " + getAttribute().toString() + ">";
-		}
+	public String toString() {
+		return "<" + getType() + ", " + getAttribute().toString() + ">";
+	}
+
+	public String getText() {
+		return attribute.toString();
+	}
 }

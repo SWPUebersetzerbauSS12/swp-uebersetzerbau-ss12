@@ -66,6 +66,7 @@ class LLVM_Block implements ILLVM_Block {
 		whitelist.add(LLVM_Operation.MUL.toString());
 		whitelist.add(LLVM_Operation.DIV.toString());
 		whitelist.add(LLVM_Operation.SUB.toString());
+		whitelist.add(LLVM_Operation.LOAD.toString());
 		
 		for (ILLVM_Command i = this.firstCommand; i != null; i=i.getSuccessor()){
 			// Nur Kommandos aus der Whitelist optimieren

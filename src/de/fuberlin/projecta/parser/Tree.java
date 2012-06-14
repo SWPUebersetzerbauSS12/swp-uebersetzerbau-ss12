@@ -185,7 +185,9 @@ public class Tree implements ISyntaxTree {
 
 	@Override
 	public ISyntaxTree removeChild(int i) {
-		return children.remove(i);
+		ISyntaxTree child = children.remove(i);
+		child.setParent(child);
+		return child;
 	}
 
 	public Symbol getSymbol() {

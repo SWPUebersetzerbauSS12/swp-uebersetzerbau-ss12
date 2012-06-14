@@ -22,8 +22,8 @@ class Main {
 	static final String PARAM_LR_PARSER = "-lr"; // benutzt den LR Parser
 	static final String PARAM_LL_PARSER = "-ll"; // benutzt den LL Parser
 	// Lexer
-	static final String PARAM_BI_LEXER  = "-bi"; // TODO aussagekräftiger gestalten
-	static final String PARAM_BII_LEXER = "-bii"; // TODO aussagekräftiger gestalten
+	static final String PARAM_BI_LEXER  = "-bi"; // benutzt die indirekte Umwandlung
+	static final String PARAM_BII_LEXER = "-bii"; // benutzt die direkte Umwandlung
 	// Allgemein
 	static final String PARAM_SOURCE_FILE = "-f"; // Gibt den Pfad zum Quellprogramm an
 	

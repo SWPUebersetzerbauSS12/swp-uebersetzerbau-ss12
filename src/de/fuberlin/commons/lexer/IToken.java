@@ -24,11 +24,11 @@ public interface IToken {
 	 * 
 	 * Same applies to the following TokenTypes:
 	 * INT -> Integer
-	 * REAL -> Float
+	 * REAL -> Double
 	 * STRING -> String
 	 * 
-	 * @example Usage: If getType() == REAL, then (Float)getAttribute()
-	 *          retrieves the value
+	 * Usage: If getType() == REAL, then (Double)getAttribute()
+	 *        retrieves the value
 	 * 
 	 * @return Attribute value, may be null
 	 */
@@ -37,7 +37,7 @@ public interface IToken {
 	/**
 	 * Get the start offset of this Token's attribute
 	 * 
-	 * @note The position is relative to the beginning of the line
+	 * The position is relative to the beginning of the line
 	 * 
 	 * @return Start offset
 	 */

@@ -3,7 +3,7 @@ package de.fuberlin.optimierung;
 import java.io.*;
 import java.util.LinkedList;
 
-class LLVM_Optimization implements ILLVM_Optimization {
+public class LLVM_Optimization implements ILLVM_Optimization {
 	
 	private String code = "";
 	

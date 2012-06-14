@@ -31,7 +31,7 @@ public class TokenizerTest {
 	 */
 	@Test
 	public void testGetNextToken() throws Exception {
-		String sourceFilename = "src/test/resources/source/tokenmatcher/testrelop.fun";
+		String sourceFilename = "tests/resources/de/fuberlin/bii/source/tokenmatcher/testrelop.fun";
 
 		FiniteStateMachine<Character, StatePayload> fsm = generateRelopFSM();
 		fsm.union(generateCommentFSM());
@@ -48,17 +48,30 @@ public class TokenizerTest {
 		String tokenString;
 		String[] tokensToFind = { "<OP, LE>", "<OP, LT>", "<OP, NE>",
 				"<OP, LT>", "<OP, NE>", "<OP, LT>", "<OP, NE>", "<OP, LE>",
-				"<OP, LT>", "<OP, LT>" };
+				"<OP, LT>", "<OP, LT>" , "<EOF, null>"};
 		int i = 0;
-		while (!Token.isEofToken(currentToken = tokenizer.getNextToken())) {
-			tokenString = "<" + currentToken.getType() + ", "
-					+ currentToken.getAttribute().toString() + ">";
-			Assert.assertEquals(tokensToFind[i], tokenString);
-			System.out.println(tokenString);
-			i++;
-		}
+		currentToken = null;
+		boolean expectedWarningOccur = false;
+		do {
+			try {
+				currentToken = tokenizer.getNextToken();
+				tokenString = "<" + currentToken.getType() + ", "
+						+ ( de.fuberlin.bii.utils.Test.isAssigned(currentToken.getAttribute()) 
+								 ? currentToken.getAttribute().toString()
+										 : "null" ) + ">";
+				Assert.assertEquals(tokensToFind[i], tokenString);
+				System.out.println(tokenString);
+				i++;
+			} catch ( LexemIdentificationException li) {
+				expectedWarningOccur = true;
+				continue;
+			}
+		} while ( !Token.isEofToken( currentToken));
+			
 
 		Assert.assertEquals(i, tokensToFind.length);
+		
+		Assert.assertTrue( expectedWarningOccur);
 	}
 
 	/**

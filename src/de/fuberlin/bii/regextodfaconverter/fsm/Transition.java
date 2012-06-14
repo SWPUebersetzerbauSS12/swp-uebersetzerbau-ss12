@@ -129,6 +129,8 @@ public class Transition<ConditionType extends Serializable, StatePayloadType ext
 	    	}
 	    }
 	}
+	
+	public int hashCode() { return getCondition().hashCode(); }
 
 	/**
 	 * Erstellt ein neues Transition Objekt.

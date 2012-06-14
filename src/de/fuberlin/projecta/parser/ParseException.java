@@ -1,6 +1,6 @@
 package de.fuberlin.projecta.parser;
 
-import de.fuberlin.projecta.lexer.IToken;
+import de.fuberlin.commons.lexer.IToken;
 
 public class ParseException extends RuntimeException {
 

@@ -2,6 +2,9 @@ package de.fuberlin.projecta.lexer;
 
 import java.util.HashMap;
 
+import de.fuberlin.commons.lexer.IToken;
+import de.fuberlin.commons.lexer.TokenType;
+
 public class Token implements IToken {
 
 	/**
@@ -110,9 +113,8 @@ public class Token implements IToken {
 		if (lineNumber != token.lineNumber) return false;
 		if (offset != token.offset) return false;
 		if (attribute != null ? !attribute.equals(token.attribute) : token.attribute != null) return false;
-		if (internalType != token.internalType) return false;
+		return internalType == token.internalType;
 
-		return true;
 	}
 
 	@Override

@@ -1,8 +1,8 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
+import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.SymbolTableStack;
-import de.fuberlin.projecta.lexer.TokenType;
 
 public class BinaryOp extends AbstractSyntaxTree {
 

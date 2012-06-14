@@ -2,7 +2,7 @@ package de.fuberlin.projecta.parser;
 
 import java.util.List;
 
-import de.fuberlin.projecta.lexer.IToken;
+import de.fuberlin.commons.lexer.IToken;
 
 /**
  * Using composite pattern as tree data-structure. Leafs are indicated by a

@@ -2,6 +2,9 @@ package de.fuberlin.projecta.lexer;
 
 import java.util.HashMap;
 
+import de.fuberlin.commons.lexer.IToken;
+import de.fuberlin.commons.lexer.TokenType;
+
 public class Token implements IToken {
 
 	/**

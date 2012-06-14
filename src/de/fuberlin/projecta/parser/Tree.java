@@ -5,13 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import de.fuberlin.commons.lexer.IToken;
 import de.fuberlin.projecta.analysis.ast.nodes.AbstractSyntaxTree;
 import de.fuberlin.projecta.analysis.ast.nodes.BasicType;
 import de.fuberlin.projecta.analysis.ast.nodes.BinaryOp;
 import de.fuberlin.projecta.analysis.ast.nodes.Id;
 import de.fuberlin.projecta.analysis.ast.nodes.IntLiteral;
 import de.fuberlin.projecta.analysis.ast.nodes.UnaryOp;
-import de.fuberlin.projecta.lexer.IToken;
 import de.fuberlin.projecta.utils.StringUtils;
 
 public class Tree implements ISyntaxTree {

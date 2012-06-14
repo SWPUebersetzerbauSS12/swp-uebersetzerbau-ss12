@@ -1,5 +1,7 @@
 package de.fuberlin.projecta.lexer;
 
+import de.fuberlin.commons.lexer.ILexer;
+import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.projecta.lexer.io.ICharStream;
 
 public class Lexer implements ILexer {

@@ -1,5 +1,6 @@
 package de.fuberlin.projecta.analysis;
 
+import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.projecta.analysis.ast.nodes.AbstractSyntaxTree;
 import de.fuberlin.projecta.analysis.ast.nodes.Args;
 import de.fuberlin.projecta.analysis.ast.nodes.Array;
@@ -30,7 +31,6 @@ import de.fuberlin.projecta.analysis.ast.nodes.Type;
 import de.fuberlin.projecta.analysis.ast.nodes.UnaryOp;
 import de.fuberlin.projecta.analysis.ast.nodes.While;
 import de.fuberlin.projecta.lexer.BasicTokenType;
-import de.fuberlin.projecta.lexer.TokenType;
 import de.fuberlin.projecta.parser.ISyntaxTree;
 import de.fuberlin.projecta.parser.NonTerminal;
 import de.fuberlin.projecta.parser.Parser;

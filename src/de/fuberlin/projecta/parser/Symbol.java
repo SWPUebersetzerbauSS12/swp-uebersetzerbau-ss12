@@ -1,6 +1,6 @@
 package de.fuberlin.projecta.parser;
 
-import de.fuberlin.projecta.lexer.TokenType;
+import de.fuberlin.commons.lexer.TokenType;
 
 public class Symbol {
 

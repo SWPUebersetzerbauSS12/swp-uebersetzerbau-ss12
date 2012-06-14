@@ -2,7 +2,7 @@ package de.fuberlin.projecta;
 
 import java.io.File;
 
-import de.fuberlin.projecta.lexer.ILexer;
+import de.fuberlin.commons.lexer.ILexer;
 import de.fuberlin.projecta.lexer.Lexer;
 import de.fuberlin.projecta.lexer.io.FileCharStream;
 import de.fuberlin.projecta.lexer.io.ICharStream;

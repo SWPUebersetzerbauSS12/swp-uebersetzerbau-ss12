@@ -9,11 +9,11 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
+import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.projecta.lexer.BasicTokenType;
 import de.fuberlin.projecta.lexer.Lexer;
 import de.fuberlin.projecta.lexer.SyntaxErrorException;
 import de.fuberlin.projecta.lexer.Token;
-import de.fuberlin.projecta.lexer.TokenType;
 import de.fuberlin.projecta.lexer.io.FileCharStream;
 import de.fuberlin.projecta.lexer.io.StringCharStream;
 

@@ -33,8 +33,9 @@ public class IfElse extends Statement {
 	}
 
 	protected boolean couldAmmendReturnStatement() {
+		boolean ifWentWell = true;
 		if(!ifBranchHasReturnStatement())
-			ammendReturnOnIf();
+			ifWentWell = ammendReturnOnIf();
 		if (!elseBranchHasReturnStatement()) {
 			ISyntaxTree elseBranch = this.getChild(2);
 			if (elseBranch instanceof Block) {
@@ -70,7 +71,8 @@ public class IfElse extends Statement {
 				this.addChild(r);
 			}
 		}
-		return true;
+		// For we know at this point that else went well :-)
+		return ifWentWell;
 	}
 	
 	private boolean ammendReturnOnIf() {

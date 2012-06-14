@@ -42,7 +42,7 @@ import de.fuberlin.bii.dfaprovider.IndirectMinimalDfaBuilder;
 import de.fuberlin.bii.dfaprovider.MinimalDfaBuilder;
 import de.fuberlin.bii.dfaprovider.MinimalDfaProvider;
 
-import de.fuberlin.bii.parser.IToken;
+import de.fuberlin.commons.lexer.*;
 import de.fuberlin.bii.regextodfaconverter.MinimalDfa;
 import de.fuberlin.bii.tokenmatcher.StatePayload;
 import de.fuberlin.bii.tokenmatcher.Tokenizer;

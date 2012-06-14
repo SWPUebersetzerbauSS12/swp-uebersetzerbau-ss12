@@ -282,6 +282,9 @@ public class Printer {
 			if (child.getChildrenCount() == 0){
 				childNode = doc.createElement("TOKEN");
 				Attr symbolAttr = doc.createAttribute("symbol");
+				if (tagName.equals("@")){
+				    tagName="EPSILON";
+				}
                 symbolAttr.setValue(tagName);
                 childNode.setAttributeNode(symbolAttr);
                 if (child.getToken() != null){

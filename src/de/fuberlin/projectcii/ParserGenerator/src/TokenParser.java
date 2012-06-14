@@ -142,12 +142,12 @@ public class TokenParser {
 				if (!Production.elementAt(i).equals(Settings.getEPSILON())){
 					tree.addChild(parseToken(Production.elementAt(i),tree));
 				}
-				// add a epsilon childNode to the tree
-//				else{
-//					SyntaxTree epsilonTree = new SyntaxTree();
-//					epsilonTree.setSymbol(Settings.getEPSILON());
-//					tree.addChild(epsilonTree);
-//				}
+				// add an epsilon childNode to the tree
+				else{
+					SyntaxTree epsilonTree = new SyntaxTree();
+					epsilonTree.setSymbol(Settings.getEPSILON());
+					tree.addChild(epsilonTree);
+				}
 			}
 		}
 		// Token doesn't fit the given grammar

@@ -42,8 +42,8 @@ public class Variable {
 
 		if (this.type.equals("i32"))
 			this.size = 4;
-		else
-			this.size = 4;
+		else if(this.type.equals("double"))
+			this.size = 8;
 		regAddresses.add(reg);
 	}
 

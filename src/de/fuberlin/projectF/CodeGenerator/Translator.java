@@ -125,25 +125,32 @@ public class Translator {
 				String source;
 				// Zuweisung Variable
 				System.out.println(tok.getOp1() + " " + tok.getTarget());
-
-				// Zuweisung Zahl
-				if (!tok.getOp1().startsWith("%"))
-					movl("$" + tok.getOp1(), target,
-							"Assignment " + tok.getTarget());
-				// Variable (Stack -> Stack)
-				else if (mem.onStack(tok.getOp1())
-						&& mem.onStack(tok.getTarget())) {
-					RegisterAddress tmp = mem.getFreeRegister();
-					movl(mem.getAddress(tok.getOp1()), tmp.getFullName(),
-							"Copy assignment");
-					movl(tmp.getFullName(), target,
-							tok.getTarget() + tok.getOp1());
-					mem.freeRegister(tmp);
-					// Variable
-				} else {
-					source = mem.getAddress(tok.getOp1());
-					movl(source, target, "Assignment " + tok.getTarget());
-				}
+					
+					// Zuweisung Zahl
+					if (!tok.getOp1().startsWith("%")) {
+						if(tok.getTypeTarget().equals("i32*"))
+							movl("$" + tok.getOp1(), target, "Assignment " + tok.getTarget());
+						else if(tok.getTypeTarget().equals("double*")) {
+							String target2 = new String((Integer.parseInt(target.substring(0,target.indexOf('('))) + 4) + "(%ebp)");
+							movl("$" + tok.getOp1().substring(0,10), target2, "Assignment " + tok.getTarget());
+							movl("$0x" + tok.getOp1().substring(10), target, "Assignment " + tok.getTarget());
+						}
+					}
+					
+					// Variable (Stack -> Stack)
+					else if (mem.onStack(tok.getOp1())
+							&& mem.onStack(tok.getTarget())) {
+						RegisterAddress tmp = mem.getFreeRegister();
+						movl(mem.getAddress(tok.getOp1()), tmp.getFullName(),
+								"Copy assignment");
+						movl(tmp.getFullName(), target,
+								tok.getTarget() + tok.getOp1());
+						mem.freeRegister(tmp);
+						// Variable
+					} else {
+						source = mem.getAddress(tok.getOp1());
+						movl(source, target, "Assignment double" + tok.getTarget());
+					}
 
 				break;
 

@@ -361,7 +361,7 @@ public class Lexer {
 		
 		long tmp = Double.doubleToLongBits(result);
 		String tmp2 = Long.toHexString(tmp);
-		return new String("0x" + tmp2.substring(0, 8));
+		return new String("0x" + tmp2);
 	}
 
 	private String requote(String string) {

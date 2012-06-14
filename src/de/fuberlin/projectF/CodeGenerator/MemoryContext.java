@@ -34,11 +34,11 @@ public class MemoryContext {
 
 	// Neue Variable auf dem Stack angeben
 	public Variable newStackVar(String name, String type) {
-		int size;
+		int size = 0;
 		if (type.equals("i32"))
 			size = 4;
-		else
-			size = 4;
+		else if(type.equals("double"))
+			size = 8;
 
 		stackVars++;
 		stackPointer -= size;

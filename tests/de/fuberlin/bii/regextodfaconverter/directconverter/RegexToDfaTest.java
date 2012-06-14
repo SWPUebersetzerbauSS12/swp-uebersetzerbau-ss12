@@ -16,7 +16,6 @@ import de.fuberlin.bii.tokenmatcher.attributes.ParseIntAttribute;
 import de.fuberlin.bii.tokenmatcher.attributes.ParseStringAttribute;
 import de.fuberlin.bii.utils.Notification;
 
-
 public class RegexToDfaTest {
 
 	@Test
@@ -31,9 +30,8 @@ public class RegexToDfaTest {
 		FiniteStateMachine<Character, ? extends de.fuberlin.bii.tokenmatcher.StatePayload> fsm = new RegexToDfaConverter()
 		.convert( regexToPayloadMap);
 
-		LexemeReader lexemeReader = new BufferedLexemeReader("src/test/resources/source/tokenmatcher/regex.fun");// new SimpleLexemeReader(
+		LexemeReader lexemeReader = new BufferedLexemeReader("tests/resources/de/fuberlin/bii/source/tokenmatcher/regex.fun");// new SimpleLexemeReader(
 		
-		// TODO @Daniel: fsm.isDeterministic() ist hier false, da fsm.addTransition() auch gleiche Übergänge mehrfach aufnimmt. Benötige Funktionalität, mit der ich das Vorhandensein eines Übergangs abfragen kann, bevor ich den Übergang ggf. dann hinzufüge.
 		Assert.assertTrue( fsm.isDeterministic());		
 	}
 	
@@ -50,7 +48,7 @@ public class RegexToDfaTest {
 		FiniteStateMachine<Character, ? extends de.fuberlin.bii.tokenmatcher.StatePayload> fsm = new RegexToDfaConverter()
 		.convert( regexToPayloadMap);
 
-		LexemeReader lexemeReader = new BufferedLexemeReader("src/test/resources/source/tokenmatcher/regex.fun");// new SimpleLexemeReader(
+		LexemeReader lexemeReader = new BufferedLexemeReader("tests/resources/de/fuberlin/bii/source/tokenmatcher/regex.fun");// new SimpleLexemeReader(
 	
 		Tokenizer tokenizer = new Tokenizer( lexemeReader, new MinimalDfa( fsm));
 	

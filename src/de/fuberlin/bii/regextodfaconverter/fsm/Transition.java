@@ -120,14 +120,39 @@ public class Transition<ConditionType extends Serializable, StatePayloadType ext
 	    else 
 	    {
 	    	Transition<?,?> t = (Transition<?,?>)o;
-	    	if (t.getCondition().equals(getCondition()) && t.getState().equals(getState())) {
-	    		return true;
+	    	if (t.getCondition() != null && getCondition() != null)
+	    	{
+		    	if (t.getCondition().equals(getCondition()) && t.getState().equals(getState())) {
+		    		return true;
+		    	}
+		    	else
+		    	{
+		    		return false;
+		    	}
 	    	}
 	    	else
 	    	{
-	    		return false;
+		    	if (t.getCondition() == null && getCondition() == null && t.getState().equals(getState())) {
+		    		return true;
+		    	}
+		    	else
+		    	{
+		    		return false;
+		    	}
 	    	}
 	    }
+	}
+	
+	public int hashCode() 
+	{ 
+		if (getCondition() != null)
+		{
+			return getCondition().hashCode(); 
+		}
+		else
+		{
+			return 0;
+		}
 	}
 
 	/**

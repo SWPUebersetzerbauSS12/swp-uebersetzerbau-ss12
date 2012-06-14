@@ -1,0 +1,8 @@
+define i32 @main() nounwind uwtable {
+	%x = alloca i32, align 4
+	store i32 1, i32* %x
+	%q = load i32* %x, align 4
+	%w = load i32* %x, align 4
+	%a = add nsw i32 %q, %w
+	ret i32 %a
+}

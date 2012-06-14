@@ -1,6 +1,5 @@
 package de.fuberlin.bii.tokenmatcher;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import org.junit.Assert;
@@ -31,7 +30,7 @@ public class TokenizerTest {
 	 */
 	@Test
 	public void testGetNextToken() throws Exception {
-		String sourceFilename = "src/test/resources/source/tokenmatcher/testrelop.fun";
+		String sourceFilename = "tests/resources/de/fuberlin/bii/source/tokenmatcher/testrelop.fun";
 
 		FiniteStateMachine<Character, StatePayload> fsm = generateRelopFSM();
 		fsm.union(generateCommentFSM());
@@ -39,7 +38,7 @@ public class TokenizerTest {
 		fsm = nfaToDfaConverter.convertToDfa(fsm);
 
 		LexemeReader lexemeReader = new BufferedLexemeReader(sourceFilename);
-		// LexemeReader lexemeReader = new SimpleLexemeReader(sourceFile);
+//		LexemeReader lexemeReader = new SimpleLexemeReader(sourceFile);
 
 		Tokenizer tokenizer = new Tokenizer(lexemeReader,
 				new MinimalDfa<Character, StatePayload>(fsm));

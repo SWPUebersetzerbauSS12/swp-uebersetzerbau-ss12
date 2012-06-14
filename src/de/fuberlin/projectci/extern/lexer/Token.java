@@ -1,7 +1,9 @@
 package de.fuberlin.projectci.extern.lexer;
 
-import de.fuberlin.projectci.extern.IToken;
-import de.fuberlin.projectci.extern.IToken.TokenType;
+import de.fuberlin.commons.lexer.IToken;
+import de.fuberlin.commons.lexer.TokenType;
+
+
 
 
 //import lombok.AllArgsConstructor;
@@ -36,8 +38,8 @@ class Token implements IToken {
 	}
 
 	@Override
-	public TokenType getType() {
-		return type;
+	public String getType() {
+		return type.toString();
 	}
 
 	@Override
@@ -53,6 +55,12 @@ class Token implements IToken {
 	@Override
 	public int getLineNumber() {
 		return lineNumber;
+	}
+
+	@Override
+	public String getText() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

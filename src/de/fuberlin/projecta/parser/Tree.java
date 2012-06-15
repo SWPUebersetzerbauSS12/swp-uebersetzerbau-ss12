@@ -24,8 +24,6 @@ public class Tree implements ISyntaxTree {
 	private HashMap<String, Object> attributes;
 
 	ISyntaxTree parent = null;
-	@Getter
-	ISyntaxTree parent;
 
 	/**
 	 * Creates a new empty node for non-terminals.

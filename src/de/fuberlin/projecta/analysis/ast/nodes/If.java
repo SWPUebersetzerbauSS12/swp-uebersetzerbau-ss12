@@ -1,6 +1,7 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 import de.fuberlin.projecta.analysis.SymbolTableStack;
+import de.fuberlin.projecta.lexer.TokenType;
 
 public class If extends Statement {
 	private Block block;
@@ -27,16 +28,37 @@ public class If extends Statement {
 		block = getHighestBlock();
 		if (block != null) {
 			int[] regs = new int[3];
-			for (int i = 0; i < 3; i++) {
-				regs[i] = block.getNewRegister();
+			// for (int i = 0; i < 3; i++) {
+			// regs[i] = block.getNewRegister();
+			// }
+			int nots = 0;
+			AbstractSyntaxTree newTree = (AbstractSyntaxTree) getChild(0);
+			while (newTree instanceof UnaryOp) {
+				if (((UnaryOp) newTree).getOp() == TokenType.OP_NOT) {
+					nots++;
+				}
+				newTree = (AbstractSyntaxTree) newTree.getChild(0);
 			}
-			ret = "%" +  regs[0] + " = "
+			regs[0] = block.getNewRegister();
+			ret += "%" + regs[0] + " = "
 					+ ((AbstractSyntaxTree) getChild(0)).genCode() + "\n";
-			ret += "br i1 %" + regs[0] + ", label %" + regs[1] + ", label %"
-					+ regs[2] + "\n";
+			String block1 = "";
+			if (nots % 2 == 0) {
+				regs[1] = block.getNewRegister();
+				ret += "br i1 %" + regs[0] + ", label %" + regs[1];
+				block1 = ((Statement) getChild(1)).genCode();
+				regs[2] = block.getNewRegister();
+				ret += ", label %" + regs[2] + "\n";
+			} else {				
+				regs[1] = block.getNewRegister();
+				ret += "br i1 %" + regs[0] + ", label %" + regs[2];
+				block1 = ((Statement) getChild(1)).genCode();
+				regs[2] = block.getNewRegister();
+				ret += ", label %" + regs[1] + "\n";
+			}
 			ret += "; <label>:" + regs[1] + "\n";
-			ret += ((Statement) getChild(1)).genCode() + "\n";
-			ret += "; <label>:" + regs[2] + "\n";
+			ret += block1 + "\n";
+			ret += "; <label>:" + regs[2];
 		}
 
 		return ret;

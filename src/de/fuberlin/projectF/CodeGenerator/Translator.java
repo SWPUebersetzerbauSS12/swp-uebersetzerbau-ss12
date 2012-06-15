@@ -26,6 +26,7 @@ public class Translator {
 		this.code = code;
 		int tokenNumber = 0;
 		for (Token tok : code) {
+			
 			String op1, op2;
 			RegisterAddress res;
 
@@ -70,13 +71,13 @@ public class Translator {
 
 			case Call:
 				String function = tok.getOp1().substring(1);
+				
 				// Variablen, die nur in Registern sind, auf dem Stack speichern
 				List<Variable> regVars = mem.getRegVariables(true);
 				for (Variable var : regVars) {
 					mem.regToStack(var);
 					// Stackpointer verschieben
-					subl("$" + String.valueOf(var.getSize()), "%esp",
-							"Move var to stack");
+					subl("$" + String.valueOf(var.getSize()), "%esp", "Move var to stack");
 				}
 				// Alle Register sind nun frei und werden möglicherweise in der
 				// Aufgerufenen Funktion verwendet.
@@ -92,6 +93,9 @@ public class Translator {
 						System.out.println(operand);
 						if (operand.charAt(1) == '@')
 							operand = "$" + operand.substring(3);
+						
+						if(p.getType().equals("double"))
+							pushl(mem.getAddress(p.getOperand(), 4), "Parameter " + p.getOperand());
 						pushl(operand, "Parameter " + p.getOperand());
 					}
 				}
@@ -131,7 +135,7 @@ public class Translator {
 						if(tok.getTypeTarget().equals("i32*"))
 							movl("$" + tok.getOp1(), target, "Assignment " + tok.getTarget());
 						else if(tok.getTypeTarget().equals("double*")) {
-							String target2 = new String((Integer.parseInt(target.substring(0,target.indexOf('('))) + 4) + "(%ebp)");
+							String target2 = mem.getAddress(tok.getTarget(), +4);
 							movl("$" + tok.getOp1().substring(0,10), target2, "Assignment " + tok.getTarget());
 							movl("$0x" + tok.getOp1().substring(10), target, "Assignment " + tok.getTarget());
 						}

@@ -43,8 +43,11 @@ public class MemoryManager {
 	}
 
 	public String getAddress(String name) {
-		System.out.println(current.get(name));
 		return current.get(name).getAddress();
+	}
+	
+	public String getAddress(String name, int offset) {
+		return current.get(name).getAddress(offset);
 	}
 
 	public void newVirtualVar(String name, String var) {

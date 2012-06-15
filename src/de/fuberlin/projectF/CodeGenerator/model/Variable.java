@@ -64,6 +64,12 @@ public class Variable {
 			return getRegAddress().getFullName();
 		return stackAddresses.get(0).getFullName();
 	}
+	
+	public String getAddress(int offset) {
+		if (!regAddresses.isEmpty())
+			return getRegAddress().getFullName();
+		return stackAddresses.get(0).getFullName(offset);
+	}
 
 	public RegisterAddress getRegAddress() {
 		return regAddresses.get(0);

@@ -19,6 +19,10 @@ public class StackAddress extends Address {
 	public String getFullName() {
 		return (addr + "(%ebp)");
 	}
+	
+	public String getFullName(int offset) {
+		return ((addr + offset) + "(%ebp)");
+	}
 
 	public String getType() {
 		return "Stack";

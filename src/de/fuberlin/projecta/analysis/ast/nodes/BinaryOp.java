@@ -1,19 +1,10 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
+import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SemanticException;
+import de.fuberlin.projecta.analysis.SymbolTableHelper;
 import de.fuberlin.projecta.analysis.SymbolTableStack;
 import de.fuberlin.projecta.lexer.TokenType;
-
-public class BinaryOp extends AbstractSyntaxTree {
-
-package analysis.ast.nodes;
-
-import lexer.BasicTokenType;
-import lexer.TokenType;
-import analysis.EntryType;
-import analysis.SemanticException;
-import analysis.SymbolTable;
-import analysis.SymbolTableStack;
 
 public class BinaryOp extends AbstractSyntaxTree {
 
@@ -64,29 +55,57 @@ public class BinaryOp extends AbstractSyntaxTree {
 	@Override
 	public String genCode() {
 		String ret = "";
-		Id a = null,b = null;
-		if(getChild(0) instanceof Id && getChild(1) instanceof Id){
+		Id a = null, b = null;
+		if (op == TokenType.OP_EQ || op == TokenType.OP_NE
+				|| op == TokenType.OP_LT || op == TokenType.OP_LE
+				|| op == TokenType.OP_GT || op == TokenType.OP_GE) {
+
+		}
+		if (getChild(0) instanceof Id && getChild(1) instanceof Id) {
 			a = ((Id) getChild(0));
 			b = ((Id) getChild(1));
+
+			String int_or_real = "";
+			String cmp_op = "";
+			if (checkType(a, b).equals("double")) {
+				int_or_real = "fcmp";
+			} else {
+				int_or_real = "icmp";
+			}
+
+			switch (op) {
+			case OP_LT:
+				cmp_op = "olt";
+				break;
+			case OP_LE:
+				cmp_op = "ole";
+				break;
+			case OP_GT:
+				cmp_op = "ogt";
+				break;
+			case OP_GE:
+				cmp_op = "oge";
+				break;
+			case OP_EQ:
+				cmp_op = "eq";
+				break;
+			case OP_NE:
+				cmp_op = "ne";
+				break;
+			}
+			ret = int_or_real + " " + cmp_op + " " + checkType(a, b) + "* %"
+					+ a.getValue() + ", %" + b.getValue();
+
 		}
-		
-		switch (op) {
-		case OP_LT:
-			ret = "fcmp olt " + checkType(a, b) + " %" + a.getRegister() + ", %"
-					+ b.getRegister();
-			break;
-		case OP_LE:
-			ret = "fcmp ole " + checkType(a, b) + " %" + a.getRegister() + ", %"
-					+ b.getRegister();
-			break;
-		}
+
 		return ret;
 	}
 
 	/**
 	 * Searches the symbolTables up to the point where both id's are found and
 	 * gives the highest type possible. E.g. for int and real it is double, for
-	 * int and int it is i32, for int and string it is i8*.
+	 * int and int it is i32, for int and string it is i8*. If at least one
+	 * parameter is not found in any symbolTable an SemanticException is raised.
 	 * 
 	 * @param a
 	 *            the first id
@@ -96,27 +115,24 @@ public class BinaryOp extends AbstractSyntaxTree {
 	 */
 	private String checkType(Id a, Id b) {
 		String ret = "";
-		SymbolTable t = table;
-		EntryType eA = null, eB = null;
-		if (t == null)
-			t = getHigherTable();
-		while (t != null) {
-			eA = t.lookup(a.getValue());
-			eB = t.lookup(b.getValue());
-			if (eA != null && eB != null)
-				break;
-			t = getHigherTable();
-		}
 
+		EntryType eA = null, eB = null;
+		SymbolTableHelper helper = new SymbolTableHelper();
+		eA = helper.lookup(a.getValue(), this);
+		eB = helper.lookup(b.getValue(), this);
+		
 		if (eA != null && eB != null) {
 			Type tA = eA.getType();
 			Type tB = eB.getType();
-			if(tA.equals(tB)){
+			if (tA.equals(tB)) {
 				ret = tA.genCode();
+			} else {
+				throw new SemanticException("Error! " + eA + " and " + eB
+						+ " must be of the same type!");
 			}
 		} else {
 			throw new SemanticException("Error! Id's:" + a.getValue() + ", "
-					+ b.getValue() + " not found in symbolTables!");
+					+ b.getValue() + " not found in symbolTables:");
 		}
 
 		return ret;

@@ -220,9 +220,6 @@ public class SemanticAnalyzer {
 						toAST(tree.getChild(i), stmt);
 					}
 					insertNode.addChild(stmt);
-				} else {
-					throw new SemanticException(
-							"stmt could'nt be set to any node in semantic analyzer");
 				}
 				return;
 			case assign:

@@ -274,7 +274,10 @@ public class Lexer {
 			else if (line[2].contentEquals("add")
 					|| line[2].contentEquals("sub")
 					|| line[2].contentEquals("mul")
-					|| line[2].contentEquals("sdiv")) {
+					|| line[2].contentEquals("sdiv")
+					|| line[2].contentEquals("or")
+					|| line[2].contentEquals("and")
+					|| line[2].contentEquals("xor")) {
 				// Type: ADDITION
 				newToken.setType(TokenType.ExpressionInt);
 				newToken.setTarget(line[0]);
@@ -365,8 +368,9 @@ public class Lexer {
 	}
 
 	private String requote(String string) {
-		
+		//TODO
 		string = string.replace("\\0A", "\\n");
+		string = string.replace("\\09", "\\t");
 		string = string.replace("\\00", "\\0");
 		
 		return string;

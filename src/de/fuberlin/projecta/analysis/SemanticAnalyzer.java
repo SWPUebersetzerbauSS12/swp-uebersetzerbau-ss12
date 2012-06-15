@@ -221,8 +221,8 @@ public class SemanticAnalyzer {
 					}
 					insertNode.addChild(stmt);
 				} else {
-					// throw new SemanticException(
-					// "stmt could'nt be set to any node in semantic analyzer");
+					throw new SemanticException(
+							"stmt could'nt be set to any node in semantic analyzer");
 				}
 				return;
 			case assign:

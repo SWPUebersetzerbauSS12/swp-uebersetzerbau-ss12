@@ -13,6 +13,6 @@ public class Type extends AbstractSyntaxTree {
 	}
 	
 	public String genCode(){
-		return null;
+		return "";
 	}
 }

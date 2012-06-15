@@ -4,6 +4,11 @@ import de.fuberlin.projecta.analysis.SymbolTableStack;
 
 
 public class Block extends Statement {
+	/**
+	 * Used for naming conventions in declarations
+	 */
+	private int registerCounter;
+	
 	@Override
 	public void buildSymbolTable(SymbolTableStack stack){
 		stack.push();
@@ -23,5 +28,9 @@ public class Block extends Statement {
 		return true;
 	}
 
-	// using super implementation
+	// using super implementation for genCode
+	
+	public int getNewRegister(){
+		return ++registerCounter;
+	}
 }

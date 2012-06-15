@@ -1,6 +1,6 @@
 package de.fuberlin.projecta.parser;
 
-import de.fuberlin.projecta.lexer.ILexer;
+import de.fuberlin.commons.lexer.ILexer;
 
 
 public interface IParser {

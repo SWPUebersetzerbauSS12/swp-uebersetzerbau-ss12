@@ -2,10 +2,10 @@ package de.fuberlin.projecta.parser;
 
 import java.util.Stack;
 
-import de.fuberlin.projecta.lexer.ILexer;
-import de.fuberlin.projecta.lexer.IToken;
+import de.fuberlin.commons.lexer.ILexer;
+import de.fuberlin.commons.lexer.IToken;
+import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.projecta.lexer.SyntaxErrorException;
-import de.fuberlin.projecta.lexer.TokenType;
 
 public class Parser implements IParser {
 
@@ -37,7 +37,6 @@ public class Parser implements IParser {
 	 */
 	@Override
 	public ISyntaxTree parse(ILexer lexer, String grammar) throws ParseException {
-		ILexer lexer1 = lexer;
 
 		if (table.isAmbigous()) {
 			throw new ParseException(

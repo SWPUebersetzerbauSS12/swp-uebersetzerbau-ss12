@@ -3,6 +3,7 @@
 *.rej
 *.orig
 *.out
+.*
 
 # from git merge
 *.BACKUP.*
@@ -11,9 +12,8 @@
 *.REMOTE.*
 
 # java
+bin/*
 *.class
 
 # project-specific
 target/
-.classpath
-.project

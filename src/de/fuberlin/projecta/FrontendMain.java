@@ -2,8 +2,8 @@ package de.fuberlin.projecta;
 
 import java.io.File;
 
+import de.fuberlin.commons.lexer.ILexer;
 import de.fuberlin.projecta.analysis.SemanticAnalyzer;
-import de.fuberlin.projecta.lexer.ILexer;
 import de.fuberlin.projecta.lexer.Lexer;
 import de.fuberlin.projecta.lexer.io.FileCharStream;
 import de.fuberlin.projecta.lexer.io.ICharStream;
@@ -44,6 +44,7 @@ public class FrontendMain {
 			parser.parse(lexer, "");
 		} catch (ParseException e) {
 			e.printStackTrace();
+			System.err.println(e.getDetails());
 			System.err.println("Parser failed.");
 			return;
 		}
@@ -58,6 +59,7 @@ public class FrontendMain {
 		}else{
 			System.out.println("Bad semantics!");
 		}
+		analyzer.getAST().printTree();
 		System.out.println(analyzer.getAST().genCode());
 		
 	}

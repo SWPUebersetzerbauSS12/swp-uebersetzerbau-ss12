@@ -445,8 +445,7 @@ public class GrammarReader {
 	 * Eliminates direct leftrekursions by introducing new Nonterminal <"N"$>
 	 * 
 	 * @author Patrick Schlott
-	 * @param grammar
-	 *            Grammar to be examined
+	 * @param grammar Grammar to be examined
 	 * @return The Modified grammar as a Vector of Productions
 	 */
 	private Vector<Productions> eliminateDirectLeftRekursion(
@@ -486,13 +485,13 @@ public class GrammarReader {
 				// initialise new nonterminal <"N">
 				Productions nonTerminalMod = new Productions(head);
 				// initialise new nonterminal <"N"1>
-				String head1 = head.substring(0, head.length() - 1) + "$";
+				String head1 = head.substring(0, head.length() - 1) + "_";
 
 				// prevent duplicate Productions
 				boolean alreadyExists = true;
 				while (alreadyExists) {
 					if (heads.contains(head1 + ">")) {
-						head1 += "$";
+						head1 += "_";
 					} else {
 						alreadyExists = false;
 					}

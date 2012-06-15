@@ -38,19 +38,12 @@ public enum TokenType {
 	IF, THEN, ELSE, WHILE, DO, BREAK, RETURN, PRINT,
 	/** Function definition */
 	DEF,
+	/** Basic type */
+	BASIC,
 	/** Record keyword */
 	RECORD,
 	/** Identifier */
 	ID,
-
-	/** Bool (bool) type */
-	BOOL_TYPE,
-	/** String (string) type */
-	STRING_TYPE,
-	/** Integer (int) type) */
-	INT_TYPE,
-	/** Real (real) type */
-	REAL_TYPE,
 
 	/** Boolean literal */
 	BOOL_LITERAL,

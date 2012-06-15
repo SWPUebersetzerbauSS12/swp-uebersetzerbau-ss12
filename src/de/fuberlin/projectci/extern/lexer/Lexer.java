@@ -1,10 +1,8 @@
 package de.fuberlin.projectci.extern.lexer;
 
-import de.fuberlin.projectci.extern.ILexer;
-import de.fuberlin.projectci.extern.IToken;
-import de.fuberlin.projectci.extern.IToken.TokenType;
+import de.fuberlin.commons.lexer.ILexer;
+import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.projectci.extern.lexer.io.ICharStream;
-import de.fuberlin.projectci.extern.lexer.io.StringCharStream;
 
 public class Lexer implements ILexer {
 
@@ -217,7 +215,7 @@ public class Lexer implements ILexer {
 			}
 			if (is.getNextChars(5).matches("true" + delimiterRegexp)) {
 				is.consumeChars(4);
-				return new Token(TokenType.BOOL_TRUE, true, this.line, offset);
+				return new Token(TokenType.BOOL_LITERAL, true, this.line, offset);
 			}
 		}
 		if (s.equals("e")
@@ -277,7 +275,7 @@ public class Lexer implements ILexer {
 		if (s.equals("f")
 				&& is.getNextChars(6).matches("false" + delimiterRegexp)) {
 			is.consumeChars(5);
-			return new Token(TokenType.BOOL_FALSE, false, this.line, offset);
+			return new Token(TokenType.BOOL_LITERAL, false, this.line, offset);
 		}
 		if (s.equals("+")) {
 			is.consumeChars(1);
@@ -387,14 +385,14 @@ public class Lexer implements ILexer {
 	}
 	
 	public static void main(String[] args) {
-		String s="def int main() { int i; i=1; }";
-		ICharStream charStream=new StringCharStream(s);
-		Lexer lexer=new Lexer(charStream);
-		IToken token=lexer.getNextToken();
-		while(token!=null && token.getType()!=IToken.TokenType.EOF){
-			System.out.println(token);
-			token=lexer.getNextToken();
-		}
+//		String s="def int main() { int i; i=1; }";
+//		ICharStream charStream=new StringCharStream(s);
+//		Lexer lexer=new Lexer(charStream);
+//		IToken token=lexer.getNextToken();
+//		while(token!=null && token.get!=TokenType.EOF){
+//			System.out.println(token);
+//			token=lexer.getNextToken();
+//		}
 		
 	}
 }

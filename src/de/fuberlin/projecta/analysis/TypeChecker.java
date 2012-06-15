@@ -1,6 +1,6 @@
 package de.fuberlin.projecta.analysis;
 
-import de.fuberlin.projecta.lexer.TokenType;
+import de.fuberlin.commons.lexer.TokenType;
 
 public class TypeChecker {
 

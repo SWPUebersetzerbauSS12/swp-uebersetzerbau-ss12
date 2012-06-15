@@ -9,8 +9,8 @@ import java.util.logging.Logger;
 
 import de.fuberlin.commons.util.LogFactory;
 import de.fuberlin.projectci.extern.IAttribute;
-import de.fuberlin.projectci.extern.ISyntaxTree;
-import de.fuberlin.projectci.extern.IToken;
+import de.fuberlin.commons.parser.ISyntaxTree;
+import de.fuberlin.commons.lexer.IToken;
 import de.fuberlin.projectci.grammar.Grammar;
 import de.fuberlin.projectci.grammar.Symbol;
 import de.fuberlin.projectci.grammar.TerminalSymbol;
@@ -43,14 +43,10 @@ public class SyntaxTreeNode implements ISyntaxTree{
 	// ****************************************************************************
 	
 	@Override
-	public void addTree(ISyntaxTree tree) {
+	public void addChild(ISyntaxTree tree) {
 		children.add(tree);		
 	}
 	
-	@Override
-	public String getName() {
-		return symbol.getName();
-	}
 
 	@Override
 	public int getChildrenCount() {
@@ -66,7 +62,7 @@ public class SyntaxTreeNode implements ISyntaxTree{
 	public List<ISyntaxTree> getChildrenByName(String name) {
 		List<ISyntaxTree> result=new ArrayList<ISyntaxTree>();
 		for (ISyntaxTree aChildTree : children) {
-			if (aChildTree.getName().equals(name)){
+			if (aChildTree.getToken().getType().equals(name)){
 				result.add(aChildTree);
 			}
 		}
@@ -79,12 +75,6 @@ public class SyntaxTreeNode implements ISyntaxTree{
 	public IAttribute getAttribute(String name) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public boolean setAttribute(String name, String value) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override
@@ -197,5 +187,44 @@ public class SyntaxTreeNode implements ISyntaxTree{
 //				continue;
 //			}
 		}				
+	}
+
+	@Override
+	public void setParent(ISyntaxTree tree) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public ISyntaxTree getParent() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ISyntaxTree removeChild(int i) {
+		return children.remove(i);
+	}
+
+	@Override
+	public boolean setAttribute(String name, Object value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public IToken getToken() {
+		return token;
+	}
+
+	@Override
+	public List<ISyntaxTree> getChildren() {
+		return children;
+	}
+
+	@Override
+	public void printTree() {
+		System.out.println(toString());
+		
 	}
 }

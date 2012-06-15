@@ -3,8 +3,8 @@ package de.fuberlin.projecta;
 import java.io.File;
 import java.io.IOException;
 
-import de.fuberlin.projecta.lexer.ILexer;
-import de.fuberlin.projecta.lexer.IToken;
+import de.fuberlin.commons.lexer.ILexer;
+import de.fuberlin.commons.lexer.IToken;
 import de.fuberlin.projecta.lexer.Lexer;
 import de.fuberlin.projecta.lexer.SyntaxErrorException;
 import de.fuberlin.projecta.lexer.io.FileCharStream;

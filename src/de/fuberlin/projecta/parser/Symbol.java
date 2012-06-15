@@ -1,6 +1,6 @@
 package de.fuberlin.projecta.parser;
 
-import de.fuberlin.projecta.lexer.TokenType;
+import de.fuberlin.commons.lexer.TokenType;
 
 public class Symbol {
 
@@ -27,21 +27,18 @@ public class Symbol {
 	 */
 	public Symbol(String string) {
 		try {
-			Reserved reserved = Reserved.valueOf(string);
-			this.symbol = reserved;
+			this.symbol = Reserved.valueOf(string);
 			return;
 		} catch (IllegalArgumentException e) {
 		}
 		try {
-			NonTerminal nonT = NonTerminal.valueOf(string);
-			this.symbol = nonT;
+			this.symbol = NonTerminal.valueOf(string);
 			return;
 		} catch (IllegalArgumentException e) {
 		}
 
 		if (this.symbol == null) {
-			TokenType t = TokenType.valueOf(string);
-			this.symbol = t;
+			this.symbol = TokenType.valueOf(string);
 		}
 	}
 

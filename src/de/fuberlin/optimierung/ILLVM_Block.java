@@ -12,6 +12,8 @@ public interface ILLVM_Block {
 	public void createDefUseSets();
 	public boolean updateInOutLiveVariables();
 	public void deleteDeadStores();
+	
+	public void createGenKillSets();
 
 	public void setFirstCommand(ILLVM_Command first);
 	public void setLastCommand(ILLVM_Command last);

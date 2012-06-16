@@ -240,6 +240,46 @@ public class LLVM_Function {
 	
 	/*
 	 * *********************************************************
+	 * *********** Reaching Analysis ***************************
+	 * *********************************************************
+	 */
+	
+	/**
+	 * Erstelle IN und OUT Mengen fuer Reaching Analyse
+	 * Arbeitet nicht auf Registern, sondern auf Speicheradressen
+	 * Dient dazu, spaeter store/load-paare zusammenfuegen zu koennen
+	 * Vorraussetzung: gen und kill Mengen der Bloecke sind gesetzt
+	 */
+	private void createInOutReaching() {
+		// Algorithmus siehe Seite 610 Drachenbuch
+		boolean changes = true;
+		while(changes) {
+			changes = false;
+			for(ILLVM_Block b : this.blocks) {
+				if(b.updateInOutLiveVariables()) {
+					changes = true;
+				}
+			}
+		}
+		
+	}
+	
+	/**
+	 * Erstelle IN OUT Mengen pro Block fuer Lebendigkeitsanalyse
+	 * Entferne anschliessend ueberfluessige Stores
+	 */
+	public void reachingAnalysis() {
+		for(ILLVM_Block b : this.blocks) {
+			b.createGenKillSets();
+		}
+		/*this.createInOutLiveVariables();
+		for(ILLVM_Block b : this.blocks) {
+			b.deleteDeadStores();
+		}*/
+	}
+	
+	/*
+	 * *********************************************************
 	 * *********** CommonExpressions ***************************
 	 * *********************************************************
 	 */

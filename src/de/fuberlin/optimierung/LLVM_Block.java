@@ -264,7 +264,6 @@ class LLVM_Block implements ILLVM_Block {
 	 * store auf a gibt (in diesem Block)
 	 * kill : store i32 1, i32* %a -> alle anderen stores auf a werden hinzugefuegt
 	 * (aus allen Bloecken)
-	 * TODO: not ready
 	 */
 	public void createGenKillSets() {
 		if(!this.isEmpty()) {
@@ -273,7 +272,7 @@ class LLVM_Block implements ILLVM_Block {
 				if(LLVM_Operation.STORE==c.getOperation()) {
 					
 					// Register mit Speicheradresse steht in zweitem Operanden
-					LLVM_Parameter p = c.getOperands().getLast();
+					LLVM_Parameter p = c.getOperands().get(1);
 					String registerName = p.getName();
 					
 					// Falls es vorheriges Store auf diesem Register gab, so ist der
@@ -287,7 +286,7 @@ class LLVM_Block implements ILLVM_Block {
 					LinkedList<ILLVM_Command> uses = this.function.getRegisterMap().
 							getUses(registerName);
 					for(ILLVM_Command u : uses) {
-						if(LLVM_Operation.STORE==u.getOperation()) {
+						if(LLVM_Operation.STORE==u.getOperation() && u!=c) {
 							this.kill.add(u);
 						}
 					}

@@ -213,7 +213,10 @@ public class Lexer {
 			newToken.setTypeTarget(line[3]);
 			
 			if(line[1].equals("double"))
-				newToken.setOp1(transformInIEEE(line[2]));
+				if(line[2].charAt(0) == '%')
+					newToken.setOp1(line[2]);
+				else
+					newToken.setOp1(transformInIEEE(line[2]));
 			else
 				newToken.setOp1(line[2]);
 			
@@ -418,9 +421,6 @@ public class Lexer {
 		line = line.replace('}', ' ');
 		
 		line = line.trim();
-		
-		System.out.println("Fillparameter Start");
-		System.out.println(line);
 		
 		if(line.isEmpty())
 			return;

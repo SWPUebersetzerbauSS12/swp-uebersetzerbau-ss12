@@ -8,6 +8,7 @@ public class Variable {
 	public String name;
 	LinkedList<Address> addresses;
 	ArrayList<RegisterAddress> regAddresses;
+	ArrayList<MMXRegisterAddress> mmxAddresses;
 	ArrayList<StackAddress> stackAddresses;
 	int size;
 
@@ -19,6 +20,7 @@ public class Variable {
 		this.type = type;
 		this.name = name;
 		regAddresses = new ArrayList<RegisterAddress>();
+		mmxAddresses = new ArrayList<MMXRegisterAddress>();
 		stackAddresses = new ArrayList<StackAddress>();
 	}
 
@@ -46,6 +48,16 @@ public class Variable {
 			this.size = 8;
 		regAddresses.add(reg);
 	}
+	
+	public Variable(String type, MMXRegisterAddress reg, String name) {
+		this(type, name);
+
+		if (this.type.equals("i32"))
+			this.size = 4;
+		else if(this.type.equals("double"))
+			this.size = 8;
+		mmxAddresses.add(reg);
+	}
 
 	public void addStackAddress(StackAddress stackAddress) {
 		stackAddresses.add(stackAddress);
@@ -62,16 +74,23 @@ public class Variable {
 	public String getAddress() {
 		if (!regAddresses.isEmpty())
 			return getRegAddress().getFullName();
+		else if (!mmxAddresses.isEmpty())
+			return getRegAddress().getFullName();
 		return stackAddresses.get(0).getFullName();
 	}
 	
 	public String getAddress(int offset) {
 		if (!regAddresses.isEmpty())
 			return getRegAddress().getFullName();
+		else if (!mmxAddresses.isEmpty())
+			return getRegAddress().getFullName();
 		return stackAddresses.get(0).getFullName(offset);
 	}
 
-	public RegisterAddress getRegAddress() {
+	public Address getRegAddress() {
+		System.out.println("Type: " + this.type);
+		if(this.type.equals("double*"))
+			return mmxAddresses.get(0);
 		return regAddresses.get(0);
 	}
 
@@ -79,12 +98,20 @@ public class Variable {
 		return stackAddresses.size() == 0;
 	}
 
+	//??? hat die wirklich nen Sinn?
 	public boolean onStack() {
 		return !stackAddresses.isEmpty();
 	}
 
 	public boolean inReg(int i) {
 		for (RegisterAddress r : regAddresses)
+			if (r.regNumber == i)
+				return true;
+		return false;
+	}
+	
+	public boolean inMMXReg(int i) {
+		for (MMXRegisterAddress r : mmxAddresses)
 			if (r.regNumber == i)
 				return true;
 		return false;

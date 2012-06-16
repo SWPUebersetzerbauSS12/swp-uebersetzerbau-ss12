@@ -5,6 +5,7 @@ import java.util.List;
 
 import de.fuberlin.projectF.CodeGenerator.model.Token.Parameter;
 
+import de.fuberlin.projectF.CodeGenerator.model.MMXRegisterAddress;
 import de.fuberlin.projectF.CodeGenerator.model.RegisterAddress;
 import de.fuberlin.projectF.CodeGenerator.model.Token;
 import de.fuberlin.projectF.CodeGenerator.model.TokenType;
@@ -29,6 +30,8 @@ public class Translator {
 			
 			String op1, op2;
 			RegisterAddress res;
+			MMXRegisterAddress mmxRes;
+			MMXRegisterAddress mmxRes2;
 
 			switch (tok.getType()) {
 			case Definition:
@@ -151,7 +154,7 @@ public class Translator {
 						// Variable
 					} else {
 						source = mem.getAddress(tok.getOp1());
-						movl(source, target, "Assignment double" + tok.getTarget());
+						movsd(source, target, "Assignment double" + tok.getTarget());
 					}
 
 				break;
@@ -216,13 +219,6 @@ public class Translator {
 				break;
 
 			case ExpressionDouble:
-				res = mem.getFreeRegister();
-				if (res == null) {
-					if (!freeUnusedRegister(tokenNumber)) {
-						System.out.println("Could'nt free register");
-					}
-					res = mem.getFreeRegister();
-				}
 
 				if (tok.getOp1().startsWith("%"))
 					op1 = mem.getAddress(tok.getOp1());
@@ -233,33 +229,36 @@ public class Translator {
 				else
 					op2 = "$" + tok.getOp2();
 
-				movl(op1, res.getFullName(), "Expression");
-				if (tok.getTypeTarget().equals("add"))
-					addl(op2, res.getFullName(),
-							tok.getOp1() + " + " + tok.getOp2());
-				else if (tok.getTypeTarget().equals("sub"))
-					subl(op2, res.getFullName(),
-							tok.getOp1() + " - " + tok.getOp2());
-				else if (tok.getTypeTarget().equals("mul"))
-					imull(op2, res.getFullName(),
-							tok.getOp1() + " * " + tok.getOp2());
-				else if (tok.getTypeTarget().equals("sdiv")) {
-					if (!isRegisterFree(new RegisterAddress(0))) {
-						System.out.println("Register eax is not free");
-						saveRegisterValue(new RegisterAddress(0));
+				mmxRes = mem.getFreeMMXRegister();
+				if (mmxRes == null) {
+					if (!freeUnusedMMXRegister(tokenNumber)) {
+						System.out.println("Could'nt free register");
 					}
-					if (!isRegisterFree(new RegisterAddress(3))) {
-						System.out.println("Register edx is not free");
-						saveRegisterValue(new RegisterAddress(3));
-					}
-					movl(op1, new RegisterAddress(0).getFullName(), "");
-					movl(new String("$0"),
-							new RegisterAddress(3).getFullName(), "");
-
-					idivl(op2);
-					res = new RegisterAddress(0);
+					mmxRes = mem.getFreeMMXRegister();
 				}
-				mem.addRegVar(tok.getTarget(), tok.getTypeTarget(), res);
+				movsd(op1, mmxRes.getFullName(), "Expression");
+				mem.addMMXRegVar(tok.getOp1(), tok.getTypeOp1(), mmxRes);
+				
+				mmxRes2 = mem.getFreeMMXRegister();
+				if (mmxRes2 == null) {
+					if (!freeUnusedMMXRegister(tokenNumber)) {
+						System.out.println("Could'nt free register");
+					}
+					mmxRes2 = mem.getFreeMMXRegister();
+				}
+				movsd(op2, mmxRes2.getFullName(), "Expression");
+				mem.addMMXRegVar(tok.getOp2(), tok.getTypeOp2(), mmxRes2);
+				
+				if (tok.getTypeTarget().equals("fadd"))
+					addsd(mmxRes2.getFullName(), mmxRes.getFullName(), tok.getOp1() + " + " + tok.getOp2());
+				else if (tok.getTypeTarget().equals("fsub"))
+					subsd(mmxRes2.getFullName(), mmxRes.getFullName(), tok.getOp1() + " - " + tok.getOp2());
+				else if (tok.getTypeTarget().equals("fmul"))
+					mulsd(mmxRes2.getFullName(), mmxRes.getFullName(), tok.getOp1() + " * " + tok.getOp2());
+				else if (tok.getTypeTarget().equals("fdiv")) {
+					divsd(mmxRes2.getFullName(), mmxRes.getFullName(), tok.getOp1() + " * " + tok.getOp2());
+				}
+				mem.addMMXRegVar(tok.getTarget(), "double*", mmxRes);
 				break;
 
 			case Label:
@@ -400,6 +399,11 @@ public class Translator {
 		sectionText.append("\tmovl ").append(source).append(", ")
 				.append(target).append("\t#").append(comment).append("\n");
 	}
+	
+	private void movsd(String source, String target, String comment) {
+		sectionText.append("\tmovsd ").append(source).append(", ")
+				.append(target).append("\t#").append(comment).append("\n");
+	}
 
 	private void orl(String source, String target, String comment) {
 		sectionText.append("\torl ").append(source).append(", ")
@@ -434,6 +438,26 @@ public class Translator {
 		sectionText.append("\taddl ").append(source).append(", ")
 				.append(target).append("\t#").append(comment).append("\n");
 	}
+	
+	private void addsd(String source, String target, String comment) {
+		sectionText.append("\taddsd ").append(source).append(", ")
+				.append(target).append("\t#").append(comment).append("\n");
+	}
+	
+	private void subsd(String source, String target, String comment) {
+		sectionText.append("\tsubsd ").append(source).append(", ")
+				.append(target).append("\t#").append(comment).append("\n");
+	}
+	
+	private void mulsd(String source, String target, String comment) {
+		sectionText.append("\tmulsd ").append(source).append(", ")
+				.append(target).append("\t#").append(comment).append("\n");
+	}
+	
+	private void divsd(String source, String target, String comment) {
+		sectionText.append("\tdivsd ").append(source).append(", ")
+				.append(target).append("\t#").append(comment).append("\n");
+	}
 
 	private boolean freeUnusedRegister(int tokenNumber) {
 		boolean result = false;
@@ -441,6 +465,18 @@ public class Translator {
 			Variable tmp = mem.getVarFromReg(i);
 			if (findToken(tokenNumber, false, null, null, tmp.name, tmp.name) == 0) {
 				mem.freeRegister(new RegisterAddress(i));
+				result = true;
+			}
+		}
+		return result;
+	}
+	
+	private boolean freeUnusedMMXRegister(int tokenNumber) {
+		boolean result = false;
+		for (int i = 0; i < 6; i++) {
+			Variable tmp = mem.getVarFromMMXReg(i);
+			if (findToken(tokenNumber, false, null, null, tmp.name, tmp.name) == 0) {
+				mem.freeMMXRegister(new MMXRegisterAddress(i));
 				result = true;
 			}
 		}

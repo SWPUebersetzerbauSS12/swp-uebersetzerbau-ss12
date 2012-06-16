@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import de.fuberlin.projectF.CodeGenerator.model.MMXRegisterAddress;
 import de.fuberlin.projectF.CodeGenerator.model.StackAddress;
 import de.fuberlin.projectF.CodeGenerator.model.Variable;
 import de.fuberlin.projectF.CodeGenerator.model.RegisterAddress;
@@ -15,16 +16,22 @@ public class MemoryContext {
 	private HashMap<String, Variable> variables;
 	ArrayList<RegisterAddress> freeRegisters;
 	HashMap<RegisterAddress, Variable> usedRegisters;
-	//Variable[] registerInfo;
+	ArrayList<MMXRegisterAddress> freeMMXRegisters;
+	HashMap<MMXRegisterAddress, Variable> usedMMXRegisters;
 
 	public MemoryContext() {
-		int stackVars = 0;
-		int stackPointer = 0;
+		stackVars = 0;
+		stackPointer = 0;
 		variables = new HashMap<String, Variable>();
 		freeRegisters = new ArrayList<RegisterAddress>();
 		usedRegisters = new HashMap<RegisterAddress, Variable>();
+		freeMMXRegisters = new ArrayList<MMXRegisterAddress>();
+		usedMMXRegisters = new HashMap<MMXRegisterAddress, Variable>();
 		for (int i = 0; i < 6; i++) {
 			freeRegisters.add(new RegisterAddress(i));
+		}
+		for (int i = 0; i < 8; i++) {
+			freeMMXRegisters.add(new MMXRegisterAddress(i));
 		}
 	}
 
@@ -55,9 +62,18 @@ public class MemoryContext {
 	public void regToStack(Variable var){
 		stackVars++;
 		stackPointer -= var.getSize();
-		RegisterAddress reg = var.getRegAddress(); 
+		RegisterAddress reg = (RegisterAddress)var.getRegAddress(); 
 		freeRegisters.add(reg);
 		usedRegisters.remove(reg);
+		var.addStackAddress(new StackAddress(stackPointer));
+	}
+	
+	public void MMXRegToStack(Variable var){
+		stackVars++;
+		stackPointer -= var.getSize();
+		MMXRegisterAddress reg = (MMXRegisterAddress)var.getRegAddress(); 
+		freeMMXRegisters.add(reg);
+		usedMMXRegisters.remove(reg);
 		var.addStackAddress(new StackAddress(stackPointer));
 	}
 
@@ -68,12 +84,19 @@ public class MemoryContext {
 		freeRegisters.remove(reg);
 		usedRegisters.put(reg, var);
 	}
+	
+	public void addMMXRegVar(String name, String type, MMXRegisterAddress reg) {
+		Variable var = new Variable(type, reg, name);
+		variables.put(name, var);
+		freeMMXRegisters.remove(reg);
+		usedMMXRegisters.put(reg, var);
+	}
 
 	// Vorhandene Stackvariable hinzufügen, z. B. Funktionsparameter, nach Aufruf
 	public void addStackVar(String name, String type, int stackAddress) {
 		int size;
-		if (type.equals("i32"))
-			size = 4;
+		if (type.equals("double"))
+			size = 8;
 		else
 			size = 4;
 
@@ -93,6 +116,14 @@ public class MemoryContext {
 			return null;
 		}
 	}
+	
+	public MMXRegisterAddress getFreeMMXRegister() {
+		try {
+			return freeMMXRegisters.get(0);
+		} catch(IndexOutOfBoundsException e) {
+			return null;
+		}
+	}
 
 	public Variable getVarFromReg(int regNumber) {
 		//return registerInfo[regNumber];
@@ -102,9 +133,22 @@ public class MemoryContext {
 		return null;
 	}
 	
+	public Variable getVarFromMMXReg(int regNumber) {
+		//return registerInfo[regNumber];
+		for (MMXRegisterAddress reg : usedMMXRegisters.keySet()) {
+			if (reg.regNumber == regNumber) return usedMMXRegisters.get(reg);
+		}
+		return null;
+	}
+	
 	public void freeRegister(RegisterAddress tmp) {
 		usedRegisters.remove(tmp.regNumber);
 		freeRegisters.add(0, tmp);
+	}
+	
+	public void freeMMXRegister(MMXRegisterAddress tmp) {
+		usedMMXRegisters.remove(tmp.regNumber);
+		freeMMXRegisters.add(0, tmp);
 	}
 	
 	public List<Variable> getRegVariables(boolean exclusive) {
@@ -115,8 +159,20 @@ public class MemoryContext {
 		return vars;
 	}
 	
+	public List<Variable> getMMXRegVariables(boolean exclusive) {
+		ArrayList<Variable> vars = new ArrayList<Variable>(usedMMXRegisters.values());
+		for (Variable v : vars) {
+			if (v.onStack()) vars.remove(v);
+		}
+		return vars;
+	}
+	
 	public boolean registerInUse(int i) {
 		return usedRegisters.containsKey(i);
+	}
+	
+	public boolean MMXRegisterInUse(int i) {
+		return usedMMXRegisters.containsKey(i);
 	}
 
 	public boolean onStack(String name) {
@@ -128,9 +184,20 @@ public class MemoryContext {
 		if (!variables.containsKey(name)) return false;
 		return variables.get(name).inReg(regNumber);
 	}
+	
+	public boolean inMMXReg(String name, int regNumber) {
+		if (!variables.containsKey(name)) return false;
+		return variables.get(name).inMMXReg(regNumber);
+	}
 
 	public RegisterAddress getFreeRegister(int i) {
 		for (RegisterAddress r : freeRegisters)
+			if (r.regNumber == i) return r;
+		return null;
+	}
+	
+	public MMXRegisterAddress getFreeMMXRegister(int i) {
+		for (MMXRegisterAddress r : freeMMXRegisters)
 			if (r.regNumber == i) return r;
 		return null;
 	}

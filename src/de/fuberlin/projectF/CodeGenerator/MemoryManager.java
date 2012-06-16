@@ -3,6 +3,7 @@ package de.fuberlin.projectF.CodeGenerator;
 import java.util.HashMap;
 import java.util.List;
 
+import de.fuberlin.projectF.CodeGenerator.model.MMXRegisterAddress;
 import de.fuberlin.projectF.CodeGenerator.model.RegisterAddress;
 import de.fuberlin.projectF.CodeGenerator.model.Variable;
 
@@ -37,9 +38,12 @@ public class MemoryManager {
 		return current.newStackVar(name, type);
 	}
 	
-	public void regToStack(Variable var)
-	{
+	public void regToStack(Variable var) {
 		current.regToStack(var);
+	}
+	
+	public void MMXRegToStack(Variable var) {
+		current.MMXRegToStack(var);
 	}
 
 	public String getAddress(String name) {
@@ -57,10 +61,17 @@ public class MemoryManager {
 	public RegisterAddress getFreeRegister() {
 		return current.getFreeRegister();
 	}
+	
+	public MMXRegisterAddress getFreeMMXRegister() {
+		return current.getFreeMMXRegister();
+	}
 
 	public void addRegVar(String name, String type, RegisterAddress reg) {
 		current.addRegVar(name, type, reg);
-
+	}
+	
+	public void addMMXRegVar(String name, String type, MMXRegisterAddress reg) {
+		current.addMMXRegVar(name, type, reg);
 	}
 
 	public void addStackVar(String name, String type, int stackAddress) {
@@ -76,24 +87,49 @@ public class MemoryManager {
 		current.freeRegister(tmp);
 	}
 	
+	public void freeMMXRegister(MMXRegisterAddress tmp) {
+		current.freeMMXRegister(tmp);
+	}
+	
 	public Variable getVarFromReg(int regNumber) {
 		return current.getVarFromReg(regNumber);
+	}
+	
+	public Variable getVarFromMMXReg(int regNumber) {
+		return current.getVarFromMMXReg(regNumber);
 	}
 	
 	public boolean registerInUse(int i) {
 		return current.registerInUse(i);
 	}
 	
+	public boolean MMXRegisterInUse(int i) {
+		return current.MMXRegisterInUse(i);
+	}
+	
 	public List<Variable> getRegVariables(boolean exclusive){
 		return current.getRegVariables(exclusive);
+	}
+	
+	public List<Variable> getMMXRegVariables(boolean exclusive){
+		return current.getMMXRegVariables(exclusive);
 	}
 
 	public boolean inReg(String name, int regNumber) {
 		if (heap.containsKey(name)) return false;
 		return current.inReg(name, regNumber);
 	}
+	
+	public boolean inMMXReg(String name, int regNumber) {
+		if (heap.containsKey(name)) return false;
+		return current.inMMXReg(name, regNumber);
+	}
 
 	public RegisterAddress getFreeRegister(int i) {
 		return current.getFreeRegister(i);
+	}
+	
+	public MMXRegisterAddress getFreeMMXRegister(int i) {
+		return current.getFreeMMXRegister(i);
 	}
 }

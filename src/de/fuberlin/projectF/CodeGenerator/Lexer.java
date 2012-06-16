@@ -94,7 +94,7 @@ public class Lexer {
 		line = line.replace(":", " : ");
 
 		int p1 = line.lastIndexOf('(');
-		int p2 = line.indexOf('(', p1);
+		int p2 = line.indexOf(')', p1);
 		if(line.indexOf(')',p2+1) != -1) {
 			p2 = line.indexOf(')', p2+1);
 		}
@@ -418,6 +418,10 @@ public class Lexer {
 		line = line.replace('}', ' ');
 		
 		line = line.trim();
+		
+		System.out.println("Fillparameter Start");
+		System.out.println(line);
+		
 		if(line.isEmpty())
 			return;
 		

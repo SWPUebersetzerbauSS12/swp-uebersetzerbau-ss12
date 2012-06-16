@@ -17,4 +17,6 @@ public enum TokenType {
 	Branch,
 	ExpressionInt,
 	ExpressionDouble,
+	Cast,
+	Getelementptr,
 }

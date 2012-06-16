@@ -84,25 +84,24 @@ public class Lexer {
 		String[] tmpSplitLine;
 		String[] splitLine;
 
-		line = line.replace("(", " (");
-		line = line.replace(")", ") ");
-		line = line.replace("[", " [");
-		line = line.replace("]", "] ");
-		line = line.replace("{", " {");
-		line = line.replace("}", "} ");
+		line = line.replace("(", " ( ");
+		line = line.replace(")", " ) ");
+		line = line.replace("[", " [ ");
+		line = line.replace("]", " ] ");
+		line = line.replace("{", " { ");
+		line = line.replace("}", " } ");
 		line = line.replace(",", " , ");
 		line = line.replace(":", " : ");
 
 		int p1 = line.lastIndexOf('(');
-		int p2 = line.indexOf(')', p1);
+		int p2 = line.indexOf('(', p1);
 		if(line.indexOf(')',p2+1) != -1) {
 			p2 = line.indexOf(')', p2+1);
-			System.out.println("Found a second one");
 		}
 		line = replaceBetween(line, p1, p2, ' ', (char) 1);
 
-		p1 = line.lastIndexOf('[');
-		p2 = line.indexOf(']', p1);
+		p1 = line.indexOf(" [ ") + 1;
+		p2 = line.lastIndexOf(" ] ");
 		line = replaceBetween(line, p1, p2, ' ', (char) 1);
 
 		p1 = line.lastIndexOf('{');
@@ -112,7 +111,10 @@ public class Lexer {
 		p1 = line.indexOf('"');
 		p2 = line.indexOf('"', p1 + 1);
 		line = replaceBetween(line, p1, p2, ' ', (char) 1);
-
+		
+		System.out.println("Bevor:");
+		System.out.println(line);
+		
 		tmpSplitLine = line.split(" ");
 
 		int count = 0;
@@ -120,14 +122,18 @@ public class Lexer {
 			if (tmpSplitLine[i].isEmpty()) {
 			} else if (tmpSplitLine[i].contentEquals(",")) {
 			} else if (tmpSplitLine[i].contentEquals("*")) {
-			} else if (tmpSplitLine[i].contentEquals("(i8*")) {
-			} else if (tmpSplitLine[i].contentEquals("...)")) {
-			} else if (tmpSplitLine[i].contentEquals("getelementptr")) {
+			} else if (tmpSplitLine[i].contentEquals("i8*")) {
+			} else if (tmpSplitLine[i].contentEquals("...")) {
+			} else if (tmpSplitLine[i].contentEquals("(")) {
+			} else if (tmpSplitLine[i].contentEquals(")")) {
 			} else if (tmpSplitLine[i].contentEquals("inbounds")) {
 			} else if (tmpSplitLine[i].contentEquals("nounwind")) {
 			} else if (tmpSplitLine[i].contentEquals("nsw")) {
 			} else if (tmpSplitLine[i].contentEquals("tail")) {
 			} else if (tmpSplitLine[i].contentEquals("noreturn")) {
+			} else if (tmpSplitLine[i].contentEquals("private")) {
+			} else if (tmpSplitLine[i].contentEquals("unnamed_addr")) {
+			} else if (tmpSplitLine[i].contentEquals("constant")) {
 			} else if (tmpSplitLine[i].contentEquals("align")) {
 				break;
 			}
@@ -144,14 +150,18 @@ public class Lexer {
 			if (tmpSplitLine[i].isEmpty()) {
 			} else if (tmpSplitLine[i].contentEquals(",")) {
 			} else if (tmpSplitLine[i].contentEquals("*")) {
-			} else if (tmpSplitLine[i].contentEquals("(i8*")) {
-			} else if (tmpSplitLine[i].contentEquals("...)")) {
-			} else if (tmpSplitLine[i].contentEquals("getelementptr")) {
+			} else if (tmpSplitLine[i].contentEquals("i8*")) {
+			} else if (tmpSplitLine[i].contentEquals("...")) {
+			} else if (tmpSplitLine[i].contentEquals("(")) {
+			} else if (tmpSplitLine[i].contentEquals(")")) {
 			} else if (tmpSplitLine[i].contentEquals("inbounds")) {
 			} else if (tmpSplitLine[i].contentEquals("nounwind")) {
 			} else if (tmpSplitLine[i].contentEquals("nsw")) {
 			} else if (tmpSplitLine[i].contentEquals("tail")) {
 			} else if (tmpSplitLine[i].contentEquals("noreturn")) {
+			} else if (tmpSplitLine[i].contentEquals("private")) {
+			} else if (tmpSplitLine[i].contentEquals("unnamed_addr")) {
+			} else if (tmpSplitLine[i].contentEquals("constant")) {
 			} else if (tmpSplitLine[i].contentEquals("align")) {
 				break;
 			}
@@ -160,7 +170,11 @@ public class Lexer {
 				splitLine[count++] = new String(tmpSplitLine[i]);
 			}
 		}
-
+		
+		for(int i = 0; i < splitLine.length; i++)
+			System.out.print(splitLine[i] + " ");
+		System.out.println();
+		
 		return splitLine;
 	}
 
@@ -229,9 +243,7 @@ public class Lexer {
 				newToken.setTypeOp2(line[5]);
 				
 			}
-			
 			newToken.setTarget(line[2]);
-			
 		}
 
 		// Return anweisungen
@@ -265,9 +277,9 @@ public class Lexer {
 			else if (line[0].startsWith("@.str")) {
 				newToken.setType(TokenType.String);
 				newToken.setTarget(line[0]);
-				newToken.setTypeTarget(line[5].replace((char) 1, ' '));
-				newToken.setOp1(requote(line[6].substring(1).replace((char) 1, ' ')));
-				newToken.setOp2("" + line[6].length());
+				newToken.setTypeTarget(line[2].replace((char) 1, ' '));
+				newToken.setOp1(requote(line[3].substring(1).replace((char) 1, ' ')));
+				newToken.setOp2("" + line[3].length());
 			}
 
 			// Expression Int
@@ -298,6 +310,26 @@ public class Lexer {
 				newToken.setOp1(line[4]);
 				newToken.setOp2(line[5]);
 			}
+			
+			else if (line[2].contentEquals("sitofp")
+					|| line[2].contentEquals("fptosi")) {
+				
+				newToken.setType(TokenType.Cast);
+				newToken.setTarget(line[0]);
+				newToken.setTypeTarget(line[6]);
+				newToken.setOp1(line[4]);
+				newToken.setTypeOp1(line[3]);
+			}
+			
+			else if (line[2].contentEquals("getelementptr")) {
+				newToken.setType(TokenType.Getelementptr);
+				newToken.setTarget(line[0]);
+				newToken.setTypeTarget(line[3].replace((char) 1, ' '));
+				
+				newToken.setOp1(line[4]);
+				newToken.setOp2(line[8]);
+				newToken.setTypeOp2(line[7]);
+			}
 	
 			// Wert aus Speicher lesen
 			else if (line[2].contentEquals("load")) {
@@ -318,10 +350,13 @@ public class Lexer {
 				
 				newToken.setType(TokenType.Call);
 				newToken.setOp1(line[4]);
-				fillParameter(newToken, line[5].replace((char) 1, ' '));
+				
 				if(line[4].equals("@printf")) {
+					fillParameter(newToken, line[6].replace((char) 1, ' '));
 					newToken.removeParameters(1);
 					newToken.removeParameters(1);
+				} else {
+					fillParameter(newToken, line[5].replace((char) 1, ' '));
 				}
 			}
 

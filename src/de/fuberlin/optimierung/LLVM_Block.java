@@ -36,6 +36,13 @@ class LLVM_Block implements ILLVM_Block {
 	private LinkedList<String> inLive = new LinkedList<String>();
 	private LinkedList<String> outLive = new LinkedList<String>();
 	
+	// gen- und killmengen fuer globale Reaching Analyse
+	private LinkedList<ILLVM_Command> gen = new LinkedList<ILLVM_Command>();
+	private LinkedList<ILLVM_Command> kill = new LinkedList<ILLVM_Command>();
+	// IN und OUT Mengen fuer globale Reachinganalyse
+	private LinkedList<ILLVM_Command> inReaching = new LinkedList<ILLVM_Command>();
+	private LinkedList<ILLVM_Command> outReaching = new LinkedList<ILLVM_Command>();
+	
 	// Kompletter Code des Blocks als String
 	private String blockCode;
 	
@@ -172,6 +179,10 @@ class LLVM_Block implements ILLVM_Block {
 	
 	/**
 	 * Erstelle def und use Mengen dieses Blockes fuer globale Lebendigkeitsanalyse
+	 * def : store i32 1, i32* %a -> %a wird hinzugefuegt, falls es keine vorherige
+	 * Verwendung von a in diesem Block gibt
+	 * use : %5 = load i32* %a -> %a wird hinzugefuegt, falls es keine vorherige
+	 * Definition von a in diesem Block gibt
 	 */
 	public void createDefUseSets() {
 		if(!this.isEmpty()) {
@@ -211,6 +222,90 @@ class LLVM_Block implements ILLVM_Block {
 	 * @return true, falls IN veraendert wurde
 	 */
 	public boolean updateInOutLiveVariables() {
+		
+		// this.out = in-Mengen aller Nachfolger zusammenfuegen
+		this.outLive.clear();
+		for(ILLVM_Block b : this.nextBlocks) {
+			LinkedList<String> inNextBlock = b.getInLive();
+			for(String s : inNextBlock) {
+				if(!this.outLive.contains(s)) {
+					this.outLive.add(s);
+				}
+			}
+		}
+		
+		// this.in = this.use + (this.out - this.def)
+		//this.inLive.clear();
+		LinkedList<String> inLiveOld = this.inLive;
+		this.inLive = (LinkedList<String>) this.outLive.clone();	// gibt doch neues obj zurueck?
+		for(String s : this.def) {
+			this.inLive.remove(s);
+		}
+		for(String s : this.use) {
+			if(!this.inLive.contains(s)) {
+				this.inLive.add(s);
+			}
+		}
+		
+		return !(this.compareLists(inLiveOld, this.inLive));
+				
+	}
+	
+	
+	/*
+	 * *********************************************************
+	 * *********** Reaching Analysis ***************************
+	 * *********************************************************
+	 */
+	
+	/**
+	 * Erstelle gen und kill Mengen dieses Blockes fuer globale Lebendigkeitsanalyse
+	 * gen : store i32 1, i32* %a -> Befehl wird hinzugefuegt, falls es kein spaeteres
+	 * store auf a gibt (in diesem Block)
+	 * kill : store i32 1, i32* %a -> alle anderen stores auf a werden hinzugefuegt
+	 * (aus allen Bloecken)
+	 * TODO: not ready
+	 */
+	public void createGenKillSets() {
+		if(!this.isEmpty()) {
+			ILLVM_Command c = this.lastCommand;
+			while(c!=null) {
+				if(LLVM_Operation.STORE==c.getOperation()) {
+					
+					// Register mit Speicheradresse steht in zweitem Operanden
+					LLVM_Parameter p = c.getOperands().getLast();
+					String registerName = p.getName();
+					
+					// Falls es vorheriges Store auf diesem Register gab, so ist der
+					// aktuelle Befehl in der kill-Menge diese Blockes enthalten
+					if(!this.kill.contains(c)) {
+						this.gen.add(c);
+					}
+					
+					// Suche alle anderen Stores auf diesem Register und fuege diese
+					// Befehle der kill-Menge hinzu
+					LinkedList<ILLVM_Command> uses = this.function.getRegisterMap().
+							getUses(registerName);
+					for(ILLVM_Command u : uses) {
+						if(LLVM_Operation.STORE==u.getOperation()) {
+							this.kill.add(u);
+						}
+					}
+				}
+
+				c = c.getPredecessor();
+			}
+		}
+		
+	}
+	
+	/**
+	 * Aktualisiere IN und OUT Mengen fuer globale Lebendigkeitsanalyse
+	 * Voraussetzung: def und use sind gesetzt
+	 * @return true, falls IN veraendert wurde
+	 * TODO: not ready
+	 */
+	public boolean updateInOutReaching() {
 		
 		// this.out = in-Mengen aller Nachfolger zusammenfuegen
 		this.outLive.clear();

@@ -279,10 +279,24 @@ public class Translator {
 			case Cast:
 				if(tok.getTypeTarget().equals("i32") && tok.getTypeOp1().equals("double")) {
 					System.out.println("Op1: " + tok.getOp1());
-					System.out.println(mem.getVarFromMMXReg(1).name);
 					op1 = mem.getAddress(tok.getOp1());
+					System.out.println("Address:" + op1);
 					System.out.println(op1);
-					//movsd();
+					
+					cvtsd2ss(op1,op1, "Convert to single precision");
+					
+					res = mem.getFreeRegister();
+					if (res == null) {
+						if (!freeUnusedRegister(tokenNumber)) {
+							System.out.println("Could'nt free register");
+						}
+						res = mem.getFreeRegister();
+					}
+					
+					cvttss2si(op1,res.getFullName(), "Convert to integer");
+					
+					mem.addRegVar(tok.getTarget(), "i32*", res);
+
 					
 				} else if (tok.getTypeTarget().equals("double") && tok.getTypeOp1().equals("i32")) {
 					op1 = mem.getAddress(tok.getOp1());
@@ -446,6 +460,16 @@ public class Translator {
 	
 	private void cvtsi2sd(String source, String target, String comment) {
 		sectionText.append("\tcvtsi2sd ").append(source).append(", ")
+				.append(target).append("\t#").append(comment).append("\n");
+	}
+	
+	private void cvtsd2ss(String source, String target, String comment) {
+		sectionText.append("\tcvtsd2ss ").append(source).append(", ")
+				.append(target).append("\t#").append(comment).append("\n");
+	}
+	
+	private void cvttss2si(String source, String target, String comment) {
+		sectionText.append("\tcvttss2si ").append(source).append(", ")
 				.append(target).append("\t#").append(comment).append("\n");
 	}
 

@@ -88,7 +88,6 @@ public class Variable {
 	}
 
 	public Address getRegAddress() {
-		System.out.println("Type: " + this.type);
 		if(this.type.equals("double*"))
 			return mmxAddresses.get(0);
 		return regAddresses.get(0);
@@ -98,7 +97,6 @@ public class Variable {
 		return stackAddresses.size() == 0;
 	}
 
-	//??? hat die wirklich nen Sinn?
 	public boolean onStack() {
 		return !stackAddresses.isEmpty();
 	}

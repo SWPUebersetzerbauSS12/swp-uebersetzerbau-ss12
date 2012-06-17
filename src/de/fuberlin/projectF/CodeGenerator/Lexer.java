@@ -83,7 +83,7 @@ public class Lexer {
 
 		String[] tmpSplitLine;
 		String[] splitLine;
-
+		
 		line = line.replace("(", " ( ");
 		line = line.replace(")", " ) ");
 		line = line.replace("[", " [ ");
@@ -107,7 +107,7 @@ public class Lexer {
 		p1 = line.lastIndexOf('{');
 		p2 = line.indexOf('}', p1);
 		line = replaceBetween(line, p1, p2, ' ', (char) 1);
-
+		
 		p1 = line.indexOf('"');
 		p2 = line.indexOf('"', p1 + 1);
 		line = replaceBetween(line, p1, p2, ' ', (char) 1);
@@ -281,7 +281,15 @@ public class Lexer {
 				newToken.setType(TokenType.String);
 				newToken.setTarget(line[0]);
 				newToken.setTypeTarget(line[2].replace((char) 1, ' '));
-				newToken.setOp1(requote(line[3].substring(1).replace((char) 1, ' ')));
+				newToken.setOp1(requote(line[3].substring(1).replace((char) 1, ' ')
+						.replace(" ( ", "(")
+						.replace(" ) ", ")")
+						.replace(" [ ", "[")
+						.replace(" ] ", "]")
+						.replace(" { ", "{")
+						.replace(" } ", "}")
+						.replace(" , ", ",")
+						.replace(" : ", ":")));
 				newToken.setOp2("" + line[3].length());
 			}
 

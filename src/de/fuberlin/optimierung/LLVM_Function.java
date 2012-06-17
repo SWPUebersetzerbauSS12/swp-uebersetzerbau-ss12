@@ -251,12 +251,12 @@ public class LLVM_Function {
 	 * Vorraussetzung: gen und kill Mengen der Bloecke sind gesetzt
 	 */
 	private void createInOutReaching() {
-		// Algorithmus siehe Seite 610 Drachenbuch
+		// Algorithmus siehe Seite 607 Drachenbuch
 		boolean changes = true;
 		while(changes) {
 			changes = false;
 			for(ILLVM_Block b : this.blocks) {
-				if(b.updateInOutLiveVariables()) {
+				if(b.updateInOutReaching()) {
 					changes = true;
 				}
 			}
@@ -272,8 +272,8 @@ public class LLVM_Function {
 		for(ILLVM_Block b : this.blocks) {
 			b.createGenKillSets();
 		}
-		/*this.createInOutLiveVariables();
-		for(ILLVM_Block b : this.blocks) {
+		this.createInOutReaching();
+		/*for(ILLVM_Block b : this.blocks) {
 			b.deleteDeadStores();
 		}*/
 	}

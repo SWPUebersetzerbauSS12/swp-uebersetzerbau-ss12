@@ -299,38 +299,37 @@ class LLVM_Block implements ILLVM_Block {
 	}
 	
 	/**
-	 * Aktualisiere IN und OUT Mengen fuer globale Lebendigkeitsanalyse
-	 * Voraussetzung: def und use sind gesetzt
+	 * Aktualisiere IN und OUT Mengen fuer Reachinganalyse
+	 * Voraussetzung: gen und kill sind gesetzt
 	 * @return true, falls IN veraendert wurde
 	 * TODO: not ready
 	 */
 	public boolean updateInOutReaching() {
 		
-		// this.out = in-Mengen aller Nachfolger zusammenfuegen
-		this.outLive.clear();
-		for(ILLVM_Block b : this.nextBlocks) {
-			LinkedList<String> inNextBlock = b.getInLive();
-			for(String s : inNextBlock) {
-				if(!this.outLive.contains(s)) {
-					this.outLive.add(s);
+		// this.in = out-Mengen aller Vorgaenger zusammenfuegen
+		this.inReaching.clear();
+		for(ILLVM_Block b : this.previousBlocks) {
+			LinkedList<ILLVM_Command> outPreviousBlock = b.getOutReaching();
+			for(ILLVM_Command c : outPreviousBlock) {
+				if(!this.inReaching.contains(c)) {
+					this.inReaching.add(c);
 				}
 			}
 		}
 		
-		// this.in = this.use + (this.out - this.def)
-		//this.inLive.clear();
-		LinkedList<String> inLiveOld = this.inLive;
-		this.inLive = (LinkedList<String>) this.outLive.clone();	// gibt doch neues obj zurueck?
-		for(String s : this.def) {
-			this.inLive.remove(s);
+		// this.out = this.gen + (this.in - this.kill)
+		LinkedList<ILLVM_Command> outReachingOld = this.outReaching;
+		this.outReaching = (LinkedList<ILLVM_Command>) this.inReaching.clone();	// gibt doch neues obj zurueck?
+		for(ILLVM_Command c : this.kill) {
+			this.outReaching.remove(c);
 		}
-		for(String s : this.use) {
-			if(!this.inLive.contains(s)) {
-				this.inLive.add(s);
+		for(ILLVM_Command c : this.gen) {
+			if(!this.outReaching.contains(c)) {
+				this.outReaching.add(c);
 			}
 		}
 		
-		return !(this.compareLists(inLiveOld, this.inLive));
+		return !(this.compareLists(outReachingOld, this.outReaching));
 				
 	}
 	
@@ -493,15 +492,28 @@ class LLVM_Block implements ILLVM_Block {
 	 * Hilfsfunktion, um zwei String-Listen zu vergleichen
 	 * Gibt true zurueck, wenn sie die gleichen Strings enthalten (Reihenfolge egal),
 	 * sonst false
+	 * @param <T>
 	 * @param l1 Liste 1
 	 * @param l2 Liste 2
 	 * @return
 	 */
-	private boolean compareLists(LinkedList<String> l1, LinkedList<String> l2) {
+	/*private boolean compareLists(LinkedList<String> l1, LinkedList<String> l2) {
 		if(l1.size()!=l2.size()) {
 			return false;
 		}
 		for(String s : l1) {
+			if(!l2.contains(s)) {
+				return false;
+			}
+		}
+		return true;
+	}*/
+	
+	private <T> boolean compareLists(LinkedList<T> l1, LinkedList<T> l2) {
+		if(l1.size()!=l2.size()) {
+			return false;
+		}
+		for(T s : l1) {
 			if(!l2.contains(s)) {
 				return false;
 			}
@@ -581,6 +593,10 @@ class LLVM_Block implements ILLVM_Block {
 	
 	public LinkedList<String> getInLive() {
 		return inLive;
+	}
+	
+	public LinkedList<ILLVM_Command> getOutReaching() {
+		return outReaching;
 	}
 
 	public String toString() {

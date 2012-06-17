@@ -60,11 +60,19 @@ public class Translator {
 					break;
 				// Variable zurückgeben
 				if (tok.getOp1().startsWith("%")) {
-					movl(mem.getAddress(tok.getOp1()), "%eax", "Return value");
+					if(tok.getTypeOp1().equals("double"))
+						movsd(mem.getAddress(tok.getOp1()), "%mmx0", "Return value");
+					else
+						movl(mem.getAddress(tok.getOp1()), "%eax", "Return value");
+					
 				}
 				// Fester Wert
-				else
-					movl("$" + tok.getOp1(), "%eax", "Return Value");
+				else {
+					if(tok.getTypeOp1().equals("double"))
+						movl("$" + tok.getOp1(), "%xmm0", "Return Value");
+					else
+						movl("$" + tok.getOp1(), "%eax", "Return Value");
+				}
 				break;
 
 			case DefinitionEnd:
@@ -154,7 +162,10 @@ public class Translator {
 						// Variable
 					} else {
 						source = mem.getAddress(tok.getOp1());
-						movsd(source, target, "Assignment double" + tok.getTarget());
+						if(tok.getTypeTarget().equals("double*"))
+							movsd(source, target, "Assignment double" + tok.getTarget());
+						else
+							movl(source, target, "Assignment i32" + tok.getTarget());
 					}
 
 				break;
@@ -215,7 +226,7 @@ public class Translator {
 					idivl(op2);
 					res = new RegisterAddress(0);
 				}
-				mem.addRegVar(tok.getTarget(), tok.getTypeTarget(), res);
+				mem.addRegVar(tok.getTarget(), "i32*", res);
 				break;
 
 			case ExpressionDouble:
@@ -229,15 +240,17 @@ public class Translator {
 				else
 					op2 = "$" + tok.getOp2();
 
-				mmxRes = mem.getFreeMMXRegister();
-				if (mmxRes == null) {
-					if (!freeUnusedMMXRegister(tokenNumber)) {
-						System.out.println("Could'nt free register");
-					}
+				//if(!op1.startsWith("%xmm")) {
 					mmxRes = mem.getFreeMMXRegister();
-				}
-				movsd(op1, mmxRes.getFullName(), "Expression");
-				mem.addMMXRegVar(tok.getOp1(), tok.getTypeOp1(), mmxRes);
+					if (mmxRes == null) {
+						if (!freeUnusedMMXRegister(tokenNumber)) {
+							System.out.println("Could'nt free register");
+						}
+						mmxRes = mem.getFreeMMXRegister();
+					}
+					mem.addMMXRegVar(tok.getOp1(), tok.getTypeOp1(), mmxRes);
+					movsd(op1, mmxRes.getFullName(), "Expression");
+				//}
 				
 				mmxRes2 = mem.getFreeMMXRegister();
 				if (mmxRes2 == null) {
@@ -258,9 +271,35 @@ public class Translator {
 				else if (tok.getTypeTarget().equals("fdiv")) {
 					divsd(mmxRes2.getFullName(), mmxRes.getFullName(), tok.getOp1() + " * " + tok.getOp2());
 				}
+				
 				mem.addMMXRegVar(tok.getTarget(), "double*", mmxRes);
+				
 				break;
 
+			case Cast:
+				if(tok.getTypeTarget().equals("i32") && tok.getTypeOp1().equals("double")) {
+					System.out.println("Op1: " + tok.getOp1());
+					System.out.println(mem.getVarFromMMXReg(1).name);
+					op1 = mem.getAddress(tok.getOp1());
+					System.out.println(op1);
+					//movsd();
+					
+				} else if (tok.getTypeTarget().equals("double") && tok.getTypeOp1().equals("i32")) {
+					op1 = mem.getAddress(tok.getOp1());
+					mmxRes = mem.getFreeMMXRegister();
+					if (mmxRes == null) {
+						if (!freeUnusedMMXRegister(tokenNumber)) {
+							System.out.println("Could'nt free register");
+						}
+						mmxRes = mem.getFreeMMXRegister();
+					}
+					cvtsi2sd(op1, mmxRes.getFullName(), "Cast");
+					mem.addMMXRegVar(tok.getTarget(), "double*", mmxRes);
+				} else {
+					System.out.println("Cast Error");
+				}
+					
+				break;
 			case Label:
 				label(tok.getTarget());
 				break;
@@ -402,6 +441,11 @@ public class Translator {
 	
 	private void movsd(String source, String target, String comment) {
 		sectionText.append("\tmovsd ").append(source).append(", ")
+				.append(target).append("\t#").append(comment).append("\n");
+	}
+	
+	private void cvtsi2sd(String source, String target, String comment) {
+		sectionText.append("\tcvtsi2sd ").append(source).append(", ")
 				.append(target).append("\t#").append(comment).append("\n");
 	}
 

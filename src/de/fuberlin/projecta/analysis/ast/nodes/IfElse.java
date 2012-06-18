@@ -1,16 +1,12 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 import de.fuberlin.commons.lexer.TokenType;
-import de.fuberlin.projecta.analysis.SymbolTableStack;
 import de.fuberlin.projecta.parser.ISyntaxTree;
 
 public class IfElse extends Statement {
 
 	private Block block;
 
-	public void buildSymbolTable(SymbolTableStack tables) {
-
-	}
 
 	@Override
 	public boolean checkSemantics() {
@@ -179,6 +175,12 @@ public class IfElse extends Statement {
 		} else if (elseBranch instanceof Return) {
 			return true;
 		}
+		return false;
+	}
+
+	@Override
+	public boolean checkTypes() {
+		// TODO Auto-generated method stub
 		return false;
 	}
 }

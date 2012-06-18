@@ -78,4 +78,10 @@ public class Block extends Statement {
 		return true;
 		
 	}
+
+	@Override
+	public boolean checkTypes() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

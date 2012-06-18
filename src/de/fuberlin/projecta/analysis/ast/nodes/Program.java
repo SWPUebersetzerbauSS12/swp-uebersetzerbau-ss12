@@ -17,12 +17,26 @@ public class Program extends AbstractSyntaxTree {
 
 	@Override
 	public boolean checkSemantics() {
+		boolean mainExists = false;
 		for(int i = 0; i < this.getChildrenCount(); i++){
-			if(!((AbstractSyntaxTree)this.getChild(i)).checkSemantics()){
+			AbstractSyntaxTree child = (AbstractSyntaxTree)this.getChild(i);
+			if(!child.checkSemantics()){
 				return false;
 			}
+			if(child instanceof FuncDef){
+				String name = ((Id)child.getChild(1)).getValue();
+				if(name.equals("main")){
+					mainExists = true;
+				}
+			}
 		}
-		return true;
+		return mainExists;
+	}
+
+	@Override
+	public boolean checkTypes() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 	/*

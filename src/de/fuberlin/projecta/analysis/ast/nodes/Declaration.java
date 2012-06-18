@@ -30,4 +30,10 @@ public class Declaration extends AbstractSyntaxTree {
 				+ ((Type) getChild(0)).genCode();
 		return ret;
 	}
+
+	@Override
+	public boolean checkTypes() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

@@ -1,6 +1,5 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
-import de.fuberlin.projecta.analysis.SymbolTableStack;
 
 /**
  * first child num
@@ -8,9 +7,6 @@ import de.fuberlin.projecta.analysis.SymbolTableStack;
  * 
  */
 public class ArrayCall extends AbstractSyntaxTree {
-	public void buildSymbolTable(SymbolTableStack tables) {
-
-	}
 
 	@Override
 	public boolean checkSemantics() {
@@ -21,5 +17,11 @@ public class ArrayCall extends AbstractSyntaxTree {
 	public String genCode() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public boolean checkTypes() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

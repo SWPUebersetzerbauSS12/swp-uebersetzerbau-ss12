@@ -1,6 +1,5 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
-import de.fuberlin.projecta.analysis.SymbolTableStack;
 
 public class Id extends AbstractSyntaxTree {
 	
@@ -14,10 +13,6 @@ public class Id extends AbstractSyntaxTree {
 		this.value = value;
 	}
 	
-	public void buildSymbolTable(SymbolTableStack tables) {
-
-	}
-
 	@Override
 	public boolean checkSemantics() {
 		//can't have children!
@@ -31,5 +26,11 @@ public class Id extends AbstractSyntaxTree {
 	
 	public String getValue(){
 		return this.value;
+	}
+
+	@Override
+	public boolean checkTypes() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

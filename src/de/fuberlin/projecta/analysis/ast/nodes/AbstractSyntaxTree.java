@@ -50,8 +50,7 @@ public abstract class AbstractSyntaxTree extends Tree {
 	 **/
 
 	public String genCode() {
-		//we use puts to print to screen
-		String out = "declare i32 @puts(i8*) nounwind\n";
+		String out = "";
 		for (int i = 0; i < getChildrenCount(); i++) {
 			out += ((AbstractSyntaxTree) getChild(i)).genCode() + "\n";
 		}

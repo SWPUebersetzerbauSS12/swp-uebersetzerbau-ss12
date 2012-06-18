@@ -9,7 +9,4 @@ import de.fuberlin.projecta.analysis.SymbolTableStack;
  * @author sh4ke
  */
 public class Array extends Type {
-	public void buildSymbolTable(SymbolTableStack tables) {
-
-	}
 }

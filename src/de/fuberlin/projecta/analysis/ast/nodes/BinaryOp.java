@@ -14,10 +14,6 @@ public class BinaryOp extends AbstractSyntaxTree {
 		this.op = op;
 	}
 
-	public void buildSymbolTable(SymbolTableStack tables) {
-
-	}
-
 	@Override
 	public boolean checkSemantics() {
 		switch (this.getOp()) {

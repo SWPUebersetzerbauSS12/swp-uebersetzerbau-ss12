@@ -8,9 +8,6 @@ import de.fuberlin.projecta.analysis.SymbolTableStack;
  * 
  */
 public class ArrayCall extends AbstractSyntaxTree {
-	public void buildSymbolTable(SymbolTableStack tables) {
-
-	}
 
 	@Override
 	public boolean checkSemantics() {

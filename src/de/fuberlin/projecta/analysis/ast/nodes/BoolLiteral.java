@@ -11,11 +11,6 @@ public class BoolLiteral extends Statement {
 	}
 	
 	@Override
-	public void buildSymbolTable(SymbolTableStack stack){
-		
-	}
-
-	@Override
 	public boolean checkSemantics() {
 		return true;
 	}

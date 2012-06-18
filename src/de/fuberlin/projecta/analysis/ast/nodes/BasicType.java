@@ -11,10 +11,6 @@ public class BasicType extends Type {
 		this.type = t;
 	}
 	
-	public void buildSymbolTable(SymbolTableStack tables) {
-
-	}
-
 	@Override
 	public String genCode() {
 		String ret = "";

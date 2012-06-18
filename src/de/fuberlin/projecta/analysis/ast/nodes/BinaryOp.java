@@ -67,30 +67,51 @@ public class BinaryOp extends AbstractSyntaxTree {
 				String cmp_op = "";
 				if (checkType(a, b).equals("double")) {
 					int_or_real = "fcmp";
+					switch (op) {
+					case OP_LT:
+						cmp_op = "olt";
+						break;
+					case OP_LE:
+						cmp_op = "ole";
+						break;
+					case OP_GT:
+						cmp_op = "ogt";
+						break;
+					case OP_GE:
+						cmp_op = "oge";
+						break;
+					case OP_EQ:
+						cmp_op = "eq";
+						break;
+					case OP_NE:
+						cmp_op = "ne";
+						break;
+					}
 				} else {
 					int_or_real = "icmp";
+					switch (op) {
+					case OP_LT:
+						cmp_op = "slt";
+						break;
+					case OP_LE:
+						cmp_op = "sle";
+						break;
+					case OP_GT:
+						cmp_op = "sgt";
+						break;
+					case OP_GE:
+						cmp_op = "sge";
+						break;
+					case OP_EQ:
+						cmp_op = "eq";
+						break;
+					case OP_NE:
+						cmp_op = "ne";
+						break;
+					}
 				}
 
-				switch (op) {
-				case OP_LT:
-					cmp_op = "olt";
-					break;
-				case OP_LE:
-					cmp_op = "ole";
-					break;
-				case OP_GT:
-					cmp_op = "ogt";
-					break;
-				case OP_GE:
-					cmp_op = "oge";
-					break;
-				case OP_EQ:
-					cmp_op = "eq";
-					break;
-				case OP_NE:
-					cmp_op = "ne";
-					break;
-				}
+				
 				ret = int_or_real + " " + cmp_op + " " + checkType(a, b)
 						+ "* %" + a.getValue() + ", %" + b.getValue();
 

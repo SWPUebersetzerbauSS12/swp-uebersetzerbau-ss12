@@ -32,4 +32,10 @@ public class UnaryOp extends AbstractSyntaxTree {
 	public TokenType getOp() {
 		return this.op;
 	}
+
+	@Override
+	public boolean checkTypes() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

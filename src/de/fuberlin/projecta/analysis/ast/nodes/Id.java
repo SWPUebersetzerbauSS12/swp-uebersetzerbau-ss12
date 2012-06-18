@@ -32,4 +32,10 @@ public class Id extends AbstractSyntaxTree {
 	public String getValue(){
 		return this.value;
 	}
+
+	@Override
+	public boolean checkTypes() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

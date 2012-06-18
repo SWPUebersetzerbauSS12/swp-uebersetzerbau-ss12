@@ -181,4 +181,10 @@ public class IfElse extends Statement {
 		}
 		return false;
 	}
+
+	@Override
+	public boolean checkTypes() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

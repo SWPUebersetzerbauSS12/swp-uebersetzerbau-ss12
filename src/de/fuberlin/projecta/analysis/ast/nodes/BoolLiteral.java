@@ -28,4 +28,10 @@ public class BoolLiteral extends Statement {
 	public boolean getValue(){
 		return this.value;
 	}
+
+	@Override
+	public boolean checkTypes() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

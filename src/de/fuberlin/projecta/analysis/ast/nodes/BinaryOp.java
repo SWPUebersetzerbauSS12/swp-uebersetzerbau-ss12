@@ -148,4 +148,10 @@ public class BinaryOp extends AbstractSyntaxTree {
 	public TokenType getOp() {
 		return op;
 	}
+
+	@Override
+	public boolean checkTypes() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

@@ -74,4 +74,10 @@ public class Do extends Statement {
 		this.removeChild(this.getChildrenCount() - 1);
 		return true;
 	}
+
+	@Override
+	public boolean checkTypes() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

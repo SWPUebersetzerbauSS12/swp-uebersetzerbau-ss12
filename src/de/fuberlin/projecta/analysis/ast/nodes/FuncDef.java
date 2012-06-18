@@ -144,4 +144,10 @@ public class FuncDef extends AbstractSyntaxTree {
 		return false;
 
 	}
+
+	@Override
+	public boolean checkTypes() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

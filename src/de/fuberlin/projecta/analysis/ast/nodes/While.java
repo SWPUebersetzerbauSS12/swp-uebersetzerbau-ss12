@@ -23,4 +23,10 @@ public class While extends Statement {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public boolean checkTypes() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

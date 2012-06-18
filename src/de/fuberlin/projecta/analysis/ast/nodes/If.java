@@ -64,4 +64,10 @@ public class If extends Statement {
 		return ret;
 	}
 
+	@Override
+	public boolean checkTypes() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

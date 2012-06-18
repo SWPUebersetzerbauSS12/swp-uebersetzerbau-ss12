@@ -32,6 +32,12 @@ public class Program extends AbstractSyntaxTree {
 		}
 		return mainExists;
 	}
+
+	@Override
+	public boolean checkTypes() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 	/*
 	 * GenCode already implemented by AbstractSyntaxTree

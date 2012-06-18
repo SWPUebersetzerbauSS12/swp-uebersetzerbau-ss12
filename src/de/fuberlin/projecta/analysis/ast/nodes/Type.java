@@ -15,4 +15,10 @@ public class Type extends AbstractSyntaxTree {
 	public String genCode(){
 		return "";
 	}
+
+	@Override
+	public boolean checkTypes() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

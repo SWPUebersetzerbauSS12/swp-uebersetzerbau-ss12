@@ -44,4 +44,10 @@ public class Params extends AbstractSyntaxTree {
 		}
 		return ret;
 	}
+
+	@Override
+	public boolean checkTypes() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

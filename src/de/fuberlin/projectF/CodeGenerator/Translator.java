@@ -61,7 +61,7 @@ public class Translator {
 				// Variable zurückgeben
 				if (tok.getOp1().startsWith("%")) {
 					if(tok.getTypeOp1().equals("double"))
-						movsd(mem.getAddress(tok.getOp1()), "%mmx0", "Return value");
+						movsd(mem.getAddress(tok.getOp1()), "%xmm0", "Return value");
 					else
 						movl(mem.getAddress(tok.getOp1()), "%eax", "Return value");
 					
@@ -69,7 +69,7 @@ public class Translator {
 				// Fester Wert
 				else {
 					if(tok.getTypeOp1().equals("double"))
-						movl("$" + tok.getOp1(), "%mmx0", "Return Value");
+						movl("$" + tok.getOp1(), "%xmm0", "Return Value");
 					else
 						movl("$" + tok.getOp1(), "%eax", "Return Value");
 				}
@@ -114,8 +114,14 @@ public class Translator {
 				call(function);
 
 				// Rückgabe speichern
-				if (!tok.getTypeTarget().equals("void")) {
+				if (tok.getTypeTarget().equals("i32")) {
 					mem.addRegVar(tok.getTarget(), tok.getTypeTarget(), mem.getFreeRegister(0));
+				}
+				else if (tok.getTypeTarget().equals("double")) {
+					System.out.println("Register " + tok.getTarget());
+					mmxRes = new MMXRegisterAddress(0);
+					System.out.println("To: " + mmxRes.getFullName());
+					mem.addMMXRegVar(tok.getTarget(), tok.getTypeTarget(), mmxRes);
 				}
 				// Parameter löschen
 				for (int i = 0; i < tok.getParameterCount(); i++) {
@@ -137,7 +143,6 @@ public class Translator {
 				String target = mem.getAddress(tok.getTarget());
 				String source;
 				// Zuweisung Variable
-				System.out.println(tok.getOp1() + " " + tok.getTarget());
 					
 					// Zuweisung Zahl
 					if (!tok.getOp1().startsWith("%")) {
@@ -151,21 +156,26 @@ public class Translator {
 					}
 					
 					// Variable (Stack -> Stack)
-					else if (mem.onStack(tok.getOp1())
-							&& mem.onStack(tok.getTarget())) {
-						RegisterAddress tmp = mem.getFreeRegister();
-						movl(mem.getAddress(tok.getOp1()), tmp.getFullName(),
-								"Copy assignment");
-						movl(tmp.getFullName(), target,
-								tok.getTarget() + tok.getOp1());
-						mem.freeRegister(tmp);
+					else if (mem.onStack(tok.getOp1()) && mem.onStack(tok.getTarget())) {
+						
+						if(tok.getTypeOp1().equals("double")) {
+							MMXRegisterAddress tmp = mem.getFreeMMXRegister();
+							movsd(mem.getAddress(tok.getOp1()), tmp.getFullName(), "Copy assignment");
+							movsd(tmp.getFullName(), target, tok.getTarget() + tok.getOp1());
+						} else {
+							RegisterAddress tmp = mem.getFreeRegister();
+							movl(mem.getAddress(tok.getOp1()), tmp.getFullName(), "Copy assignment");
+							movl(tmp.getFullName(), target, tok.getTarget() + tok.getOp1());
+							mem.freeRegister(tmp);
+						}
 						// Variable
 					} else {
 						source = mem.getAddress(tok.getOp1());
+						System.out.println("Source: " + source);
 						if(tok.getTypeTarget().equals("double*"))
-							movsd(source, target, "Assignment double" + tok.getTarget());
+							movsd(source, target, "Assignment double " + tok.getTarget());
 						else
-							movl(source, target, "Assignment i32" + tok.getTarget());
+							movl(source, target, "Assignment i32 " + tok.getTarget());
 					}
 
 				break;
@@ -284,7 +294,13 @@ public class Translator {
 					System.out.println(op1);
 					
 					//TODO wenn wert noch nicht in mmx register
-					cvtsd2ss(op1,op1, "Convert to single precision");
+					if(!(op1.charAt(0) == '%')) {
+						mmxRes = mem.getFreeMMXRegister();
+						movss(op1, mmxRes.getFullName(), "Convert to single precision");
+						op1 = mmxRes.getFullName();
+					} else {
+						cvtsd2ss(op1,op1, "Convert to single precision");
+					}
 					
 					res = mem.getFreeRegister();
 					if (res == null) {
@@ -459,6 +475,11 @@ public class Translator {
 				.append(target).append("\t#").append(comment).append("\n");
 	}
 	
+	private void movss(String source, String target, String comment) {
+		sectionText.append("\tmovss ").append(source).append(", ")
+				.append(target).append("\t#").append(comment).append("\n");
+	}
+	
 	private void cvtsi2sd(String source, String target, String comment) {
 		sectionText.append("\tcvtsi2sd ").append(source).append(", ")
 				.append(target).append("\t#").append(comment).append("\n");
@@ -603,8 +624,8 @@ public class Translator {
 	}
 
 	private static int getSize(String type) {
-		if (type.equals("i32"))
-			return 4;
+		if (type.equals("double"))
+			return 8;
 		else
 			return 4;
 	}

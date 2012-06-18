@@ -74,8 +74,9 @@ public class Variable {
 	public String getAddress() {
 		if (!regAddresses.isEmpty())
 			return getRegAddress().getFullName();
-		else if (!mmxAddresses.isEmpty())
+		else if (!mmxAddresses.isEmpty()) {
 			return getRegAddress().getFullName();
+		}
 		return stackAddresses.get(0).getFullName();
 	}
 	
@@ -88,7 +89,8 @@ public class Variable {
 	}
 
 	public Address getRegAddress() {
-		if(this.type.equals("double*"))
+		System.out.println("lffuzfuz" + this.type);
+		if(this.type.equals("double*") || this.type.equals("double"))
 			return mmxAddresses.get(0);
 		return regAddresses.get(0);
 	}

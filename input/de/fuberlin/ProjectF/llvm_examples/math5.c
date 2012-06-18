@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 
 int addition( int summand1 , int summand2 );
 double additionDouble( double summand1 , double summand2 );
@@ -19,9 +21,16 @@ int main(void) {
 	int differenz;
 	
 	summe = addition( op1 , op2 );
-	summeDouble = addition( op1Double , op2Double );
+	printf("%d + %d = %d\n", op1, op2, summe);
+	
+	summeDouble = op1Double + op2Double;
+	printf("%f + %f = %f\n", op1Double, op2Double, summeDouble);
+	
+	summeDouble = additionDouble( op1Double , op2Double );
+	printf("%f + %f = %f\n", op1Double, op2Double, summeDouble);
 	
 	differenz = subtraktion( op1 , op2 );
+	printf("%d + %d = %d\n", op1, op2, differenz);
 	
 	sinnlos();
 	

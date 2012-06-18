@@ -29,7 +29,10 @@ public class Return extends Statement {
 			ret = "%" + reg + " = load " + eA.getType().genCode() + "* %"
 					+ ((AbstractSyntaxTree) getChild(0)).genCode() + "\n";
 			ret += "ret " + eA.getType().genCode() + " %" + reg;
+		} else {
+			ret += "ret " + ((AbstractSyntaxTree) getChild(0)).genCode();
 		}
+
 		return ret;
 	}
 }

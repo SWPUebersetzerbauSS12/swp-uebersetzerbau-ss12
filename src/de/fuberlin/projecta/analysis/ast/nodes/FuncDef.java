@@ -47,17 +47,17 @@ public class FuncDef extends AbstractSyntaxTree {
 		// these are parameters
 		((AbstractSyntaxTree) getChild(2)).buildSymbolTable(stack);
 
-		List<EntryType> parameters = stack.top().getEntries();
+		List<EntryType> parameters = stack.pop().getEntries();
 
-		if (this.getChildrenCount() == 4)
-			((AbstractSyntaxTree) getChild(3)).buildSymbolTable(stack); // this
-																		// is
-																		// the
-																		// block,
-																		// it
-																		// can
-		// handle everything itself
-
+		if (this.getChildrenCount() == 4) {
+			// this is the block, it can
+			// handle everything itself
+			((AbstractSyntaxTree) getChild(3)).buildSymbolTable(stack);
+			for (EntryType entry : parameters) {
+				((AbstractSyntaxTree) getChild(3)).getTable()
+						.insertEntry(entry);
+			}
+		}
 		EntryType entry = new EntryType(id, type, parameters);
 		stack.top().insertEntry(entry);
 

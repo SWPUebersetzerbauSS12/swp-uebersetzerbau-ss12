@@ -2,7 +2,6 @@ package de.fuberlin.projecta.analysis.ast.nodes;
 
 import de.fuberlin.projecta.analysis.SymbolTableStack;
 
-
 public class Print extends Statement {
 	public void buildSymbolTable(SymbolTableStack tables) {
 
@@ -15,9 +14,14 @@ public class Print extends Statement {
 	}
 
 	@Override
+	/*
+	 * we use the puts function to print to screen
+	 */
 	public String genCode() {
-		// TODO Auto-generated method stub
-		return null;
+		String out = "%" + getHighestBlock().getNewRegister() + " = ";
+		out += "tail call i32 (i8*)* @puts(i8* %"
+				+ ((Id) getChild(0)).getValue() + ")\t;me likes to print";
+		return out;
 	}
 
 	@Override

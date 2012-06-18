@@ -418,7 +418,17 @@ public class Lexer {
 		string = string.replace("\\0A", "\\n");
 		string = string.replace("\\09", "\\t");
 		string = string.replace("\\00", "\\0");
+		string = string.replace("'", "\\'");
+		string = string.replace("\\22", "\\\"");
+		string = string.replace("?", "\\?");
+		string = string.replace("\\5C", "\\\\");
+		string = string.replace("\\07", "\\a");
+		string = string.replace("\\08", "\\b");
+		string = string.replace("\\0C", "\\f");
+		string = string.replace("\\0D", "\\r");
+		string = string.replace("\\0B", "\\v");
 		
+		//ToDo: Unicode zeichen etc
 		return string;
 	}
 

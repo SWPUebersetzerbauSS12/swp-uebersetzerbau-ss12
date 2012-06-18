@@ -21,13 +21,13 @@ public class Program extends AbstractSyntaxTree {
 		for(int i = 0; i < this.getChildrenCount(); i++){
 			AbstractSyntaxTree child = (AbstractSyntaxTree)this.getChild(i);
 			if(!child.checkSemantics()){
-				if(child instanceof FuncDef){
-					String name = ((Id)child.getChild(1)).getValue();
-					if(name.equals("main")){
-						mainExists = true;
-					}
-				}
 				return false;
+			}
+			if(child instanceof FuncDef){
+				String name = ((Id)child.getChild(1)).getValue();
+				if(name.equals("main")){
+					mainExists = true;
+				}
 			}
 		}
 		return mainExists;

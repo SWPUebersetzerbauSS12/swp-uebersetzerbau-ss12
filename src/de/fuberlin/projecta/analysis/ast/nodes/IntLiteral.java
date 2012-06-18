@@ -1,6 +1,5 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
-import de.fuberlin.projecta.analysis.SymbolTableStack;
 
 public class IntLiteral extends Statement {
 	
@@ -8,10 +7,6 @@ public class IntLiteral extends Statement {
 	
 	public IntLiteral(int value){
 		this.value = value;
-	}
-	
-	public void buildSymbolTable(SymbolTableStack tables) {
-
 	}
 
 	@Override

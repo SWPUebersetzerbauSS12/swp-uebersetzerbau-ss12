@@ -41,7 +41,9 @@ public abstract class AbstractSyntaxTree extends Tree {
 	/**
 	 * Method for building the SymbolTables that the nodes should implement
 	 **/
-	public abstract void buildSymbolTable(SymbolTableStack tables);
+	public void buildSymbolTable(SymbolTableStack tables){
+		
+	}
 
 	/**
 	 * Code generation

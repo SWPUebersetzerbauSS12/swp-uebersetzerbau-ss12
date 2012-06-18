@@ -1,6 +1,5 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
-import de.fuberlin.projecta.analysis.SymbolTableStack;
 
 /**
  * Must have exactly two children of the type Id! First id is the record id,
@@ -9,9 +8,6 @@ import de.fuberlin.projecta.analysis.SymbolTableStack;
  * @author sh4ke
  */
 public class RecordVarCall extends AbstractSyntaxTree {
-	public void buildSymbolTable(SymbolTableStack tables) {
-
-	}
 
 	@Override
 	public boolean checkSemantics() {

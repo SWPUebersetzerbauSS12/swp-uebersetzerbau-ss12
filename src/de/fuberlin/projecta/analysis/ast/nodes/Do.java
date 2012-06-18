@@ -3,7 +3,6 @@ package de.fuberlin.projecta.analysis.ast.nodes;
 import java.util.List;
 
 import de.fuberlin.commons.lexer.TokenType;
-import de.fuberlin.projecta.analysis.SymbolTableStack;
 import de.fuberlin.projecta.parser.ISyntaxTree;
 
 /**
@@ -11,9 +10,6 @@ import de.fuberlin.projecta.parser.ISyntaxTree;
  *
  */
 public class Do extends Statement {
-	public void buildSymbolTable(SymbolTableStack tables) {
-
-	}
 
 	@Override
 	public boolean checkSemantics() {

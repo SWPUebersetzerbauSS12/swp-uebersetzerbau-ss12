@@ -47,10 +47,6 @@ public class FuncDef extends AbstractSyntaxTree {
 		// these are parameters
 		((AbstractSyntaxTree) getChild(2)).buildSymbolTable(stack);
 
-		SymbolTable tmp = stack.pop();
-		EntryType entry = new EntryType(id, type, tmp.getEntries());
-		stack.top().insertEntry(entry);
-
 		// TODO: musn't the parameters be also stored in the block
 		// symbolTable???
 		if (this.getChildrenCount() == 4)

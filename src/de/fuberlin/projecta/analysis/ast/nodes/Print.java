@@ -1,11 +1,7 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
-import de.fuberlin.projecta.analysis.SymbolTableStack;
 
 public class Print extends Statement {
-	public void buildSymbolTable(SymbolTableStack tables) {
-
-	}
 
 	@Override
 	public boolean checkSemantics() {

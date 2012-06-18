@@ -41,7 +41,7 @@ public class Program extends AbstractSyntaxTree {
 	
 	/*
 	 * GenCode already implemented by AbstractSyntaxTree
-	 * - i don't care
+	 * - i don't care, we need some declarations
 	 */
 	public String genCode(){
 		//we use puts to print to screen

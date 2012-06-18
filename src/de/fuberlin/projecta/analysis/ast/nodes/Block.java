@@ -13,6 +13,7 @@ public class Block extends Statement {
 	
 	@Override
 	public void buildSymbolTable(SymbolTableStack stack){
+		stack.push();
 		for(int i = 0; i < this.getChildrenCount(); i++){
 			((AbstractSyntaxTree)(this.getChild(i))).buildSymbolTable(stack);
 		}

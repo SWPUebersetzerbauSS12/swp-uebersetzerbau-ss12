@@ -1,10 +1,10 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.projecta.analysis.EntryType;
-import de.fuberlin.projecta.analysis.SymbolTable;
 import de.fuberlin.projecta.analysis.SymbolTableStack;
 import de.fuberlin.projecta.lexer.BasicTokenType;
 
@@ -47,16 +47,19 @@ public class FuncDef extends AbstractSyntaxTree {
 		// these are parameters
 		((AbstractSyntaxTree) getChild(2)).buildSymbolTable(stack);
 
-		// TODO: musn't the parameters be also stored in the block
-		// symbolTable???
-		if (this.getChildrenCount() == 4)
-			((AbstractSyntaxTree) getChild(3)).buildSymbolTable(stack); // this
-																		// is
-																		// the
-																		// block,
-																		// it
-																		// can
-		// handle everything itself
+		List<EntryType> parameters = stack.pop().getEntries();
+
+		if (this.getChildrenCount() == 4) {
+			// this is the block, it can
+			// handle everything itself
+			((AbstractSyntaxTree) getChild(3)).buildSymbolTable(stack);
+			for (EntryType entry : parameters) {
+				((AbstractSyntaxTree) getChild(3)).getTable()
+						.insertEntry(entry);
+			}
+		}
+		EntryType entry = new EntryType(id, type, parameters);
+		stack.top().insertEntry(entry);
 
 	}
 

@@ -69,7 +69,7 @@ public class Translator {
 				// Fester Wert
 				else {
 					if(tok.getTypeOp1().equals("double"))
-						movl("$" + tok.getOp1(), "%xmm0", "Return Value");
+						movl("$" + tok.getOp1(), "%mmx0", "Return Value");
 					else
 						movl("$" + tok.getOp1(), "%eax", "Return Value");
 				}
@@ -283,6 +283,7 @@ public class Translator {
 					System.out.println("Address:" + op1);
 					System.out.println(op1);
 					
+					//TODO wenn wert noch nicht in mmx register
 					cvtsd2ss(op1,op1, "Convert to single precision");
 					
 					res = mem.getFreeRegister();

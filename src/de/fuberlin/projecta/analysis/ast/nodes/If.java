@@ -6,9 +6,6 @@ import de.fuberlin.projecta.analysis.SymbolTableStack;
 public class If extends Statement {
 	private Block block;
 
-	public void buildSymbolTable(SymbolTableStack tables) {
-
-	}
 
 	@Override
 	public boolean checkSemantics() {

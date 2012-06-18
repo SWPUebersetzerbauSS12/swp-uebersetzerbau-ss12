@@ -8,7 +8,5 @@ import de.fuberlin.projecta.analysis.SymbolTableStack;
  * @author sh4ke
  */
 public class Record extends Type {
-	public void buildSymbolTable(SymbolTableStack tables) {
 
-	}
 }

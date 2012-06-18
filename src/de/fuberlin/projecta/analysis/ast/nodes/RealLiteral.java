@@ -9,10 +9,6 @@ public class RealLiteral extends Statement {
 	public RealLiteral(double value){
 		this.value = value;
 	}
-	
-	public void buildSymbolTable(SymbolTableStack tables) {
-
-	}
 
 	@Override
 	public boolean checkSemantics() {

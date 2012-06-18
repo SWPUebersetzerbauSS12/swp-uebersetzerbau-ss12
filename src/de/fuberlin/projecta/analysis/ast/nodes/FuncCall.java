@@ -11,9 +11,6 @@ import de.fuberlin.projecta.analysis.SymbolTableStack;
  * 
  */
 public class FuncCall extends AbstractSyntaxTree {
-	public void buildSymbolTable(SymbolTableStack tables) {
-
-	}
 
 	@Override
 	public boolean checkSemantics() {

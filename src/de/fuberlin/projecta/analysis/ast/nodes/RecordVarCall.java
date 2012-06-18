@@ -9,9 +9,6 @@ import de.fuberlin.projecta.analysis.SymbolTableStack;
  * @author sh4ke
  */
 public class RecordVarCall extends AbstractSyntaxTree {
-	public void buildSymbolTable(SymbolTableStack tables) {
-
-	}
 
 	@Override
 	public boolean checkSemantics() {

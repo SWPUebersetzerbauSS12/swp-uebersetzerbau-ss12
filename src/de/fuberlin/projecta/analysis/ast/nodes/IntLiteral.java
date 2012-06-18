@@ -9,10 +9,6 @@ public class IntLiteral extends Statement {
 	public IntLiteral(int value){
 		this.value = value;
 	}
-	
-	public void buildSymbolTable(SymbolTableStack tables) {
-
-	}
 
 	@Override
 	public boolean checkSemantics() {

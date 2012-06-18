@@ -10,10 +10,6 @@ public class StringLiteral extends Statement {
 		this.value = value;
 	}
 
-	public void buildSymbolTable(SymbolTableStack tables) {
-
-	}
-
 	@Override
 	public boolean checkSemantics() {
 		return true;

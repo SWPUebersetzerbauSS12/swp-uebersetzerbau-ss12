@@ -4,9 +4,6 @@ import de.fuberlin.projecta.analysis.SymbolTableStack;
 
 
 public class While extends Statement {
-	public void buildSymbolTable(SymbolTableStack tables) {
-
-	}
 
 	@Override
 	public boolean checkSemantics() {

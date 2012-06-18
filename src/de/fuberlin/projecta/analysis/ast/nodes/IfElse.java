@@ -8,9 +8,6 @@ public class IfElse extends Statement {
 
 	private Block block;
 
-	public void buildSymbolTable(SymbolTableStack tables) {
-
-	}
 
 	@Override
 	public boolean checkSemantics() {

@@ -14,10 +14,6 @@ public class Id extends AbstractSyntaxTree {
 		this.value = value;
 	}
 	
-	public void buildSymbolTable(SymbolTableStack tables) {
-
-	}
-
 	@Override
 	public boolean checkSemantics() {
 		//can't have children!

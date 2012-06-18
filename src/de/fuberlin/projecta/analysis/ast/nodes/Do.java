@@ -11,9 +11,6 @@ import de.fuberlin.projecta.parser.ISyntaxTree;
  *
  */
 public class Do extends Statement {
-	public void buildSymbolTable(SymbolTableStack tables) {
-
-	}
 
 	@Override
 	public boolean checkSemantics() {

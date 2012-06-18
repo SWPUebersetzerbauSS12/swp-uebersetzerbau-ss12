@@ -1,10 +1,9 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
-import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.commons.lexer.TokenType;
+import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
-import de.fuberlin.projecta.analysis.SymbolTableStack;
 
 public class BinaryOp extends AbstractSyntaxTree {
 

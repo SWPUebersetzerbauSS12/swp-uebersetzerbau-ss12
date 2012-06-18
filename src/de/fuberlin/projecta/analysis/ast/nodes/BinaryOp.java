@@ -5,7 +5,7 @@ import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
 
-public class BinaryOp extends AbstractSyntaxTree {
+public class BinaryOp extends Statement {
 
 	TokenType op;
 
@@ -105,7 +105,7 @@ public class BinaryOp extends AbstractSyntaxTree {
   %firstEl = getelementptr [9 x i8]* %r3, i8 0, i8 0
   store i8* %firstEl, i8** %str3
 				 */
-				Block block = ((Block) getParent()).getHighestBlock();
+				Block block = getHighestBlock();
 				int tempReg = block.getNewRegister();
 				int tempReg2 = block.getNewRegister();
 				ret  = "%"+ tempReg +" = alloca ["+ str.getValue().length() + " x i8]\n";

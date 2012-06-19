@@ -46,10 +46,10 @@ public class ParserGenerator {
 	/**
 	 * Initializes the grammar so a parsetable can be created from it.
 	 * 
-	 * @author Patrick Schlott
+	 * @author Patrick Schlott, Ying Wei
 	 * @param file Path to the grammar file
 	 * @return returns the created parsertable
-	 * @throws IOException 
+	 * @throws IOException (@author Ying Wei)
 	 */
 	public Map<String, HashMap<String,Vector<Integer>>> initialize () throws IOException{
 		//Read the Grammar from file
@@ -93,8 +93,8 @@ public class ParserGenerator {
 	/**
 	 * Reads the Grammar from a file specified in SETTINGS.
 	 * 
-	 * @author Patrick Schlott
-	 * @throws IOException 
+	 * @author Patrick Schlott,Ying Wei
+	 * @throws IOException (@author Ying Wei)
 	 */
 	private void readGrammar() throws IOException{
 		GrammarReader gR = new GrammarReader();
@@ -130,7 +130,7 @@ public class ParserGenerator {
 	/**
 	 * Evaluates the firstsets of a grammar.
 	 * 
-	 * @author Christoph Schroeder
+	 * @author Ying Wei, Christoph Schroeder
 	 * @param grammarMap contains the grammar 
 	 * @return returns a Map with all firstsets where
 	 * key = head of a production and value = HashMap with
@@ -149,7 +149,7 @@ public class ParserGenerator {
 	/**
 	 * Evaluates the firstset of a given Nonterminal regarding to a grammarMap.
 	 * 
-	 * @author Christoph Schroeder
+	 * @author Christoph Schroeder ,Ying Wei
 	 * @param head Nonterminal on left side of production rule
 	 * @param grammarMap contains the grammar 
 	 * @return returns firstset as Hashmap where key = item of firstset 
@@ -229,7 +229,7 @@ public class ParserGenerator {
 
 	/**
 	 * Evaluates all followsets of a grammar given by a grammarMap.
-	 * 
+	 * @author Ying Wei
 	 * @param grammarMap contains the grammar 
 	 * @return HashMap with nonterminals as key and followsets as value
 	 */
@@ -246,12 +246,12 @@ public class ParserGenerator {
 	}
 	
 	/**
-	 * Evaluates followset of a nonterminal regarding to a grammarMap
+	 * Evaluates follow set of a nonterminal regarding to a grammarMap
 	 * 
-	 * @author Patrick Schlott, Ying Wei
+	 * @author Ying Wei, Patrick Schlott
 	 * @param head nonterminal at left side of a production rule
 	 * @param grammarMap contains the grammar
-	 * @return returns a set with all folloitems of given head
+	 * @return returns a set with all follow items of given head
 	 */
 	private Set<String> evalFollowSet(String head,Map<String, Vector<Vector<String>>> grammarMap,Set<String> visitedNonTerminals) {
 		

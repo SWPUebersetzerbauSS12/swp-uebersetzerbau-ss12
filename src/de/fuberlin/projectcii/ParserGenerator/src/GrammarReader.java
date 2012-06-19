@@ -16,9 +16,9 @@ public class GrammarReader {
 
 	private Vector<String> heads;
 
-	private enum ReadingState {
-		TERMINAL, NONTERMINAL, NONE
-	}
+//	private enum ReadingState {
+//		TERMINAL, NONTERMINAL, NONE
+//	}
 
 	/**
 	 * Getter for the Startsymbol
@@ -38,16 +38,18 @@ public class GrammarReader {
 	 * the Grammar is deemed not LL(1)-parsable.
 	 * 
 	 * @author Patrick Schlott,Ying Wei
-	 * @param NItr The maximum number of iterations for clearing Leftrekursions,
-	 *             if more iterations are needes, the whole grammar will be cleared
+	 * @param NItr (@author Ying Wei)
+	 *            defines the Max. no. of the iterations, if more than NItr,the
+	 *            whole grammar will be cleared
 	 * @return The grammar as HashMap where the keys are the heads of the
 	 *         production and the values are vectors containing the productions
 	 *         itself. Each production is represented as a vector of terminal
 	 *         and nonterminal symbols
-	 * @throws IOException 
+	 * @throws IOException (@author Ying Wei)
 	 *            
-	 * @throws RuntimeException  if the No. of iterations more than NItr, 
-	 *                           then there is too much iterations (endless iteration)
+	 * @throws RuntimeException  (@author Ying Wei)
+	 * if the No. of iterations more than NItr, 
+	 * then there is too much iterations (endless iteration)
 	 * 
 	 */
 	public Map<String, Vector<Vector<String>>> createGrammar(int NItr)
@@ -100,16 +102,17 @@ public class GrammarReader {
 	 * Reads a grammar from the given file in BNF and converts it to Vector of
 	 * Productions.
 	 * 
-	 * @author Patrick Schlott, Ying Wei
+	 * @author Ying Wei, Patrick Schlott
 	 * @param file
 	 *            The path to the file containing the grammar that shall be
 	 *            used.
 	 * @return The grammar as a Vector of Productions
-	 * @throws IOException
-	 * @throws RuntimeException check not correct format of grammar
+	 * @throws IOException (@author Ying Wei)
+	 * @throws RuntimeException check not correct format of grammar (@author Ying Wei)
 	 * if no "::=", or either the part of left side or right side is empty.(No BNF)
-	 * if the left side(it must be nonterminal symbol) of production is not in format <A>.(false Production/grammar)
-	 */        
+	 * if the left side(it must be nonterminal symbol) of production is not in format <A>.(false Production/grammar),
+	 * and the invalid no. of the line will be given back.invalid
+	 */      
 	private Vector<Productions> ReadFile() throws IOException {
 
 		// Vector the nonterminals are saved to
@@ -119,7 +122,7 @@ public class GrammarReader {
 		BufferedReader in = new BufferedReader(new FileReader(
 				Settings.getGRAMMAR_PATH()));
 
-		ReadingState state;
+//		ReadingState state;
 		String line;
 		int lineNo=0;
 		while ((line = in.readLine()) != null) {
@@ -137,21 +140,61 @@ public class GrammarReader {
 				// Create Nonterminal and fill head and rump
 				Productions nonterminal = new Productions(
 						nonterminalLR[0].trim());
-				//regulaere Ausdruck, check out the left side of the productions, 
-				//they(all are non-terminal) must be <A>,e.g.<<A> or <> or <A>a or A>>. ect. are uncorrect format(Y.)
+				
+				/*using regular expression, check out the left side of the productions.
+				*they(all are non-terminal) must be <A>,e.g.<<A> or <> or <A>a or A>>. ect. are uncorrect format(Y.)
+				*@author Ying Wei
+				*if false format at the left side of the production, the line no. and the false nonterminal will be showed.
+				*
+				*/
 				if(!nonterminal.getHead().matches("<\\w+>")){
 					throw new RuntimeException("invalid input garmmar at line "+lineNo+".\n " +"the format for nonterminal is false!!"); 
 				}
 
-				String rump = "";
+			//	String rump = "";
 				//why "for"?? size of nonterminalLR is 2 fix!
 				// there is nonterminalLR[0] and nonterminalLR[1].. then no any more
-				for (int i = 1; i < nonterminalLR.length; i++) {
-					rump += nonterminalLR[i];
-				}
+		//		for (int i = 1; i < nonterminalLR.length; i++) {
+		//			rump += nonterminalLR[i];
+		//		}
+				
+				/*
+				 * Using regular expression is good to checking the right side formats of the production
+				 * @author Ying Wei
+				 * As nonterminal <A>, the whole block with "<" and "<" will be added into ProductionVector.
+				 * As terminal "string", the both "" will not be added into productionVector, 
+				 * therefore get substring from position 1 to position (size-1).
+				 * Regular Expression: <\\w+> --> define nonterminal format is <A> or <String>
+				 *                     "\\S+" -->define terminal format is "string", but "" (no white space between "")is not allowed.
+				 * */
 
 				Vector<String> productionVector = new Vector<String>();
-				state = ReadingState.NONE;
+				
+				StringTokenizer st = new StringTokenizer(nonterminalLR[1]);
+				while (st.hasMoreTokens()) {
+					String token = st.nextToken().trim();
+					if (token.matches("<\\w+>")) {
+						// non-terminal symbol
+						productionVector.add(token);
+					} else if (token.matches("\"\\S+\"")) {
+						// terminal symbol
+						productionVector.add(token.substring(1,
+								token.length() - 1));
+					} else if (token.equals("|")) {
+						// next production
+						nonterminal.InsertProduction(productionVector);
+						productionVector = new Vector<String>();
+					} else {
+						throw new RuntimeException(
+								"invalid production definition : " + token
+										+ ", at line " + lineNo);
+					}
+				}
+				if (!productionVector.isEmpty()) {
+					nonterminal.InsertProduction(productionVector);
+				}
+				
+	/*			state = ReadingState.NONE;
 				String symbol = "";
 				for (char c : rump.toCharArray()) {
 					switch (state) {
@@ -193,6 +236,8 @@ public class GrammarReader {
 				}
 				nonterminal.InsertProduction(productionVector);
 				// Finaly add the Nonterminal to the Grammar
+				 * 
+				 */
 				grammar.add(nonterminal);
 			}
 		}

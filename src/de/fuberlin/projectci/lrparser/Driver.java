@@ -39,7 +39,7 @@ public class Driver {
 		stateStack.push(parseTable.getInitialState());
 		IToken currentToken=readNextToken(lexer);
 //		tokenStack.push(currentToken);
-		TerminalSymbol currentTerminalSymbol=new TerminalSymbol(currentToken.getType());
+		TerminalSymbol currentTerminalSymbol=new TerminalSymbol(currentToken.getText());
 		
 		while(true){			
 			State currentState=stateStack.peek();
@@ -51,7 +51,7 @@ public class Driver {
 				stateStack.push(targetState);
 				tokenStack.push(currentToken);
 				currentToken=readNextToken(lexer);				
-				currentTerminalSymbol=new TerminalSymbol(currentToken.getType());
+				currentTerminalSymbol=new TerminalSymbol(currentToken.getText());
 				
 			}
 			else if (currentAction instanceof ReduceAction){

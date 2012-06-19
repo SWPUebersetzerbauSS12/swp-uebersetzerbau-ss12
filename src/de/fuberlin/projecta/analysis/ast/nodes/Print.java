@@ -2,7 +2,7 @@ package de.fuberlin.projecta.analysis.ast.nodes;
 
 import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
-import de.fuberlin.projectci.extern.IToken.TokenType;
+import de.fuberlin.projecta.lexer.BasicTokenType;
 
 public class Print extends Statement {
 
@@ -22,13 +22,15 @@ public class Print extends Statement {
 		SymbolTableHelper helper = new SymbolTableHelper();
 		EntryType id = helper.lookup(((Id) getChild(0)).getValue(), this);
 		/* Please check if this Id is for a string. How do we do this? */
-		//if (id.getType() == TokenType.STRING_LITERAL) {
-			int reg = getHighestBlock().getNewRegister();
-			out += "%" + reg + " = load i8** %" + ((Id) getChild(0)).getValue()
-					+ "\n";
-			out += "%" + getHighestBlock().getNewRegister() + " = "
-					+ "tail call i32 (i8*)* @puts(i8* %" + reg + ")";
-		//}
+		if (id.getType() instanceof BasicType) {
+			if(((BasicType)id.getType()).getType() == BasicTokenType.STRING){
+				int reg = getHighestBlock().getNewRegister();
+				out += "%" + reg + " = load i8** %" + ((Id) getChild(0)).getValue()
+						+ "\n";
+				out += "%" + getHighestBlock().getNewRegister() + " = "
+						+ "tail call i32 (i8*)* @puts(i8* %" + reg + ")";
+			}			
+		}
 		return out;
 	}
 

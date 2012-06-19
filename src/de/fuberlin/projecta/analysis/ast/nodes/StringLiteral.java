@@ -13,13 +13,6 @@ public class StringLiteral extends Statement {
 	public boolean checkSemantics() {
 		return true;
 	}
-
-	/* How to create a string in llvm and output it (it's easy once you get it..)
-  %str = alloca [5 x i8]
-  store [5 x i8] c"test\00", [5 x i8]* %str
-  %1 = getelementptr [5 x i8]* %str, i8 0, i8 0
-  %2 = tail call i32 (i8*)* @puts(i8* %1)
-	 */
 	
 	@Override
 	public String genCode() {

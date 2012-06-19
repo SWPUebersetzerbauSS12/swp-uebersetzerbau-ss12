@@ -24,9 +24,6 @@ public class If extends Statement {
 		block = getHighestBlock();
 		if (block != null) {
 			int[] regs = new int[3];
-			// for (int i = 0; i < 3; i++) {
-			// regs[i] = block.getNewRegister();
-			// }
 			int nots = 0;
 			AbstractSyntaxTree newTree = (AbstractSyntaxTree) getChild(0);
 			while (newTree instanceof UnaryOp) {

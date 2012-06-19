@@ -106,7 +106,6 @@ public class BinaryOp extends Statement {
 					}
 				}
 
-				
 				ret = int_or_real + " " + cmp_op + " " + checkType(a, b)
 						+ "* %" + a.getValue() + ", %" + b.getValue();
 
@@ -119,23 +118,27 @@ public class BinaryOp extends Statement {
 			eA = helper.lookup(a.getValue(), this);
 			if (getChild(1) instanceof StringLiteral) {
 				StringLiteral str = (StringLiteral) getChild(1);
-				/* if you look below, this is what is implemented (it's kind of sick)
- ;basic principle for saving a string to a char pointer %str3
-  %r3 = alloca [9 x i8] 
-  store [9 x i8] c"test1234\00", [9 x i8]* %r3 
-  %firstEl = getelementptr [9 x i8]* %r3, i8 0, i8 0
-  store i8* %firstEl, i8** %str3
+				/*
+				 * if you look below, this is what is implemented (it's kind of
+				 * sick) ;basic principle for saving a string to a char pointer
+				 * %str3 %r3 = alloca [9 x i8] store [9 x i8] c"test1234\00", [9
+				 * x i8]* %r3 %firstEl = getelementptr [9 x i8]* %r3, i8 0, i8 0
+				 * store i8* %firstEl, i8** %str3
 				 */
 				Block block = getHighestBlock();
 				int tempReg = block.getNewRegister();
 				int tempReg2 = block.getNewRegister();
-				ret  = "%"+ tempReg +" = alloca ["+ str.getValue().length() + " x i8]\n";
-				ret += "store ["+ str.getValue().length() + " x i8] c\""+ str.getValue() +"\\00\", ["+ str.getValue().length() +"x i8]* %"+tempReg + "\n";
-				ret += "%"+tempReg2+" = getelementptr ["+str.getValue().length()+" x i8]* %"+tempReg+", i8 0, i8 0 \n";
-				ret += "store i8* %"+tempReg2+", i8** %"+a.getValue();
+				int strLength = (str.getValue().length() + 1);
+				ret = "%" + tempReg + " = alloca [" + strLength + " x i8]\n";
+				ret += "store [" + strLength + " x i8] c\"" + str.getValue()
+						+ "\\00\", [" + strLength + " x i8]* %" + tempReg
+						+ "\n";
+				ret += "%" + tempReg2 + " = getelementptr [" + strLength
+						+ " x i8]* %" + tempReg + ", i8 0, i8 0 \n";
+				ret += "store i8* %" + tempReg2 + ", i8** %" + a.getValue();
 			} else {
-				ret = "store " + ((AbstractSyntaxTree) getChild(1)).genCode() + ", "
-						+ eA.getType().genCode() + "* %" + a.getValue();
+				ret = "store " + ((AbstractSyntaxTree) getChild(1)).genCode()
+						+ ", " + eA.getType().genCode() + "* %" + a.getValue();
 			}
 		}
 

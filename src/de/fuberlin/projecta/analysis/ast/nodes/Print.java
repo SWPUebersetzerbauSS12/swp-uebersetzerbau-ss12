@@ -14,14 +14,14 @@ public class Print extends Statement {
 
 	@Override
 	/*
-	 * we use the puts function to print to screen %forprinting = load i8**
+	 * we use the puts function to print to screen 
+	 * %forprinting = load i8**
 	 * %str3 tail call i32 (i8*)* @puts(i8* %forprinting)
 	 */
 	public String genCode() {
 		String out = "";
 		SymbolTableHelper helper = new SymbolTableHelper();
 		EntryType id = helper.lookup(((Id) getChild(0)).getValue(), this);
-		/* Please check if this Id is for a string. How do we do this? */
 		if (id.getType() instanceof BasicType) {
 			if(((BasicType)id.getType()).getType() == BasicTokenType.STRING){
 				int reg = getHighestBlock().getNewRegister();

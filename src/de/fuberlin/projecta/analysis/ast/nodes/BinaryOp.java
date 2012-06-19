@@ -50,10 +50,33 @@ public class BinaryOp extends Statement {
 	@Override
 	public String genCode() {
 		String ret = "";
+		Block block = getHighestBlock();
+		int regs[] = new int[5];
 		Id a = null, b = null;
 		if (op == TokenType.OP_EQ || op == TokenType.OP_NE
 				|| op == TokenType.OP_LT || op == TokenType.OP_LE
 				|| op == TokenType.OP_GT || op == TokenType.OP_GE) {
+			SymbolTableHelper helper = new SymbolTableHelper();
+			// load value of id1 if it is an id!!!
+			if (getChild(0) instanceof Id) {
+				Id id = (Id) getChild(0);
+				regs[3] = block.getNewRegister();
+				ret += "%"
+						+ regs[3]
+						+ " = load "
+						+ (helper.lookup(id.getValue(), this)).getType()
+								.genCode() + "* %" + id.getValue() + "\n";
+			}
+			// load value of id2 if it is an id!!!
+			if (getChild(1) instanceof Id) {
+				Id id = (Id) getChild(1);
+				regs[4] = block.getNewRegister();
+				ret += "%"
+						+ regs[4]
+						+ " = load "
+						+ (helper.lookup(id.getValue(), this)).getType()
+								.genCode() + "* %" + id.getValue() + "\n";
+			}
 			if (getChild(0) instanceof Id && getChild(1) instanceof Id) {
 				a = ((Id) getChild(0));
 				b = ((Id) getChild(1));
@@ -105,9 +128,10 @@ public class BinaryOp extends Statement {
 						break;
 					}
 				}
-
-				ret = int_or_real + " " + cmp_op + " " + checkType(a, b)
-						+ "* %" + a.getValue() + ", %" + b.getValue();
+				int bla = block.getNewRegister();
+				ret += "%" + bla + " = " + int_or_real + " " + cmp_op + " "
+						+ checkType(a, b) + "* %" + a.getValue() + ", %"
+						+ b.getValue() + "\n";
 
 			}
 		}
@@ -125,7 +149,6 @@ public class BinaryOp extends Statement {
 				 * x i8]* %r3 %firstEl = getelementptr [9 x i8]* %r3, i8 0, i8 0
 				 * store i8* %firstEl, i8** %str3
 				 */
-				Block block = getHighestBlock();
 				int tempReg = block.getNewRegister();
 				int tempReg2 = block.getNewRegister();
 				int strLength = (str.getValue().length() + 1);

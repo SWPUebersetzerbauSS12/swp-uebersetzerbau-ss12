@@ -36,6 +36,10 @@ public class Block extends Statement {
 	public int getNewRegister(){
 		return ++registerCounter;
 	}
+	
+	public int getCurrentRegister(){
+		return registerCounter;
+	}
 
 	protected boolean hasReturnStatement(){
 		if(this.getChildrenCount() > 0){

@@ -1,12 +1,12 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 import de.fuberlin.commons.lexer.TokenType;
+import de.fuberlin.projecta.analysis.SymbolTableHelper;
 import de.fuberlin.projecta.parser.ISyntaxTree;
 
 public class IfElse extends Statement {
 
 	private Block block;
-
 
 	@Override
 	public boolean checkSemantics() {
@@ -25,7 +25,7 @@ public class IfElse extends Statement {
 		String ret = "";
 		block = getHighestBlock();
 		if (block != null) {
-			int[] regs = new int[4];
+			int[] regs = new int[6];
 			// for (int i = 0; i < 4; i++) {
 			// regs[i] = block.getNewRegister();
 			// }
@@ -37,10 +37,34 @@ public class IfElse extends Statement {
 				}
 				newTree = (AbstractSyntaxTree) newTree.getChild(0);
 			}
+
+			SymbolTableHelper helper = new SymbolTableHelper();
+			// load value of id1 if it is an id!!!
+			if (((BinaryOp) getChild(0)).getChild(0) instanceof Id) {
+				regs[4] = block.getNewRegister();
+				Id id = (Id) ((BinaryOp) getChild(0)).getChild(0);
+				ret += "%"
+						+ regs[4]
+						+ " = load "
+						+ (helper.lookup(id.getValue(), this)).getType()
+								.genCode() + "* %" + id.getValue() + "\n";
+			}
+			// load value of id2 if it is an id!!!
+			if (((BinaryOp) getChild(0)).getChild(1) instanceof Id) {
+				Id id = (Id) ((BinaryOp) getChild(0)).getChild(1);
+				regs[5] = block.getNewRegister();
+				ret += "%"
+						+ regs[5]
+						+ " = load "
+						+ (helper.lookup(id.getValue(), this)).getType()
+								.genCode() + "* %" + id.getValue() + "\n";
+			}
+			// create new register for comparison
 			regs[0] = block.getNewRegister();
 			ret += "%" + regs[0] + " = "
 					+ ((AbstractSyntaxTree) getChild(0)).genCode() + "\n";
 			String block1, block2;
+			// count nots 
 			if (nots % 2 == 0) {
 				regs[1] = block.getNewRegister();
 				ret += "br i1 %" + regs[0] + ", label %" + regs[1];
@@ -74,7 +98,7 @@ public class IfElse extends Statement {
 
 	protected boolean couldAmmendReturnStatement() {
 		boolean ifWentWell = true;
-		if(!ifBranchHasReturnStatement())
+		if (!ifBranchHasReturnStatement())
 			ifWentWell = ammendReturnOnIf();
 		if (!elseBranchHasReturnStatement()) {
 			ISyntaxTree elseBranch = this.getChild(2);
@@ -114,7 +138,7 @@ public class IfElse extends Statement {
 		// For we know at this point that else went well :-)
 		return ifWentWell;
 	}
-	
+
 	private boolean ammendReturnOnIf() {
 		ISyntaxTree ifBranch = this.getChild(1);
 		if (ifBranch instanceof Block) {

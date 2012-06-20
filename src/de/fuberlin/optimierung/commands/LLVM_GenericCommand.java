@@ -77,7 +77,7 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 		}
 	}
 	
-	public static LLVM_Parameter readArrayListToLLVM_Parameter(ArrayList<String> input, LinkedList<LLVM_Parameter> output, parseTypes type, boolean opt){
+	public static LLVM_Parameter readArrayListToLLVM_Parameter(ArrayList<String> input, parseTypes type, boolean opt){
 		if (type == parseTypes.array){
 			if (!input.get(0).contains("[")) return null;
 			else{

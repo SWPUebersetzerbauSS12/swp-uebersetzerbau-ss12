@@ -18,7 +18,6 @@ public class LLVM_CallCommand extends LLVM_GenericCommand{
 	private String cconv = "";
 	private String reta = "";
 	private String fnty = "";
-	private String rest = "";
 	private String fnptrval = "";
 	private String fnattrs = "";
 	
@@ -74,7 +73,7 @@ public class LLVM_CallCommand extends LLVM_GenericCommand{
 		
 		fnptrval = cmd[start].substring(0, cmd[start].indexOf('('));
 		
-		rest += cmd[start].substring(cmd[start].indexOf('(') + 1, cmd[start].length());
+		String rest = cmd[start].substring(cmd[start].indexOf('(') + 1, cmd[start].length());
 		for (int i = start+1; i < cmd.length && !cmd[i].contains(")"); i++){
 			rest += " " + cmd[i];
 			start = i;

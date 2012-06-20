@@ -259,6 +259,91 @@ class LLVM_Block implements ILLVM_Block {
 	 */
 	
 	/**
+	 * Load-Befehle, die nur von einem Store erreicht werden koennen,
+	 * werden zu Registerzuweisung.
+	 * Diese wird hier weiterpropagiert.
+	 * Koennen tote Stores entstehen.
+	 */
+	public void foldStoreLoad() {
+		
+		HashMap<String,LinkedList<ILLVM_Command>> reaching = 
+				new HashMap<String,LinkedList<ILLVM_Command>>();
+		//LinkedList<ILLVM_Command> reaching = (LinkedList<ILLVM_Command>) this.inReaching.clone();
+		
+		for(ILLVM_Command c : this.inReaching) {
+			
+			String registerName = c.getOperands().get(1).getName();
+			LinkedList<ILLVM_Command> stores = reaching.get(registerName);
+			
+			if(stores==null) {
+				stores = new LinkedList<ILLVM_Command>();
+			}
+			// Fuege ein, falls der Befehl noch nicht enthalten ist
+			if(!stores.contains(c)) {
+				stores.add(c);
+			}
+			
+			reaching.put(registerName, stores);
+			
+		}
+		
+		// Gehe Befehle von vorne durch
+		ILLVM_Command c = this.firstCommand;
+		for(;c!=null; c = c.getPredecessor()) {
+			
+			// falls store, fuege zu liste hinzu
+			if(c.getOperation()==LLVM_Operation.STORE) {
+				
+				String registerName = c.getOperands().get(1).getName();
+				LinkedList<ILLVM_Command> stores = reaching.get(registerName);
+				
+				if(stores==null) {
+					stores = new LinkedList<ILLVM_Command>();
+				}
+				// Fuege ein, falls der Befehl noch nicht enthalten ist
+				if(!stores.contains(c)) {
+					stores.add(c);
+				}
+				
+				reaching.put(registerName, stores);
+			}
+			
+			// falls load, teste ob es nur von einer definition erreicht werden kann
+			// dann ersetze load befehl
+			// store koennte danach tot sein
+			if(c.getOperation()==LLVM_Operation.LOAD) {
+				String registerName = c.getOperands().getFirst().getName();
+				LinkedList<ILLVM_Command> stores = reaching.get(registerName);
+				if(stores!=null) {
+					if(stores.size()==1) {
+						ILLVM_Command store = stores.getFirst();
+						// Veraendere Load Befehl, store ist einzige Definition, die Load erreicht
+						this.function.getRegisterMap().deleteCommand(c);
+						
+						// Erstelle  neuen Befehl
+						ILLVM_Command newCommand = new LLVM_ArithmeticCommand();
+						newCommand.setOperation(LLVM_Operation.ADD);
+						LinkedList<LLVM_Parameter> parameterList = new LinkedList<LLVM_Parameter>();
+						LLVM_Parameter newParameter = store.getOperands().getFirst();
+						parameterList.add(new LLVM_Parameter(newParameter.getName(),
+								newParameter.getTypeString()));
+						parameterList.add(new LLVM_Parameter("0",newParameter.getTypeString()));
+						newCommand.setOperands(parameterList);
+						newCommand.setTarget(c.getTarget());
+						newCommand.setBlock(c.getBlock());
+						newCommand.setPredecessor(c.getPredecessor());
+						newCommand.setSuccessor(c.getSuccessor());
+						c.replaceCommand(newCommand);
+						
+						this.function.getRegisterMap().addCommand(newCommand);
+						
+					}
+				}
+			}
+		}
+	}
+	
+	/**
 	 * Erstelle gen und kill Mengen dieses Blockes fuer globale Lebendigkeitsanalyse
 	 * gen : store i32 1, i32* %a -> Befehl wird hinzugefuegt, falls es kein spaeteres
 	 * store auf a gibt (in diesem Block)
@@ -301,7 +386,7 @@ class LLVM_Block implements ILLVM_Block {
 	/**
 	 * Aktualisiere IN und OUT Mengen fuer Reachinganalyse
 	 * Voraussetzung: gen und kill sind gesetzt
-	 * @return true, falls IN veraendert wurde
+	 * @return true, falls OUT veraendert wurde
 	 * TODO: not ready
 	 */
 	public boolean updateInOutReaching() {

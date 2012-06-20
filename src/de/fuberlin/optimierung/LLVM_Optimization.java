@@ -49,10 +49,12 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 			//Constant Folding
 			tmp.constantFolding();
 			
+			// Reaching vor Lebendigkeitsanalyse
+			// Koennen tote Stores entstehen
+			tmp.reachingAnalysis();
+			
 			// Globale Lebendigkeitsanalyse fuer Store, Load
 			tmp.globalLiveVariableAnalysis();
-			
-			tmp.reachingAnalysis();
 			
 			// CommonExpressions
 			tmp.removeCommonExpressions();

@@ -51,6 +51,21 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 		}
 	}
 	
+	public void replaceCommand(ILLVM_Command c) {
+		if (this.isSingleCommand()){
+			
+		} else if(this.isFirstCommand()) {	// Loesche erstes Element
+			this.successor.setPredecessor(c);
+			this.getBlock().setFirstCommand(c);
+		} else if(this.isLastCommand()) {	// Loesche letztes Element
+			this.predecessor.setSuccessor(c);
+			this.getBlock().setLastCommand(c);
+		} else{
+			this.predecessor.setSuccessor(c);
+			this.successor.setPredecessor(c);
+		}
+	}
+	
 	public String getComment(){
 		if (comment == ""){
 			return "\n";

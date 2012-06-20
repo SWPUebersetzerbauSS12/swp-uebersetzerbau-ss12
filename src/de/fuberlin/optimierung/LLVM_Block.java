@@ -73,9 +73,13 @@ class LLVM_Block implements ILLVM_Block {
 						matched = true;
 						if (LLVM_Optimization.DEBUG) System.out.println("same command at " + command.getTarget().getName() + ", command replaced : " + i.toString());
 						this.function.getRegisterMap().deleteCommand(i);
-						i.setOperation(LLVM_Operation.ADD);
-						i.getOperands().get(0).setName(command.getTarget().getName());
-						i.getOperands().get(1).setName("0");
+						ILLVM_Command neu = new LLVM_ArithmeticCommand();
+						neu.setOperation(LLVM_Operation.ADD);
+						LinkedList<LLVM_Parameter> neu2 = new LinkedList<LLVM_Parameter>();
+						neu2.add(new LLVM_Parameter(command.getTarget().getName(), command.getTarget().getTypeString()));
+						neu2.add(new LLVM_Parameter("0", command.getTarget().getTypeString()));
+						neu.setOperands(neu2);
+						i.replaceCommand(neu);
 						this.function.getRegisterMap().addCommand(i);
 						changed.add(i);
 					}

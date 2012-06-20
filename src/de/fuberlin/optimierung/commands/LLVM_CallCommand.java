@@ -1,6 +1,5 @@
 package de.fuberlin.optimierung.commands;
 
-import sun.net.ftp.FtpClient;
 import de.fuberlin.optimierung.ILLVM_Block;
 import de.fuberlin.optimierung.ILLVM_Command;
 import de.fuberlin.optimierung.LLVM_Operation;

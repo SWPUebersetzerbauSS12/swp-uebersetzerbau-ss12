@@ -1,7 +1,6 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 import de.fuberlin.commons.lexer.TokenType;
-import de.fuberlin.projecta.analysis.SymbolTableHelper;
 
 public class If extends Statement {
 	private Block block;
@@ -50,8 +49,9 @@ public class If extends Statement {
 				regs[2] = block.getNewRegister();
 				ret += ", label %" + regs[1] + "\n";
 			}
-			ret += "; <label>:" + regs[1] + "\n";
+			ret += "; <label>:" + regs[1]+ "\n";
 			ret += block1 + "\n";
+			ret += "br label %" + regs[2];
 			ret += "; <label>:" + regs[2];
 		}
 

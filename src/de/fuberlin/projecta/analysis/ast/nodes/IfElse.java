@@ -35,9 +35,7 @@ public class IfElse extends Statement {
 			}
 			ret += ((AbstractSyntaxTree)getChild(0)).genCode();
 			// create new register for comparison
-			regs[0] = block.getNewRegister();
-//			ret += "%" + regs[0] + " = "
-//					+ ((AbstractSyntaxTree) getChild(0)).genCode() + "\n";
+			regs[0] = block.getCurrentRegister();
 			String block1, block2;
 			// count nots 
 			if (nots % 2 == 0) {

@@ -4,6 +4,7 @@ package de.fuberlin.optimierung.commands;
 import de.fuberlin.optimierung.ILLVM_Block;
 import de.fuberlin.optimierung.ILLVM_Command;
 import de.fuberlin.optimierung.LLVM_Operation;
+import de.fuberlin.optimierung.LLVM_Optimization;
 import de.fuberlin.optimierung.LLVM_Parameter;
 
 /*
@@ -24,7 +25,7 @@ public class LLVM_FloatArithmeticCommand extends LLVM_GenericCommand{
 		// <op2> <ty>
 		operands.add(new LLVM_Parameter(cmd[5], cmd[3]));
 		
-		System.out.println("Operation generiert: " + this.toString());
+		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());
 	}
 	
 	public String toString() {

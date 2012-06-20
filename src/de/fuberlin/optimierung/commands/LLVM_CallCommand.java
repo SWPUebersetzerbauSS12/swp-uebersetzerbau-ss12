@@ -1,8 +1,10 @@
 package de.fuberlin.optimierung.commands;
 
+import sun.net.ftp.FtpClient;
 import de.fuberlin.optimierung.ILLVM_Block;
 import de.fuberlin.optimierung.ILLVM_Command;
 import de.fuberlin.optimierung.LLVM_Operation;
+import de.fuberlin.optimierung.LLVM_Optimization;
 import de.fuberlin.optimierung.LLVM_Parameter;
 
 /*
@@ -15,7 +17,10 @@ public class LLVM_CallCommand extends LLVM_GenericCommand{
 	private boolean tail = false;
 	private String cconv = "";
 	private String reta = "";
+	private String fnty = "";
 	private String rest = "";
+	private String fnptrval = "";
+	private String fnattrs = "";
 	
 	public LLVM_CallCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
 		super(operation, predecessor, block, comment);
@@ -30,7 +35,7 @@ public class LLVM_CallCommand extends LLVM_GenericCommand{
 		start = (tail) ? start + 1 : start;
 		
 		//cconv angegeben?
-		if (cmd.length >= start && (cmd[start].trim().equals("ccc") ||
+		if (cmd.length > start && (cmd[start].trim().equals("ccc") ||
 			cmd[start].trim().equals("fastcc") ||
 			cmd[start].trim().equals("coldcc")	||
 			cmd[start].trim().equals("cc"))){
@@ -44,7 +49,7 @@ public class LLVM_CallCommand extends LLVM_GenericCommand{
 		}
 		
 		//ret attrs angegeben?
-		if (cmd.length >= start && (cmd[start].trim().equals("zeroext") ||
+		if (cmd.length > start && (cmd[start].trim().equals("zeroext") ||
 			cmd[start].trim().equals("signext") ||
 			cmd[start].trim().equals("inreg"))){
 			reta = cmd[start];
@@ -54,26 +59,39 @@ public class LLVM_CallCommand extends LLVM_GenericCommand{
 		// <result> <ty>
 		target = new LLVM_Parameter(cmd[0], cmd[start]);
 		start = start + 1;
-		/*end = start;
+		end = start;
 		
-		while(cmd.length >= end && (!cmd[end].trim().startsWith("@"))){
+		while(cmd.length > end && (!cmd[end].trim().startsWith("@"))){
 			end = end + 1; 
 		}
 		
 		if (start != end){
-			for (int i = start; i <= end; i++){
+			for (int i = start; i < end; i++){
 				fnty += cmd[i].trim() + " ";
 			}
 		}
 		start = end;
-		*/
 		
-		for (int i = start; i < cmd.length; i++){
-			rest += cmd[i] + " ";
+		fnptrval = cmd[start].substring(0, cmd[start].indexOf('('));
+		
+		rest += cmd[start].substring(cmd[start].indexOf('(') + 1, cmd[start].length());
+		for (int i = start+1; i < cmd.length && !cmd[i].contains(")"); i++){
+			rest += " " + cmd[i];
+			start = i;
 		}
-		rest.trim();
+		start = start + 1;
+		rest += " " + cmd[start].substring(0, cmd[start].indexOf(')'));
 		
-		System.out.println("Operation generiert: " + this.toString());
+		start = start + 1;
+		//fn attrs angegeben?
+		if (cmd.length > start && (cmd[start].trim().equals("noreturn") ||
+			cmd[start].trim().equals("nounwind") ||
+			cmd[start].trim().equals("readonly") ||
+			cmd[start].trim().equals("readnone"))){
+			fnattrs = cmd[start];
+		}
+		
+		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());
 	}
 	
 	public String toString() {
@@ -85,7 +103,12 @@ public class LLVM_CallCommand extends LLVM_GenericCommand{
 		if (reta != "") cmd_out += reta + " ";
 		
 		cmd_out += target.getTypeString() + " ";
-		cmd_out += rest;
+		
+		if (fnty != "") cmd_out += fnty + " ";
+		if (fnptrval != "") cmd_out += fnptrval;
+		
+		if (rest != "") cmd_out += "(" + rest + ") ";
+		if (fnattrs != "") cmd_out += fnattrs + " ";
 		
 		cmd_out += " " + getComment();
 		

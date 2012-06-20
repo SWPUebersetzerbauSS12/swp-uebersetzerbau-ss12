@@ -49,10 +49,10 @@ public class LLVM_CallCommand extends LLVM_GenericCommand{
 		}
 		
 		//ret attrs angegeben?
-		if (cmd.length > start && (cmd[start].trim().equals("zeroext") ||
-			cmd[start].trim().equals("signext") ||
-			cmd[start].trim().equals("inreg"))){
-			reta = cmd[start];
+		while (cmd.length > start && (cmd[start].trim().compareTo("zeroext") == 0 ||
+			cmd[start].trim().compareTo("signext") == 0 ||
+			cmd[start].trim().compareTo("inreg") == 0)){
+			reta += cmd[start] + " ";
 			start = start + 1;
 		}
 		
@@ -82,13 +82,25 @@ public class LLVM_CallCommand extends LLVM_GenericCommand{
 		start = start + 1;
 		rest += " " + cmd[start].substring(0, cmd[start].indexOf(')'));
 		
+		String[] str = rest.split(",");
+		
+		for(String pair : str){
+			
+			String[] single = pair.trim().split(" ");
+			if (single.length == 2){
+				operands.add(new LLVM_Parameter(single[1].trim(), single[0].trim()));
+			}
+			else System.out.println("LLVM_Parameter doesn't match:" + pair);
+		}
+		
 		start = start + 1;
 		//fn attrs angegeben?
-		if (cmd.length > start && (cmd[start].trim().equals("noreturn") ||
-			cmd[start].trim().equals("nounwind") ||
-			cmd[start].trim().equals("readonly") ||
-			cmd[start].trim().equals("readnone"))){
-			fnattrs = cmd[start];
+		while (cmd.length > start && (cmd[start].trim().compareTo("noreturn") == 0 ||
+			cmd[start].trim().compareTo("nounwind") == 0 ||
+			cmd[start].trim().compareTo("readonly") == 0 ||
+			cmd[start].trim().compareTo("readnone") == 0)){
+			fnattrs += cmd[start] + " ";
+			start = start + 1;
 		}
 		
 		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());
@@ -107,7 +119,15 @@ public class LLVM_CallCommand extends LLVM_GenericCommand{
 		if (fnty != "") cmd_out += fnty + " ";
 		if (fnptrval != "") cmd_out += fnptrval;
 		
-		if (rest != "") cmd_out += "(" + rest + ") ";
+		if (operands.size() > 0){
+			cmd_out += "(";
+			for (int i = 0; i < operands.size(); i++){
+				cmd_out += operands.get(i).getTypeString() + " " + operands.get(i).getName();
+				if (i+1 < operands.size()) cmd_out += ", "; 
+			}
+			cmd_out += ") ";
+		}
+		
 		if (fnattrs != "") cmd_out += fnattrs + " ";
 		
 		cmd_out += " " + getComment();

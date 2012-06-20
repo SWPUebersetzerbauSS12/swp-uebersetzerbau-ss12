@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 int main()
 {
 	int erg = 0;
@@ -13,6 +15,8 @@ int main()
 	int s10 = 6;
 	
 	erg = s1 + s2 + s3 + s4 + s5 + s6 + s7 + s8 + s9 + s10;
+	
+	printf("Ergebnis: %d\n",erg);
 	
 	return erg;
 }

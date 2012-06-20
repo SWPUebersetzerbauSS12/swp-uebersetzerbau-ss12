@@ -25,7 +25,7 @@ int main()
 		i--;
 	}
 	
-	while(i == 0) {
+	while(i != a) {
 		printf("while #5: i = %d\n",i);
 		i++;
 	}

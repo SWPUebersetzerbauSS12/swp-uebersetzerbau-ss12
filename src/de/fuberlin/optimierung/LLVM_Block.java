@@ -4,14 +4,6 @@ import java.util.*;
 
 import de.fuberlin.optimierung.commands.*;
 
-/**
- * @author kargerb
- *
- */
-/**
- * @author kargerb
- *
- */
 class LLVM_Block implements ILLVM_Block {
 	
 	// Funktion, zu der der Block gehoert
@@ -51,9 +43,7 @@ class LLVM_Block implements ILLVM_Block {
 	public LLVM_Block(String blockCode, LLVM_Function function) {
 		
 		this.function = function;
-		this.blockCode = blockCode;
-		System.out.println(blockCode + "\n*****************\n");
-		
+		this.blockCode = blockCode;		
 		this.createCommands();
 		this.optimizeBlock();
 	}
@@ -88,7 +78,7 @@ class LLVM_Block implements ILLVM_Block {
 						// gleiches Kommando gefunden
 						// ersetze aktuelles Kommando mit Bestehendem
 						matched = true;
-						System.out.println("same command at " + command.getTarget().getName() + ", command replaced : " + i.toString());
+						if (LLVM_Optimization.DEBUG) System.out.println("same command at " + command.getTarget().getName() + ", command replaced : " + i.toString());
 						this.function.getRegisterMap().deleteCommand(i);
 						i.setOperation(LLVM_Operation.ADD);
 						i.getOperands().get(0).setName(command.getTarget().getName());

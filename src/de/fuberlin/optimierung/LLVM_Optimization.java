@@ -9,6 +9,8 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 	
 	private LinkedList<LLVM_Function> functions;
 	
+	public static final boolean DEBUG = true;
+	
 	
 	public LLVM_Optimization(){
 		functions = new LinkedList<LLVM_Function>();
@@ -139,6 +141,10 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 
 	}
 	
+	public String getCode(){
+		return this.code;
+	}
+	
 	public static void main(String args[]) {
 
 		ILLVM_Optimization optimization = new LLVM_Optimization();
@@ -149,6 +155,15 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 		//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_dag");
 		//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_dead_block");
 		//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_localsub_registerprop");
+		
+		System.out.println("###########################################################");
+		System.out.println("################## Optimization Input #####################");
+		System.out.println("###########################################################");
+		System.out.println(optimization.getCode());
+		
+		System.out.println("###########################################################");
+		System.out.println("################## Optimization Output ####################");
+		System.out.println("###########################################################");
 		System.out.println(optimizedCode);
 	}
 

@@ -1,12 +1,19 @@
 package de.fuberlin.optimierung.commands;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import de.fuberlin.optimierung.ILLVM_Block;
 import de.fuberlin.optimierung.ILLVM_Command;
 import de.fuberlin.optimierung.LLVM_Operation;
+import de.fuberlin.optimierung.LLVM_Optimization;
 import de.fuberlin.optimierung.LLVM_Parameter;
+import de.fuberlin.optimierung.LLVM_ParameterType;
 
 public abstract class LLVM_GenericCommand implements ILLVM_Command{
+	
+	public enum parseTypes{
+		array, struct, vector, i, f, label
+	}
 	
 	protected ILLVM_Block block;
 
@@ -33,8 +40,12 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 		}
 	}
 	
+	public LLVM_GenericCommand(){
+		
+	}
+	
 	public void deleteCommand() {
-		System.out.println("del in block " + this.block.getLabel() + " command " + this.toString());
+		if (LLVM_Optimization.DEBUG) System.out.println("del in block " + this.block.getLabel() + " command " + this.toString());
 
 		if (this.isSingleCommand()){
 			this.successor = null;
@@ -72,6 +83,35 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 		}else{
 			return "; " + comment + "\n";
 		}
+	}
+	
+	public static LLVM_Parameter readArrayListToLLVM_Parameter(ArrayList<String> input, LinkedList<LLVM_Parameter> output, parseTypes type, boolean opt){
+		if (type == parseTypes.array){
+			if (!input.get(0).contains("[")) return null;
+			else{
+				// Arrayende finden
+				int count = 0;
+				for (int i = 0; i < input.size(); i++){
+					String str = input.get(i);
+					if (str.contains("[")) count++;
+					if (str.contains("]")) count--;
+					if (count == 0){
+						// Arrayende bei count
+						count = i;
+						break;
+					}
+				}
+				// Arraylist zu String
+				String str = "";
+				for (int i = 0; i <= count; i++){
+					str += input.get(i);
+				}
+				//TODO: Anpassung LLVM_Parameter
+				// name, array
+				return new LLVM_Parameter(input.get(count+1), str);
+			}
+		}
+		return null;		
 	}
 	
 	public boolean isFirstCommand() {

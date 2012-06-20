@@ -26,9 +26,6 @@ public class IfElse extends Statement {
 		block = getHighestBlock();
 		if (block != null) {
 			int[] regs = new int[6];
-			// for (int i = 0; i < 4; i++) {
-			// regs[i] = block.getNewRegister();
-			// }
 			int nots = 0;
 			AbstractSyntaxTree newTree = (AbstractSyntaxTree) getChild(0);
 			while (newTree instanceof UnaryOp) {
@@ -37,32 +34,11 @@ public class IfElse extends Statement {
 				}
 				newTree = (AbstractSyntaxTree) newTree.getChild(0);
 			}
-
-			SymbolTableHelper helper = new SymbolTableHelper();
-			// load value of id1 if it is an id!!!
-			if (((BinaryOp) getChild(0)).getChild(0) instanceof Id) {
-				regs[4] = block.getNewRegister();
-				Id id = (Id) ((BinaryOp) getChild(0)).getChild(0);
-				ret += "%"
-						+ regs[4]
-						+ " = load "
-						+ (helper.lookup(id.getValue(), this)).getType()
-								.genCode() + "* %" + id.getValue() + "\n";
-			}
-			// load value of id2 if it is an id!!!
-			if (((BinaryOp) getChild(0)).getChild(1) instanceof Id) {
-				Id id = (Id) ((BinaryOp) getChild(0)).getChild(1);
-				regs[5] = block.getNewRegister();
-				ret += "%"
-						+ regs[5]
-						+ " = load "
-						+ (helper.lookup(id.getValue(), this)).getType()
-								.genCode() + "* %" + id.getValue() + "\n";
-			}
+			ret += ((AbstractSyntaxTree)getChild(0)).genCode();
 			// create new register for comparison
 			regs[0] = block.getNewRegister();
-			ret += "%" + regs[0] + " = "
-					+ ((AbstractSyntaxTree) getChild(0)).genCode() + "\n";
+//			ret += "%" + regs[0] + " = "
+//					+ ((AbstractSyntaxTree) getChild(0)).genCode() + "\n";
 			String block1, block2;
 			// count nots 
 			if (nots % 2 == 0) {

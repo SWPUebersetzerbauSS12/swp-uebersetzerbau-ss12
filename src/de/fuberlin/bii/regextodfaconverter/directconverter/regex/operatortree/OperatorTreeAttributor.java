@@ -38,7 +38,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symbol;
 import de.fuberlin.bii.regextodfaconverter.directconverter.regex.RegexSpecialChars;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.SyntaxTreeException;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeNode;

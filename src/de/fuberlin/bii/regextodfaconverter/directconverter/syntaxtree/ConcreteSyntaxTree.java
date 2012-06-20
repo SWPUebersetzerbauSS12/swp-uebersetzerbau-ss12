@@ -42,23 +42,26 @@ import java.util.Iterator;
 import java.util.Stack;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import de.fuberlin.bii.regextodfaconverter.directconverter.EventHandler;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.ItemAutomata;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.Lr0ItemAutomata;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.ReduceEventHandler;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.ShiftEventHandler;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.ContextFreeGrammar;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Grammar;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.ProductionSet;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
+import de.fuberlin.bii.regextodfaconverter.directconverter.AutomatEventHandler;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.ItemAutomat;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.Lr0ItemAutomat;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.ReduceEventHandler;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.Slr1ItemAutomat;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.ShiftEventHandler;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ContextFreeGrammar;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.EmptyString;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Grammar;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Nonterminal;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionRule;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionSet;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symbol;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Terminal;
 import de.fuberlin.bii.regextodfaconverter.directconverter.regex.RegexSpecialChars;
 import de.fuberlin.bii.regextodfaconverter.directconverter.regex.operatortree.OperatorType;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.InnerNode;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.Leaf;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.NewNodeEventHandler;
+import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.NumberedTreeNode;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.ScalableInnerNode;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeNode;
 
@@ -75,7 +78,7 @@ public class ConcreteSyntaxTree<ExpressionElement extends Symbol> implements Tre
 
 	private ArrayList<ExpressionElement> inputElements = null;
 
-	private Stack<TreeNode> nodeStack = null;
+	private Stack<NumberedTreeNode> nodeStack = null;
 
 	public NewNodeEventHandler onNewNodeEvent = null;
 
@@ -107,19 +110,24 @@ public class ConcreteSyntaxTree<ExpressionElement extends Symbol> implements Tre
 	}
 	
 	
-	protected Stack<TreeNode> getNodeStack() {
+	protected Stack<NumberedTreeNode> getNodeStack() {
 		return nodeStack;
+	}
+	
+	protected ItemAutomat<ExpressionElement> getNewItemAutomat( Grammar grammar) {
+		return new Slr1ItemAutomat<ExpressionElement>( (ContextFreeGrammar) grammar);
 	}
 
 	protected void buildTree() {
-		ItemAutomata<ExpressionElement> itemAutomata = new Lr0ItemAutomata<ExpressionElement>( (ContextFreeGrammar) grammar);
+		ItemAutomat<ExpressionElement> itemAutomat = getNewItemAutomat( grammar);
 
-		itemAutomata.setReduceEventHandler( getReduceEventHandler());
+		itemAutomat.setReduceEventHandler( getReduceEventHandler());
 
-		itemAutomata.setShiftEventHandler( getShiftEventHandler());
- 
-   	itemAutomata.match( inputElements);
-		rootNode = nodeStack.peek();
+		itemAutomat.setShiftEventHandler( getShiftEventHandler());
+    // System.out.println( "isSLR1 = " + itemAutomat.isReduceConflictFree());
+    // System.out.println( itemAutomat);
+   	itemAutomat.match( inputElements);
+		rootNode = nodeStack.peek().getTreeNode();
 	}
 
 
@@ -151,7 +159,9 @@ public class ConcreteSyntaxTree<ExpressionElement extends Symbol> implements Tre
 	protected ReduceEventHandler getReduceEventHandler() {
 		return new ReduceEventHandler() {
 
-			public Object handle( Object sender, ProductionRule reduceRule) throws Exception {
+			public Object handle( Object sender, ProductionRule reduceRule, int sequenceNumber) throws Exception {
+				
+				cleanStackBySequenceNumber( sequenceNumber);
 			
 				// create new inner node
 				InnerNode<ProductionRule> newInnerNode = new ScalableInnerNode<ProductionRule>( reduceRule);
@@ -162,13 +172,19 @@ public class ConcreteSyntaxTree<ExpressionElement extends Symbol> implements Tre
 
 				// add childs to the new inner node
 				int countOfReducedElements = reduceRule.getRightRuleSide().size();
-				for ( int i = 0; i < countOfReducedElements; i++) {
-					TreeNode childNode = nodeStack.pop();
+	
+				for ( int i = countOfReducedElements; i > 0; i--) {
+			  	if ( reduceRule.getRightRuleSide().get( i-1) instanceof EmptyString)
+			  		continue;
+					// get child from stack
+					TreeNode childNode = getNodeStack().pop().getTreeNode();
+					// insert child into parent node
 					newInnerNode.insertChild( childNode, 0);
 				}
 
 				// push the inner node onto stack
-				nodeStack.push( newInnerNode);
+				NumberedTreeNode newNumberedNode = new NumberedTreeNode( newInnerNode, sequenceNumber);
+				nodeStack.push( newNumberedNode);
 
 				return null;
 			}
@@ -179,22 +195,39 @@ public class ConcreteSyntaxTree<ExpressionElement extends Symbol> implements Tre
 	protected ShiftEventHandler getShiftEventHandler() {
 		return new ShiftEventHandler() {
 
-			public Object handle( Object sender, Terminal shiftedTerminal) throws Exception {
+			public Object handle( Object sender, Terminal shiftedTerminal, int sequenceNumber) throws Exception {
+				
+				cleanStackBySequenceNumber( sequenceNumber);
+				
 				Leaf newLeaf = new Leaf( shiftedTerminal);
 				newLeaf.setPrintHandler( getNodePrintHandler());
 
 				if ( Test.isAssigned( onNewNodeEvent))
 					onNewNodeEvent.doOnEvent( this, newLeaf);
 
-				nodeStack.push( newLeaf);
+				NumberedTreeNode newNumberedLeaf = new NumberedTreeNode( newLeaf, sequenceNumber);
+				nodeStack.push( newNumberedLeaf);
 				return null;
 			}
 		};
 	}
 
 
+	
+	protected void cleanStackBySequenceNumber( int sequenceNumber) {
+		try {
+			while( getNodeStack().peek().getNumber() >= sequenceNumber )
+			{
+				getNodeStack().pop();
+			}
+		} catch (Exception e) {
+			// stack is empty
+		}
+	}
+	
+	
 	private void initTreeSkeleton() {
-		nodeStack = new Stack<TreeNode>();
+		nodeStack = new Stack<NumberedTreeNode>();
 	}
 
 

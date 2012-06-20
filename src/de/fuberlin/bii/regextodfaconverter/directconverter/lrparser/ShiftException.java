@@ -30,18 +30,22 @@
  *
  */
 
-package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
+package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser;
 
-import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionRule;
 
 /**
  * 
  * @author Johannes Dahlke
  *
  */
-public interface SemanticRule {
+public class ShiftException extends Exception {
 	
-	void apply( AttributesMap ... attributesMaps);
+	public ShiftException() {
+	  super();
+	}
 	
+	public ShiftException( String message) {
+	  super( message);
+    }
 
 }

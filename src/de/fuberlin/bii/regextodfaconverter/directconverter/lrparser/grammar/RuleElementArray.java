@@ -30,18 +30,41 @@
  *
  */
 
-package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
+package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar;
 
-import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionRule;
+import java.util.ArrayList;
 
 /**
  * 
  * @author Johannes Dahlke
  *
  */
-public interface SemanticRule {
+public class RuleElementArray extends ArrayList<RuleElement> implements RuleElementSequenz {
 	
-	void apply( AttributesMap ... attributesMaps);
+	public RuleElementArray() {
+	  super();
+	}
 	
-
+	public RuleElementArray( RuleElementSequenz sequenz) {
+	  super( sequenz);
+	}
+	
+	public RuleElementArray( RuleElementSequenz sequenz, RuleElement ... furtherElements) {
+	  super( sequenz);
+	  for ( RuleElement ruleElement : furtherElements) {
+			add( ruleElement);
+		}
+	}
+	
+	
+	
+	
+	public static <T extends Symbol> RuleElementArray toRuleElementArray( T ... ts) {
+		RuleElementArray result = new RuleElementArray();
+		for ( T t : ts) {
+			result.add( new Terminal<T>( t));
+		}
+		return result;
+	}
+	
 }

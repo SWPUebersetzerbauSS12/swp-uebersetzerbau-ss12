@@ -30,14 +30,8 @@
  *
  */
 
-package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
+package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar;
 
-import java.util.Collection;
-import java.util.HashSet;
-
-import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Grammar;
-import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.Leaf;
-import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeNode;
 import de.fuberlin.bii.utils.Test;
 
 
@@ -45,14 +39,61 @@ import de.fuberlin.bii.utils.Test;
  * 
  * @author Johannes Dahlke
  *
+ * @param <Symbol>
  */
-public interface Tree extends Iterable<TreeNode> {
+public class Terminal<T extends Symbol> extends RuleElement {
+	
+	private T symbol;
+	
+	
+	public Terminal( T symbol) {
+		super();
+		this.symbol = symbol;
+	}
+	
+	
+	@Override
+	public boolean equals( Object theOtherObject) {
+		
+		if ( Test.isUnassigned( theOtherObject))
+			return false;
+		
+		if ( !( theOtherObject instanceof Terminal))
+			return false;
+		
+		Terminal theOtherTerminal = (Terminal) theOtherObject;
+		
+		if ( !theOtherTerminal.getSymbol().equals( this.symbol))
+			return false;
+		
+		return true;
+	}
 
 	
-	TreeNode getRoot();
 	
-	Grammar getGrammar();
+	public T getSymbol() {
+		return symbol;
+	}
 	
-	Collection<Leaf> getLeafSet(); 
-	
+	@Override
+	public String toString() {
+		return symbol.toString();
+	}
+
+
+	public int compareTo(RuleElement o) {
+		if ( Test.isUnassigned(o))
+			return 1;
+		if ( o instanceof Nonterminal)
+			return -1;
+		if ( o instanceof Terminator)
+			return -1;
+		if ( o instanceof EmptyString)
+			return +1;
+		if ( o instanceof Terminal)
+			return ((Terminal)o).getSymbol().compareTo( this.symbol);
+		
+		return -1;
+	}
+
 }

@@ -30,18 +30,21 @@
  *
  */
 
-package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
-
-import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionRule;
+package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser;
 
 /**
  * 
  * @author Johannes Dahlke
  *
  */
-public interface SemanticRule {
+public class ReduceException extends Exception {
 	
-	void apply( AttributesMap ... attributesMaps);
+	public ReduceException() {
+	  super();
+	}
 	
+	public ReduceException( String message) {
+	  super( message);
+    }
 
 }

@@ -30,18 +30,32 @@
  *
  */
 
-package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
 
-import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionRule;
+package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar;
+
+import java.util.HashMap;
+import java.util.Set;
+
 
 /**
  * 
  * @author Johannes Dahlke
  *
  */
-public interface SemanticRule {
+public interface Grammar {
 	
-	void apply( AttributesMap ... attributesMaps);
+	public Nonterminal getStartSymbol();
 	
+	public void setStartSymbol( Nonterminal startSymbol);
 
+	boolean addProduction(ProductionRule productionRule);
+	
+	TerminalSet getTerminals();
+
+	Set<Nonterminal> getNonterminals();
+	
+	HashMap<Nonterminal, TerminalSet> getFirstSets();
+	
+	HashMap<Nonterminal, TerminalSet> getFollowSets();
+	
 }

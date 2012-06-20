@@ -30,18 +30,18 @@
  *
  */
 
-package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
+package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser;
 
-import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionRule;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Terminal;
+
 
 /**
  * 
  * @author Johannes Dahlke
  *
  */
-public interface SemanticRule {
-	
-	void apply( AttributesMap ... attributesMaps);
-	
+public interface ShiftEventHandler {
 
+	
+	Object handle( Object sender, Terminal shiftedTerminal, int sequenceNumber) throws Exception;
 }

@@ -97,16 +97,15 @@ public class RegexToDfaConverter {
 	
 	public static FiniteStateMachine<Character, StatePayload> convert( RegexToPayloadMap<StatePayload> regexToPayloadMap)
 			throws DirectConverterException {
-		
-		String concatenatedRegex = "";
+				String concatenatedRegex = "";
 		PositionToPayloadMap<StatePayload> positionToPayloadMap = new PositionToPayloadMap<StatePayload>();
 		
 		for ( String regex : regexToPayloadMap.keySet()) {
 			if ( !concatenatedRegex.isEmpty())
 				concatenatedRegex += "|";
-			
 			try {
-				regex = Regex.reduceAndBracketRegex(regex);
+				regex = Regex.reduceRegex(regex);
+				System.out.println( "regex : " + regex);
 			} catch (RegexInvalidException e) {
 				throw new DirectConverterException(
 						"Der verwendete reguläre Ausdruck '"

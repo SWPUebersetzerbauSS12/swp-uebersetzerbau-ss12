@@ -41,13 +41,16 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.ContextFreeGrammar;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Grammar;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.ProductionSet;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.ItemAutomat;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.Slr1ItemAutomat;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ContextFreeGrammar;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.EmptyString;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Grammar;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Nonterminal;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionRule;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionSet;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symbol;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Terminal;
 import de.fuberlin.bii.regextodfaconverter.directconverter.regex.RegexSpecialChars;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.AbstractSyntaxTree;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.AttributesMap;
@@ -56,6 +59,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.SemanticRu
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.SyntaxDirectedDefinition;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.Tree;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.TreeIterator;
+import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.InnerNode;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.Leaf;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeNode;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeNodeCollection;
@@ -71,9 +75,13 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 	// definition of nonterminals
 	private static final Nonterminal NONTERMINAL_R = new Nonterminal( "R");
 	private static final Nonterminal NONTERMINAL_S = new Nonterminal( "S");
+	private static final Nonterminal NONTERMINAL_SX = new Nonterminal( "SX");
 	private static final Nonterminal NONTERMINAL_T = new Nonterminal( "T");
+	private static final Nonterminal NONTERMINAL_TX = new Nonterminal( "TX");
 	private static final Nonterminal NONTERMINAL_U = new Nonterminal( "U");
+	private static final Nonterminal NONTERMINAL_UX = new Nonterminal( "UX");
 	private static final Nonterminal NONTERMINAL_V = new Nonterminal( "V");
+
 	private static final Nonterminal START_SYMBOL = NONTERMINAL_R;
 	
 		
@@ -83,20 +91,32 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 	private static final Terminal<RegularExpressionElement> TERMINAL_RIGHT_BRACKET_TERMINAL = new Terminal<RegularExpressionElement>(  new RegularExpressionElement( ')'));
 	private static final Terminal<RegularExpressionElement> OPERATOR_KLEENE_CLOSURE = new Terminal<RegularExpressionElement>(  new RegularExpressionElement( '*'));
 	private static final Terminal<RegularExpressionElement> OPERATOR_ALTERNATIVE = new Terminal<RegularExpressionElement>(  new RegularExpressionElement( '|'));
-	//private static final Terminal<RegularExpressionElement> EMPTY_STRING = new EmptyString();
-	//private static final Terminal<RegularExpressionElement> OPERATOR_CONCATENATION = new Terminal<RegularExpressionElement>(  new RegularExpressionElement( '.'));
+	private static final Terminal<RegularExpressionElement> EMPTY_STRING = new EmptyString();
+	private static final Terminal<RegularExpressionElement> OPERATOR_CONCATENATION = new Terminal<RegularExpressionElement>(  new RegularExpressionElement( '.'));
 
 	// definitions of productions
 	private static final ProductionRule PRODUCTION_REGEX_ALTERNATIVE = new ProductionRule(NONTERMINAL_R, NONTERMINAL_R, OPERATOR_ALTERNATIVE, NONTERMINAL_S);
 	private static final ProductionRule PRODUCTION_REGEX_ALTERNATIVE_BYPASS = new ProductionRule(NONTERMINAL_R, NONTERMINAL_S);
+	
 	//private static final ProductionRule PRODUCTION_REGEX_CONCATENATION = new ProductionRule(NONTERMINAL_S, NONTERMINAL_S, OPERATOR_CONCATENATION, NONTERMINAL_T);
-	private static final ProductionRule PRODUCTION_REGEX_CONCATENATION = new ProductionRule(NONTERMINAL_S, NONTERMINAL_S, NONTERMINAL_T);
+	private static final ProductionRule PRODUCTION_REGEX_CONCATENATION = new ProductionRule(NONTERMINAL_S, NONTERMINAL_SX, NONTERMINAL_T);
+	private static final ProductionRule PRODUCTION_REGEX_CONCATENATION_STEADY = new ProductionRule(NONTERMINAL_SX, NONTERMINAL_SX, NONTERMINAL_TX);
+	
 	private static final ProductionRule PRODUCTION_REGEX_CONCATENATION_BYPASS = new ProductionRule(NONTERMINAL_S, NONTERMINAL_T);
+	private static final ProductionRule PRODUCTION_REGEX_CONCATENATION_STEADY_BYPASS = new ProductionRule(NONTERMINAL_SX, NONTERMINAL_TX);
+	
 	private static final ProductionRule PRODUCTION_REGEX_KLEENE_CLOSURE = new ProductionRule(NONTERMINAL_T, NONTERMINAL_U, OPERATOR_KLEENE_CLOSURE);
+	private static final ProductionRule PRODUCTION_REGEX_KLEENE_CLOSURE_STEADY = new ProductionRule(NONTERMINAL_TX, NONTERMINAL_UX, OPERATOR_KLEENE_CLOSURE);
+	
 	private static final ProductionRule PRODUCTION_REGEX_KLEENE_CLOSURE_BYPASS = new ProductionRule(NONTERMINAL_T, NONTERMINAL_U);
+	private static final ProductionRule PRODUCTION_REGEX_KLEENE_CLOSURE_STEADY_BYPASS = new ProductionRule(NONTERMINAL_TX, NONTERMINAL_UX);
+	
 	private static final ProductionRule PRODUCTION_REGEX_BRACKET = new ProductionRule(NONTERMINAL_U, TERMINAL_LEFT_BRACKET, NONTERMINAL_R, TERMINAL_RIGHT_BRACKET_TERMINAL);
+	private static final ProductionRule PRODUCTION_REGEX_BRACKET_STEADY = new ProductionRule(NONTERMINAL_UX, TERMINAL_LEFT_BRACKET, NONTERMINAL_R, TERMINAL_RIGHT_BRACKET_TERMINAL);
+	
 	private static final ProductionRule PRODUCTION_REGEX_BRACKET_BYPASS = new ProductionRule(NONTERMINAL_U, NONTERMINAL_V);
-	//private static final ProductionRule PRODUCTION_REGEX_EMPTY_STRING = new ProductionRule(NONTERMINAL_U, EMPTY_STRING);
+	private static final ProductionRule PRODUCTION_REGEX_BRACKET_STEADY_BYPASS = new ProductionRule(NONTERMINAL_UX, NONTERMINAL_V);
+	private static final ProductionRule PRODUCTION_REGEX_EMPTY_STRING = new ProductionRule(NONTERMINAL_U, EMPTY_STRING);
 	
 	
 	
@@ -114,7 +134,12 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 	  // extends regex string
 		regularExpression = Arrays.copyOf( regularExpression, regularExpression.length +1);
 		regularExpression[regularExpression.length -1] = new RegularExpressionElement( RegexSpecialChars.TERMINATOR, null);
-		ast = new AbstractSyntaxTree( regexGrammar, regexSdd, regularExpression);
+		ast = new AbstractSyntaxTree( regexGrammar, regexSdd, regularExpression) {
+			@Override
+			protected ItemAutomat getNewItemAutomat( Grammar grammar) {
+				return new Slr1ItemAutomat<Symbol>( (ContextFreeGrammar) grammar);
+			}
+		};
 		operatorTreeAttributor.attributizeOperatorTree( this);
 	}
 	
@@ -142,18 +167,25 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 		for ( char c : furtherChars) {
 			terminals.add(new Terminal<RegularExpressionElement>( new RegularExpressionElement( c)));	
 		}	
+		
 
 		
 		ProductionSet productions = new ProductionSet();
 		productions.add( PRODUCTION_REGEX_ALTERNATIVE);
 		productions.add( PRODUCTION_REGEX_ALTERNATIVE_BYPASS);
 		productions.add( PRODUCTION_REGEX_CONCATENATION);
+		productions.add( PRODUCTION_REGEX_CONCATENATION_STEADY);
 		productions.add( PRODUCTION_REGEX_CONCATENATION_BYPASS);
+		productions.add( PRODUCTION_REGEX_CONCATENATION_STEADY_BYPASS);
 		productions.add( PRODUCTION_REGEX_KLEENE_CLOSURE);
+		productions.add( PRODUCTION_REGEX_KLEENE_CLOSURE_STEADY);
 		productions.add( PRODUCTION_REGEX_KLEENE_CLOSURE_BYPASS);
+		productions.add( PRODUCTION_REGEX_KLEENE_CLOSURE_STEADY_BYPASS);
 		productions.add( PRODUCTION_REGEX_BRACKET);
+		productions.add( PRODUCTION_REGEX_BRACKET_STEADY);
 		productions.add( PRODUCTION_REGEX_BRACKET_BYPASS);
-		//productions.add( PRODUCTION_REGEX_EMPTY_STRING);
+		productions.add( PRODUCTION_REGEX_BRACKET_STEADY_BYPASS);
+	  productions.add( PRODUCTION_REGEX_EMPTY_STRING);
 		for ( Terminal<RegularExpressionElement> terminal : terminals) {
 			productions.add( new ProductionRule(NONTERMINAL_V, terminal));	
 		}
@@ -195,22 +227,25 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 		});
 		result.put( PRODUCTION_REGEX_ALTERNATIVE_BYPASS, semanticRules);
 
-	  // S -> S1 T
+	  // S -> SX T
 		semanticRules = new SemanticRules();
 		semanticRules.add( new SemanticRule() {	
 			public void apply( AttributesMap... attributesMaps) {
 				OperatorNode nodeS = new OperatorNode( OperatorType.CONCATENATION);		
-				TreeNode nodeS1 = (TreeNode) attributesMaps[1].get( "node");
+				TreeNode nodeS0 = (TreeNode) attributesMaps[1].get( "node");
 				TreeNode nodeT = (TreeNode) attributesMaps[2].get( "node");
 				//Object payload = ((Symbol) attributesMaps[2].get( "value")).getPayload();
 				//tryPassPayloadDownwards( payload, nodeT);
-				nodeS.setLeftChildNode( nodeS1);
+				nodeS.setLeftChildNode( nodeS0);
 				nodeS.setRightChildNode( nodeT);
 				attributesMaps[0].put( "node", nodeS);
 			}
 		});
 		result.put( PRODUCTION_REGEX_CONCATENATION, semanticRules);
-
+		// alike SX -> SX1 T
+		result.put( PRODUCTION_REGEX_CONCATENATION_STEADY, semanticRules);
+		
+		
 		// S -> T
 		semanticRules = new SemanticRules();
 		semanticRules.add( new SemanticRule() {	
@@ -220,7 +255,10 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 			}
 		});
 		result.put( PRODUCTION_REGEX_CONCATENATION_BYPASS, semanticRules);
-
+	  // alike SX -> TX
+		result.put( PRODUCTION_REGEX_CONCATENATION_STEADY_BYPASS, semanticRules);
+	  
+		
 		// T -> U*
 		semanticRules = new SemanticRules();
 		semanticRules.add( new SemanticRule() {	
@@ -235,7 +273,10 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 			}
 		});
 		result.put( PRODUCTION_REGEX_KLEENE_CLOSURE, semanticRules);
+	  // alike TX -> UX*
+		result.put( PRODUCTION_REGEX_KLEENE_CLOSURE_STEADY, semanticRules);
 
+		
 		// T -> U
 		semanticRules = new SemanticRules();
 		semanticRules.add( new SemanticRule() {	
@@ -245,6 +286,8 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 			}
 		});
 		result.put( PRODUCTION_REGEX_KLEENE_CLOSURE_BYPASS, semanticRules);
+	  // alike TX -> UX
+		result.put( PRODUCTION_REGEX_KLEENE_CLOSURE_STEADY_BYPASS, semanticRules);
 
 		// U -> V
 		semanticRules = new SemanticRules();
@@ -255,6 +298,9 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 			}
 		});
 		result.put( PRODUCTION_REGEX_BRACKET_BYPASS, semanticRules);
+	  // alike UX -> V
+		result.put( PRODUCTION_REGEX_BRACKET_STEADY_BYPASS, semanticRules);
+
 
 		// U -> ( R )
 		semanticRules = new SemanticRules();
@@ -267,6 +313,18 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 			}
 		});
 		result.put( PRODUCTION_REGEX_BRACKET, semanticRules);
+	  // alike UX -> ( R ) 
+		result.put( PRODUCTION_REGEX_BRACKET_STEADY, semanticRules);
+
+	  // U -> \epsilon
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+		  public void apply( AttributesMap... attributesMaps) {
+				TreeNode<Symbol> nodeTerminal = new TerminalNode( new RegularExpressionElement( RegexSpecialChars.EMPTY_STRING));
+				attributesMaps[0].put( "node", nodeTerminal);
+			}
+		});
+		result.put( PRODUCTION_REGEX_EMPTY_STRING, semanticRules);
 
 		// V -> a
 		semanticRules = new SemanticRules();
@@ -336,6 +394,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 				embracingNonterminalNode.setLeftChildNode( priorStartSymbolNode);
 				embracingNonterminalNode.setRightChildNode( terminatorNode);
 	      attributesMaps[0].put( "node", embracingNonterminalNode);
+				System.out.println( "Q " + ((InnerNode)embracingNonterminalNode).toFullString());
 			}
 		});
 		sdd.put( terminatorProductionRule, semanticRules);

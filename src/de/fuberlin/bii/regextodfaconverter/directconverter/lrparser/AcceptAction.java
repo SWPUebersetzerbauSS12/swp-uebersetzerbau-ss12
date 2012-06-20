@@ -30,18 +30,30 @@
  *
  */
 
-package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
+package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser;
 
-import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionRule;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symbol;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Closure;
 
 /**
  * 
  * @author Johannes Dahlke
  *
+ * @param <Element>
  */
-public interface SemanticRule {
+public class AcceptAction<Element extends Symbol, SpecializedClosure extends Closure> extends Action<Element, SpecializedClosure> {
+
+	public AcceptAction() {
+		super();
+	}
 	
-	void apply( AttributesMap ... attributesMaps);
+	public Object handleOnAutomat(ItemAutomatInterior<Element, SpecializedClosure> itemAutomata) throws Exception {
+		return true;
+	}
 	
+	@Override
+	public String toString() {
+		return "Accept";
+	}
 
 }

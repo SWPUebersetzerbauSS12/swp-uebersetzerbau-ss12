@@ -30,18 +30,16 @@
  *
  */
 
-package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
+package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar;
 
-import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionRule;
+import java.util.List;
+
 
 /**
  * 
  * @author Johannes Dahlke
  *
  */
-public interface SemanticRule {
-	
-	void apply( AttributesMap ... attributesMaps);
-	
+public interface RuleElementSequenz extends List<RuleElement> {
 
 }

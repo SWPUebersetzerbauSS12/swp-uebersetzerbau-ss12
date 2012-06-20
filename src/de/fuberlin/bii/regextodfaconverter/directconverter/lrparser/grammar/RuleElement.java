@@ -30,18 +30,14 @@
  *
  */
 
-package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
+package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar;
 
-import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionRule;
 
 /**
  * 
  * @author Johannes Dahlke
  *
  */
-public interface SemanticRule {
-	
-	void apply( AttributesMap ... attributesMaps);
-	
+public abstract class RuleElement implements Comparable<RuleElement> {
 
 }

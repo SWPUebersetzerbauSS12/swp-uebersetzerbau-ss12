@@ -30,18 +30,34 @@
  *
  */
 
-package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
+package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser;
 
-import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionRule;
+import java.util.List;
+
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symbol;
 
 /**
  * 
  * @author Johannes Dahlke
  *
+ * @param <Element>
  */
-public interface SemanticRule {
-	
-	void apply( AttributesMap ... attributesMaps);
-	
+public interface ItemAutomat<Element extends Symbol> {
 
+	boolean match( List<Element> input);
+		
+	/**
+	 * - Keine shift-reduce Konflikte
+	 * - Keine reduce-reduce Konflikte
+	 * - reduce-Aktionen über Followmengen plaziert
+	 * @return
+	 */
+  boolean isReduceConflictFree();
+  
+	
+  void setReduceEventHandler( ReduceEventHandler reduceEventHandler);
+	
+	
+	void setShiftEventHandler( ShiftEventHandler shiftEventHandler);
+	
 }

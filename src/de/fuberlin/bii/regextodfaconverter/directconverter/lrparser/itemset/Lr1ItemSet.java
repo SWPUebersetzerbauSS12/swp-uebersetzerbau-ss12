@@ -30,18 +30,30 @@
  *
  */
 
-package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
+package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset;
 
-import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionRule;
+import java.util.Collection;
+import java.util.HashSet;
+
 
 /**
  * 
  * @author Johannes Dahlke
  *
  */
-public interface SemanticRule {
+public class Lr1ItemSet extends ItemSet<Lr1Item> {
 	
-	void apply( AttributesMap ... attributesMaps);
 	
-
+	public Lr1ItemSet() {
+		super();
+	}
+	
+	public Lr1ItemSet( Collection<? extends Lr1Item> collection) {
+		super( collection);
+	}
+	
+	
+	
+	
+	
 }

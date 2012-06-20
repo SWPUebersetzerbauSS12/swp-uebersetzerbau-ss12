@@ -30,18 +30,28 @@
  *
  */
 
-package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
+package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser;
 
-import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionRule;
+import java.util.Queue;
+import java.util.Stack;
+
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.RuleElement;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symbol;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Closure;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Lr0Closure;
 
 /**
  * 
  * @author Johannes Dahlke
  *
+ * @param <Element>
  */
-public interface SemanticRule {
-	
-	void apply( AttributesMap ... attributesMaps);
-	
+public interface ItemAutomatInterior<Element extends Symbol, SpecializedClosure extends Closure> {
 
+	Stack<RuleElement> getSymbolStack();
+	
+	Stack<SpecializedClosure> getClosureStack();
+	
+	Queue<Element> getInputQueue();
+	
 }

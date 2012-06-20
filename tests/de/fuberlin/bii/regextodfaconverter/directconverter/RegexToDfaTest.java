@@ -25,19 +25,25 @@ public class RegexToDfaTest {
 		Notification.enableDebugPrinting();
 		
 		RegexToPayloadMap<de.fuberlin.bii.tokenmatcher.StatePayload> regexToPayloadMap = new RegexToPayloadMap<de.fuberlin.bii.tokenmatcher.StatePayload>();
-		regexToPayloadMap.put( "(1|2)*3", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "NUM", new ParseIntAttribute()));
-		regexToPayloadMap.put( "c(1|2)*3", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "OP", new ParseStringAttribute()));
-				
+		//regexToPayloadMap.put( "(1|2)*3", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "NUM", new ParseIntAttribute()));
+		//regexToPayloadMap.put( "c(1|2)*3", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "OP", new ParseStringAttribute()));
+			
+		regexToPayloadMap.put( "\\\\v", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "OP", new ParseStringAttribute()));
+		
+		
 		FiniteStateMachine<Character, ? extends de.fuberlin.bii.tokenmatcher.StatePayload> fsm = new RegexToDfaConverter()
 		.convert( regexToPayloadMap);
 
-		LexemeReader lexemeReader = new BufferedLexemeReader("src/test/resources/source/tokenmatcher/regex.fun");// new SimpleLexemeReader(
-		
+		LexemeReader lexemeReader = new BufferedLexemeReader("tests/resources/de/fuberlin/bii/source/tokenmatcher/regex.fun");// new SimpleLexemeReader(
+		System.out.println( fsm);
+		System.out.println( new MinimalDfa( fsm));
 		// TODO @Daniel: fsm.isDeterministic() ist hier false, da fsm.addTransition() auch gleiche Übergänge mehrfach aufnimmt. Benötige Funktionalität, mit der ich das Vorhandensein eines Übergangs abfragen kann, bevor ich den Übergang ggf. dann hinzufüge.
 		Assert.assertTrue( fsm.isDeterministic());		
+		
+		
 	}
 	
-	
+	/*
 	@Test
 	public void testTokenRecognition() throws Exception {
 		
@@ -50,7 +56,7 @@ public class RegexToDfaTest {
 		FiniteStateMachine<Character, ? extends de.fuberlin.bii.tokenmatcher.StatePayload> fsm = new RegexToDfaConverter()
 		.convert( regexToPayloadMap);
 
-		LexemeReader lexemeReader = new BufferedLexemeReader("src/test/resources/source/tokenmatcher/regex.fun");// new SimpleLexemeReader(
+		LexemeReader lexemeReader = new BufferedLexemeReader("tests/resources/de/fuberlin/bii/source/tokenmatcher/regex.fun");// new SimpleLexemeReader(
 	
 		Tokenizer tokenizer = new Tokenizer( lexemeReader, new MinimalDfa( fsm));
 	
@@ -92,7 +98,7 @@ public class RegexToDfaTest {
 		Assert.assertTrue( currentToken.getAttribute() instanceof String);
 
 	}
-
+*/
 
 
 

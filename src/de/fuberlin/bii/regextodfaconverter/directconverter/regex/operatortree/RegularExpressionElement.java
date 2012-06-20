@@ -1,6 +1,6 @@
 package de.fuberlin.bii.regextodfaconverter.directconverter.regex.operatortree;
 
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symbol;
 
 
 public class RegularExpressionElement<StatePayloadType> extends Symbol<Character, StatePayloadType> {

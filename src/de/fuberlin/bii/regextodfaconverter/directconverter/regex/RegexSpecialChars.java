@@ -53,7 +53,7 @@ public class RegexSpecialChars {
 	public static final char REGEX_OPTION = '?';
 	public static final char REGEX_JOKER = '.';
 
-	public static final char EMPTY_STRING = 0x00;
+	public static final char EMPTY_STRING = '€';//0x00;
 	public static final char TERMINATOR = 0x03; // ETX = End Of Text
 
 	/**

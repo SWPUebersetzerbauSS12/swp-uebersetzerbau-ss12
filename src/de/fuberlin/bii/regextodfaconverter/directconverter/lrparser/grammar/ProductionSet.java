@@ -30,18 +30,52 @@
  *
  */
 
-package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
+package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar;
 
-import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionRule;
+import java.util.HashSet;
+
+import de.fuberlin.bii.utils.Test;
+
 
 /**
  * 
  * @author Johannes Dahlke
  *
  */
-public interface SemanticRule {
+public class ProductionSet extends HashSet<ProductionRule> {
 	
-	void apply( AttributesMap ... attributesMaps);
+	public boolean IsLeftSideUnique() {
+		Nonterminal lastNonterminal = null;
+		for ( ProductionRule rule : this) {
+			if ( lastNonterminal == null) {
+				lastNonterminal = rule.getLeftRuleSide();
+			} else {
+			  if ( !rule.getLeftRuleSide().equals( lastNonterminal)) {
+			  	return false;
+			  } else {
+			    lastNonterminal = rule.getLeftRuleSide(); 	
+			  }
+			}
+		}
+		return true;
+	}
 	
+	@Override
+	public boolean contains(Object theOtherObject) {
+
+		if ( Test.isUnassigned( theOtherObject))
+			return false;
+		
+		if ( !( theOtherObject instanceof ProductionRule))
+			return false;
+		
+		ProductionRule theOtherProductionRule = (ProductionRule) theOtherObject;
+		
+		for (ProductionRule rule : this) {
+			if ( rule.equals(theOtherObject))
+				return true;
+		}
+		return false;
+	}
 
 }

@@ -30,18 +30,34 @@
  *
  */
 
-package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
+package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar;
 
-import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionRule;
+import de.fuberlin.bii.utils.Test;
+
 
 /**
  * 
  * @author Johannes Dahlke
  *
  */
-public interface SemanticRule {
+public class Terminator extends Terminal  {
 	
-	void apply( AttributesMap ... attributesMaps);
+	
+	public Terminator() {
+		super( new Symbol( '$'));
+	}
+	
+	@Override
+	public boolean equals( Object theOtherObject) {
+		
+		if ( Test.isUnassigned( theOtherObject))
+			return false;
+		
+		if ( !( theOtherObject instanceof Terminator))
+			return false;
+		
+		return true;
+	}
 	
 
 }

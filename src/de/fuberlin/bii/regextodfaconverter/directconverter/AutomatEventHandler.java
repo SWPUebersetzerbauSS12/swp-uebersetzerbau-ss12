@@ -30,18 +30,19 @@
  *
  */
 
-package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
+package de.fuberlin.bii.regextodfaconverter.directconverter;
 
-import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionRule;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.ItemAutomatInterior;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symbol;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Closure;
 
 /**
  * 
  * @author Johannes Dahlke
  *
  */
-public interface SemanticRule {
-	
-	void apply( AttributesMap ... attributesMaps);
-	
+public interface AutomatEventHandler<Element extends Symbol, SpecializedClosure extends Closure> {
 
+	
+	Object handleOnAutomat( ItemAutomatInterior<Element, SpecializedClosure> itemAutomat) throws Exception;
 }

@@ -30,7 +30,8 @@
  *
  */
 
-package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
+
+package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser;
 
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionRule;
 
@@ -39,9 +40,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Prod
  * @author Johannes Dahlke
  *
  */
-public interface SemanticRule {
-	
-	void apply( AttributesMap ... attributesMaps);
-	
+public interface ReduceEventHandler {
 
+	Object handle( Object sender, ProductionRule reduceRule, int sequenceNumber) throws Exception;
 }

@@ -16,7 +16,6 @@ import de.fuberlin.bii.tokenmatcher.attributes.ParseIntAttribute;
 import de.fuberlin.bii.tokenmatcher.attributes.ParseStringAttribute;
 import de.fuberlin.bii.utils.Notification;
 
-
 public class RegexToDfaTest {
 
 	@Test
@@ -37,7 +36,7 @@ public class RegexToDfaTest {
 		LexemeReader lexemeReader = new BufferedLexemeReader("tests/resources/de/fuberlin/bii/source/tokenmatcher/regex.fun");// new SimpleLexemeReader(
 		System.out.println( fsm);
 		System.out.println( new MinimalDfa( fsm));
-		// TODO @Daniel: fsm.isDeterministic() ist hier false, da fsm.addTransition() auch gleiche Übergänge mehrfach aufnimmt. Benötige Funktionalität, mit der ich das Vorhandensein eines Übergangs abfragen kann, bevor ich den Übergang ggf. dann hinzufüge.
+
 		Assert.assertTrue( fsm.isDeterministic());		
 		
 		

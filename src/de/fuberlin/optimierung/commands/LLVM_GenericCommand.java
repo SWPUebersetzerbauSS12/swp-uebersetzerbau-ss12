@@ -40,6 +40,10 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 		}
 	}
 	
+	public LLVM_GenericCommand(){
+		
+	}
+	
 	public void deleteCommand() {
 		if (LLVM_Optimization.DEBUG) System.out.println("del in block " + this.block.getLabel() + " command " + this.toString());
 

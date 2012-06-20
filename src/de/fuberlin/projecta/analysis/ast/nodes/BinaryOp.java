@@ -128,10 +128,18 @@ public class BinaryOp extends Statement {
 						break;
 					}
 				}
-				int bla = block.getNewRegister();
-				ret += "%" + bla + " = " + int_or_real + " " + cmp_op + " "
-						+ checkType(a, b) + "* %" + a.getValue() + ", %"
-						+ b.getValue() + "\n";
+				int tmp = block.getNewRegister();
+				ret += "%" + tmp + " = " + int_or_real + " " + cmp_op + " "
+						+ checkType(a, b) + " %" ;
+				if(regs[3] == 0)
+					ret += a.getValue() + ", %";
+				else
+					ret += regs[3] + ", %";
+				if(regs[4] == 0)
+					ret += b.getValue() + "\n";
+				else
+					ret += regs[4] + "\n";
+						
 
 			}
 		}

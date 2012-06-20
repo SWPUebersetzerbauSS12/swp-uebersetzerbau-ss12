@@ -1,5 +1,7 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
+import de.fuberlin.projecta.parser.ISyntaxTree;
+
 
 
 public abstract class Statement extends AbstractSyntaxTree {
@@ -12,12 +14,12 @@ public abstract class Statement extends AbstractSyntaxTree {
 	public Block getHighestBlock(){
 		Block block = null;
 		if(getParent() != null){
-			AbstractSyntaxTree parent = (AbstractSyntaxTree) getParent();
+			ISyntaxTree parent = getParent();
 			while(parent != null){
 				if(parent instanceof Block){
 					block = (Block) parent;					
 				}
-				parent = (AbstractSyntaxTree) parent.getParent();
+				parent = parent.getParent();
 			}
 		}		
 		return block;

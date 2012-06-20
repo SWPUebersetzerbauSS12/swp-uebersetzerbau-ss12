@@ -1,5 +1,6 @@
 package de.fuberlin.projectF.CodeGenerator;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 
@@ -8,11 +9,27 @@ import de.fuberlin.projectF.CodeGenerator.model.TokenType;
 
 public class CodeGenerator {
 
-	public static String generateCode(String filename, boolean debug,
+	//Variante f�r File-Input
+	public static String generateCode(File llvmFile, boolean debug,
 			boolean guiFlag) {
-		// Lexer, Variablenverwaltung und Übersetzter erstellen
+		
+		ILexer lex = new FileLexer(llvmFile);
+		return generateCode2(debug, guiFlag, lex);
+	}
+	
+	//Variante f�r String-Input
+	public static String generateCode(String llvmCode, boolean debug,
+			boolean guiFlag) {
+		ILexer lex = new StringLexer(llvmCode);
+		
+		return generateCode2(debug, guiFlag, lex);
+	}
+	
+	//extrahiert weil wir jetzt 2 verschiedene Lexer haben
+	private static String generateCode2(boolean debug, boolean guiFlag,
+			ILexer lex) {
+		// Variablenverwaltung und Übersetzter erstellen
 		ArrayList<Token> code = new ArrayList<Token>();
-		Lexer lex = new Lexer(filename);
 		Translator trans = new Translator();
 
 		// Token durchgehen und übersetzten bis EOF
@@ -28,9 +45,8 @@ public class CodeGenerator {
 		// Token informationen ausgeben
 		if (debug) {
 			for (Token t : code) {
-				System.out.println("Input file: " + filename);
-				System.out.println("File " + filename + " Token #"
-						+ linecount++);
+				
+				System.out.println("Token #" + linecount++);
 				t.print();
 			}
 		}
@@ -65,12 +81,15 @@ public class CodeGenerator {
 		// Rückgabe des erzeugten Code's
 		return trans.getCode();
 	}
+	
 
 	public static void main(String[] args) {
 		boolean debug = true;
 		boolean gui = true;
 
 		ArrayList<String> inputFile = new ArrayList<String>();
+		//Inhalt der inputFiles als String
+		ArrayList<String> inputStrings = new ArrayList<String>();
 		String outputFile = null;
 
 		// Argumente parsen
@@ -92,8 +111,10 @@ public class CodeGenerator {
 			System.out.println("No inputfile spezified!");
 			return;
 		}
+		
 
-		for (String file : inputFile) {
+		for (String filename : inputFile) {
+			File file = new File(filename);
 			String output = generateCode(file, debug, gui);
 			if (outputFile != null) {
 				try{

@@ -21,20 +21,20 @@ import de.fuberlin.projectF.CodeGenerator.model.TokenType;
  * 
  */
 
-public class Lexer {
+public class FileLexer implements ILexer {
 
 	FileInputStream fstream;
 	DataInputStream in;
 	BufferedReader br;
 
-	public Lexer(String filename) {
-		this.open(filename);
+	public FileLexer(File llvmFile) {
+		this.open(llvmFile);
 	}
 
 	// öffnen der Datei
-	public int open(String filename) {
+	public int open(File file) {
 		try {
-			fstream = new FileInputStream(filename);
+			fstream = new FileInputStream(file);
 			in = new DataInputStream(fstream);
 			br = new BufferedReader(new InputStreamReader(in));
 

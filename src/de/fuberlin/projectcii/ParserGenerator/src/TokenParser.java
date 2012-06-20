@@ -143,11 +143,11 @@ public class TokenParser {
 					tree.addChild(parseToken(Production.elementAt(i),tree));
 				}
 				// add an epsilon childNode to the tree
-//				else{
-//					SyntaxTree epsilonTree = new SyntaxTree();
-//					epsilonTree.setSymbol(Settings.getEPSILON());
-//					tree.addChild(epsilonTree);
-//				}
+				else{
+					SyntaxTree epsilonTree = new SyntaxTree();
+					epsilonTree.setSymbol(Settings.getEPSILON());
+					tree.addChild(epsilonTree);
+				}
 			}
 		}
 		// Token doesn't fit the given grammar

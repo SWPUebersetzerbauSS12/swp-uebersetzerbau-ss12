@@ -72,13 +72,13 @@ public class DriverTestDataProvider2 implements DriverTestDataProvider{
 		try {
 			parseTable=ptb.buildParseTable();
 			logger.info("Valid source grammar.");
-			System.out.println(parseTable.toString());
+			//System.out.println(parseTable.toString());
 		} catch (InvalidGrammarException e) {
 			logger.log(Level.INFO, "Invalid source grammar.",e);
 		}	
 
 		String strProgram=
-				"def int fib(int n){\n"+
+				"def int fib(int n/{\n"+
 				"  if (n <= 1) return n;\n"+
 				"  else {\n"+
 				"    int fib;\n"+

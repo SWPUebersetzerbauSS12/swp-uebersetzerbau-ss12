@@ -108,12 +108,20 @@ public class Driver {
 //					tokenStack.push(currentToken);
 					continue;
 				}
+				
 				// TODO Fehlerbehandlung implementieren
-				logger.warning("Error");
+				System.out.println("Parse Error: unexpected Token "+currentToken.getText()+" in line "+currentToken.getLineNumber()+":"+currentToken.getOffset());
+				System.out.print("Possible Tokens: ");
+				for(TerminalSymbol t : parseTable.getActionTableForState(currentState).getAllLegalTerminals()) {
+					System.out.print(t.toString()+" ");
+				}
+				System.out.println();
+				
+				//logger.warning("Error");
 				break;
 			}			
 		}
-		logger.severe("Unexpected Error");
+		//logger.severe("Unexpected Error");
 		return null;
 	}
 	

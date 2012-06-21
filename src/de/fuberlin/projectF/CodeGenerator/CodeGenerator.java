@@ -13,21 +13,21 @@ public class CodeGenerator {
 	public static String generateCode(File llvmFile, boolean debug,
 			boolean guiFlag) {
 		
-		ILexer lex = new FileLexer(llvmFile);
+		Lexer lex = new FileLexer(llvmFile);
 		return generateCode2(debug, guiFlag, lex);
 	}
 	
 	//Variante für String-Input
 	public static String generateCode(String llvmCode, boolean debug,
 			boolean guiFlag) {
-		ILexer lex = new StringLexer(llvmCode);
+		Lexer lex = new StringLexer(llvmCode);
 		
 		return generateCode2(debug, guiFlag, lex);
 	}
 	
 	//extrahiert weil wir jetzt 2 verschiedene Lexer haben
 	private static String generateCode2(boolean debug, boolean guiFlag,
-			ILexer lex) {
+			Lexer lex) {
 		// Variablenverwaltung und Ãœbersetzter erstellen
 		ArrayList<Token> code = new ArrayList<Token>();
 		Translator trans = new Translator();

@@ -302,7 +302,7 @@ public class Lr0ItemAutomat<Element extends Symbol> implements ItemAutomat<Eleme
 
 				alternativeAction: do {
 					try {
-						
+
 						if ( handler instanceof Action
 								&& ((Action)handler).hasAlternative()) {
 							// put alternative on stack

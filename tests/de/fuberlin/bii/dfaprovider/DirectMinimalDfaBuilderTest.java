@@ -11,6 +11,7 @@ import de.fuberlin.bii.regextodfaconverter.MinimalDfa;
 import de.fuberlin.bii.tokenmatcher.StatePayload;
 import de.fuberlin.bii.tokenmatcher.Token;
 import de.fuberlin.bii.tokenmatcher.Tokenizer;
+import de.fuberlin.bii.utils.Notification;
 
 /**
  * Test-Klasse für die DirectMinimalDfaBuilder-Klasse.
@@ -25,6 +26,8 @@ public class DirectMinimalDfaBuilderTest {
 	 */
 	@Test
 	public void testBuildMinimalDfa() throws Exception {
+		Notification.enableDebugPrinting();
+		
 		File rdFile = new File("tests/resources/de/fuberlin/bii/def/dfaprovider/test.rd");
 		String sourceFilename = "tests/resources/de/fuberlin/bii/source/dfaprovider/test.fun";
 

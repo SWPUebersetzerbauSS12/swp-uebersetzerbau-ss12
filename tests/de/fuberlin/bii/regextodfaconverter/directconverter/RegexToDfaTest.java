@@ -24,8 +24,8 @@ public class RegexToDfaTest {
 		Notification.enableDebugPrinting();
 		
 		RegexToPayloadMap<de.fuberlin.bii.tokenmatcher.StatePayload> regexToPayloadMap = new RegexToPayloadMap<de.fuberlin.bii.tokenmatcher.StatePayload>();
-		regexToPayloadMap.put( "(1|2)*3", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "NUM", new ParseIntAttribute()));
-	//	regexToPayloadMap.put( "c(1|2)*3", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "OP", new ParseStringAttribute()));
+		regexToPayloadMap.put( "(|2)*3\\|333", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "NUM", new ParseIntAttribute()));
+	  regexToPayloadMap.put( "c(1|2)*3", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "OP", new ParseStringAttribute()));
 		
 		
 		FiniteStateMachine<Character, ? extends de.fuberlin.bii.tokenmatcher.StatePayload> fsm = new RegexToDfaConverter()

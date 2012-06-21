@@ -124,6 +124,7 @@ public class DirectMinimalDfaBuilder implements MinimalDfaBuilder {
 		try {
 			mDfa = new MinimalDfa<Character, StatePayload>(fsm);
 		} catch (ConvertExecption e) {
+			Notification.printDebugException( e);
 			throw new MinimalDfaBuilderException(
 					"Fehler beim Erstellen des minimalen DFA's: "
 							+ e.getMessage());

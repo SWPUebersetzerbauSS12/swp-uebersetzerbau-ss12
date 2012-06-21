@@ -35,6 +35,8 @@ package de.fuberlin.bii.utils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -85,6 +87,21 @@ public class Sets {
 		return list;
 
 	
+	}
+	
+	
+	public static <T> Set<T> setMinus( Set<T> setA, Set<T> setB) {
+		Set<T> result = new HashSet<T>();
+		boolean found = false;
+		for ( T a : setA) {
+			if ( !setB.contains( a))
+				result.add( a);
+		}
+		return result;
+	}
+	
+	public static <T> Collection<T> setMinus( Collection<T> setA, Collection<T> setB) {
+		return setMinus( new HashSet<T>( setA), new HashSet<T>( setB));
 	}
 
 }

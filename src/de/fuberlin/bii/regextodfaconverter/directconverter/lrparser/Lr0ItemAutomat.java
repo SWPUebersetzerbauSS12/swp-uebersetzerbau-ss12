@@ -319,7 +319,6 @@ public class Lr0ItemAutomat<Element extends Symbol> implements ItemAutomat<Eleme
 							currentSequenceNumber = alternativeActionContext.getSequenceNumber();
 							currentClosure = alternativeActionContext.getCurrentClosure();
 							handler = alternativeActionContext.getAction();
-							System.out.println( "resume with " + handler);
 							continue alternativeAction; 
 						} else {
 							throw new Exception( e);

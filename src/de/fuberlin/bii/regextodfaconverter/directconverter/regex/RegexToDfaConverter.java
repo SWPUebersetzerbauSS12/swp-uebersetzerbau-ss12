@@ -105,7 +105,6 @@ public class RegexToDfaConverter {
 				concatenatedRegex += "|";
 			try {
 				regex = Regex.reduceRegex(regex);
-				System.out.println( "regex : " + regex);
 			} catch (RegexInvalidException e) {
 				throw new DirectConverterException(
 						"Der verwendete reguläre Ausdruck '"

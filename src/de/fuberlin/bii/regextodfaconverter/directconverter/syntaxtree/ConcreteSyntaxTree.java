@@ -39,6 +39,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -79,6 +80,8 @@ public class ConcreteSyntaxTree<ExpressionElement extends Symbol> implements Tre
 	private ArrayList<ExpressionElement> inputElements = null;
 
 	private Stack<NumberedTreeNode> nodeStack = null;
+	
+	private HashMap<Integer, Stack> stackSnapshots = new HashMap<Integer, Stack>();
 
 	public NewNodeEventHandler onNewNodeEvent = null;
 
@@ -161,7 +164,7 @@ public class ConcreteSyntaxTree<ExpressionElement extends Symbol> implements Tre
 
 			public Object handle( Object sender, ProductionRule reduceRule, int sequenceNumber) throws Exception {
 				
-				cleanStackBySequenceNumber( sequenceNumber);
+				updateStackBySequenceNumber( sequenceNumber);
 			
 				// create new inner node
 				InnerNode<ProductionRule> newInnerNode = new ScalableInnerNode<ProductionRule>( reduceRule);
@@ -186,10 +189,12 @@ public class ConcreteSyntaxTree<ExpressionElement extends Symbol> implements Tre
 				NumberedTreeNode newNumberedNode = new NumberedTreeNode( newInnerNode, sequenceNumber);
 				nodeStack.push( newNumberedNode);
 
+				snapshotCurrentStackWithSequenceNumber( sequenceNumber);
 				return null;
 			}
 		};
 	}
+
 
 
 	protected ShiftEventHandler getShiftEventHandler() {
@@ -197,7 +202,7 @@ public class ConcreteSyntaxTree<ExpressionElement extends Symbol> implements Tre
 
 			public Object handle( Object sender, Terminal shiftedTerminal, int sequenceNumber) throws Exception {
 				
-				cleanStackBySequenceNumber( sequenceNumber);
+				updateStackBySequenceNumber( sequenceNumber);
 				
 				Leaf newLeaf = new Leaf( shiftedTerminal);
 				newLeaf.setPrintHandler( getNodePrintHandler());
@@ -207,22 +212,37 @@ public class ConcreteSyntaxTree<ExpressionElement extends Symbol> implements Tre
 
 				NumberedTreeNode newNumberedLeaf = new NumberedTreeNode( newLeaf, sequenceNumber);
 				nodeStack.push( newNumberedLeaf);
+				
+				snapshotCurrentStackWithSequenceNumber( sequenceNumber);
 				return null;
 			}
 		};
 	}
 
 
-	
-	protected void cleanStackBySequenceNumber( int sequenceNumber) {
-		try {
-			while( getNodeStack().peek().getNumber() >= sequenceNumber )
-			{
-				getNodeStack().pop();
+	protected void updateStackBySequenceNumber( int sequenceNumber) {
+		// clear overhang
+		int recentSerial = -1;
+
+		Set<Integer> keys = new HashSet<Integer>( stackSnapshots.keySet());
+		for ( Integer stackSerial : keys) {	
+			if ( stackSerial >= sequenceNumber) {
+				stackSnapshots.remove( stackSerial);
 			}
-		} catch (Exception e) {
-			// stack is empty
+			else
+				recentSerial = Math.max( recentSerial, stackSerial);
 		}
+		
+		// update stack;
+		if ( recentSerial > -1) {
+		  nodeStack = (Stack) stackSnapshots.get( recentSerial).clone();
+		} else {
+			nodeStack.clear();
+		}
+	}
+	
+	protected void snapshotCurrentStackWithSequenceNumber( int sequenceNumber) {
+		stackSnapshots.put( sequenceNumber, (Stack) nodeStack.clone());
 	}
 	
 	

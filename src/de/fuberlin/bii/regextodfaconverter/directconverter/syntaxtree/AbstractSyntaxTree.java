@@ -79,7 +79,7 @@ public class AbstractSyntaxTree<ExpressionElement extends Symbol> extends Concre
 
 			public Object handle( Object sender, ProductionRule reduceRule, int sequenceNumber) throws Exception {
 			
-				cleanStackBySequenceNumber( sequenceNumber);
+				updateStackBySequenceNumber( sequenceNumber);
 				
 				// create the map contains attributes of this node
 				AttributesMap thisAttributesMap = new AttributesMap();
@@ -123,7 +123,7 @@ public class AbstractSyntaxTree<ExpressionElement extends Symbol> extends Concre
 				NumberedTreeNode newNumberedNode = new NumberedTreeNode( newInnerNode, sequenceNumber);
 				getNodeStack().push( newNumberedNode);
 
-
+				snapshotCurrentStackWithSequenceNumber( sequenceNumber);
 				return null;
 			}
 		};
@@ -138,7 +138,7 @@ public class AbstractSyntaxTree<ExpressionElement extends Symbol> extends Concre
 
 			public Object handle( Object sender, Terminal shiftedTerminal, int sequenceNumber) throws Exception {
 			  
-				cleanStackBySequenceNumber( sequenceNumber);
+				updateStackBySequenceNumber( sequenceNumber);
 				
 				// create the map contains attributes of this node
 				AttributesMap thisAttributesMap = new AttributesMap();
@@ -153,6 +153,8 @@ public class AbstractSyntaxTree<ExpressionElement extends Symbol> extends Concre
 
 				NumberedTreeNode newNumberedLeaf = new NumberedTreeNode( newLeaf, sequenceNumber);
 				getNodeStack().push( newNumberedLeaf);
+				
+				snapshotCurrentStackWithSequenceNumber( sequenceNumber);
 				return null;
 			}
 		};

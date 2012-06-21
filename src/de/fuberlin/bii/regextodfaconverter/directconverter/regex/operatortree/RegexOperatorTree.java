@@ -40,8 +40,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
+import de.fuberlin.bii.regextodfaconverter.Regex;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.ItemAutomat;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.Lr1ItemAutomat;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.Slr1ItemAutomat;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ContextFreeGrammar;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.EmptyString;
@@ -89,6 +92,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 	private static final Terminal<RegularExpressionElement> TERMINAL_TERMINATOR = new Terminal<RegularExpressionElement>( new RegularExpressionElement( RegexSpecialChars.TERMINATOR));
 	private static final Terminal<RegularExpressionElement> TERMINAL_LEFT_BRACKET = new Terminal<RegularExpressionElement>(  new RegularExpressionElement( '('));
 	private static final Terminal<RegularExpressionElement> TERMINAL_RIGHT_BRACKET_TERMINAL = new Terminal<RegularExpressionElement>(  new RegularExpressionElement( ')'));
+	private static final Terminal<RegularExpressionElement> TERMINAL_MASK = new Terminal<RegularExpressionElement>( new RegularExpressionElement( '\\'));
 	private static final Terminal<RegularExpressionElement> OPERATOR_KLEENE_CLOSURE = new Terminal<RegularExpressionElement>(  new RegularExpressionElement( '*'));
 	private static final Terminal<RegularExpressionElement> OPERATOR_ALTERNATIVE = new Terminal<RegularExpressionElement>(  new RegularExpressionElement( '|'));
 	private static final Terminal<RegularExpressionElement> EMPTY_STRING = new EmptyString();
@@ -149,26 +153,19 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 		ContextFreeGrammar grammar = new ContextFreeGrammar();
 
 		// we define valid chars 
-		ArrayList<Terminal<RegularExpressionElement>>  terminals = new ArrayList<Terminal<RegularExpressionElement>>(); 
-    // a..z
-		for ( int c = 'a'; c <= 'z'; c++) {
-			terminals.add(new Terminal<RegularExpressionElement>( new RegularExpressionElement( (char) c)));
+		char[] metaChars = Regex.getMetaChars();
+		ArrayList<Terminal<RegularExpressionElement>>  metaTerminals = new ArrayList<Terminal<RegularExpressionElement>>();
+		for ( char c : Regex.getMetaChars()) {
+			metaTerminals.add(new Terminal<RegularExpressionElement>( new RegularExpressionElement( (char) c)));
 		}
-		// A..Z
-		for ( int c = 'A'; c <= 'Z'; c++) {
-			terminals.add(new Terminal<RegularExpressionElement>( new RegularExpressionElement( (char) c)));
-		}
-	  // 0..9
-		for ( int c = '0'; c <= '9'; c++) {
-			terminals.add(new Terminal<RegularExpressionElement>( new RegularExpressionElement( (char) c)));
-		}
-		// add further chars
-		char[] furtherChars = { '!', '"', '#', '$' , '%', '&', '\'', '`', '´', '-', '_', ',', ';', '.', ':', '/', '\\', '?', '=', ']', '[', '{', '}', '^', '°', '<', '>', '~', '+'};
-		for ( char c : furtherChars) {
-			terminals.add(new Terminal<RegularExpressionElement>( new RegularExpressionElement( c)));	
-		}	
 		
-
+		ArrayList<Terminal<RegularExpressionElement>>  terminals = new ArrayList<Terminal<RegularExpressionElement>>(); 
+		for ( int c = Regex.getFirstAsciiChar(); c <= Regex.getLastAsciiChar(); c++) {
+			Terminal<RegularExpressionElement> newTerminal =  new Terminal<RegularExpressionElement>( new RegularExpressionElement( (char) c));
+			if ( !metaTerminals.contains( newTerminal))
+			  terminals.add(newTerminal);
+		}
+	
 		
 		ProductionSet productions = new ProductionSet();
 		productions.add( PRODUCTION_REGEX_ALTERNATIVE);
@@ -186,9 +183,15 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 		productions.add( PRODUCTION_REGEX_BRACKET_BYPASS);
 		productions.add( PRODUCTION_REGEX_BRACKET_STEADY_BYPASS);
 	  productions.add( PRODUCTION_REGEX_EMPTY_STRING);
-		for ( Terminal<RegularExpressionElement> terminal : terminals) {
+		
+	  for ( Terminal<RegularExpressionElement> terminal : terminals) {
 			productions.add( new ProductionRule(NONTERMINAL_V, terminal));	
 		}
+		
+		for ( Terminal<RegularExpressionElement> metaTerminal : metaTerminals) {
+			productions.add( new ProductionRule(NONTERMINAL_V, TERMINAL_MASK, metaTerminal));	
+		}
+		
 		// TODO: Regex Grammatik noch unvollständig
 		
 		grammar.addAll( productions);
@@ -326,6 +329,13 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 		});
 		result.put( PRODUCTION_REGEX_EMPTY_STRING, semanticRules);
 
+		
+		char[] metaChars = Regex.getMetaChars();
+		ArrayList<Character>  metaCharacters = new ArrayList<Character>();
+		for ( char c : Regex.getMetaChars()) {
+			metaCharacters.add( c);
+		}
+		
 		// V -> a
 		semanticRules = new SemanticRules();
 		semanticRules.add( new SemanticRule() {	
@@ -335,8 +345,23 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 			}
 		});
 		for ( Terminal terminal : getRegexGrammar().getTerminals()) {
-			result.put( new ProductionRule(NONTERMINAL_V, terminal), semanticRules);
+			if ( !metaCharacters.contains( terminal.getSymbol().getValue())) 
+				result.put( new ProductionRule(NONTERMINAL_V, terminal), semanticRules);
 		}  
+
+		// V -> \ a
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) {
+				TreeNode<Symbol> nodeTerminal = new TerminalNode( (Symbol) attributesMaps[2].get( "value"));
+				attributesMaps[0].put( "node", nodeTerminal);
+			}
+		});
+		for ( Terminal terminal : getRegexGrammar().getTerminals()) {
+			if ( metaCharacters.contains( terminal.getSymbol().getValue())) 
+				result.put( new ProductionRule(NONTERMINAL_V, TERMINAL_MASK, terminal), semanticRules);
+		}  
+
 		return result;
 	}
 	
@@ -394,7 +419,6 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 				embracingNonterminalNode.setLeftChildNode( priorStartSymbolNode);
 				embracingNonterminalNode.setRightChildNode( terminatorNode);
 	      attributesMaps[0].put( "node", embracingNonterminalNode);
-				System.out.println( "Q " + ((InnerNode)embracingNonterminalNode).toFullString());
 			}
 		});
 		sdd.put( terminatorProductionRule, semanticRules);

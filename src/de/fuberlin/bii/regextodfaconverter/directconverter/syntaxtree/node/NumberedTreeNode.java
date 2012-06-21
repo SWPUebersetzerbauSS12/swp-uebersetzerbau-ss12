@@ -29,4 +29,9 @@ public class NumberedTreeNode<Value> {
 		return treeNode;
 	}
 	
+	
+	@Override
+	public String toString() {
+		return "[" + number + ": " + treeNode + "]";
+	}
 }

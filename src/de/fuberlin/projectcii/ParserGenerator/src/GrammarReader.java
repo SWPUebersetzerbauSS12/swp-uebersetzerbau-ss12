@@ -24,7 +24,6 @@ public class GrammarReader {
 	 * Getter for the Startsymbol
 	 * 
 	 * @return The start symbol for the read Grammar
-	 * @author Patrick Schlott
 	 */
 	public String getStartSymbol() {
 		return startSymbol;
@@ -37,17 +36,16 @@ public class GrammarReader {
 	 * performed. elimination of left-rekursions is fixed at 4 runs after which
 	 * the Grammar is deemed not LL(1)-parsable.
 	 * 
-	 * @author Patrick Schlott,Ying Wei
-	 * @param NItr (@author Ying Wei)
+	 * @param NItr
 	 *            defines the Max. no. of the iterations, if more than NItr,the
 	 *            whole grammar will be cleared
 	 * @return The grammar as HashMap where the keys are the heads of the
 	 *         production and the values are vectors containing the productions
 	 *         itself. Each production is represented as a vector of terminal
 	 *         and nonterminal symbols
-	 * @throws IOException (@author Ying Wei)
+	 * @throws IOException
 	 *            
-	 * @throws RuntimeException  (@author Ying Wei)
+	 * @throws RuntimeException
 	 * if the No. of iterations more than NItr, 
 	 * then there is too much iterations (endless iteration)
 	 * 
@@ -102,13 +100,12 @@ public class GrammarReader {
 	 * Reads a grammar from the given file in BNF and converts it to Vector of
 	 * Productions.
 	 * 
-	 * @author Ying Wei, Patrick Schlott
 	 * @param file
 	 *            The path to the file containing the grammar that shall be
 	 *            used.
 	 * @return The grammar as a Vector of Productions
-	 * @throws IOException (@author Ying Wei)
-	 * @throws RuntimeException check not correct format of grammar (@author Ying Wei)
+	 * @throws IOException
+	 * @throws RuntimeException check not correct format of grammar
 	 * if no "::=", or either the part of left side or right side is empty.(No BNF)
 	 * if the left side(it must be nonterminal symbol) of production is not in format <A>.(false Production/grammar),
 	 * and the invalid no. of the line will be given back.invalid
@@ -143,7 +140,6 @@ public class GrammarReader {
 				
 				/*using regular expression, check out the left side of the productions.
 				*they(all are non-terminal) must be <A>,e.g.<<A> or <> or <A>a or A>>. ect. are uncorrect format(Y.)
-				*@author Ying Wei
 				*if false format at the left side of the production, the line no. and the false nonterminal will be showed.
 				*
 				*/
@@ -160,7 +156,6 @@ public class GrammarReader {
 				
 				/*
 				 * Using regular expression is good to checking the right side formats of the production
-				 * @author Ying Wei
 				 * As nonterminal <A>, the whole block with "<" and "<" will be added into ProductionVector.
 				 * As terminal "string", the both "" will not be added into productionVector, 
 				 * therefore get substring from position 1 to position (size-1).
@@ -249,7 +244,6 @@ public class GrammarReader {
 	/**
 	 * Performs left-factorisation on a given grammar.
 	 * 
-	 * @author Patrick Schlott
 	 * @param grammar
 	 *            Grammar to be left-factorised
 	 * @return The Modified grammar as a Vector of Productions
@@ -375,7 +369,6 @@ public class GrammarReader {
 	/**
 	 * Calculates the longest Factor in the Production
 	 * 
-	 * @author Patrick Schlott
 	 * @param productions
 	 *            The Productions of the nonterminal
 	 * @return An array containing [0]: size of the longest factor [1]: first
@@ -418,7 +411,6 @@ public class GrammarReader {
 	/**
 	 * Eliminates indirect left-factorisation on a given grammar.
 	 * 
-	 * @author Patrick Schlott
 	 * @param grammar
 	 *            Grammar to be examined
 	 * @param rekursive
@@ -489,7 +481,6 @@ public class GrammarReader {
 	/**
 	 * Eliminates direct leftrekursions by introducing new Nonterminal <"N"$>
 	 * 
-	 * @author Patrick Schlott
 	 * @param grammar Grammar to be examined
 	 * @return The Modified grammar as a Vector of Productions
 	 */
@@ -530,13 +521,13 @@ public class GrammarReader {
 				// initialise new nonterminal <"N">
 				Productions nonTerminalMod = new Productions(head);
 				// initialise new nonterminal <"N"1>
-				String head1 = head.substring(0, head.length() - 1) + "_";
+				String head1 = head.substring(0, head.length() - 1) + "$";
 
 				// prevent duplicate Productions
 				boolean alreadyExists = true;
 				while (alreadyExists) {
 					if (heads.contains(head1 + ">")) {
-						head1 += "_";
+						head1 += "$";
 					} else {
 						alreadyExists = false;
 					}
@@ -595,7 +586,6 @@ public class GrammarReader {
 	 * the form: Map<String, Vector<Vector<String>>> with the head of the
 	 * productions as keys.
 	 * 
-	 * @author Ying Wei
 	 * @param grammar
 	 *            Grammar to be transformed
 	 * @return The transformed Grammar

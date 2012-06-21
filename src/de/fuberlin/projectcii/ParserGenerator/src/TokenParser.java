@@ -12,8 +12,6 @@ import de.fuberlin.commons.lexer.IToken;
  * A Table-navigated LL(1)-Parser. The Parser parses a TokenStream represented
  * by calls of the methode "getNextToken" based on a given grammar, Startsymbol
  * and Parsetable
- * 
- * @author Patrick Schlott
  *
  */
 public class TokenParser {
@@ -30,7 +28,6 @@ public class TokenParser {
 	/**
 	 * The Constructor initialising the Variables needed to parse a Tokenstream
 	 * 
-	 * @author Patrick Schlott
 	 * @param parserTable The parsertable that is used to parse the Tokenstream
 	 * @param grammar The LL(1) grammar that is used for this specific language
 	 * @param StartSymbol The Starting symbol of the grammar
@@ -84,8 +81,6 @@ public class TokenParser {
 	}
 
 	/**
-	 * 
-	 * @author Patrick Schlott, Ying Wei
 	 *
 	 * @return SyntaxTree The Parsetree created by parsing the Tokenstream
 	 * @throws RuntimeException No 'EOF' too much symbols
@@ -107,8 +102,6 @@ public class TokenParser {
 	/**
 	 * 
 	 * Parses the actual Tokenstream and creates a SyntaxTree from it
-	 * 
-	 * @author Patrick Schlott, Ying Wei
 	 *
 	 * @param symbol The terminal or nonterminal that is next on the imaginary stack
 	 * @param parent The Node that was reduced to the given symbol
@@ -161,7 +154,6 @@ public class TokenParser {
 	/**
 	 * Helping method while IToken has not the value of Symbols as they are defined in grammar
 	 * 
-	 * @author Christoph Schr�der
 	 */
 	private void getNextToken() {
 		Token = lexer.getNextToken();

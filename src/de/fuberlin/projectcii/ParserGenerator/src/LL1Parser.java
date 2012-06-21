@@ -9,8 +9,6 @@ import de.fuberlin.commons.parser.ISyntaxTree;
  * 
  * LL1 Parser for a given TokenStream. The Parser uses the Grammar defined in
  * the Settings.ini file
- * 
- * @author Patrick Schlott, Christoph Schröder
  *
  */
 public class LL1Parser implements IParser {
@@ -35,7 +33,6 @@ public class LL1Parser implements IParser {
 	 * This Methode creates a ParserTree from the parsergenerators data
 	 * and a given Lexer.
 	 * Decides whether parsing can be done based on the parsergenerators Parsertable
-	 * @author Ying Wei, Patrick Schlott, Christoph Schröder
 	 * @param lexer The Lexer used as input for the parser.
 	 * @return ISyntaxTree The ParseTree;
 	 * */

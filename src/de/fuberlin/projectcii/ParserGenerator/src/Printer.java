@@ -26,7 +26,6 @@ import de.fuberlin.commons.parser.ISyntaxTree;
 /**
  * Debugging Class to visualize the current status of the used Datastructures
  * 
- * @author Patrick Schlott
  */
 public class Printer {
 
@@ -34,7 +33,6 @@ public class Printer {
 	/**
 	 * Use this Function to view the global Grammar inside the grammarReader.
 	 * 
-	 * @author Patrick Schlott
 	 */
 	static public void printGrammar(Vector<Productions> grammar){	
 		
@@ -60,7 +58,6 @@ public class Printer {
 	/**
 	 * Use this Function to view the global Grammar inside the ParserGenerator.
 	 * 
-	 * @author Patrick Schlott
 	 */
 	
 	static public void printGrammar(Map<String, Vector<Vector<String>>> grammar){	
@@ -82,7 +79,6 @@ public class Printer {
 	/**
 	 * Use this Function to view the global Grammar inside the ParserGenerator.
 	 * 
-	 * @author Patrick Schlott
 	 */
 	
 	static public void printProduction(Map<String, Vector<Vector<String>>> grammar,String key, int productionNr){	
@@ -99,7 +95,6 @@ public class Printer {
 	/**
 	 * Use this Function to view the Parsetable inside the ParserGenerator.
 	 * 
-	 * @author Patrick Schlott
 	 */
 	
 	static public void printParserTable(Vector<String> Terminals,
@@ -145,7 +140,6 @@ public class Printer {
 	/**
 	 * Use this Function to view the Parsetable inside the ParserGenerator.
 	 * 
-	 * @author Patrick Schlott
 	 */
 	
 	static public void printParserTable(Vector<String> Terminals,
@@ -200,7 +194,6 @@ public class Printer {
 	/**
 	 * Use this Function to view the FirstSet inside the ParserGenerator.
 	 * 
-	 * @author Ying Wei, Patrick Schlott
 	 */
 	static public void printFirstSets(Map<String, Set<String>> firstSets) {
 		for (Entry<String, Set<String>> fs : firstSets.entrySet()) {
@@ -212,7 +205,6 @@ public class Printer {
 	/**
 	 * Use this Function to view the FirstSet inside the ParserGenerator.
 	 * 
-	 * @author Ying Wei, Patrick Schlott
 	 */
 	static public void printFollowSets(Map<String, Set<String>> followSets) {
 		for (Entry<String, Set<String>> fs : followSets.entrySet()) {
@@ -224,7 +216,6 @@ public class Printer {
 	/**
 	 * Use this Function to view the FirstSetProductions inside the ParserGenerator.
 	 * 
-	 * @author Christoph Schr�der, Patrick Schlott
 	 */
 	static public void printFirstSetsProductions(Map<String, HashMap<String,Integer>> firstSetsProductions) {
 		for (Entry<String, HashMap<String,Integer>> fs : firstSetsProductions.entrySet()) {
@@ -245,7 +236,10 @@ public class Printer {
 			if (tagName.startsWith("<")){
 				tagName = tagName.substring(1, tagName.length()-1);
 			}
-			Element root = doc.createElement(tagName);
+			Element root = doc.createElement("Root");
+			Attr typeAttr = doc.createAttribute("symbol");
+            typeAttr.setValue(tagName);
+            root.setAttributeNode(typeAttr);
 			doc.appendChild(root);
 			
 			doc = childrenToXML(node, root, doc);
@@ -308,7 +302,11 @@ public class Printer {
 				parentNode.appendChild(childNode);
 			}
 			else{
-				childNode = doc.createElement(tagName);
+	            
+				childNode = doc.createElement("Node");
+				Attr typeAttr = doc.createAttribute("symbol");
+                typeAttr.setValue(tagName);
+                childNode.setAttributeNode(typeAttr);
 				doc = childrenToXML(child, childNode, doc);
 				parentNode.appendChild(childNode);
 			}

@@ -253,12 +253,14 @@ class LLVM_Block implements ILLVM_Block {
 	 * werden zu Registerzuweisung.
 	 * Diese wird hier weiterpropagiert.
 	 * Koennen tote Stores entstehen.
+	 * TODO: weiterpropagieren
 	 */
 	public void foldStoreLoad() {
 		
 		HashMap<String,LinkedList<ILLVM_Command>> reaching = 
 				new HashMap<String,LinkedList<ILLVM_Command>>();
 		//LinkedList<ILLVM_Command> reaching = (LinkedList<ILLVM_Command>) this.inReaching.clone();
+		LinkedList<ILLVM_Command> changed = new LinkedList<ILLVM_Command>();
 		
 		for(ILLVM_Command c : this.inReaching) {
 			
@@ -279,7 +281,7 @@ class LLVM_Block implements ILLVM_Block {
 		
 		// Gehe Befehle von vorne durch
 		ILLVM_Command c = this.firstCommand;
-		for(;c!=null; c = c.getPredecessor()) {
+		for(;c!=null; c = c.getSuccessor()) {
 			
 			// falls store, fuege zu liste hinzu
 			if(c.getOperation()==LLVM_Operation.STORE) {
@@ -327,10 +329,14 @@ class LLVM_Block implements ILLVM_Block {
 						
 						this.function.getRegisterMap().addCommand(newCommand);
 						
+						changed.add(newCommand);
+						
 					}
 				}
 			}
 		}
+		
+		this.function.constantPropagation(changed);
 	}
 	
 	/**

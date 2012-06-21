@@ -21,6 +21,10 @@ public class LLVM_ArithmeticCommand extends LLVM_GenericCommand{
 	private boolean has_nuw = false;
 	private boolean has_nsw = false;
 	
+	public LLVM_ArithmeticCommand(){
+		super();
+	}
+	
 	public LLVM_ArithmeticCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
 		super(operation, predecessor, block, comment);
 		

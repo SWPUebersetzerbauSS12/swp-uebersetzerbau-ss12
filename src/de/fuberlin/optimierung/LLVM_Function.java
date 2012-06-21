@@ -273,9 +273,9 @@ public class LLVM_Function {
 			b.createGenKillSets();
 		}
 		this.createInOutReaching();
-		/*for(ILLVM_Block b : this.blocks) {
-			b.deleteDeadStores();
-		}*/
+		for(ILLVM_Block b : this.blocks) {
+			b.foldStoreLoad();
+		}
 	}
 	
 	/*
@@ -486,8 +486,10 @@ public class LLVM_Function {
 							if(!changed_cmds.contains(_cmds.get(j)))
 								changed_cmds.add(_cmds.get(j));
 							LLVM_Parameter op = cmd.getOperands().get(0);
-							registerMap.deleteCommand(_cmds.get(j), cmd.getTarget());
+							registerMap.deleteCommand(_cmds.get(j));
+							//registerMap.deleteCommand(_cmds.get(j), cmd.getTarget());
 							operands.set(k, new LLVM_Parameter(op.getName(), op.getType(), op.getTypeString()));
+							registerMap.addCommand(_cmds.get(j));
 						}
 					}
 					

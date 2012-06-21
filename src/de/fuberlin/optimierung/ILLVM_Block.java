@@ -15,6 +15,7 @@ public interface ILLVM_Block {
 	
 	public void createGenKillSets();
 	public boolean updateInOutReaching();
+	public void foldStoreLoad();
 
 	public void setFirstCommand(ILLVM_Command first);
 	public void setLastCommand(ILLVM_Command last);

@@ -77,6 +77,7 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 			this.predecessor.setSuccessor(c);
 			this.successor.setPredecessor(c);
 		}
+	}
 	
 	public String getComment(){
 		if (comment == ""){

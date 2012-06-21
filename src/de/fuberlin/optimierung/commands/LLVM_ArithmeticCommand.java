@@ -66,10 +66,6 @@ public class LLVM_ArithmeticCommand extends LLVM_GenericCommand{
 		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());
 	}
 	
-	public LLVM_ArithmeticCommand(){
-		super();
-	}
-	
 	public String toString() {
 		String cmd_output = target.getName()+" = ";
 		

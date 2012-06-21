@@ -370,9 +370,11 @@ class LLVM_Block implements ILLVM_Block {
 					// Befehle der kill-Menge hinzu
 					LinkedList<ILLVM_Command> uses = this.function.getRegisterMap().
 							getUses(registerName);
-					for(ILLVM_Command u : uses) {
-						if(LLVM_Operation.STORE==u.getOperation() && u!=c) {
-							this.kill.add(u);
+					if(uses != null){
+						for(ILLVM_Command u : uses) {
+							if(LLVM_Operation.STORE==u.getOperation() && u!=c) {
+								this.kill.add(u);
+							}
 						}
 					}
 				}

@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import de.fuberlin.commons.util.LogFactory;
 import de.fuberlin.projectci.extern.IAttribute;
+import de.fuberlin.commons.parser.ISymbol;
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.commons.lexer.IToken;
 import de.fuberlin.projectci.grammar.Grammar;
@@ -228,6 +229,10 @@ public class SyntaxTreeNode implements ISyntaxTree{
 	@Override
 	public void printTree() {
 		System.out.println(toString());
-		
+	}
+
+	@Override
+	public ISymbol getSymbol() {
+		return this.symbol;
 	}
 }

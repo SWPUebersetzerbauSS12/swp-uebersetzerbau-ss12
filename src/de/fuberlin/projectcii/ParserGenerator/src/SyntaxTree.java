@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Vector;
 
 import de.fuberlin.commons.lexer.IToken;
+import de.fuberlin.commons.parser.ISymbol;
 import de.fuberlin.commons.parser.ISyntaxTree;
 
 
@@ -24,7 +25,7 @@ public class SyntaxTree implements ISyntaxTree {
 	//Token for the current Node
 	private IToken token;
 	//Symbol of the current Node
-	private String symbol;
+	private ISymbol symbol;
 	
 	/**
 	 * Default Constructor
@@ -38,7 +39,7 @@ public class SyntaxTree implements ISyntaxTree {
 	 * @param token
 	 * @param symbol
 	 */
-	public SyntaxTree(IToken token,String symbol) {
+	public SyntaxTree(IToken token, ISymbol symbol) {
 		this.symbol = symbol;
 		this.token = token;
 	}
@@ -154,12 +155,12 @@ public class SyntaxTree implements ISyntaxTree {
 	//---------------------
 	// End of Interface Methodes
 	
-	public String getSymbol() {
+	public ISymbol getSymbol() {
 		return this.symbol;
 	}
 	
-	public void setSymbol(String symbol) {
-		this.symbol=symbol;
+	public void setSymbol(ISymbol symbol) {
+		this.symbol = symbol;
 	}
 	
 	private void printChild(ISyntaxTree node,int level,boolean first){

@@ -3,6 +3,7 @@ package de.fuberlin.projectci.test.driver;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.fuberlin.bii.lexergen.LexergeneratorException;
 import de.fuberlin.commons.lexer.ILexer;
 import de.fuberlin.commons.lexer.IToken;
 import de.fuberlin.commons.lexer.TokenType;
@@ -64,6 +65,11 @@ public class DummyLexer implements ILexer{
 			return null;
 		}
 		
+	}
+
+	@Override
+	public void reset() throws LexergeneratorException {
+		// TODO Auto-generated method stub
 	}
 	
 	

@@ -5,8 +5,9 @@ import java.io.File;
 import org.junit.Assert;
 import org.junit.Test;
 
-import de.fuberlin.bii.parser.IToken;
+import de.fuberlin.commons.lexer.IToken;
 import de.fuberlin.bii.tokenmatcher.errorhandler.ErrorCorrector.CorrectionMode;
+import de.fuberlin.commons.lexer.ILexer;
 
 public class LexergenTest {
 	
@@ -19,7 +20,7 @@ public class LexergenTest {
 		File sourceFile = new File("src/test/resources/source/lexergen/test.fun");
 		
 	  //Lexergenerator lexergen = new Lexergen(rdFile, sourceFile, BuilderType.indirectBuilder, CorrectionMode.PANIC_MODE, true);		
-		Lexergenerator lexergen = new Lexergen(rdFile, sourceFile, BuilderType.directBuilder, CorrectionMode.PANIC_MODE, true);		
+		ILexer lexergen = new Lexergen(rdFile, sourceFile, BuilderType.directBuilder, CorrectionMode.PANIC_MODE, true);		
 		IToken currentToken = null;
 		
 		currentToken = lexergen.getNextToken();

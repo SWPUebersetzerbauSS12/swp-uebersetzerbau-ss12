@@ -1,14 +1,17 @@
 package de.fuberlin;
 
+import java.io.File;
 import java.util.HashMap;
 
+import de.fuberlin.bii.lexergen.BuilderType;
+import de.fuberlin.bii.lexergen.Lexergen;
+import de.fuberlin.bii.lexergen.LexergeneratorException;
+import de.fuberlin.bii.tokenmatcher.errorhandler.ErrorCorrector.CorrectionMode;
 import de.fuberlin.commons.lexer.ILexer;
-
 import de.fuberlin.commons.parser.IParser;
 import de.fuberlin.commons.parser.ISyntaxTree;
-import de.fuberlin.projectci.lrparser.LRParser;
-
 import de.fuberlin.optimierung.LLVM_Optimization;
+import de.fuberlin.projectci.lrparser.LRParser;
 
 
 
@@ -22,8 +25,10 @@ class Main {
 	static final String PARAM_LR_PARSER = "-lr"; // benutzt den LR Parser
 	static final String PARAM_LL_PARSER = "-ll"; // benutzt den LL Parser
 	// Lexer
-	static final String PARAM_BI_LEXER  = "-bi"; // TODO aussagekräftiger gestalten
-	static final String PARAM_BII_LEXER = "-bii"; // TODO aussagekräftiger gestalten
+	static final String PARAM_DEF_FILE = "-d"; // Gibt den Pfad zur Datei mit den regulären Definitionen an
+	static final String PARAM_BI_LEXER  = "-bi"; // benutzt die indirekte Umwandlung
+	static final String PARAM_BII_LEXER = "-bii"; // benutzt die direkte Umwandlung
+	static final String PARAM_REBUILD_DFA = "-rb"; //Gibt an, dass der DFA neu erstellt werden soll
 	// Allgemein
 	static final String PARAM_SOURCE_FILE = "-f"; // Gibt den Pfad zum Quellprogramm an
 	
@@ -47,8 +52,12 @@ class Main {
 		System.out.println("Hier die Code-Schnipsel einfuegen!");
 		
 		HashMap<String,String> arguments = readParams(args);
+		boolean rebuildDFA = arguments.containsKey(PARAM_REBUILD_DFA);
 		
 		// path of input-program
+		String defFile = arguments.get(PARAM_DEF_FILE); 			// -d "/path/to/definitionFile"
+		if( defFile == null )						// no -d or -d without path
+			defFile = "input/de/fuberlin/bii/de/tokendefinition.rd";
 		String inputFile = arguments.get(PARAM_SOURCE_FILE);		// -f "/path/to/inputProgram"
 		if( inputFile == null )						// no -f or -f without path
 			inputFile = "/path/to/exampleInputProgram";
@@ -57,23 +66,26 @@ class Main {
 		//--------------------------
 		/*
 		 *	Lexer
-		 *	input:
-		 *	output:
+		 *	input: Pfad zu der Datei mit den regulären Definitionen und Pfad zu der Programmdatei
+		 *	output: IToken-Objekt beim aufruf von getNextToken
 		 */
 		ILexer lexer = null;
 		
-		if( arguments.containsKey(PARAM_BII_LEXER) ){		// -bii
-			
-			// Codeschnipsel von bii
-			
-		} else {									// [-bi]
-			
-			// Codeschnipsel von bi
-			
+		if( arguments.containsKey(PARAM_BII_LEXER) ){		// -bii			
+			try {
+				lexer = new Lexergen(new File(defFile), new File(inputFile), BuilderType.directBuilder, CorrectionMode.PANIC_MODE, rebuildDFA);
+			} catch (LexergeneratorException e) {
+				e.printStackTrace();
+			}			
+		} else {									// [-bi]			
+			try {
+				lexer = new Lexergen(new File(defFile), new File(inputFile), BuilderType.indirectBuilder, CorrectionMode.PANIC_MODE, rebuildDFA);
+			} catch (LexergeneratorException e) {
+				e.printStackTrace();
+			}			
 		}
 		//--------------------------
-		
-		
+
 		//--------------------------
 		/*
 		 *	Parser

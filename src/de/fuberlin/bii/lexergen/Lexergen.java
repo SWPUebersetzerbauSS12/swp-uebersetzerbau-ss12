@@ -36,17 +36,16 @@ import java.io.File;
 
 import de.fuberlin.bii.bufferedreader.BufferedLexemeReader;
 import de.fuberlin.bii.bufferedreader.LexemeReaderException;
-
 import de.fuberlin.bii.dfaprovider.DirectMinimalDfaBuilder;
 import de.fuberlin.bii.dfaprovider.IndirectMinimalDfaBuilder;
 import de.fuberlin.bii.dfaprovider.MinimalDfaBuilder;
 import de.fuberlin.bii.dfaprovider.MinimalDfaProvider;
-
-import de.fuberlin.bii.parser.IToken;
 import de.fuberlin.bii.regextodfaconverter.MinimalDfa;
 import de.fuberlin.bii.tokenmatcher.StatePayload;
 import de.fuberlin.bii.tokenmatcher.Tokenizer;
 import de.fuberlin.bii.tokenmatcher.errorhandler.ErrorCorrector.CorrectionMode;
+import de.fuberlin.commons.lexer.ILexer;
+import de.fuberlin.commons.lexer.IToken;
 
 /**
  * Stellt einen Lexergenerator (mit Namen "Lexergen") dar.
@@ -54,7 +53,7 @@ import de.fuberlin.bii.tokenmatcher.errorhandler.ErrorCorrector.CorrectionMode;
  * @author Daniel Rotar
  * 
  */
-public class Lexergen implements Lexergenerator {
+public class Lexergen implements ILexer {
 	/**
 	 * Die Datei, die die regulären Definitionen enthält.
 	 */
@@ -221,6 +220,7 @@ public class Lexergen implements Lexergenerator {
 	 * Gibt das nächste Token zurück.
 	 * 
 	 * @return Das nächste Token.
+	 * @throws LexergeneratorException
 	 */
 	public IToken getNextToken() throws LexergeneratorException {
 		try {

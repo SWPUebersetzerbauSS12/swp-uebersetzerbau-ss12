@@ -10,4 +10,10 @@ public interface ILexer {
 	 */
 	IToken getNextToken();
 
+	/**
+	 * Setzt die Position im Quellprogramm auf die Startposition zurück.
+	 * @throws RuntimeException
+	 */
+	void reset();
+
 }

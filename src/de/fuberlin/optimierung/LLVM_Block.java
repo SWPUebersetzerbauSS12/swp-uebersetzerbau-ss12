@@ -480,12 +480,50 @@ class LLVM_Block implements ILLVM_Block {
 	//TODO elegante Methode finden, switch funktioniert auf Strings nicht!
 	private LLVM_GenericCommand mapCommands(String cmdLine, ILLVM_Command predecessor){
 		
-		// Kommentar Handling
+		// comment handling
 		if (cmdLine.trim().startsWith(";")){
 			return new LLVM_Comment(null, LLVM_Operation.COMMENT, predecessor, this, cmdLine.replaceFirst(";", "").trim());
 		}
 		
-		String[] com = cmdLine.trim().split(";");
+		// command handling
+		if(cmdLine.contains("br")){
+			return new LLVM_BranchCommand(cmdLine, predecessor, this);
+		}else if(cmdLine.contains("ret")){
+			return new LLVM_ReturnCommand(cmdLine, predecessor, this);
+		}else if(cmdLine.contains("store")){
+			return new LLVM_StoreCommand(cmdLine, predecessor, this);
+		}else if(cmdLine.contains("add")){
+			return new LLVM_ArithmeticCommand(cmdLine, LLVM_Operation.ADD, predecessor, this);
+		}else if(cmdLine.contains("sub")){
+			return new LLVM_ArithmeticCommand(cmdLine, LLVM_Operation.SUB, predecessor, this);
+		}else if(cmdLine.contains("mul")){
+			return new LLVM_ArithmeticCommand(cmdLine, LLVM_Operation.MUL, predecessor, this);
+		}else if(cmdLine.contains("div")){
+			return new LLVM_ArithmeticCommand(cmdLine, LLVM_Operation.DIV, predecessor, this);
+		}else if(cmdLine.contains("urem")){
+			return new LLVM_ArithmeticCommand(cmdLine, LLVM_Operation.UREM, predecessor, this);
+		}else if(cmdLine.contains("srem")){
+			return new LLVM_ArithmeticCommand(cmdLine, LLVM_Operation.SREM, predecessor, this);
+		}else if(cmdLine.contains("alloca")){
+			return new LLVM_AllocaCommand(cmdLine, predecessor, this);
+		}else if(cmdLine.contains("and")){
+			return new LLVM_LogicCommand(cmdLine, LLVM_Operation.AND, predecessor, this);
+		}else if(cmdLine.contains("or")){
+			return new LLVM_LogicCommand(cmdLine, LLVM_Operation.OR, predecessor, this);
+		}else if(cmdLine.contains("xor")){
+			return new LLVM_LogicCommand(cmdLine, LLVM_Operation.XOR, predecessor, this);
+		}else if(cmdLine.contains("load")){
+			return new LLVM_LoadCommand(cmdLine, predecessor, this);
+		}else if(cmdLine.contains("getelementptr")){
+			return new LLVM_GetElementPtrCommand(cmdLine, predecessor, this);
+		}else if(cmdLine.contains("call")){
+			return new LLVM_CallCommand(cmdLine, predecessor, this);
+		}else if(cmdLine.contains("icmp")){
+			return new LLVM_IcmpCommand(cmdLine, predecessor, this);
+		}
+		
+		
+		/*String[] com = cmdLine.trim().split(";");
 		String comment = "";
 		
 		if (com.length > 1){
@@ -545,7 +583,7 @@ class LLVM_Block implements ILLVM_Block {
 					return new LLVM_CallCommand(cmd, LLVM_Operation.CALL, predecessor, this, comment);
 				}else if (cmd[2].compareTo("icmp") == 0){
 					if (cmd[3].compareTo("eq") == 0){
-						return new LLVM_IcmpCommand(cmd, LLVM_Operation.ICMP_EQ, predecessor, this, comment);
+						
 					}else if (cmd[3].compareTo("ne") == 0){
 						return new LLVM_IcmpCommand(cmd, LLVM_Operation.ICMP_NE, predecessor, this, comment);
 					}else if (cmd[3].compareTo("ugt") == 0){
@@ -567,7 +605,7 @@ class LLVM_Block implements ILLVM_Block {
 					}
 				}
 			}
-		}
+		}*/
 		return null;
 	}
 	

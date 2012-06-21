@@ -1,7 +1,6 @@
 package de.fuberlin.optimierung.commands;
 
 import java.util.ArrayList;
-
 import de.fuberlin.optimierung.ILLVM_Block;
 import de.fuberlin.optimierung.ILLVM_Command;
 import de.fuberlin.optimierung.LLVM_Operation;
@@ -22,15 +21,15 @@ public class LLVM_GetElementPtrCommand extends LLVM_GenericCommand {
 	public LLVM_GetElementPtrCommand(String[] cmd,LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
 		super(operation, predecessor, block, comment);
 		
-		// <result> <ty>
-		target = new LLVM_Parameter(cmd[0], cmd[3]);
-		
 		int i = 3;
 		
 		if(cmd[3].compareTo("inbounds") == 0){
 			hasInbounds = true;
 			i++;
 		}
+		
+		// <result> <ty>
+		target = new LLVM_Parameter(cmd[0], cmd[4]);
 		
 		ArrayList<String> rest_cmd = new ArrayList<String>();
 		
@@ -40,19 +39,36 @@ public class LLVM_GetElementPtrCommand extends LLVM_GenericCommand {
 		
 		if(cmd[i].contains("[")){
 			operands.add(readArrayListToLLVM_Parameter(rest_cmd, parseTypes.array, false));
-		}else{
-			operands.add(new LLVM_Parameter(cmd[i+1], cmd[i]));
+			if (operands.get(0) == null){
+				operands.remove(0);
+			}
+			rest_cmd.remove(0);
 		}
 
-		//TODO Hier weitere Parameter erkennen {, <ty> <idx>}* beliebig viele
+		while (rest_cmd.size() % 2 == 0 && rest_cmd.size() >= 2){
+			operands.add(new LLVM_Parameter(rest_cmd.get(1), rest_cmd.get(0)));
+			rest_cmd.remove(0);
+			rest_cmd.remove(0);
+		}
 		
 		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());
 	}
 	
 	public String toString(){
+		String cmd_out = target.getName() + " = ";
+		cmd_out += "getelementptr ";
 		
-		String res = "";
+		if (hasInbounds) cmd_out += "inbounds ";
 		
-		return res;
+		cmd_out += operands.get(0).getTypeString() + " ";
+		cmd_out += operands.get(0).getName();
+		
+		for (int i = 1; i < operands.size(); i++){
+			cmd_out += ", " + operands.get(i).getTypeString() + " ";
+			cmd_out += operands.get(i).getName();
+		}
+		
+		cmd_out += " " + getComment();
+		return cmd_out;
 	}
 }

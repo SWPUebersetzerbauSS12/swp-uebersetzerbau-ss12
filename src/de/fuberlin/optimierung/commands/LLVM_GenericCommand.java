@@ -96,11 +96,14 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 				// Arraylist zu String
 				String str = "";
 				for (int i = 0; i <= count; i++){
-					str += input.get(i);
+					str += input.get(i) + " ";
+				}
+				for (int i = 0; i <= count; i++){
+					input.remove(0);
 				}
 				//TODO: Anpassung LLVM_Parameter
 				// name, array
-				return new LLVM_Parameter(input.get(count+1), str);
+				return new LLVM_Parameter(input.get(0), str);
 			}
 		}
 		return null;		

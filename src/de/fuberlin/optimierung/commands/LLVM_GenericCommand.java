@@ -63,6 +63,8 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 	}
 	
 	public void replaceCommand(ILLVM_Command c) {
+		c.setPredecessor(this.predecessor);
+		c.setSuccessor(this.successor);
 		if (this.isSingleCommand()){
 			
 		} else if(this.isFirstCommand()) {	// Loesche erstes Element
@@ -75,7 +77,6 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 			this.predecessor.setSuccessor(c);
 			this.successor.setPredecessor(c);
 		}
-	}
 	
 	public String getComment(){
 		if (comment == ""){
@@ -85,7 +86,7 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 		}
 	}
 	
-	public static LLVM_Parameter readArrayListToLLVM_Parameter(ArrayList<String> input, LinkedList<LLVM_Parameter> output, parseTypes type, boolean opt){
+	public static LLVM_Parameter readArrayListToLLVM_Parameter(ArrayList<String> input, parseTypes type, boolean opt){
 		if (type == parseTypes.array){
 			if (!input.get(0).contains("[")) return null;
 			else{
@@ -104,11 +105,14 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 				// Arraylist zu String
 				String str = "";
 				for (int i = 0; i <= count; i++){
-					str += input.get(i);
+					str += input.get(i) + " ";
+				}
+				for (int i = 0; i <= count; i++){
+					input.remove(0);
 				}
 				//TODO: Anpassung LLVM_Parameter
 				// name, array
-				return new LLVM_Parameter(input.get(count+1), str);
+				return new LLVM_Parameter(input.get(0), str);
 			}
 		}
 		return null;		

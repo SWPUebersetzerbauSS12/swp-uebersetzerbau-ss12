@@ -482,7 +482,7 @@ class LLVM_Block implements ILLVM_Block {
 		
 		// comment handling
 		if (cmdLine.trim().startsWith(";")){
-			return new LLVM_Comment(null, LLVM_Operation.COMMENT, predecessor, this, cmdLine.replaceFirst(";", "").trim());
+			return new LLVM_Comment(cmdLine, predecessor, this);
 		}
 		
 		// command handling
@@ -504,6 +504,16 @@ class LLVM_Block implements ILLVM_Block {
 			return new LLVM_ArithmeticCommand(cmdLine, LLVM_Operation.UREM, predecessor, this);
 		}else if(cmdLine.contains("srem")){
 			return new LLVM_ArithmeticCommand(cmdLine, LLVM_Operation.SREM, predecessor, this);
+		}else if(cmdLine.contains("fadd")){
+			return new LLVM_FloatArithmeticCommand(cmdLine, LLVM_Operation.FADD, predecessor, this);
+		}else if(cmdLine.contains("fsub")){
+			return new LLVM_FloatArithmeticCommand(cmdLine, LLVM_Operation.FSUB, predecessor, this);
+		}else if(cmdLine.contains("fmul")){
+			return new LLVM_FloatArithmeticCommand(cmdLine, LLVM_Operation.FMUL, predecessor, this);
+		}else if(cmdLine.contains("fdiv")){
+			return new LLVM_FloatArithmeticCommand(cmdLine, LLVM_Operation.FDIV, predecessor, this);
+		}else if(cmdLine.contains("frem")){
+			return new LLVM_FloatArithmeticCommand(cmdLine, LLVM_Operation.FREM, predecessor, this);
 		}else if(cmdLine.contains("alloca")){
 			return new LLVM_AllocaCommand(cmdLine, predecessor, this);
 		}else if(cmdLine.contains("and")){

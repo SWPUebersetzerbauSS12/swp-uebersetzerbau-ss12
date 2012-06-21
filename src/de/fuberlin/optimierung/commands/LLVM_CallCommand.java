@@ -24,7 +24,7 @@ public class LLVM_CallCommand extends LLVM_GenericCommand{
 		super(predecessor, block, cmdLine);
 		setOperation(LLVM_Operation.CALL);
 		
-		String[] cmd = cmdLine.split(" ");
+		String[] cmd = command.split("[ \t]");
 		// tail?
 		if (cmd[2].trim().equals("tail")){
 			tail = true;

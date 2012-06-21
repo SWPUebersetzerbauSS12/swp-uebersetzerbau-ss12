@@ -25,11 +25,11 @@ public class LLVM_ReturnCommand extends LLVM_GenericCommand{
 			setOperation(LLVM_Operation.RET_CODE);
 		}
 		
-		String[] cmd = cmdLine.split(" ");
-		if (cmd.length == 2){
+		String[] cmd = command.split("[ \t]");
+		if (operation == LLVM_Operation.RET){
 			// ohne Return-Code 
 			operands.add(new LLVM_Parameter(cmd[1], cmd[1]));
-		}else if (cmd.length == 3){
+		}else{
 			// mit Return-Code
 			operands.add(new LLVM_Parameter(cmd[2], cmd[1]));
 		}

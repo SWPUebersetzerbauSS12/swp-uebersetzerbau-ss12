@@ -21,7 +21,7 @@ public class LLVM_StoreCommand extends LLVM_GenericCommand{
 		super(predecessor, block, cmdLine);
 		setOperation(LLVM_Operation.STORE);
 		
-		String[] cmd = cmdLine.split(" ");
+		String[] cmd = command.split("[ \t]");
 		if (cmd[1].trim().equals("atomic")){
 			atom = true;
 			if (cmd[2].trim().equals("volatile")) vol = true;

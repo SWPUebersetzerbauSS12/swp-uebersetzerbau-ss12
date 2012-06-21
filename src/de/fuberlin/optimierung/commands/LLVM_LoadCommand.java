@@ -23,7 +23,7 @@ public class LLVM_LoadCommand extends LLVM_GenericCommand{
 		
 		setOperation(LLVM_Operation.LOAD);
 		
-		String[] cmd = cmdLine.split(" ");
+		String[] cmd = command.split("[ \t]");
 		if (cmd[3].trim().equals("atomic")){
 			atom = true;
 			if (cmd[4].trim().equals("volatile")) vol = true;

@@ -18,7 +18,7 @@ public class LLVM_AllocaCommand extends LLVM_GenericCommand{
 		super(predecessor, block, cmdLine);
 		setOperation(LLVM_Operation.ALLOCA);
 		
-		String[] cmd = cmdLine.split(" ");
+		String[] cmd = command.split("[ \t]");
 		// <result> <type>
 		target = new LLVM_Parameter(cmd[0], cmd[3]);
 		

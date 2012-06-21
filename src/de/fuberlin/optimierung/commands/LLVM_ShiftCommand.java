@@ -28,7 +28,7 @@ public class LLVM_ShiftCommand extends LLVM_GenericCommand{
 		super(predecessor, block, cmdLine);
 		setOperation(LLVM_Operation.SHL);
 		
-		String[] cmd = cmdLine.split(" ");
+		String[] cmd = command.split("[ \t]");
 		// Kommaposition ermitteln
 		int i = -1;
 		for (int j = 0; j < cmd.length; j++){

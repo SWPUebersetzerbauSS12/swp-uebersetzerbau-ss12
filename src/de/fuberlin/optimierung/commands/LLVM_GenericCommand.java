@@ -24,6 +24,7 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 	protected LinkedList<LLVM_Parameter> operands = new LinkedList<LLVM_Parameter>();;
 	
 	protected String comment = "";
+	protected String command = "";
 	
 	public LLVM_GenericCommand(ILLVM_Command predecessor, ILLVM_Block block, String cmdLine){
 		// Setze die Zeiger
@@ -36,6 +37,8 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 				this.comment += com[i]; 
 			}
 		}
+		
+		this.command = com[0];
 		
 		// Setze den zugehoerigen Basisblock
 		this.setBlock(block);

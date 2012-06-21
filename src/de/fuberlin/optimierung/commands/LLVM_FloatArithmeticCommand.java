@@ -19,7 +19,7 @@ public class LLVM_FloatArithmeticCommand extends LLVM_GenericCommand{
 		super(predecessor, block, cmdLine);
 		setOperation(operation);
 		
-		String[] cmd = cmdLine.split(" ");
+		String[] cmd = command.split("[ \t]");
 		// <result> <ty>
 		target = new LLVM_Parameter(cmd[0], cmd[3]);
 		// <op1> <ty>

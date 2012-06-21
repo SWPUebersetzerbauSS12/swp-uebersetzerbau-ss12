@@ -21,7 +21,7 @@ public class LLVM_GetElementPtrCommand extends LLVM_GenericCommand {
 		super(predecessor, block, cmdLine);
 		setOperation(LLVM_Operation.GETELEMENTPTR);
 		
-		String[] cmd = cmdLine.split(" ");
+		String[] cmd = command.split("[ \t]");
 		int i = 3;
 		
 		if(cmd[3].compareTo("inbounds") == 0){

@@ -28,7 +28,7 @@ public class LLVM_ArithmeticCommand extends LLVM_GenericCommand{
 		super(predecessor, block, cmdLine);
 		setOperation(operation);
 		
-		String[] cmd = cmdLine.split(" ");
+		String[] cmd = command.split("[ \t]");
 		// Kommaposition ermitteln
 		int i = -1;
 		for (int j = 0; j < cmd.length; j++){

@@ -25,7 +25,7 @@ public class LLVM_BranchCommand extends LLVM_GenericCommand{
 			setOperation(LLVM_Operation.BR);
 		}
 		
-		String[] cmd = cmdLine.split(" ");
+		String[] cmd = command.split("[ \t]");
 		if (this.operation == LLVM_Operation.BR){
 			// unconditional Branch
 			// <dest> label

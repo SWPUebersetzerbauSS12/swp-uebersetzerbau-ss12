@@ -17,7 +17,7 @@ public class LLVM_IcmpCommand extends LLVM_GenericCommand{
 	
 	public LLVM_IcmpCommand(String cmdLine, ILLVM_Command predecessor, ILLVM_Block block){
 		super(predecessor, block, cmdLine);
-		String[] cmd = cmdLine.split(" ");
+		String[] cmd = command.split("[ \t]");
 		
 		if (cmd[3].compareTo("eq") == 0){
 			setOperation(LLVM_Operation.ICMP_EQ);

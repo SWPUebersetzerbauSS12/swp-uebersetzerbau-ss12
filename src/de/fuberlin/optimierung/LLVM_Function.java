@@ -331,7 +331,32 @@ public class LLVM_Function {
 					op2.setName("0");
 						
 					return true;
+				}else if(op1.getType() == LLVM_ParameterType.DOUBLE && op2.getType() == LLVM_ParameterType.DOUBLE){
+					double iOP1 = Double.parseDouble(op1.getName());
+					double iOP2 = Double.parseDouble(op2.getName());
+					double result = 0;
+					
+					switch(cmd.getOperation()){
+					case ADD :
+						result = iOP1 + iOP2;
+						break;
+					case SUB :
+						result = iOP1 - iOP2;
+						break;
+					case MUL :
+						result = iOP1 * iOP2;
+						break;
+					case DIV :
+						result = iOP1 / iOP2;
+						break;
+					}
+					
+					op1.setName(""+result);
+					op2.setName("0");
+						
+					return true;
 				}else if(op1.getType() == LLVM_ParameterType.REGISTER && op2.getType() == LLVM_ParameterType.INTEGER){
+				
 					int iOP2 = Integer.parseInt(op2.getName());
 					if(iOP2 == 0){
 						return true;
@@ -388,6 +413,48 @@ public class LLVM_Function {
 					op2.setName("0");
 					
 					return true;
+				}else if(op1.getType() == LLVM_ParameterType.DOUBLE && op2.getType() == LLVM_ParameterType.DOUBLE){
+					double iOP1 = Double.parseDouble(op1.getName());
+					double iOP2 = Double.parseDouble(op2.getName());
+					boolean result = false;
+					
+					switch(cmd.getOperation()){
+					case ICMP_EQ :
+						result = iOP1 == iOP2;
+						break;
+					case ICMP_NE :
+						result = iOP1 != iOP2;
+						break;
+					case ICMP_UGT :
+						result = iOP1 > iOP2;
+						break;
+					case ICMP_UGE :
+						result = iOP1 >= iOP2;
+						break;
+					case ICMP_ULT :
+						result = iOP1 < iOP2;
+						break;
+					case ICMP_ULE :
+						result = iOP1 <= iOP2;
+						break;
+					case ICMP_SGT :
+						result = iOP1 > iOP2;
+						break;
+					case ICMP_SGE :
+						result = iOP1 >= iOP2;
+						break;
+					case ICMP_SLT :
+						result = iOP1 < iOP2;
+						break;
+					case ICMP_SLE :
+						result = iOP1 <= iOP2;
+						break;	
+					}
+					
+					op1.setName(""+result);
+					op2.setName("0");
+					
+					return true;
 				}
 			}catch(NumberFormatException e){
 				// no numbers
@@ -399,6 +466,27 @@ public class LLVM_Function {
 			
 			try{
 				if(op1.getType() == LLVM_ParameterType.INTEGER && op2.getType() == LLVM_ParameterType.INTEGER){
+					int iOP1 = Integer.parseInt(op1.getName());
+					int iOP2 = Integer.parseInt(op2.getName());
+					boolean result = false;
+					
+					switch(cmd.getOperation()){
+					case AND :
+						result = iOP1 == iOP2;
+						break;
+					case OR :
+						result = ((iOP1 != iOP2) || (iOP1 == iOP2));
+						break;
+					case XOR :
+						result = iOP1 != iOP2;
+						break;
+					}
+					
+					op1.setName(result?"1":"0");
+					op2.setName("0");
+					
+					return true;
+				}else if(op1.getType() == LLVM_ParameterType.DOUBLE && op2.getType() == LLVM_ParameterType.DOUBLE){
 					int iOP1 = Integer.parseInt(op1.getName());
 					int iOP2 = Integer.parseInt(op2.getName());
 					boolean result = false;

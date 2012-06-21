@@ -6,7 +6,6 @@ import de.fuberlin.optimierung.ILLVM_Command;
 import de.fuberlin.optimierung.LLVM_Operation;
 import de.fuberlin.optimierung.LLVM_Optimization;
 import de.fuberlin.optimierung.LLVM_Parameter;
-import de.fuberlin.optimierung.LLVM_ParameterType;
 
 /*
  *  Syntax:
@@ -18,9 +17,11 @@ public class LLVM_GetElementPtrCommand extends LLVM_GenericCommand {
 	
 	boolean hasInbounds = false;
 	
-	public LLVM_GetElementPtrCommand(String[] cmd,LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
-		super(operation, predecessor, block, comment);
+	public LLVM_GetElementPtrCommand(String cmdLine, ILLVM_Command predecessor, ILLVM_Block block){
+		super(predecessor, block, cmdLine);
+		setOperation(LLVM_Operation.GETELEMENTPTR);
 		
+		String[] cmd = cmdLine.split(" ");
 		int i = 3;
 		
 		if(cmd[3].compareTo("inbounds") == 0){

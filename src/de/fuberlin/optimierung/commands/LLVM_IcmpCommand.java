@@ -1,6 +1,5 @@
 package de.fuberlin.optimierung.commands;
 
-import java.util.LinkedList;
 import de.fuberlin.optimierung.ILLVM_Block;
 import de.fuberlin.optimierung.ILLVM_Command;
 import de.fuberlin.optimierung.LLVM_Operation;
@@ -16,8 +15,31 @@ import de.fuberlin.optimierung.LLVM_Parameter;
 
 public class LLVM_IcmpCommand extends LLVM_GenericCommand{
 	
-	public LLVM_IcmpCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
-		super(operation, predecessor, block, comment);
+	public LLVM_IcmpCommand(String cmdLine, ILLVM_Command predecessor, ILLVM_Block block){
+		super(predecessor, block, cmdLine);
+		String[] cmd = cmdLine.split(" ");
+		
+		if (cmd[3].compareTo("eq") == 0){
+			setOperation(LLVM_Operation.ICMP_EQ);
+		}else if (cmd[3].compareTo("ne") == 0){
+			setOperation(LLVM_Operation.ICMP_NE);
+		}else if (cmd[3].compareTo("ugt") == 0){
+			setOperation(LLVM_Operation.ICMP_UGT);
+		}else if (cmd[3].compareTo("uge") == 0){
+			setOperation(LLVM_Operation.ICMP_UGE);
+		}else if (cmd[3].compareTo("ult") == 0){
+			setOperation(LLVM_Operation.ICMP_ULT);
+		}else if (cmd[3].compareTo("ule") == 0){
+			setOperation(LLVM_Operation.ICMP_ULE);
+		}else if (cmd[3].compareTo("sgt") == 0){
+			setOperation(LLVM_Operation.ICMP_SGT);
+		}else if (cmd[3].compareTo("sge") == 0){
+			setOperation(LLVM_Operation.ICMP_SGE);
+		}else if (cmd[3].compareTo("slt") == 0){
+			setOperation(LLVM_Operation.ICMP_SLT);
+		}else if (cmd[3].compareTo("sle") == 0){
+			setOperation(LLVM_Operation.ICMP_SLE);
+		}
 		
 		// <result> i1
 		target = new LLVM_Parameter(cmd[0], "i1");

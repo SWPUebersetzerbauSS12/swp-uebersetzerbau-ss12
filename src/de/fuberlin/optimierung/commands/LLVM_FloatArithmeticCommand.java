@@ -15,9 +15,11 @@ import de.fuberlin.optimierung.LLVM_Parameter;
 
 public class LLVM_FloatArithmeticCommand extends LLVM_GenericCommand{
 
-	public LLVM_FloatArithmeticCommand(String[] cmd,LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment) {
-		super(operation, predecessor, block, comment);
+	public LLVM_FloatArithmeticCommand(String cmdLine, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block) {
+		super(predecessor, block, cmdLine);
+		setOperation(operation);
 		
+		String[] cmd = cmdLine.split(" ");
 		// <result> <ty>
 		target = new LLVM_Parameter(cmd[0], cmd[3]);
 		// <op1> <ty>

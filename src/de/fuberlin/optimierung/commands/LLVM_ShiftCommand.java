@@ -24,9 +24,11 @@ public class LLVM_ShiftCommand extends LLVM_GenericCommand{
 	private boolean has_nuw = false;
 	private boolean has_nsw = false;
 	
-	public LLVM_ShiftCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment) {
-		super(operation, predecessor, block, comment);
+	public LLVM_ShiftCommand(String cmdLine, ILLVM_Command predecessor, ILLVM_Block block) {
+		super(predecessor, block, cmdLine);
+		setOperation(LLVM_Operation.SHL);
 		
+		String[] cmd = cmdLine.split(" ");
 		// Kommaposition ermitteln
 		int i = -1;
 		for (int j = 0; j < cmd.length; j++){

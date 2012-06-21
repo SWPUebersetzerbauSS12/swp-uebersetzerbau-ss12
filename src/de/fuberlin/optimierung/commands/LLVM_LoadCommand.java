@@ -18,9 +18,12 @@ public class LLVM_LoadCommand extends LLVM_GenericCommand{
 	private boolean vol = false;
 	private boolean atom = false;
 	
-	public LLVM_LoadCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
-		super(operation, predecessor, block, comment);
+	public LLVM_LoadCommand(String cmdLine, ILLVM_Command predecessor, ILLVM_Block block){
+		super(predecessor, block, cmdLine);
 		
+		setOperation(LLVM_Operation.LOAD);
+		
+		String[] cmd = cmdLine.split(" ");
 		if (cmd[3].trim().equals("atomic")){
 			atom = true;
 			if (cmd[4].trim().equals("volatile")) vol = true;

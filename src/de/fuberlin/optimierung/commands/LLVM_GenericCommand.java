@@ -7,7 +7,6 @@ import de.fuberlin.optimierung.ILLVM_Command;
 import de.fuberlin.optimierung.LLVM_Operation;
 import de.fuberlin.optimierung.LLVM_Optimization;
 import de.fuberlin.optimierung.LLVM_Parameter;
-import de.fuberlin.optimierung.LLVM_ParameterType;
 
 public abstract class LLVM_GenericCommand implements ILLVM_Command{
 	
@@ -26,11 +25,17 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 	
 	protected String comment = "";
 	
-	public LLVM_GenericCommand(LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
+	public LLVM_GenericCommand(ILLVM_Command predecessor, ILLVM_Block block, String cmdLine){
 		// Setze die Zeiger
 		this.predecessor = predecessor;
-		this.operation = operation;
-		this.comment = comment;
+		
+		String[] com = cmdLine.trim().split(";");
+		
+		if (com.length > 1){
+			for (int i = 1; i < com.length; i++){
+				this.comment += com[i]; 
+			}
+		}
 		
 		// Setze den zugehoerigen Basisblock
 		this.setBlock(block);

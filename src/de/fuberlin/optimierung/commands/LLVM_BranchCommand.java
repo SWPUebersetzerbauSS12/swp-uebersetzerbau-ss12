@@ -1,6 +1,5 @@
 package de.fuberlin.optimierung.commands;
 
-import java.util.LinkedList;
 import de.fuberlin.optimierung.ILLVM_Block;
 import de.fuberlin.optimierung.ILLVM_Command;
 import de.fuberlin.optimierung.LLVM_Operation;
@@ -17,14 +16,21 @@ import de.fuberlin.optimierung.LLVM_Parameter;
 
 public class LLVM_BranchCommand extends LLVM_GenericCommand{
 	
-	public LLVM_BranchCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
-		super(operation, predecessor, block, comment);
+	public LLVM_BranchCommand(String cmdLine, ILLVM_Command predecessor, ILLVM_Block block){
+		super(predecessor, block, cmdLine);
 		
-		if (cmd.length == 3){
+		if (cmdLine.contains("i1")){
+			setOperation(LLVM_Operation.BR_CON);
+		}else{
+			setOperation(LLVM_Operation.BR);
+		}
+		
+		String[] cmd = cmdLine.split(" ");
+		if (this.operation == LLVM_Operation.BR){
 			// unconditional Branch
 			// <dest> label
 			operands.add(new LLVM_Parameter(cmd[2], cmd[1]));
-		}else if (cmd.length > 3){
+		}else{
 			// conditional Branch
 			// <cond> i1
 			operands.add(new LLVM_Parameter(cmd[2], cmd[1]));

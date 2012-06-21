@@ -20,9 +20,11 @@ public class LLVM_CallCommand extends LLVM_GenericCommand{
 	private String fnptrval = "";
 	private String fnattrs = "";
 	
-	public LLVM_CallCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
-		super(operation, predecessor, block, comment);
+	public LLVM_CallCommand(String cmdLine, ILLVM_Command predecessor, ILLVM_Block block){
+		super(predecessor, block, cmdLine);
+		setOperation(LLVM_Operation.CALL);
 		
+		String[] cmd = cmdLine.split(" ");
 		// tail?
 		if (cmd[2].trim().equals("tail")){
 			tail = true;

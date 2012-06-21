@@ -17,9 +17,11 @@ public class LLVM_StoreCommand extends LLVM_GenericCommand{
 	private boolean vol = false;
 	private boolean atom = false;
 	
-	public LLVM_StoreCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
-		super(operation, predecessor, block, comment);
+	public LLVM_StoreCommand(String cmdLine, ILLVM_Command predecessor, ILLVM_Block block){
+		super(predecessor, block, cmdLine);
+		setOperation(LLVM_Operation.STORE);
 		
+		String[] cmd = cmdLine.split(" ");
 		if (cmd[1].trim().equals("atomic")){
 			atom = true;
 			if (cmd[2].trim().equals("volatile")) vol = true;

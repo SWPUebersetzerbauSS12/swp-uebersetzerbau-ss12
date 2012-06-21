@@ -26,9 +26,11 @@ public class SyntaxTreeNode implements ISyntaxTree{
 	
 	private IToken token;
 	// Attribute 
-	private Map<String, String> attributeName2Value = new HashMap<String, String>();
+	private Map<String, Object> attributeName2Value = new HashMap<String, Object>();
 	// cildren als LinkedList, um insertTree effizient zu implementieren zu können
 	private List<ISyntaxTree> children=new LinkedList<ISyntaxTree>();
+	
+	
 	
 	public SyntaxTreeNode(Symbol symbol) {
 		this.symbol = symbol;
@@ -62,7 +64,7 @@ public class SyntaxTreeNode implements ISyntaxTree{
 	public List<ISyntaxTree> getChildrenByName(String name) {
 		List<ISyntaxTree> result=new ArrayList<ISyntaxTree>();
 		for (ISyntaxTree aChildTree : children) {
-			if (aChildTree.getToken().getType().equals(name)){
+			if (aChildTree.getToken() != null && name.equals(aChildTree.getToken().getText())){
 				result.add(aChildTree);
 			}
 		}
@@ -72,15 +74,16 @@ public class SyntaxTreeNode implements ISyntaxTree{
 	// TODO Attribut-Handling implementieren --> Fehler in ISyntaxTree (IAttribute fehlt/ addAttribute macht keinen Sinn)
 	
 	@Override
-	public IAttribute getAttribute(String name) {
+	public Object getAttribute(String name) {
 		// TODO Auto-generated method stub
-		return null;
+		return attributeName2Value.get(name);
 	}
 
 	@Override
 	public boolean addAttribute(String name) {
 		// TODO Auto-generated method stub
-		return false;
+		attributeName2Value.put(name, null);
+		return true;
 	}
 
 	
@@ -208,8 +211,8 @@ public class SyntaxTreeNode implements ISyntaxTree{
 
 	@Override
 	public boolean setAttribute(String name, Object value) {
-		// TODO Auto-generated method stub
-		return false;
+		attributeName2Value.put(name, value);
+		return true;
 	}
 
 	@Override

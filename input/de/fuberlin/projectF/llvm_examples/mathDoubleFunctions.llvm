@@ -1,0 +1,102 @@
+; ModuleID = 'mathDoubleFunctions.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64"
+target triple = "x86_64-pc-linux-gnu"
+
+@.str = private unnamed_addr constant [14 x i8] c"%f + %f = %f\0A\00"
+@.str1 = private unnamed_addr constant [14 x i8] c"%f - %f = %f\0A\00"
+@.str2 = private unnamed_addr constant [14 x i8] c"%f * %f = %f\0A\00"
+@.str3 = private unnamed_addr constant [14 x i8] c"%f / %f = %f\0A\00"
+
+define i32 @main() nounwind {
+  %1 = alloca i32, align 4
+  %op1 = alloca double, align 8
+  %op2 = alloca double, align 8
+  %erg = alloca double, align 8
+  store i32 0, i32* %1
+  store double 1.000000e+01, double* %op1, align 8
+  store double 5.000000e+00, double* %op2, align 8
+  %2 = load double* %op1, align 8
+  %3 = load double* %op2, align 8
+  %4 = call double @addition(double %2, double %3)
+  store double %4, double* %erg, align 8
+  %5 = load double* %op1, align 8
+  %6 = load double* %op2, align 8
+  %7 = load double* %erg, align 8
+  %8 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([14 x i8]* @.str, i32 0, i32 0), double %5, double %6, double %7)
+  %9 = load double* %op1, align 8
+  %10 = load double* %op2, align 8
+  %11 = call double @subtraktion(double %9, double %10)
+  store double %11, double* %erg, align 8
+  %12 = load double* %op1, align 8
+  %13 = load double* %op2, align 8
+  %14 = load double* %erg, align 8
+  %15 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([14 x i8]* @.str1, i32 0, i32 0), double %12, double %13, double %14)
+  %16 = load double* %op1, align 8
+  %17 = load double* %op2, align 8
+  %18 = call double @multiplikation(double %16, double %17)
+  store double %18, double* %erg, align 8
+  %19 = load double* %op1, align 8
+  %20 = load double* %op2, align 8
+  %21 = load double* %erg, align 8
+  %22 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([14 x i8]* @.str2, i32 0, i32 0), double %19, double %20, double %21)
+  %23 = load double* %op1, align 8
+  %24 = load double* %op2, align 8
+  %25 = call double @division(double %23, double %24)
+  store double %25, double* %erg, align 8
+  %26 = load double* %op1, align 8
+  %27 = load double* %op2, align 8
+  %28 = load double* %erg, align 8
+  %29 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([14 x i8]* @.str3, i32 0, i32 0), double %26, double %27, double %28)
+  call void @sinnlos()
+  ret i32 0
+}
+
+define double @addition(double %summand1, double %summand2) nounwind {
+  %1 = alloca double, align 8
+  %2 = alloca double, align 8
+  store double %summand1, double* %1, align 8
+  store double %summand2, double* %2, align 8
+  %3 = load double* %1, align 8
+  %4 = load double* %2, align 8
+  %5 = fadd double %3, %4
+  ret double %5
+}
+
+declare i32 @printf(i8*, ...)
+
+define double @subtraktion(double %minuend, double %subtrahent) nounwind {
+  %1 = alloca double, align 8
+  %2 = alloca double, align 8
+  store double %minuend, double* %1, align 8
+  store double %subtrahent, double* %2, align 8
+  %3 = load double* %1, align 8
+  %4 = load double* %2, align 8
+  %5 = fsub double %3, %4
+  ret double %5
+}
+
+define double @multiplikation(double %summand1, double %summand2) nounwind {
+  %1 = alloca double, align 8
+  %2 = alloca double, align 8
+  store double %summand1, double* %1, align 8
+  store double %summand2, double* %2, align 8
+  %3 = load double* %1, align 8
+  %4 = load double* %2, align 8
+  %5 = fmul double %3, %4
+  ret double %5
+}
+
+define double @division(double %minuend, double %subtrahent) nounwind {
+  %1 = alloca double, align 8
+  %2 = alloca double, align 8
+  store double %minuend, double* %1, align 8
+  store double %subtrahent, double* %2, align 8
+  %3 = load double* %1, align 8
+  %4 = load double* %2, align 8
+  %5 = fdiv double %3, %4
+  ret double %5
+}
+
+define void @sinnlos() nounwind {
+  ret void
+}

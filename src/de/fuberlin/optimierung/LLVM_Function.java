@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import de.fuberlin.optimierung.commands.LLVM_ArithmeticCommand;
+import de.fuberlin.optimierung.commands.LLVM_FloatArithmeticCommand;
 import de.fuberlin.optimierung.commands.LLVM_IcmpCommand;
 import de.fuberlin.optimierung.commands.LLVM_LogicCommand;
 
@@ -331,30 +332,6 @@ public class LLVM_Function {
 					op2.setName("0");
 						
 					return true;
-				}else if(op1.getType() == LLVM_ParameterType.DOUBLE && op2.getType() == LLVM_ParameterType.DOUBLE){
-					double iOP1 = Double.parseDouble(op1.getName());
-					double iOP2 = Double.parseDouble(op2.getName());
-					double result = 0;
-					
-					switch(cmd.getOperation()){
-					case ADD :
-						result = iOP1 + iOP2;
-						break;
-					case SUB :
-						result = iOP1 - iOP2;
-						break;
-					case MUL :
-						result = iOP1 * iOP2;
-						break;
-					case DIV :
-						result = iOP1 / iOP2;
-						break;
-					}
-					
-					op1.setName(""+result);
-					op2.setName("0");
-						
-					return true;
 				}else if(op1.getType() == LLVM_ParameterType.REGISTER && op2.getType() == LLVM_ParameterType.INTEGER){
 				
 					int iOP2 = Integer.parseInt(op2.getName());
@@ -365,7 +342,38 @@ public class LLVM_Function {
 			}catch(NumberFormatException e){
 				// no numbers
 			}
+		}else if(cmd.getClass().equals(LLVM_FloatArithmeticCommand.class)){
+			LinkedList<LLVM_Parameter> operands = cmd.getOperands();
+			LLVM_Parameter op1 = operands.get(0);
+			LLVM_Parameter op2 = operands.get(1);
+			
+			if(op1.getType() == LLVM_ParameterType.DOUBLE && op2.getType() == LLVM_ParameterType.DOUBLE){
+				double iOP1 = Double.parseDouble(op1.getName());
+				double iOP2 = Double.parseDouble(op2.getName());
+				double result = 0;
+				
+				switch(cmd.getOperation()){
+				case FADD :
+					result = iOP1 + iOP2;
+					break;
+				case FSUB :
+					result = iOP1 - iOP2;
+					break;
+				case FMUL :
+					result = iOP1 * iOP2;
+					break;
+				case FDIV :
+					result = iOP1 / iOP2;
+					break;
+				}
+				
+				op1.setName(""+result);
+				op2.setName("0");
+					
+				return true;
+			}
 		}else if(cmd.getClass().equals(LLVM_IcmpCommand.class)){
+		
 			LinkedList<LLVM_Parameter> operands = cmd.getOperands();
 			LLVM_Parameter op1 = operands.get(0);
 			LLVM_Parameter op2 = operands.get(1);

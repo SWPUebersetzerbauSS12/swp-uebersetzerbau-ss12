@@ -16,7 +16,7 @@ public class Main {
 			data = IOUtils.readFile("program.txt");
 			ILexer lexer = new Lexer(new StringCharStream(data));
 			LL1Parser ll1 = new LL1Parser();
-			ll1.parse(lexer,"");		
+			ll1.parse(lexer,"language.txt");		
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

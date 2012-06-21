@@ -39,20 +39,22 @@ public class ParserGenerator {
 	private Map<String, HashMap<String,Integer>> firstSetsProductions = new HashMap<String, HashMap<String,Integer>>();
 	
 	public ParserGenerator(){
-		Terminals = new Vector<String>();
-		Nonterminal = new Vector<String>();
+		
 	}
 	
 	/**
 	 * Initializes the grammar so a parsetable can be created from it.
+	 * @param grammar 
 	 * 
 	 * @param file Path to the grammar file
 	 * @return returns the created parsertable
 	 * @throws IOException
 	 */
-	public Map<String, HashMap<String,Vector<Integer>>> initialize () throws IOException{
+	public void initialize (boolean changeToLL1, String grammar) throws IOException{
 		//Read the Grammar from file
-		readGrammar();
+	    Terminals = new Vector<String>();
+        Nonterminal = new Vector<String>();
+		readGrammar(changeToLL1,grammar);
 		Printer.printGrammar(grammarMap);
 		fillTerminalNonterminal();
 		/*
@@ -68,7 +70,6 @@ public class ParserGenerator {
 		 */
 		parserTable = createParserTable();
 		Printer.printParserTable(Terminals,Nonterminal,parserTable);
-		return parserTable;
 	}
 	
 	/**
@@ -87,11 +88,12 @@ public class ParserGenerator {
 	
 	/**
 	 * Reads the Grammar from a file specified in SETTINGS.
+	 * @param grammar 
 	 * @throws IOException
 	 */
-	private void readGrammar() throws IOException{
+	private void readGrammar(boolean changeToLL1, String grammar) throws IOException{
 		GrammarReader gR = new GrammarReader();
-		grammarMap = gR.createGrammar(5);
+		grammarMap = gR.createGrammar(5,changeToLL1,grammar);
 		
 		start = gR.getStartSymbol();
 	}

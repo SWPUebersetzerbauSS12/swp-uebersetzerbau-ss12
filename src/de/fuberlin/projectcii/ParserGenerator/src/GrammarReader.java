@@ -13,6 +13,8 @@ public class GrammarReader {
 
 	// the Startsymbol
 	private String startSymbol;
+	
+	private String file;
 
 	private Vector<String> heads;
 
@@ -39,6 +41,7 @@ public class GrammarReader {
 	 * @param NItr
 	 *            defines the Max. no. of the iterations, if more than NItr,the
 	 *            whole grammar will be cleared
+	 * @param file 
 	 * @return The grammar as HashMap where the keys are the heads of the
 	 *         production and the values are vectors containing the productions
 	 *         itself. Each production is represented as a vector of terminal
@@ -50,48 +53,50 @@ public class GrammarReader {
 	 * then there is too much iterations (endless iteration)
 	 * 
 	 */
-	public Map<String, Vector<Vector<String>>> createGrammar(int NItr)
+	public Map<String, Vector<Vector<String>>> createGrammar(int NItr, boolean changeToLL1, String file)
 			throws IOException {
 		// Read the file
+	    this.file=file;
 		Vector<Productions> grammar = ReadFile();
 		Printer.printGrammar(grammar);
 		// Perform Leftfactorisation
-		grammar = combineLeftFactorization(grammar);
-		Printer.printGrammar(grammar); 
-		// Eliminate indirect and direct leftrekursions
+		if (changeToLL1){
+		    grammar = combineLeftFactorization(grammar);
+		    Printer.printGrammar(grammar); 
+		    // Eliminate indirect and direct leftrekursions
 
-		heads = new Vector<String>();
-		for (Productions nonterminal : grammar) {
-			heads.add(nonterminal.getHead());
+		    heads = new Vector<String>();
+		    for (Productions nonterminal : grammar) {
+		        heads.add(nonterminal.getHead());
+		    }
+		    Boolean[] rekursive = { true };
+		    int iteration = 0;
+		    grammar = eliminateDirectLeftRekursion(grammar);
+		    Printer.printGrammar(grammar);
+
+		    while (rekursive[0] && iteration < NItr) {
+		        rekursive[0] = false;
+		        grammar = eliminateIndirectLeftRekursion(grammar, rekursive);
+		        grammar = eliminateDirectLeftRekursion(grammar);
+		        iteration++;
+		    }
+		    if (iteration < NItr) {
+		        // definie first Element in Vector as startsymbol
+		        startSymbol = grammar.elementAt(0).getHead();
+		    } else {
+		        throw new RuntimeException(
+		                "the no. of the iterations:"
+		                + iteration
+		                + " >= Max No. of Iterations "
+		                + NItr
+		                + "\n"
+		                + "Too Many Iterations, it's unparsable with LL(1), please input a right file!!");
+		        
+		        // System.out.println("the no. of the iterations:"+iteration+" >= Max No. of Iterations "+NItr);
+		        // System.out.println("Too Many Iterations, it's unparsable with LL(1), please input a right file!!");
+		        // grammar.clear();
+		    }   
 		}
-		Boolean[] rekursive = { true };
-		int iteration = 0;
-		grammar = eliminateDirectLeftRekursion(grammar);
-		Printer.printGrammar(grammar);
-
-		while (rekursive[0] && iteration < NItr) {
-			rekursive[0] = false;
-			grammar = eliminateIndirectLeftRekursion(grammar, rekursive);
-			grammar = eliminateDirectLeftRekursion(grammar);
-			iteration++;
-		}
-		if (iteration < NItr) {
-			// definie first Element in Vector as startsymbol
-			startSymbol = grammar.elementAt(0).getHead();
-		} else {
-			throw new RuntimeException(
-					"the no. of the iterations:"
-							+ iteration
-							+ " >= Max No. of Iterations "
-							+ NItr
-							+ "\n"
-							+ "Too Many Iterations, it's unparsable with LL(1), please input a right file!!");
-
-			// System.out.println("the no. of the iterations:"+iteration+" >= Max No. of Iterations "+NItr);
-			// System.out.println("Too Many Iterations, it's unparsable with LL(1), please input a right file!!");
-			// grammar.clear();
-		}
-
 		return buildGrammarMap(grammar);
 
 	}
@@ -117,7 +122,7 @@ public class GrammarReader {
 
 		// Read File
 		BufferedReader in = new BufferedReader(new FileReader(
-				Settings.getGRAMMAR_PATH()));
+				this.file));
 
 //		ReadingState state;
 		String line;

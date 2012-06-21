@@ -269,37 +269,48 @@ public class Printer {
 		for (ISyntaxTree child:node.getChildren()){
 			SyntaxTree currNode = (SyntaxTree)child;
 			String tagName = currNode.getSymbol();
+			boolean nonterminal=false;
 			if (tagName.startsWith("<")){
 				tagName = tagName.substring(1, tagName.length()-1);
+				nonterminal = true;
 			}
 			Element childNode;
 			if (child.getChildrenCount() == 0){
-				childNode = doc.createElement("TOKEN");
-				Attr symbolAttr = doc.createAttribute("symbol");
-				if (tagName.equals("@")){
-				    tagName="EPSILON";
-				}
-                symbolAttr.setValue(tagName);
-                childNode.setAttributeNode(symbolAttr);
-                if (child.getToken() != null){
-                    Attr typeAttr = doc.createAttribute("type");
-                    typeAttr.setValue(child.getToken().getType());
-                    childNode.setAttributeNode(typeAttr);
+			    if (!nonterminal){
+			        childNode = doc.createElement("TOKEN");
+			        Attr symbolAttr = doc.createAttribute("symbol");
+			        if (tagName.equals("@")){
+			            tagName="EPSILON";
+			        }
+			        symbolAttr.setValue(tagName);
+			        childNode.setAttributeNode(symbolAttr);
+			        if (child.getToken() != null){
+			            Attr typeAttr = doc.createAttribute("type");
+			            typeAttr.setValue(child.getToken().getType());
+			            childNode.setAttributeNode(typeAttr);
                 
-                    Attr attributeAttr = doc.createAttribute("attribute");
-                    attributeAttr.setValue("not Implemented");
-                    childNode.setAttributeNode(attributeAttr);
+			            Attr attributeAttr = doc.createAttribute("attribute");
+			            attributeAttr.setValue("not Implemented");
+			            childNode.setAttributeNode(attributeAttr);
                     
-                    Attr lNAttr = doc.createAttribute("LineNumber");
-                    lNAttr.setValue(String.valueOf(child.getToken().getLineNumber()));
-                    childNode.setAttributeNode(lNAttr);
+			            Attr lNAttr = doc.createAttribute("LineNumber");
+			            lNAttr.setValue(String.valueOf(child.getToken().getLineNumber()));
+			            childNode.setAttributeNode(lNAttr);
                     
-                    Attr offAttr = doc.createAttribute("Offset");
-                    offAttr.setValue(String.valueOf(child.getToken().getOffset()));
-                    childNode.setAttributeNode(offAttr);
-                }
-                
+			            Attr offAttr = doc.createAttribute("Offset");
+			            offAttr.setValue(String.valueOf(child.getToken().getOffset()));
+			            childNode.setAttributeNode(offAttr);
+			        }
+			    
 				parentNode.appendChild(childNode);
+			    }
+			    else{
+			        childNode = doc.createElement("Node");
+	                Attr typeAttr = doc.createAttribute("symbol");
+	                typeAttr.setValue(tagName);
+	                childNode.setAttributeNode(typeAttr);
+	                parentNode.appendChild(childNode);
+			    }
 			}
 			else{
 	            

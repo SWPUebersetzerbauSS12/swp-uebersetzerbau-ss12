@@ -19,7 +19,6 @@ public class LL1Parser implements IParser {
 		try{
 			Settings.initalize();
 			pG = new ParserGenerator();
-			pG.initialize();
 		}
 		catch(Exception e)
 		{
@@ -39,11 +38,20 @@ public class LL1Parser implements IParser {
 	@Override
 	public ISyntaxTree parse(ILexer lexer, String grammar) {
 		ISyntaxTree parsetree = new SyntaxTree();
+		
 		try{
+		    pG.initialize(true,grammar);
 			if(pG.parsable_LL1(pG.getParseTable())){
 				TokenParser tP = new TokenParser(lexer, pG.getParseTable(),pG.getGrammar(),pG.getStartSymbol());
 				parsetree = tP.parseTokenStream();
-			}			
+			}
+			else{
+			    pG.initialize(true,grammar);
+			    if(pG.parsable_LL1(pG.getParseTable())){
+	                TokenParser tP = new TokenParser(lexer, pG.getParseTable(),pG.getGrammar(),pG.getStartSymbol());
+	                parsetree = tP.parseTokenStream();
+	            }
+			}
 		}
 		catch(Exception e)
 		{

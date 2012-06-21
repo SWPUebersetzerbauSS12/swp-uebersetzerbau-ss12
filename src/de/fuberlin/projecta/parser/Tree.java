@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import de.fuberlin.commons.lexer.IToken;
+import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.ast.nodes.AbstractSyntaxTree;
 import de.fuberlin.projecta.analysis.ast.nodes.BasicType;
 import de.fuberlin.projecta.analysis.ast.nodes.BinaryOp;
@@ -150,35 +151,13 @@ public class Tree implements ISyntaxTree {
 
 	@Override
 	public boolean equals(Object object) {
+		// TODO: Review. Is this enough?
 		if (object instanceof ISyntaxTree) {
-			if (this.getSymbol().isNonTerminal()
-					&& ((ISyntaxTree) object).getSymbol().isNonTerminal()) {
-				if (this.getSymbol().asNonTerminal() == ((ISyntaxTree) object)
-						.getSymbol().asNonTerminal()) {
-					if (this.getChildren().equals(
-							((ISyntaxTree) object).getChildren())) {
-						return true;
-					}
-				}
-			} else if (this.getSymbol().isTerminal()
-					&& ((ISyntaxTree) object).getSymbol().isTerminal()) {
-				if (this.getSymbol().asNonTerminal() == ((ISyntaxTree) object)
-						.getSymbol().asNonTerminal()) {
-					if (this.getChildren().equals(
-							((ISyntaxTree) object).getChildren())) {
-						return true;
-					}
-				}
-			} else if (this.getSymbol().isReservedTerminal()
-					&& ((ISyntaxTree) object).getSymbol().isReservedTerminal()) {
-				if (this.getSymbol().asNonTerminal() == ((ISyntaxTree) object)
-						.getSymbol().asNonTerminal()) {
-					if (this.getChildren().equals(
-							((ISyntaxTree) object).getChildren())) {
-						return true;
-					}
-				}
-			}
+			ISyntaxTree tree = ((ISyntaxTree)object);
+
+			String id1 = this.getSymbol().getName();
+			String id2 = ((ISyntaxTree)object).getSymbol().getName();
+			return (id1.equals(id2) && this.getChildren().equals(tree.getChildren()));
 		}
 		return false;
 	}

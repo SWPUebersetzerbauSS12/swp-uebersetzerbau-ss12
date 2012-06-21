@@ -3,12 +3,12 @@ package de.fuberlin.projecta;
 import java.io.File;
 
 import de.fuberlin.commons.lexer.ILexer;
+import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.SemanticAnalyzer;
 import de.fuberlin.projecta.lexer.Lexer;
 import de.fuberlin.projecta.lexer.io.FileCharStream;
 import de.fuberlin.projecta.lexer.io.ICharStream;
 import de.fuberlin.projecta.lexer.io.StringCharStream;
-import de.fuberlin.projecta.parser.ISyntaxTree;
 import de.fuberlin.projecta.parser.ParseException;
 import de.fuberlin.projecta.parser.Parser;
 import de.fuberlin.projecta.utils.IOUtils;

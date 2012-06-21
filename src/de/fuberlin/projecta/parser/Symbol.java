@@ -1,9 +1,13 @@
 package de.fuberlin.projecta.parser;
 
 import de.fuberlin.commons.lexer.TokenType;
+import de.fuberlin.commons.parser.ISymbol;
 
-public class Symbol {
+public class Symbol implements ISymbol {
 
+	/**
+	 * Internal symbols, for building up the parse tree
+	 */
 	public enum Reserved {
 		EPSILON, // epsilon production
 		SP, // stack pointer
@@ -19,11 +23,9 @@ public class Symbol {
 	}
 
 	/**
-	 * Construct from string
+	 * Construct Symbol instance from string
 	 * 
-	 * FIXME: This ctor should be removed. It's not type-safe
-	 * 
-	 * @param string
+	 * @param string A string describing a terminal or non-terminal or reserved symbol 
 	 */
 	public Symbol(String string) {
 		try {
@@ -85,6 +87,19 @@ public class Symbol {
 		}
 		// never reached
 		return "<invalid>";
+	}
+
+	@Override
+	public String getName() {
+		if (isTerminal())
+			return asTerminal().toString();
+		if (isNonTerminal())
+			return asNonTerminal().toString();
+		if (isReservedTerminal()) {
+			return asReservedTerminal().toString();
+		}
+		// never reached
+		return "invalid";
 	}
 
 }

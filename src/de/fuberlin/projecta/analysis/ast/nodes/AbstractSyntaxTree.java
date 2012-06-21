@@ -1,8 +1,8 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
+import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.SymbolTable;
 import de.fuberlin.projecta.analysis.SymbolTableStack;
-import de.fuberlin.projecta.parser.ISyntaxTree;
 import de.fuberlin.projecta.parser.Symbol;
 import de.fuberlin.projecta.parser.Tree;
 

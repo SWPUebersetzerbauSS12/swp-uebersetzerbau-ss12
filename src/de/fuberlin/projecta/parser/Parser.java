@@ -5,6 +5,8 @@ import java.util.Stack;
 import de.fuberlin.commons.lexer.ILexer;
 import de.fuberlin.commons.lexer.IToken;
 import de.fuberlin.commons.lexer.TokenType;
+import de.fuberlin.commons.parser.IParser;
+import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.lexer.SyntaxErrorException;
 
 public class Parser implements IParser {

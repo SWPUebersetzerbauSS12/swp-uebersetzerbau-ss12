@@ -2,6 +2,7 @@ package de.fuberlin.projectF.CodeGenerator;
 
 import java.io.*;
 import java.lang.Number;
+import java.util.HashMap;
 
 import de.fuberlin.projectF.CodeGenerator.model.Token;
 import de.fuberlin.projectF.CodeGenerator.model.TokenType;
@@ -53,7 +54,7 @@ public class FileLexer extends Lexer{
 		}
 		return 0;
 	}
-
+	
 	public Token getNextToken() {
 		String strLine;
 		String[] splitLine;

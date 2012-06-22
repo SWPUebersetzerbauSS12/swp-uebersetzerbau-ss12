@@ -1,13 +1,32 @@
 package de.fuberlin.projectF.CodeGenerator;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import de.fuberlin.projectF.CodeGenerator.model.Token;
 import de.fuberlin.projectF.CodeGenerator.model.TokenType;
 
 public abstract class Lexer {
 	
+	ArrayList<Token> tokenStream;
+	HashMap<String,ArrayList<String>> deleteCandidate;
+	
 	// Diese Methoden sind in den Unterklassen implementiert
 	public abstract int close();
 	public abstract Token getNextToken();
+	
+	protected ArrayList<Token> getTokenStream() {
+		tokenStream = new ArrayList<Token>();
+		deleteCandidate = new HashMap<String,ArrayList<String>> ();
+		Token tok;
+		while ((tok = getNextToken()).getType() != TokenType.EOF) {
+			tokenStream.add(tok);
+		}
+		postprocessing();
+		
+		return tokenStream;
+	}
 	
 	protected String[] splitInformation(String line) {
 		line = line.trim();
@@ -32,8 +51,12 @@ public abstract class Lexer {
 		line = replaceBetween(line, p1, p2, ' ', (char) 1);
 
 		p1 = line.indexOf(" [ ") + 1;
-		p2 = line.lastIndexOf(" ] ");
-		line = replaceBetween(line, p1, p2, ' ', (char) 1);
+		while(p1 != 0) {
+			p2 = line.indexOf(" ] ",p1);
+			line = replaceBetween(line, p1, p2, ' ', (char) 1);
+			p1 = line.indexOf(" [ ",p2+1) + 1;
+			System.out.println("in" + p1);
+		}
 
 		p1 = line.lastIndexOf('{');
 		p2 = line.indexOf('}', p1);
@@ -53,7 +76,6 @@ public abstract class Lexer {
 			if (tmpSplitLine[i].isEmpty()) {
 			} else if (tmpSplitLine[i].contentEquals(",")) {
 			} else if (tmpSplitLine[i].contentEquals("*")) {
-			} else if (tmpSplitLine[i].contentEquals("i8*")) {
 			} else if (tmpSplitLine[i].contentEquals("...")) {
 			} else if (tmpSplitLine[i].contentEquals("(")) {
 			} else if (tmpSplitLine[i].contentEquals(")")) {
@@ -81,7 +103,6 @@ public abstract class Lexer {
 			if (tmpSplitLine[i].isEmpty()) {
 			} else if (tmpSplitLine[i].contentEquals(",")) {
 			} else if (tmpSplitLine[i].contentEquals("*")) {
-			} else if (tmpSplitLine[i].contentEquals("i8*")) {
 			} else if (tmpSplitLine[i].contentEquals("...")) {
 			} else if (tmpSplitLine[i].contentEquals("(")) {
 			} else if (tmpSplitLine[i].contentEquals(")")) {
@@ -139,19 +160,29 @@ public abstract class Lexer {
 
 		// Wertzuweisungen
 		else if (line[0].contentEquals("store")) {
-			newToken.setType(TokenType.Assignment);
-			newToken.setTarget(line[4]);
-			newToken.setTypeTarget(line[3]);
-			
-			if(line[1].equals("double"))
-				if(line[2].charAt(0) == '%')
-					newToken.setOp1(line[2]);
+			if(line[2].startsWith("c\"")) {
+				newToken.setType(TokenType.String);
+				newToken.setOp1(requote(line[2].substring(1)));
+				newToken.setTarget("@_str" + line[4].substring(1));
+				
+				deleteCandidate.put(newToken.getTarget(),new ArrayList<String>());
+				deleteCandidate.get(newToken.getTarget()).add(line[4]);
+			}	
+			else {
+				newToken.setType(TokenType.Assignment);
+				newToken.setTarget(line[4]);
+				newToken.setTypeTarget(line[3].replace((char) 1, ' '));
+				
+				if(line[1].equals("double"))
+					if(line[2].charAt(0) == '%')
+						newToken.setOp1(line[2]);
+					else
+						newToken.setOp1(transformInIEEE(line[2]));
 				else
-					newToken.setOp1(transformInIEEE(line[2]));
-			else
-				newToken.setOp1(line[2]);
-			
-			newToken.setTypeOp1(line[1]);
+					newToken.setOp1(line[2]);
+				
+				newToken.setTypeOp1(line[1].replace((char) 1, ' '));
+			}
 		}
 
 		else if (line[0].contentEquals("call")) {
@@ -337,7 +368,6 @@ public abstract class Lexer {
 				result = result * 10;
 			}
 		}
-		//TODO
 		
 		long tmp = Double.doubleToLongBits(result);
 		String tmp2 = Long.toHexString(tmp);
@@ -396,5 +426,20 @@ public abstract class Lexer {
 				newToken.addParameter("", pairValue[0]);
 		}
 	}
+	
+	private void postprocessing() {
+		for (Map.Entry<String, ArrayList<String>> entry : deleteCandidate.entrySet()) {
+		    System.out.println("Key: " + entry.getKey());
+		    
+		    for(int i = 0; i < tokenStream.size(); i++) {
+		    	if(tokenStream.get(i).getTarget().equals(entry.getValue().get(0))) {
+		    		System.out.println(i);
+		    	}
+		    }
+		    
+		    System.out.println("Value" + entry.getValue().get(0));
+		    
+		}
 
+	}
 }

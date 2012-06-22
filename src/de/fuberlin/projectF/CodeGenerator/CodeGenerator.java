@@ -1,15 +1,17 @@
 package de.fuberlin.projectF.CodeGenerator;
 
+import java.awt.List;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import de.fuberlin.projectF.CodeGenerator.model.Token;
 import de.fuberlin.projectF.CodeGenerator.model.TokenType;
 
 public class CodeGenerator {
 
-	//Variante f�r File-Input
+	//Variante f�r File-Input
 	public static String generateCode(File llvmFile, boolean debug,
 			boolean guiFlag) {
 		
@@ -17,7 +19,7 @@ public class CodeGenerator {
 		return generateCode2(debug, guiFlag, lex);
 	}
 	
-	//Variante f�r String-Input
+	//Variante f�r String-Input
 	public static String generateCode(String llvmCode, boolean debug,
 			boolean guiFlag) {
 		Lexer lex = new StringLexer(llvmCode);
@@ -29,22 +31,23 @@ public class CodeGenerator {
 	private static String generateCode2(boolean debug, boolean guiFlag,
 			Lexer lex) {
 		// Variablenverwaltung und Übersetzter erstellen
-		ArrayList<Token> code = new ArrayList<Token>();
 		Translator trans = new Translator();
 
 		// Token durchgehen und übersetzten bis EOF
 		GUI gui = new GUI();
 		int linecount = 0;
-		Token tok;
+		ArrayList<Token> tokenStream;
 		// Token einlesen
-		while ((tok = lex.getNextToken()).getType() != TokenType.EOF) {
-			code.add(tok);
+		
+		tokenStream = lex.getTokenStream();
+		if(tokenStream == null) {
+			System.out.println("Error");
 		}
 		lex.close();
 
 		// Token informationen ausgeben
 		if (debug) {
-			for (Token t : code) {
+			for (Token t : tokenStream) {
 				
 				System.out.println("Token #" + linecount++);
 				t.print();
@@ -53,11 +56,11 @@ public class CodeGenerator {
 
 		// Token Tabelle in der gui füllen
 		if (guiFlag)
-			gui.updateTokenStreamTable(code);
+			gui.updateTokenStreamTable(tokenStream);
 
 		// Token übersetzen
 		try {
-			trans.translate(code);
+			trans.translate(tokenStream);
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (guiFlag) {

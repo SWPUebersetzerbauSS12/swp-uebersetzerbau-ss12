@@ -49,7 +49,7 @@ public class Grammar {
 	 * Markiert das rechte Ende des Inputstrings. Wird für die Followmengen benötigt.
 	 * Im Drachenbuch als $ notiert.
 	 */
-	public static final TerminalSymbol INPUT_ENDMARKER = new TerminalSymbol("ENDMARKER");
+	public static final TerminalSymbol INPUT_ENDMARKER = new TerminalSymbol("eof");
 	
 	
 	public List<Production> getProductions() {

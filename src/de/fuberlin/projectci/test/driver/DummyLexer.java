@@ -3,9 +3,10 @@ package de.fuberlin.projectci.test.driver;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.fuberlin.projectci.extern.ILexer;
-import de.fuberlin.projectci.extern.IToken;
-import de.fuberlin.projectci.extern.IToken.TokenType;
+import de.fuberlin.bii.lexergen.LexergeneratorException;
+import de.fuberlin.commons.lexer.ILexer;
+import de.fuberlin.commons.lexer.IToken;
+import de.fuberlin.commons.lexer.TokenType;
 
 public class DummyLexer implements ILexer{
 	private List<IToken> tokens=new ArrayList<IToken>();
@@ -37,8 +38,8 @@ public class DummyLexer implements ILexer{
 		}
 
 		@Override
-		public TokenType getType() {
-			return tokenType;
+		public String getType() {
+			return tokenType.toString();
 		}
 
 		@Override
@@ -57,7 +58,18 @@ public class DummyLexer implements ILexer{
 			// TODO Auto-generated method stub
 			return 0;
 		}
+
+		@Override
+		public String getText() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 		
+	}
+
+	@Override
+	public void reset() throws LexergeneratorException {
+		// TODO Auto-generated method stub
 	}
 	
 	

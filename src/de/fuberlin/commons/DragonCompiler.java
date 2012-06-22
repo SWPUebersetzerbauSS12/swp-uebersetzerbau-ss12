@@ -1,5 +1,7 @@
 package de.fuberlin.commons;
 
+import de.fuberlin.projectF.CodeGenerator.CodeGenerator;
+
 public class DragonCompiler {
     // project a
     public static String generateLLVMCode(String program) {
@@ -15,7 +17,9 @@ public class DragonCompiler {
 
     // project f
     private static String generateGASAssembler(String llvmCode) {
-        return llvmCode;
+    	boolean debug = false;
+    	boolean guiFlag = false;
+        return CodeGenerator.generateCode(llvmCode, debug, guiFlag);
     }
 
     // project ci with bi or bii

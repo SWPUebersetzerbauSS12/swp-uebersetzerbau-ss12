@@ -1,7 +1,9 @@
 package de.fuberlin.projectci.grammar;
 
+import de.fuberlin.commons.parser.ISymbol;
 
-public abstract class Symbol {
+
+public abstract class Symbol implements ISymbol {
 	private String name;
 	
 	public Symbol(String name){

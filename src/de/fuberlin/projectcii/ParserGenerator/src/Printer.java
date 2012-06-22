@@ -232,7 +232,7 @@ public class Printer {
 			
 			// root elements
 			Document doc = docBuilder.newDocument();
-			String tagName = currNode.getSymbol();
+			String tagName = currNode.getSymbol().getName();
 			if (tagName.startsWith("<")){
 				tagName = tagName.substring(1, tagName.length()-1);
 			}
@@ -243,6 +243,24 @@ public class Printer {
 			doc.appendChild(root);
 			
 			doc = childrenToXML(node, root, doc);
+			
+			for (ISyntaxTree child:node.getChildren()){
+				tagName = currNode.getSymbol().getName();
+				if (tagName.startsWith("<")){
+					tagName = tagName.substring(1, tagName.length()-1);
+				}
+				Element childNode;
+				if (child.getChildrenCount() == 0){
+					childNode = doc.createElement("LEAF");
+					root.appendChild(childNode);
+				}
+				else{
+					childNode = doc.createElement(tagName);
+					root.appendChild(childNode);
+					doc = childrenToXML(child, childNode, doc);
+				}
+				
+			}
 			
 			// write the content into xml file
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -268,8 +286,10 @@ public class Printer {
 		
 		for (ISyntaxTree child:node.getChildren()){
 			SyntaxTree currNode = (SyntaxTree)child;
-			String tagName = currNode.getSymbol();
+
+			String tagName = currNode.getSymbol().getName();
 			boolean nonterminal=false;
+			
 			if (tagName.startsWith("<")){
 				tagName = tagName.substring(1, tagName.length()-1);
 				nonterminal = true;

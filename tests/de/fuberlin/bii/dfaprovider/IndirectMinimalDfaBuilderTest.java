@@ -25,8 +25,8 @@ public class IndirectMinimalDfaBuilderTest {
 	 */
 	@Test
 	public void testBuildMinimalDfa() throws Exception {
-		File rdFile = new File("src/test/resources/def/dfaprovider/test.rd");
-		String sourceFileName = "src/test/resources/source/dfaprovider/test.fun";
+		File rdFile = new File("tests/resources/de/fuberlin/bii/def/dfaprovider/test.rd");
+		String sourceFileName = "tests/resources/de/fuberlin/bii/source/dfaprovider/test.fun";
 
 		MinimalDfa<Character, StatePayload> mDfa = null;
 		MinimalDfaBuilder builder = new IndirectMinimalDfaBuilder();

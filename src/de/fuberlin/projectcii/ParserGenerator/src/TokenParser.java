@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import de.fuberlin.commons.lexer.ILexer;
 import de.fuberlin.commons.lexer.IToken;
+import de.fuberlin.commons.parser.StringSymbol;
 
 
 /**
@@ -112,7 +113,7 @@ public class TokenParser {
 		
 		// initalise Node
 		SyntaxTree tree = new SyntaxTree();
-		tree.setSymbol(symbol);
+		tree.setSymbol(new StringSymbol(symbol));
 		tree.setParent(parent);
 		
 		// Leaf(Terminal) reached. Get next Token to continue parsing with

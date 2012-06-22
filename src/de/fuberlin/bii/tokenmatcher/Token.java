@@ -32,8 +32,8 @@
 
 package de.fuberlin.bii.tokenmatcher;
 
-import de.fuberlin.bii.parser.IToken;
 import de.fuberlin.bii.utils.Test;
+import de.fuberlin.commons.lexer.IToken;
 
 
 
@@ -123,4 +123,9 @@ public class Token implements IToken {
 		public String toString() {
 			return "<" + getType() + ", " + getAttribute().toString() + ">";
 		}
+
+	@Override
+	public String getText() {
+		return getAttributeAsString();
+	}
 }

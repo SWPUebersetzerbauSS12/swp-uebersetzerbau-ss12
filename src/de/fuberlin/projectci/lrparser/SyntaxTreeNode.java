@@ -9,8 +9,9 @@ import java.util.logging.Logger;
 
 import de.fuberlin.commons.util.LogFactory;
 import de.fuberlin.projectci.extern.IAttribute;
-import de.fuberlin.projectci.extern.ISyntaxTree;
-import de.fuberlin.projectci.extern.IToken;
+import de.fuberlin.commons.parser.ISymbol;
+import de.fuberlin.commons.parser.ISyntaxTree;
+import de.fuberlin.commons.lexer.IToken;
 import de.fuberlin.projectci.grammar.Grammar;
 import de.fuberlin.projectci.grammar.Symbol;
 import de.fuberlin.projectci.grammar.TerminalSymbol;
@@ -26,9 +27,11 @@ public class SyntaxTreeNode implements ISyntaxTree{
 	
 	private IToken token;
 	// Attribute 
-	private Map<String, String> attributeName2Value = new HashMap<String, String>();
+	private Map<String, Object> attributeName2Value = new HashMap<String, Object>();
 	// cildren als LinkedList, um insertTree effizient zu implementieren zu können
 	private List<ISyntaxTree> children=new LinkedList<ISyntaxTree>();
+	
+	
 	
 	public SyntaxTreeNode(Symbol symbol) {
 		this.symbol = symbol;
@@ -43,14 +46,10 @@ public class SyntaxTreeNode implements ISyntaxTree{
 	// ****************************************************************************
 	
 	@Override
-	public void addTree(ISyntaxTree tree) {
+	public void addChild(ISyntaxTree tree) {
 		children.add(tree);		
 	}
 	
-	@Override
-	public String getName() {
-		return symbol.getName();
-	}
 
 	@Override
 	public int getChildrenCount() {
@@ -66,7 +65,7 @@ public class SyntaxTreeNode implements ISyntaxTree{
 	public List<ISyntaxTree> getChildrenByName(String name) {
 		List<ISyntaxTree> result=new ArrayList<ISyntaxTree>();
 		for (ISyntaxTree aChildTree : children) {
-			if (aChildTree.getName().equals(name)){
+			if (aChildTree.getToken() != null && name.equals(aChildTree.getToken().getText())){
 				result.add(aChildTree);
 			}
 		}
@@ -76,21 +75,16 @@ public class SyntaxTreeNode implements ISyntaxTree{
 	// TODO Attribut-Handling implementieren --> Fehler in ISyntaxTree (IAttribute fehlt/ addAttribute macht keinen Sinn)
 	
 	@Override
-	public IAttribute getAttribute(String name) {
+	public Object getAttribute(String name) {
 		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean setAttribute(String name, String value) {
-		// TODO Auto-generated method stub
-		return false;
+		return attributeName2Value.get(name);
 	}
 
 	@Override
 	public boolean addAttribute(String name) {
 		// TODO Auto-generated method stub
-		return false;
+		attributeName2Value.put(name, null);
+		return true;
 	}
 
 	
@@ -197,5 +191,48 @@ public class SyntaxTreeNode implements ISyntaxTree{
 //				continue;
 //			}
 		}				
+	}
+
+	@Override
+	public void setParent(ISyntaxTree tree) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public ISyntaxTree getParent() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ISyntaxTree removeChild(int i) {
+		return children.remove(i);
+	}
+
+	@Override
+	public boolean setAttribute(String name, Object value) {
+		attributeName2Value.put(name, value);
+		return true;
+	}
+
+	@Override
+	public IToken getToken() {
+		return token;
+	}
+
+	@Override
+	public List<ISyntaxTree> getChildren() {
+		return children;
+	}
+
+	@Override
+	public void printTree() {
+		System.out.println(toString());
+	}
+
+	@Override
+	public ISymbol getSymbol() {
+		return this.symbol;
 	}
 }

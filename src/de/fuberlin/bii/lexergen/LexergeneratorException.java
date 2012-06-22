@@ -39,7 +39,7 @@ package de.fuberlin.bii.lexergen;
  * @author Daniel Rotar
  * 
  */
-public class LexergeneratorException extends Exception {
+public class LexergeneratorException extends RuntimeException {
 
 	/**
 	 * serialVersionUID

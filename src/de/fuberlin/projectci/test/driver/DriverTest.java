@@ -10,8 +10,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.fuberlin.commons.util.LogFactory;
-import de.fuberlin.projectci.extern.ILexer;
-import de.fuberlin.projectci.extern.ISyntaxTree;
+import de.fuberlin.commons.lexer.ILexer;
+import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projectci.grammar.Grammar;
 import de.fuberlin.projectci.lrparser.Driver;
 import de.fuberlin.projectci.parseTable.ParseTable;
@@ -34,7 +34,7 @@ public class DriverTest {
 	@Before
 	public void setUp() throws Exception {
 		testDataProviders= new ArrayList<DriverTest.DriverTestDataProvider>();
-		testDataProviders.add(new DriverTestDataProvider1());
+		//testDataProviders.add(new DriverTestDataProvider1());
 		testDataProviders.add(new DriverTestDataProvider2());
 	}
 	

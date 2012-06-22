@@ -6,11 +6,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.fuberlin.commons.util.LogFactory;
-import de.fuberlin.projectci.extern.ILexer;
-import de.fuberlin.projectci.extern.ISyntaxTree;
-import de.fuberlin.projectci.extern.IToken;
-import de.fuberlin.projectci.extern.lexer.Lexer;
-import de.fuberlin.projectci.extern.lexer.io.StringCharStream;
+import de.fuberlin.commons.lexer.ILexer;
+import de.fuberlin.commons.parser.ISyntaxTree;
+import de.fuberlin.commons.lexer.IToken;
+import de.fuberlin.projecta.lexer.Lexer;
+import de.fuberlin.projecta.lexer.io.StringCharStream;
 import de.fuberlin.projectci.grammar.BNFParsingErrorException;
 import de.fuberlin.projectci.grammar.Grammar;
 import de.fuberlin.projectci.grammar.GrammarReader;
@@ -72,13 +72,13 @@ public class DriverTestDataProvider2 implements DriverTestDataProvider{
 		try {
 			parseTable=ptb.buildParseTable();
 			logger.info("Valid source grammar.");
-			System.out.println(parseTable.toString());
+			//System.out.println(parseTable.toString());
 		} catch (InvalidGrammarException e) {
 			logger.log(Level.INFO, "Invalid source grammar.",e);
 		}	
 
 		String strProgram=
-				"def int fib(int n){\n"+
+				"def int fib(int n/{\n"+
 				"  if (n <= 1) return n;\n"+
 				"  else {\n"+
 				"    int fib;\n"+
@@ -101,7 +101,7 @@ public class DriverTestDataProvider2 implements DriverTestDataProvider{
 		GrammarReader grammarReader = new GrammarReader();
 		Grammar g3 = null;
 		try {
-			g3 = grammarReader.readGrammar("./doc/quellsprache_bnf.txt");
+			g3 = grammarReader.readGrammar("./input/de/fuberlin/projectci/quellsprache_bnf.txt");
 		} catch (BNFParsingErrorException e) {
 			fail(e.getClass()+": "+e.getMessage());
 		}

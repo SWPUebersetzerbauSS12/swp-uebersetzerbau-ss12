@@ -1,6 +1,5 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
-import de.fuberlin.projecta.analysis.SymbolTableStack;
 import de.fuberlin.projecta.lexer.BasicTokenType;
 
 public class BasicType extends Type {
@@ -11,10 +10,6 @@ public class BasicType extends Type {
 		this.type = t;
 	}
 	
-	public void buildSymbolTable(SymbolTableStack tables) {
-
-	}
-
 	@Override
 	public String genCode() {
 		String ret = "";

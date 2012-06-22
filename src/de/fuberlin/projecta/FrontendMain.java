@@ -44,6 +44,7 @@ public class FrontendMain {
 			parser.parse(lexer, "");
 		} catch (ParseException e) {
 			e.printStackTrace();
+			System.err.println(e.getDetails());
 			System.err.println("Parser failed.");
 			return;
 		}
@@ -58,6 +59,7 @@ public class FrontendMain {
 		}else{
 			System.out.println("Bad semantics!");
 		}
+		analyzer.getAST().printTree();
 		System.out.println(analyzer.getAST().genCode());
 		
 	}

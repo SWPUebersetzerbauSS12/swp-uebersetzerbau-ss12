@@ -2,6 +2,8 @@ package de.fuberlin.projectci.parseTable;
 
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -92,6 +94,24 @@ public class ParseTable extends EasyComparableObject{
 			}
 			strBuf.append("]");
 			return strBuf.toString();
+		}
+		
+		public List<TerminalSymbol> getAllLegalTerminals() {
+			// Temporäre Liste
+			List<TerminalSymbol> temp = new LinkedList<TerminalSymbol>();
+			
+			// Alle Terminale holen
+			Set<TerminalSymbol> terminals = terminalSymbol2Action.keySet();
+			
+			// Über die Terminalsymbole iterieren und prüfen, ob diese wirklich erlaubt sind
+			for(TerminalSymbol t : terminals) {
+				Action a = terminalSymbol2Action.get(t);
+				if(a != null && !(a instanceof ErrorAction)) {
+					temp.add(t);
+				}
+			}
+			return temp;
+			
 		}
 
 		

@@ -28,6 +28,7 @@ public class IndirectMinimalDfaBuilderTest {
 		File rdFile = new File("tests/resources/de/fuberlin/bii/def/dfaprovider/test.rd");
 		String sourceFilename = "tests/resources/de/fuberlin/bii/source/dfaprovider/test.fun";
 
+
 		MinimalDfa<Character, StatePayload> mDfa = null;
 		MinimalDfaBuilder builder = new IndirectMinimalDfaBuilder();
 

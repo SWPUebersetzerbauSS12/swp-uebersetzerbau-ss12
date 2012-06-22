@@ -5,8 +5,10 @@ import java.io.File;
 import org.junit.Assert;
 import org.junit.Test;
 
-import de.fuberlin.bii.tokenmatcher.errorhandler.ErrorCorrector.CorrectionMode;
+
 import de.fuberlin.commons.lexer.IToken;
+import de.fuberlin.bii.tokenmatcher.errorhandler.ErrorCorrector.CorrectionMode;
+import de.fuberlin.commons.lexer.ILexer;
 
 public class LexergenTest {
 	
@@ -18,8 +20,10 @@ public class LexergenTest {
 		File rdFile = new File("tests/resources/de/fuberlin/bii/def/lexergen/test.rd");
 		File sourceFile = new File("tests/resources/de/fuberlin/bii/source/lexergen/test.fun");
 		
-	    Lexergenerator lexergen = new Lexergen(rdFile, sourceFile, BuilderType.indirectBuilder, CorrectionMode.PANIC_MODE, true);		
-//		Lexergenerator lexergen = new Lexergen(rdFile, sourceFile, BuilderType.directBuilder, CorrectionMode.PANIC_MODE, true);		
+
+	  //Lexergenerator lexergen = new Lexergen(rdFile, sourceFile, BuilderType.indirectBuilder, CorrectionMode.PANIC_MODE, true);		
+		ILexer lexergen = new Lexergen(rdFile, sourceFile, BuilderType.directBuilder, CorrectionMode.PANIC_MODE, true);		
+
 		IToken currentToken = null;
 		
 		currentToken = lexergen.getNextToken();

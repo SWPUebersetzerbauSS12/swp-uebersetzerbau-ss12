@@ -17,15 +17,36 @@ public class Program extends AbstractSyntaxTree {
 
 	@Override
 	public boolean checkSemantics() {
+		boolean mainExists = false;
 		for(int i = 0; i < this.getChildrenCount(); i++){
-			if(!((AbstractSyntaxTree)this.getChild(i)).checkSemantics()){
+			AbstractSyntaxTree child = (AbstractSyntaxTree)this.getChild(i);
+			if(!child.checkSemantics()){
 				return false;
 			}
+			if(child instanceof FuncDef){
+				String name = ((Id)child.getChild(1)).getValue();
+				if(name.equals("main")){
+					mainExists = true;
+				}
+			}
 		}
-		return true;
+		return mainExists;
+	}
+
+	@Override
+	public boolean checkTypes() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 	/*
 	 * GenCode already implemented by AbstractSyntaxTree
+	 * - i don't care, we need some declarations
 	 */
+	public String genCode(){
+		//we use puts to print to screen
+		String out = "declare i32 @puts(i8*) nounwind\n";
+		out += super.genCode();
+		return out;
+	}
 }

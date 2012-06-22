@@ -1,6 +1,5 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
-import de.fuberlin.projecta.analysis.SymbolTableStack;
 
 public class BoolLiteral extends Statement {
 	
@@ -10,11 +9,6 @@ public class BoolLiteral extends Statement {
 		this.value = value;
 	}
 	
-	@Override
-	public void buildSymbolTable(SymbolTableStack stack){
-		
-	}
-
 	@Override
 	public boolean checkSemantics() {
 		return true;
@@ -27,5 +21,11 @@ public class BoolLiteral extends Statement {
 	
 	public boolean getValue(){
 		return this.value;
+	}
+
+	@Override
+	public boolean checkTypes() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

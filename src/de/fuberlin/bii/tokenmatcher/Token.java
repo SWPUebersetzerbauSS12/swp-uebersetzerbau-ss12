@@ -35,6 +35,7 @@ package de.fuberlin.bii.tokenmatcher;
 import de.fuberlin.bii.utils.Test;
 import de.fuberlin.commons.lexer.IToken;
 
+
 public class Token implements IToken {
 	// TODO: resolve conflict with given interface IToken
 
@@ -117,7 +118,8 @@ public class Token implements IToken {
 		return "<" + getType() + ", " + getAttribute().toString() + ">";
 	}
 
+	@Override
 	public String getText() {
-		return attribute.toString();
+		return getAttributeAsString();
 	}
 }

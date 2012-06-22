@@ -240,7 +240,7 @@ public class Printer {
 			
 			// root elements
 			Document doc = docBuilder.newDocument();
-			String tagName = currNode.getSymbol();
+			String tagName = currNode.getSymbol().getName();
 			if (tagName.startsWith("<")){
 				tagName = tagName.substring(1, tagName.length()-1);
 			}
@@ -248,7 +248,7 @@ public class Printer {
 			doc.appendChild(root);
 			
 			for (ISyntaxTree child:node.getChildren()){
-				tagName = currNode.getSymbol();
+				tagName = currNode.getSymbol().getName();
 				if (tagName.startsWith("<")){
 					tagName = tagName.substring(1, tagName.length()-1);
 				}
@@ -289,7 +289,7 @@ public class Printer {
 		
 		for (ISyntaxTree child:node.getChildren()){
 			SyntaxTree currNode = (SyntaxTree)child;
-			String tagName = currNode.getSymbol();
+			String tagName = currNode.getSymbol().getName();
 			if (tagName.startsWith("<")){
 				tagName = tagName.substring(1, tagName.length()-1);
 			}

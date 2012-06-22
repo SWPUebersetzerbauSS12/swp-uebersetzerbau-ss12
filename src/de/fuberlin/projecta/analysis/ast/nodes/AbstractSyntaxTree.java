@@ -18,11 +18,15 @@ public abstract class AbstractSyntaxTree extends Tree {
 	}
 
 	public SymbolTable getHigherTable() {
-		while (getParent() != null) {
-			if (((AbstractSyntaxTree) getParent()).getTable() != null) {
-				return ((AbstractSyntaxTree) getParent()).getTable();
+		if(getParent() != null){
+			AbstractSyntaxTree parent = (AbstractSyntaxTree) getParent();
+			while (parent != null) {
+				if (((AbstractSyntaxTree) getParent()).getTable() != null) {
+					return ((AbstractSyntaxTree) getParent()).getTable();
+				}
+				parent = (AbstractSyntaxTree) parent.getParent();
 			}
-		}
+		}		
 		return null;
 	}
 
@@ -37,7 +41,9 @@ public abstract class AbstractSyntaxTree extends Tree {
 	/**
 	 * Method for building the SymbolTables that the nodes should implement
 	 **/
-	public abstract void buildSymbolTable(SymbolTableStack tables);
+	public void buildSymbolTable(SymbolTableStack tables){
+		
+	}
 
 	/**
 	 * Code generation
@@ -50,6 +56,8 @@ public abstract class AbstractSyntaxTree extends Tree {
 		}
 		return out;
 	}
+	
+	public abstract boolean checkTypes();
 
 	/**
 	 * 

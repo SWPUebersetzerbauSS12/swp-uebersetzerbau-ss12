@@ -16,8 +16,7 @@ public interface ISyntaxTree {
 
 	public void addChild(ISyntaxTree tree);
 
-	// TODO: Needs to be resolved
-	//public Symbol getSymbol();
+	public ISymbol getSymbol();
 
 	public ISyntaxTree removeChild(int i);
 

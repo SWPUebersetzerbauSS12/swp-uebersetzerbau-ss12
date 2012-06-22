@@ -1,6 +1,5 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
-import de.fuberlin.projecta.analysis.SymbolTableStack;
 
 public class RealLiteral extends Statement {
 	
@@ -8,10 +7,6 @@ public class RealLiteral extends Statement {
 	
 	public RealLiteral(double value){
 		this.value = value;
-	}
-	
-	public void buildSymbolTable(SymbolTableStack tables) {
-
 	}
 
 	@Override
@@ -26,5 +21,11 @@ public class RealLiteral extends Statement {
 	
 	public double getValue(){
 		return this.value;
+	}
+
+	@Override
+	public boolean checkTypes() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

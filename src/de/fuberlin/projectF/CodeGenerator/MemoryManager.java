@@ -38,6 +38,10 @@ public class MemoryManager {
 		return current.newStackVar(name, type);
 	}
 	
+	public Variable newArrayVar(String name, String type, int length) {
+		return current.newArrayVar(name, type, length);
+	}
+	
 	public void regToStack(Variable var) {
 		current.regToStack(var);
 	}

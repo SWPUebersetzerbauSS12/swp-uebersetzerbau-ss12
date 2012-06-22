@@ -2,6 +2,8 @@ package de.fuberlin.projectF.CodeGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.fuberlin.projectF.CodeGenerator.model.Token.Parameter;
 
@@ -131,12 +133,42 @@ public class Translator {
 				break;
 
 			case Allocation:
+				// Array
+				String tT = tok.getTypeTarget();
+				if  (tT.startsWith("[")){
+					// Extrahieren der Array-Größen
+					ArrayList<Integer> numbers = new ArrayList<Integer>();
+					Pattern p = Pattern.compile("(\\d+)(\\sx)");
+					Matcher m = p.matcher(tT); 
+					while (m.find()) {
+					   numbers.add(new Integer(m.group(1)));
+					}
+					
+					// Extrahieren des Typs
+					p = Pattern.compile("(i)(\\d+)");
+					m = p.matcher(tT);
+					m.find();
+					String type = m.group();
+					System.out.println(type);
+					
+					// Länge berechnen
+					int length = 1;
+					for (Integer i : numbers) {
+						length *= i;
+					}
+					Variable newArr = mem.newArrayVar(tok.getTarget(), type, length);
+					subl("$" + String.valueOf(newArr.getSize()), "%esp",
+							"Allocation " + tok.getTarget());
+				}
+				// Kein Arryay
+				else{
 				// Neue Variable anlegen
 				Variable newVar = mem.newStackVar(tok.getTarget(),
-						tok.getTypeTarget());
+						tT);
 				// Stackpointer verschieben
 				subl("$" + String.valueOf(newVar.getSize()), "%esp",
 						"Allocation " + tok.getTarget());
+				}
 				break;
 
 			case Assignment:

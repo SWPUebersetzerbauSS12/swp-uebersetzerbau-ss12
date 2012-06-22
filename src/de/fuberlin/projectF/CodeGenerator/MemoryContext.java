@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import de.fuberlin.projectF.CodeGenerator.model.Array;
 import de.fuberlin.projectF.CodeGenerator.model.MMXRegisterAddress;
 import de.fuberlin.projectF.CodeGenerator.model.StackAddress;
 import de.fuberlin.projectF.CodeGenerator.model.Variable;
@@ -41,17 +42,24 @@ public class MemoryContext {
 
 	// Neue Variable auf dem Stack angeben
 	public Variable newStackVar(String name, String type) {
-		int size = 0;
-		if (type.equals("i32"))
-			size = 4;
-		else if(type.equals("double"))
-			size = 8;
+		int size = getSize(type);
 
 		stackVars++;
 		stackPointer -= size;
 		Variable newVar = new Variable(type, size, stackPointer, name);
 		variables.put(name, newVar);
 		return newVar;
+	}
+	
+	public Array newArrayVar(String name, String type, int length) {
+		int size = getSize(type);
+		size *= length;
+		
+		stackVars++;
+		stackPointer -= size;
+		Array newArr = new Array(type, size, stackPointer, name);
+		variables.put(name, newArr);
+		return newArr;
 	}
 
 	// Verweis auf Variable speichern
@@ -94,11 +102,7 @@ public class MemoryContext {
 
 	// Vorhandene Stackvariable hinzufügen, z. B. Funktionsparameter, nach Aufruf
 	public void addStackVar(String name, String type, int stackAddress) {
-		int size;
-		if (type.equals("double"))
-			size = 8;
-		else
-			size = 4;
+		int size = getSize(type);
 
 		Variable newVar = new Variable(type, size, stackAddress, name);
 		variables.put(name, newVar);
@@ -200,6 +204,14 @@ public class MemoryContext {
 		for (MMXRegisterAddress r : freeMMXRegisters)
 			if (r.regNumber == i) return r;
 		return null;
+	}
+	
+	public static int getSize(String type){
+		if (type.equals("i32"))
+			return 4;
+		if(type.equals("double"))
+			return 8;
+		return 0;
 	}
 
 }

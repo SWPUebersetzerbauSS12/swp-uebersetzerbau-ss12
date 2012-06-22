@@ -24,7 +24,7 @@ public class RegexToDfaTest {
 		Notification.enableDebugPrinting();
 		
 		RegexToPayloadMap<de.fuberlin.bii.tokenmatcher.StatePayload> regexToPayloadMap = new RegexToPayloadMap<de.fuberlin.bii.tokenmatcher.StatePayload>();
-		regexToPayloadMap.put( "(|2)*3\\|333", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "NUM", new ParseIntAttribute()));
+		regexToPayloadMap.put( "(|2)?3\\|333", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "NUM", new ParseIntAttribute()));
 	  regexToPayloadMap.put( "c(1|2)*3", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "OP", new ParseStringAttribute()));
 		
 		
@@ -33,6 +33,7 @@ public class RegexToDfaTest {
 
 		LexemeReader lexemeReader = new BufferedLexemeReader("tests/resources/de/fuberlin/bii/source/tokenmatcher/regex.fun");// new SimpleLexemeReader(
 		System.out.println( fsm);
+		System.out.println( "isDeterministic: " + fsm.isDeterministic());
 		System.out.println( new MinimalDfa( fsm));
 
 		Assert.assertTrue( fsm.isDeterministic());		

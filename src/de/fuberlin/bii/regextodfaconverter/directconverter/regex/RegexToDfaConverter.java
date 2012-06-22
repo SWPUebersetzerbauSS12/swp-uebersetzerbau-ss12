@@ -101,7 +101,7 @@ public class RegexToDfaConverter {
 		PositionToPayloadMap<StatePayload> positionToPayloadMap = new PositionToPayloadMap<StatePayload>();
 		
 		for ( String regex : regexToPayloadMap.keySet()) {
-			if ( !concatenatedRegex.isEmpty())
+			/*if ( !concatenatedRegex.isEmpty())
 				concatenatedRegex += "|";
 			try {
 				regex = Regex.reduceRegex(regex);
@@ -111,6 +111,7 @@ public class RegexToDfaConverter {
 								+ regex
 								+ "' ist ungültig oder verwendet nicht unterstütze Operatoren!");
 			}
+			*/
 		  concatenatedRegex += regex;
 		  positionToPayloadMap.put( concatenatedRegex.length() -1, regexToPayloadMap.get( regex));  
    	}

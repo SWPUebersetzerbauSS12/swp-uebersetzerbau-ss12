@@ -57,7 +57,6 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Prod
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionSet;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symbol;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Terminal;
-import de.fuberlin.bii.regextodfaconverter.directconverter.regex.RegexSpecialChars;
 import de.fuberlin.bii.regextodfaconverter.directconverter.regex.operatortree.OperatorType;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.InnerNode;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.Leaf;

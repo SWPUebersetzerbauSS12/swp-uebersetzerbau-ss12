@@ -67,40 +67,6 @@ public class Regex {
 	private static int LAST_ASCII_CHAR = 255;
 
 	
-	/**
-	 * @Author Johannes Dahlke
-	 * 
-	 * Liefert das Zeichen mit dem niedrigsten Ordinalwert 
-	 * aus der Menge der für reguläre Ausdrücke zugelassenen Zeichen. 
-	 * 
-	 * @return das niederwertigste zulässige Zeichen.
-	 */
-	public static int getFirstAsciiChar() {
-		return FIRST_ASCII_CHAR;
-	}
-	
-	/**
-	 * @Author Johannes Dahlke
-	 * 
-	 * Liefert das Zeichen mit dem höchsten Ordinalwert 
-	 * aus der Menge der für reguläre Ausdrücke zugelassenen Zeichen. 
-	 * 
-	 * @return das höchstwertigste zulässige Zeichen.
-	 */
-	public static int getLastAsciiChar() {
-		return LAST_ASCII_CHAR;
-	}	
-	
-	/**
-	 * @Author Johannes Dahlke
-	 * 
-	 * Liefert die Menge der reservierten Zeichen. 
-	 * @return Ein Feld mit den reservierten Zeichen.
-	 */
-	public static char[] getMetaChars() {
-		return META_CHARS;
-	}
-	
 	
 	
 	/**

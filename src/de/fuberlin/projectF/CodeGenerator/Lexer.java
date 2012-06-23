@@ -317,19 +317,26 @@ public abstract class Lexer {
 				newToken.setType(TokenType.Allocation);
 				newToken.setTarget(line[0]);
 				newToken.setTypeTarget(line[3].replace((char) 1, ' '));
+				
 			} else if (line[2].contentEquals("call")) {
 				newToken.setTarget(line[0]);
 				newToken.setTypeTarget(line[3]);
 				
-				newToken.setType(TokenType.Call);
-				newToken.setOp1(line[4]);
+				int i;
+				for(i = 0; i < line.length; i++)
+					if(line[i].charAt(0) == '@')
+						break;
 				
-				if(line[4].equals("@printf")) {
-					fillParameter(newToken, line[6].replace((char) 1, ' '));
+				newToken.setType(TokenType.Call);
+				
+				newToken.setOp1(line[i]);
+				
+				if(line[i].equals("@printf")) {
+					fillParameter(newToken, line[i + 2].replace((char) 1, ' '));
 					newToken.removeParameters(1);
 					newToken.removeParameters(1);
 				} else {
-					fillParameter(newToken, line[5].replace((char) 1, ' '));
+					fillParameter(newToken, line[i + 1].replace((char) 1, ' '));
 				}
 			}
 
@@ -429,16 +436,47 @@ public abstract class Lexer {
 	
 	private void postprocessing() {
 		for (Map.Entry<String, ArrayList<String>> entry : deleteCandidate.entrySet()) {
-		    System.out.println("Key: " + entry.getKey());
+			String key = entry.getKey();
+		    System.out.println("Key: " + key);
 		    
+		    int c = 0;
+		    String var = entry.getValue().get(c);
+		    while(var != null) {
+		    	
+			   	for(int i = 0; i < tokenStream.size(); i++) {
+			    	if(tokenStream.get(i).getOp1().equals(var) || tokenStream.get(i).getOp2().equals(var)) {
+			    		System.out.println("add " + tokenStream.get(i).getTarget() + " to delete candidates");
+			    		deleteCandidate.get(key).add(tokenStream.get(i).getTarget());
+			    	}
+			    }
+			   	
+			   	for(int i = 0; i < tokenStream.size(); i++) {
+			    	if(tokenStream.get(i).getTarget().equals(var)) {
+			    		//tokenStream.
+			    		System.out.println("remove token #" + i);
+			    		tokenStream.remove(i);
+			    	}
+			    }
+			   
+			   	try {
+			   		c++;
+			   		var = entry.getValue().get(c); 
+			   	} catch (IndexOutOfBoundsException e) {
+			   		var = null;
+			   	}
+			}
+		    
+		    // ersetzen
 		    for(int i = 0; i < tokenStream.size(); i++) {
-		    	if(tokenStream.get(i).getTarget().equals(entry.getValue().get(0))) {
-		    		System.out.println(i);
+		    	if(tokenStream.get(i).getType() == TokenType.Call) {
+		    		for(int j = 0; j < tokenStream.get(i).getParameterCount(); j++) {
+		    			if(tokenStream.get(i).getParameter(j).getOperand().equals(entry.getValue().get(entry.getValue().size() - 1))) {
+		    				System.out.println("var: " + entry.getValue().get(entry.getValue().size() - 1));
+		    				tokenStream.get(i).getParameter(j).setOperand(key);
+		    			}
+		    		}
 		    	}
 		    }
-		    
-		    System.out.println("Value" + entry.getValue().get(0));
-		    
 		}
 
 	}

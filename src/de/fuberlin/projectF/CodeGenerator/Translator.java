@@ -99,10 +99,12 @@ public class Translator {
 					for (int i = tok.getParameterCount() - 1; i >= 0; i--) {
 						Parameter p = tok.getParameter(i);
 						String operand;
+						System.out.println(p.getOperand());
 						if (p.getOperand().startsWith("%"))
 							operand = mem.getAddress(p.getOperand());
 						else
 							operand = "$" + p.getOperand();
+						
 						
 						if (operand.charAt(1) == '@')
 							operand = "$" + operand.substring(3);

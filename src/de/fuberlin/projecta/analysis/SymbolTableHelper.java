@@ -12,7 +12,7 @@ import de.fuberlin.projecta.analysis.ast.nodes.AbstractSyntaxTree;
  */
 public class SymbolTableHelper {
 
-	public EntryType lookup(String name, AbstractSyntaxTree node) {
+	public static EntryType lookup(String name, AbstractSyntaxTree node) {
 
 		SymbolTable t = node.getTable();
 		EntryType entry = null;
@@ -37,7 +37,7 @@ public class SymbolTableHelper {
 		return null;
 	}
 
-	public EntryType lookup(String name, List<EntryType> params,
+	public static EntryType lookup(String name, List<EntryType> params,
 			AbstractSyntaxTree node) {
 
 		SymbolTable t = node.getTable();

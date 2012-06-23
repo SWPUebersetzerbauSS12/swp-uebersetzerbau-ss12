@@ -41,6 +41,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Queue;
+import java.util.Stack;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.ItemAutomat;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.Lr1ItemAutomat;
@@ -155,7 +158,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 	
 	// 3.1 Character class definition
 	private static final ProductionRule PRODUCTION_REGEX_CLASS = new ProductionRule(NONTERMINAL_U, BRACKET_LEFT_CLASS, NONTERMINAL_CLASS_SIGNUM, NONTERMINAL_CLASS_ELEMENTS, BRACKET_RIGHT_CLASS);
-	private static final ProductionRule PRODUCTION_REGEX_CLASS_STEADY = new ProductionRule(NONTERMINAL_U, BRACKET_LEFT_CLASS, NONTERMINAL_CLASS_SIGNUM, NONTERMINAL_CLASS_ELEMENTS, BRACKET_RIGHT_CLASS);
+	private static final ProductionRule PRODUCTION_REGEX_CLASS_STEADY = new ProductionRule(NONTERMINAL_UX, BRACKET_LEFT_CLASS, NONTERMINAL_CLASS_SIGNUM, NONTERMINAL_CLASS_ELEMENTS, BRACKET_RIGHT_CLASS);
 	// 3.1.1 Invert class definition or not
 	private static final ProductionRule PRODUCTION_REGEX_CLASS_SIGNUM_INVERT = new ProductionRule(NONTERMINAL_CLASS_SIGNUM, CLASSIFIER_CLASS_SIGNUM);
 	private static final ProductionRule PRODUCTION_REGEX_CLASS_SIGNUM_RIGHT = new ProductionRule(NONTERMINAL_CLASS_SIGNUM, EMPTY_STRING);
@@ -226,6 +229,21 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 	  // Priority level 3 (Enclosure)
 		productions.add( PRODUCTION_REGEX_GROUP);
 		productions.add( PRODUCTION_REGEX_GROUP_STEADY);
+    // 3.1 Character class definition
+		productions.add( PRODUCTION_REGEX_CLASS);
+		productions.add( PRODUCTION_REGEX_CLASS_STEADY);
+		// 3.1.1 Invert class definition or not
+		productions.add( PRODUCTION_REGEX_CLASS_SIGNUM_INVERT);
+		productions.add( PRODUCTION_REGEX_CLASS_SIGNUM_RIGHT);
+		// 3.1.2 at least one character is expected to define a class 
+		productions.add( PRODUCTION_REGEX_CLASS_ELEMENTS);
+		productions.add( PRODUCTION_REGEX_CLASS_ELEMENTS_FINAL);
+		productions.add( PRODUCTION_REGEX_CLASS_RANGE_ELEMENTS);
+		productions.add( PRODUCTION_REGEX_CLASS_RANGE_ELEMENTS_FINAL);
+		productions.add( PRODUCTION_REGEX_CLASS_RANGE);
+		
+		
+		
 		productions.add( PRODUCTION_REGEX_BRACKET_BYPASS);
 		productions.add( PRODUCTION_REGEX_BRACKET_STEADY_BYPASS);
 	  productions.add( PRODUCTION_REGEX_EMPTY_STRING);
@@ -429,6 +447,165 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 	  // alike UX -> ( R ) 
 		result.put( PRODUCTION_REGEX_GROUP_STEADY, semanticRules);
 
+
+		// -----------------------------
+		// 3.1  Character class definition
+		// -----------------------------
+
+		// U -> [ CS CE ]
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) {
+				OperatorNode nodeU = new OperatorNode( OperatorType.ALTERNATIVE);
+				Boolean buildComplementClass = (Boolean) attributesMaps[2].get( "complement");
+				
+				// determin the common payload
+				Object commonPayload = ((Symbol) attributesMaps[1].get( "value")).getPayload();
+				if ( Test.isUnassigned( commonPayload))
+					commonPayload = (Object) attributesMaps[2].get( "payload");
+				if ( Test.isUnassigned( commonPayload))
+					((Symbol) attributesMaps[4].get( "value")).getPayload();
+				
+				List<Symbol> values = (List<Symbol>) attributesMaps[3].get( "values");
+				if ( buildComplementClass) {
+				  // build the complement class by exclusion of all chars mentioned in list values
+					// and add the determine common payload to each of them
+					List<Symbol> complementValues = new ArrayList<Symbol>();
+					for ( char c = RegexCharSet.getFirstAsciiChar(); c <= RegexCharSet.getLastAsciiChar(); c++) {
+						RegularExpressionElement complementCharacterCandidate = new RegularExpressionElement( c, commonPayload);
+						if ( !values.contains( complementCharacterCandidate))
+							complementValues.add( complementCharacterCandidate);
+					} 
+					values = complementValues;
+				} else {
+					// otherwise, we use the given values. Finally we add the common payload to all that unassigned 
+					for ( Symbol value : values) {
+						if ( Test.isUnassigned( value.getPayload()))
+							value.setPayload( commonPayload);
+					}
+				}
+				
+				// now convert the list to a chain of alternatives 
+				Queue<Symbol> valuesQueue = new ArrayBlockingQueue<Symbol>( values.size());
+				valuesQueue.addAll( values);
+				TreeNode relRootNode = new TerminalNode( valuesQueue.poll());
+				while ( !valuesQueue.isEmpty()) {
+					TreeNode leftChild = relRootNode;
+					TreeNode rightChild = new TerminalNode( valuesQueue.poll());
+					relRootNode = new OperatorNode( OperatorType.ALTERNATIVE);
+					((OperatorNode) relRootNode).setLeftChildNode( leftChild);
+					((OperatorNode) relRootNode).setRightChildNode( rightChild);
+				}
+				attributesMaps[0].put( "node", relRootNode);
+			}
+		});
+		result.put( PRODUCTION_REGEX_CLASS, semanticRules);
+		result.put( PRODUCTION_REGEX_CLASS_STEADY, semanticRules);
+		
+		// CS -> ^
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) {
+				Object payload = ((Symbol) attributesMaps[2].get( "value")).getPayload();
+				attributesMaps[0].put( "complement", true);
+				attributesMaps[0].put( "payload", payload);
+			}
+		});
+		result.put( PRODUCTION_REGEX_CLASS, semanticRules);
+
+		// CS -> \epsilon
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) {
+				Object payload = ((Symbol) attributesMaps[2].get( "value")).getPayload();
+				attributesMaps[0].put( "complement", false);
+				attributesMaps[0].put( "payload", payload);
+			}
+		});
+		result.put( PRODUCTION_REGEX_CLASS, semanticRules);
+
+		
+		// CE -> CE V
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) {
+				List<Symbol> values = (List<Symbol>) attributesMaps[1].get( "values");
+			  values.add( (Symbol) attributesMaps[2].get( "value"));
+				attributesMaps[0].put( "values", values);
+			}
+		});
+		result.put( PRODUCTION_REGEX_CLASS_ELEMENTS, semanticRules);
+
+		// CE -> V
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) {
+				List<Symbol> values = new ArrayList<Symbol>();
+				values.add( (Symbol) attributesMaps[1].get( "value"));
+				attributesMaps[0].put( "values", values);
+			}
+		});
+		result.put( PRODUCTION_REGEX_CLASS_ELEMENTS_FINAL, semanticRules);
+
+		// CE -> CE CR
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) {
+				List<Symbol> values = (List<Symbol>) attributesMaps[1].get( "values");
+				List<Symbol> rangeValues = (List<Symbol>) attributesMaps[2].get( "values");
+				values.addAll( rangeValues);
+				attributesMaps[0].put( "values", values);
+			}
+		});
+		result.put( PRODUCTION_REGEX_CLASS_RANGE_ELEMENTS, semanticRules);
+		
+		// CE -> CR
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) {
+				List<Symbol> rangeValues = (List<Symbol>) attributesMaps[1].get( "values");
+				attributesMaps[0].put( "values", rangeValues);
+			}
+		});
+		result.put( PRODUCTION_REGEX_CLASS_ELEMENTS_FINAL, semanticRules);
+
+		
+		// CE -> V - V1   whereas holds Ord(V) <= Ord(V1) 
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) throws OperatorTreeException {
+				List<Symbol> values = new ArrayList<Symbol>();
+				RegularExpressionElement valueV = (RegularExpressionElement) attributesMaps[1].get( "value");
+				Object commonPayload = ((Symbol) attributesMaps[2].get( "value")).getPayload();
+				RegularExpressionElement valueV1 = (RegularExpressionElement) attributesMaps[3].get( "value");
+				char valueVChar = (Character) valueV.getValue();
+				char valueV1Char = (Character) valueV1.getValue();
+				
+				for ( char c = valueVChar; c <= valueV1Char; c++) {
+					if ( c == valueVChar 
+							&& Test.isAssigned( valueV.getPayload()))
+						values.add( new RegularExpressionElement( c, valueV.getPayload()));
+					else if ( c == valueV1Char 
+							&& Test.isAssigned( valueV1.getPayload()))
+						values.add( new RegularExpressionElement( c, valueV1.getPayload()));
+					else
+					  values.add( new RegularExpressionElement( c, commonPayload));
+				}
+				
+				if ( values.isEmpty())
+				  throw new OperatorTreeException( "Invalid regular expression. Empty range in character class.");
+					
+				attributesMaps[0].put( "values", values);
+			}
+		});
+		result.put( PRODUCTION_REGEX_CLASS_RANGE, semanticRules);
+
+		
+		
+		// -----------------------------
+		// 3.n Empty string
+		// -----------------------------
+		
 	  // U -> \epsilon
 		semanticRules = new SemanticRules();
 		semanticRules.add( new SemanticRule() {	

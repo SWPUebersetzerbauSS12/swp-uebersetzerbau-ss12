@@ -2,6 +2,9 @@ package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
+import java.util.Stack;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import junit.framework.Assert;
 
@@ -15,7 +18,6 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symb
 import de.fuberlin.bii.utils.Notification;
 
 public class ItemAutomataTest {
-
 
 
 	private void testMatchingOfExpressionWithAutomatAndGrammar( ItemAutomat<Symbol> itemAutomata, String expression, ContextFreeGrammar grammar) throws Exception {
@@ -145,7 +147,8 @@ public class ItemAutomataTest {
 		printAutomataInfo( itemAutomata);
 		
 		testAutomataToReduceConflict( itemAutomata, false);
-		testMatchingOfExpressionWithAutomatAndGrammar( itemAutomata, expression, grammar);
+		testMatchingOfExpressionWithAutomatAndGrammar( itemAutomata, expression, grammar);		
 	}
+
 		
 }

@@ -74,12 +74,12 @@ public class RegexCharSet {
 	 * 
 	 *  Zeichen 0x00 - 0x03 sind geschützt.
 	 */
-	private static int FIRST_ASCII_CHAR = 0x04; 
+	private static char FIRST_ASCII_CHAR = 0x04; 
 
 	/**
 	 * Definiert das letzte Zeichen des Alphabets aus dem ASCII Zeichensatz.
 	 */
-	private static int LAST_ASCII_CHAR = 0xFF;
+	private static char LAST_ASCII_CHAR = 0xFF;
 
 	
 	/**
@@ -88,7 +88,7 @@ public class RegexCharSet {
 	 * 
 	 * @return das niederwertigste zulässige Zeichen.
 	 */
-	public static int getFirstAsciiChar() {
+	public static char getFirstAsciiChar() {
 		return FIRST_ASCII_CHAR;
 	}
 	
@@ -98,7 +98,7 @@ public class RegexCharSet {
 	 * 
 	 * @return das höchstwertigste zulässige Zeichen.
 	 */
-	public static int getLastAsciiChar() {
+	public static char getLastAsciiChar() {
 		return LAST_ASCII_CHAR;
 	}
 	

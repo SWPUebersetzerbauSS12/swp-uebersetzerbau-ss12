@@ -30,18 +30,23 @@
  *
  */
 
-package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
-
-import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionRule;
+package de.fuberlin.bii.regextodfaconverter.directconverter.regex.operatortree;
 
 /**
  * 
  * @author Johannes Dahlke
  *
  */
-public interface SemanticRule {
+public class OperatorTreeException extends Exception {
 	
-	void apply( AttributesMap ... attributesMaps) throws Exception;
 	
+	public OperatorTreeException() {
+		super();
+	}
+	
+
+	public OperatorTreeException( String message) {
+		super( message);
+	}
 
 }

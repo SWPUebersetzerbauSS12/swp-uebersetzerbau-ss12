@@ -51,11 +51,12 @@ public abstract class Lexer {
 		}
 		line = replaceBetween(line, p1, p2, ' ', (char) 1);
 
-		p1 = line.indexOf(" [ ") + 1;
+		p1 = line.lastIndexOf(" [ ") + 1;
+		p2 = p1;
 		while(p1 != 0) {
-			p2 = line.indexOf(" ] ",p1);
+			p2 = line.indexOf(" ] ",p1 + 1);
 			line = replaceBetween(line, p1, p2, ' ', (char) 1);
-			p1 = line.indexOf(" [ ",p2+1) + 1;
+			p1 = line.lastIndexOf(" [ ") + 1;
 			System.out.println("in" + p1);
 		}
 

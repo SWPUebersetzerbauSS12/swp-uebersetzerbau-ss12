@@ -98,4 +98,8 @@ public abstract class AbstractSyntaxTree extends Tree {
 		}
 		return false;
 	}
+	
+	public Type getType(){
+		return null;
+	}
 }

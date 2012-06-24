@@ -219,6 +219,7 @@ public class BinaryOp extends Type {
 					op_name = "mul";
 					break;
 				}
+				//TODO
 				//ret += block.getNewRegister() + op_name + "";
 			}
 		}

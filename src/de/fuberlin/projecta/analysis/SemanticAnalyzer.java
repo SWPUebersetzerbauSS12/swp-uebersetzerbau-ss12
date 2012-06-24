@@ -251,12 +251,18 @@ public class SemanticAnalyzer {
 							tree.getChild(1).getChild(0).getSymbol())
 							.asTerminal());
 
-					if (bOp != null) {
-						// simply hang in both children trees
-						toAST(tree.getChild(0), bOp); // rel
-						toAST(tree.getChild(1), bOp); // equality'
-						insertNode.addChild(bOp);
-					}
+					// simply hang in both children trees
+					toAST(tree.getChild(0), bOp); // rel
+					toAST(tree.getChild(1), bOp); // equality'
+					insertNode.addChild(bOp);
+				}
+				return;
+			case expr_:
+			case term_:
+				if (tree.getChildrenCount() != 0) {
+					// simply hang in both children trees
+					toAST(tree.getChild(1), insertNode);
+					toAST(tree.getChild(2), insertNode);
 				}
 				return;
 			case unary: {

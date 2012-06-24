@@ -104,33 +104,35 @@ public class Tree implements ISyntaxTree {
 	}
 
 	protected void printTree(int depth) {
+		//remove prefix from class name
+		String className = this.getClass().getName().replaceAll("^.*\\.", "");		
 		if (getSymbol() != null)
-			System.out.println(StringUtils.repeat(' ', depth) + "Name: "
-					+ getSymbol() + this.getClass().getName());
+			System.out.println(StringUtils.repeat(' ', depth)
+					+ getSymbol() + className);
 		else {
 			if (this instanceof BinaryOp) {
 				System.out.println(StringUtils.repeat(' ', depth)
-						+ this.getClass().getName() + ":"
+						+ className + ":"
 						+ ((BinaryOp) this).getOp());
 			} else if (this instanceof IntLiteral) {
 				System.out.println(StringUtils.repeat(' ', depth)
-						+ this.getClass().getName() + ":"
+						+ className + ":"
 						+ ((IntLiteral) this).getValue());
 			} else if (this instanceof Id) {
 				System.out.println(StringUtils.repeat(' ', depth)
-						+ this.getClass().getName() + ":"
+						+ className + ":"
 						+ ((Id) this).getValue());
 			} else if (this instanceof UnaryOp) {
 				System.out.println(StringUtils.repeat(' ', depth)
-						+ this.getClass().getName() + ":"
+						+ className + ":"
 						+ ((UnaryOp) this).getOp());
 			} else if (this instanceof BasicType) {
 				System.out.println(StringUtils.repeat(' ', depth)
-						+ this.getClass().getName() + ":"
-						+ ((BasicType) this).getTokenType());
+						+ className + ":"
+						+ ((BasicType) this).getType());
 			} else {
 				System.out.println(StringUtils.repeat(' ', depth)
-						+ this.getClass().getName());
+						+ className);
 			}
 			if (((AbstractSyntaxTree) this).getTable() != null) {
 				System.out.println(StringUtils.repeat(' ', depth)

@@ -29,6 +29,20 @@ public abstract class AbstractSyntaxTree extends Tree {
 		}		
 		return null;
 	}
+	
+	public Block getHighestBlock(){
+		Block block = null;
+		if(getParent() != null){
+			ISyntaxTree parent = getParent();
+			while(parent != null){
+				if(parent instanceof Block){
+					block = (Block) parent;					
+				}
+				parent = parent.getParent();
+			}
+		}		
+		return block;
+	}
 
 	public AbstractSyntaxTree() {
 		super(null);

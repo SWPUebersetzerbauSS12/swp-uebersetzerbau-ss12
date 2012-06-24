@@ -59,6 +59,7 @@ public class Program extends AbstractSyntaxTree {
 	public String genCode(){
 		//we use puts to print to screen
 		String out = "declare i32 @puts(i8*) nounwind\n";
+		out += "declare i32 @printf(i8*, ...) nounwind\n";
 		out += super.genCode();
 		return out;
 	}

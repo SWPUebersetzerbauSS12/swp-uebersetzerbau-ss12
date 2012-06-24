@@ -28,7 +28,7 @@ public class ParserMain {
 			return null;
 		}
 
-		parser.printParseTree();
+		parser.getParseTree().printTree();
 		return parser;
 	}
 	
@@ -37,7 +37,7 @@ public class ParserMain {
 		if (parser == null)
 			return;
 
-		parser.printParseTree();
+		parser.getParseTree().printTree();
 	}
 
 	public static void main(String[] args) {

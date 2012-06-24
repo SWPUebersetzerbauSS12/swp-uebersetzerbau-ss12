@@ -1,7 +1,5 @@
 package de.fuberlin.projecta;
 
-import java.io.File;
-
 import de.fuberlin.commons.lexer.ILexer;
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.SemanticAnalyzer;
@@ -12,30 +10,9 @@ import de.fuberlin.projecta.lexer.io.StringCharStream;
 import de.fuberlin.projecta.parser.ParseException;
 import de.fuberlin.projecta.parser.Parser;
 import de.fuberlin.projecta.utils.IOUtils;
+import de.fuberlin.projecta.utils.StringUtils;
 
 public class FrontendMain {
-
-	static void readStdin() {
-		String data = IOUtils.readMultilineStringFromStdin();
-		run(new StringCharStream(data));
-	}
-
-	static void readFile(String path) {
-		File sourceFile = new File(path);
-		if (!sourceFile.exists()) {
-			System.out.println("File does not exist.");
-			return;
-		}
-
-		if (!sourceFile.canRead()) {
-			System.out.println("File is not readable");
-		}
-
-		assert (sourceFile.exists());
-		assert (sourceFile.canRead());
-
-		run(new FileCharStream(path));
-	}
 
 	static void run(ICharStream stream) {
 		ILexer lexer = new Lexer(stream);
@@ -67,10 +44,12 @@ public class FrontendMain {
 	public static void main(String[] args) {
 		if (args.length == 0) {
 			System.out.println("Reading from stdin. Exit with new line and Ctrl+D.");
-			readStdin();
+			ICharStream stream = StringUtils.readFromStdin();
+			run(stream);
 		} else if (args.length == 1) {
 			final String path = args[0];
-			readFile(path);
+			FileCharStream stream = StringUtils.readFromFile(path);
+			run(stream);
 		} else {
 			System.out.println("Wrong number of parameters.");
 		}

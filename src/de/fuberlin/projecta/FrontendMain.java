@@ -3,6 +3,7 @@ package de.fuberlin.projecta;
 import de.fuberlin.commons.lexer.ILexer;
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.SemanticAnalyzer;
+import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.lexer.Lexer;
 import de.fuberlin.projecta.lexer.io.FileCharStream;
 import de.fuberlin.projecta.lexer.io.ICharStream;
@@ -31,10 +32,12 @@ public class FrontendMain {
 		
 		SemanticAnalyzer analyzer = new SemanticAnalyzer(tree);
 		analyzer.analyze();
-		if(analyzer.getAST().checkSemantics()){
+		try{
+			analyzer.getAST().checkSemantics();
 			System.out.println("Semantics should be correct");
-		}else{
-			System.out.println("Bad semantics!");
+		} catch (SemanticException e){
+			System.out.println("Bad Semantics");
+			System.out.println(e.getMessage());
 		}
 		analyzer.getAST().printTree();
 		System.out.println(analyzer.getAST().genCode());

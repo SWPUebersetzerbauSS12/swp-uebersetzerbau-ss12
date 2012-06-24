@@ -99,7 +99,7 @@ public class SyntaxTree implements ISyntaxTree {
 			
 			for (ISyntaxTree child: children){
 				SyntaxTree currNode = (SyntaxTree)child;
-				if (currNode.getSymbol().equals(name)){
+				if (currNode.getSymbol().getName().equals(name)){
 					childrenByName.add(child);
 				}
 			}
@@ -171,7 +171,7 @@ public class SyntaxTree implements ISyntaxTree {
 				System.out.print("\t");
 			}
 		}
-		System.out.print(currNode.getSymbol()+"\t");
+		System.out.print(currNode.getSymbol().getName()+"\t");
 		first = true;
 		for (ISyntaxTree child: node.getChildren()){
 			if (child.getChildren().size() > 0){
@@ -184,7 +184,7 @@ public class SyntaxTree implements ISyntaxTree {
 						System.out.print("\t");
 					}
 				}
-				System.out.print(currNode.getSymbol());
+				System.out.print(currNode.getSymbol().getName());
 				System.out.println("");
 				first = false;
 			}

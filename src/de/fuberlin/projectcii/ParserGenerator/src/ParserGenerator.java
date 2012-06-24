@@ -133,7 +133,8 @@ public class ParserGenerator {
 	private Map<String, HashMap<String,Integer>> createFirstSet(Map<String, Vector<Vector<String>>> grammarMap) {
 		Map<String, HashMap<String,Integer>> firstSet = new HashMap<String, HashMap<String,Integer>> ();
 		for (String head : Nonterminal) {
-			firstSet.put(head, evalFirstSet(head, grammarMap));
+			System.out.println("Begin: "+head);
+			firstSet.put(head, evalFirstSet(head, grammarMap,new HashSet<String>()));
 		}
 		Printer.printFirstSetsProductions(firstSet); 
 		return firstSet;		
@@ -148,8 +149,8 @@ public class ParserGenerator {
 	 * and value = index of related production in grammarMap
 	 */
 	private HashMap<String,Integer> evalFirstSet(String head,
-			Map<String, Vector<Vector<String>>> grammarMap) {
-		
+			Map<String, Vector<Vector<String>>> grammarMap,Set<String> visitedNonTerminals) {
+		visitedNonTerminals.add(head);
 		if (firstSetsProductions.containsKey(head)) {
 			return firstSetsProductions.get(head);
 		}
@@ -170,7 +171,11 @@ public class ParserGenerator {
 			} 
 			else 
 			{
-				currentFS.addAll(evalFirstSet(term, grammarMap).keySet());
+				//Check if NonTerminal allready evaluated
+				if(!visitedNonTerminals.contains(term))
+				{
+					currentFS.addAll(evalFirstSet(term, grammarMap,visitedNonTerminals).keySet());
+				}
 			}
 			
 			//FirstSet Evaluation Rule 2 and 3
@@ -180,13 +185,17 @@ public class ParserGenerator {
 				{
 					//temporary Set for next Nonterminal if epsilon is in FirstSet of current head
 					Set<String> tempFS = new HashSet<String>();
-					String nextTerm = production.get(j);					
+					String nextTerm = production.get(j);				
 					
 					//evaluate FirstSet of next char if it is a NonTerminal 
 					//else add terminal to FirstSet
 					if(Nonterminal.contains(nextTerm))
 					{
-						tempFS = evalFirstSet(nextTerm, grammarMap).keySet();
+						//Check if NonTerminal allready evaluated
+						if(!visitedNonTerminals.contains(nextTerm))
+						{
+							tempFS = evalFirstSet(nextTerm, grammarMap,visitedNonTerminals).keySet();
+						}
 					}
 					else
 					{

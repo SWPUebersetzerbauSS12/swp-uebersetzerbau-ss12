@@ -11,7 +11,7 @@ import de.fuberlin.projecta.analysis.SymbolTableHelper;
  * @author micha
  * 
  */
-public class FuncCall extends AbstractSyntaxTree {
+public class FuncCall extends Type {
 
 	@Override
 	public boolean checkSemantics() {

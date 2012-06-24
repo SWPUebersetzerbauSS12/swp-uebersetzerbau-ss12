@@ -1,7 +1,7 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 
-public class RealLiteral extends Statement {
+public class RealLiteral extends Type {
 	
 	private double value;
 	

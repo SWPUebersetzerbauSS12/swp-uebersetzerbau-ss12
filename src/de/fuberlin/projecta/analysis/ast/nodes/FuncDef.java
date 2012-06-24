@@ -10,7 +10,7 @@ import de.fuberlin.projecta.analysis.SymbolTableStack;
 import de.fuberlin.projecta.lexer.BasicTokenType;
 import de.fuberlin.commons.parser.ISyntaxTree;
 
-public class FuncDef extends AbstractSyntaxTree {
+public class FuncDef extends Type {
 
 	@Override
 	public boolean checkSemantics() {

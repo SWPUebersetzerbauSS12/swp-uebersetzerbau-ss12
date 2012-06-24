@@ -6,8 +6,10 @@ import org.junit.Test;
 
 import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SymbolTable;
+import de.fuberlin.projecta.analysis.ast.nodes.BasicType;
 import de.fuberlin.projecta.analysis.ast.nodes.Id;
 import de.fuberlin.projecta.analysis.ast.nodes.Type;
+import de.fuberlin.projecta.lexer.BasicTokenType;
 
 public class SymbolTableTest {
 
@@ -21,8 +23,8 @@ public class SymbolTableTest {
 	@Test(expected = IllegalStateException.class)
 	public void testDuplicateEntry() {
 		SymbolTable table = new SymbolTable();
-		table.insertEntry(new EntryType(new Id("a"), new Type()));
-		table.insertEntry(new EntryType(new Id("a"), new Type()));
+		table.insertEntry(new EntryType(new Id("a"), new BasicType(BasicTokenType.INT)));
+		table.insertEntry(new EntryType(new Id("a"), new BasicType(BasicTokenType.INT)));
 	}
 
 }

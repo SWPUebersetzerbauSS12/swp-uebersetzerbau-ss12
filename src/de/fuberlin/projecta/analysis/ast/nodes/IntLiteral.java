@@ -1,7 +1,7 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 
-public class IntLiteral extends Statement {
+public class IntLiteral extends Type {
 	
 	private int value;
 	

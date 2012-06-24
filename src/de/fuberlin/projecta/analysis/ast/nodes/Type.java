@@ -1,7 +1,7 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 
-public class Type extends AbstractSyntaxTree {
+public abstract class Type extends AbstractSyntaxTree {
 
 	@Override
 	public boolean checkSemantics() {
@@ -9,6 +9,10 @@ public class Type extends AbstractSyntaxTree {
 	}
 	
 	public String genCode(){
+		return "";
+	}
+	
+	public String toTypeString(){
 		return "";
 	}
 }

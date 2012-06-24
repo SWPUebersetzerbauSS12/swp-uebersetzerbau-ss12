@@ -65,10 +65,13 @@ public class FuncDef extends AbstractSyntaxTree {
 
 	@Override
 	public String genCode() {
+		String blockCode = "";
+		if (getChildrenCount() > 3)
+			blockCode = ((Block)getChild(3)).genCode();
 		return "define " + ((Type) getChild(0)).genCode() + " @"
 				+ ((Id) getChild(1)).genCode() + "("
 				+ ((Params) getChild(2)).genCode() + ") nounwind { \n"
-				+ ((Block) getChild(3)).genCode() + "}";
+				+ blockCode + "}";
 	}
 
 	/**

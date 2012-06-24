@@ -18,10 +18,4 @@ public class ArrayCall extends AbstractSyntaxTree {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	@Override
-	public boolean checkTypes() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

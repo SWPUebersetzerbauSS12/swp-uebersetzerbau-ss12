@@ -45,9 +45,4 @@ public class Params extends AbstractSyntaxTree {
 		}
 		return ret;
 	}
-
-	@Override
-	public boolean checkTypes() {
-		return true;
-	}
 }

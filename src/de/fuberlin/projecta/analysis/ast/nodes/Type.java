@@ -11,9 +11,4 @@ public class Type extends AbstractSyntaxTree {
 	public String genCode(){
 		return "";
 	}
-
-	@Override
-	public boolean checkTypes() {
-		return true;
-	}
 }

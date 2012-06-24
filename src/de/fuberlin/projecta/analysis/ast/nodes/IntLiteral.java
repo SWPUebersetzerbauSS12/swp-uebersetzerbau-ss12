@@ -22,10 +22,4 @@ public class IntLiteral extends Statement {
 	public int getValue(){
 		return this.value;
 	}
-
-	@Override
-	public boolean checkTypes() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

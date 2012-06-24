@@ -27,10 +27,4 @@ public class Id extends AbstractSyntaxTree {
 	public String getValue(){
 		return this.value;
 	}
-
-	@Override
-	public boolean checkTypes() {
-		// an identifier by itself is ok.
-		return true;
-	}
 }

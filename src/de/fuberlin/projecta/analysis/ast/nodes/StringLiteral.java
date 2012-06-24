@@ -26,10 +26,4 @@ public class StringLiteral extends Statement {
 	public String getValue() {
 		return this.value;
 	}
-
-	@Override
-	public boolean checkTypes() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

@@ -57,7 +57,9 @@ public abstract class AbstractSyntaxTree extends Tree {
 		return out;
 	}
 	
-	public abstract boolean checkTypes();
+	public boolean checkTypes(){
+		return true;
+	}
 
 	/**
 	 * 

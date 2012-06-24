@@ -1,8 +1,11 @@
 package de.fuberlin.projectF.CodeGenerator;
 
 import java.awt.List;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -89,6 +92,7 @@ public class CodeGenerator {
 	public static void main(String[] args) {
 		boolean debug = true;
 		boolean gui = true;
+		boolean exec = false;
 
 		ArrayList<String> inputFile = new ArrayList<String>();
 		//Inhalt der inputFiles als String
@@ -105,6 +109,8 @@ public class CodeGenerator {
 					System.out.println("Option -o needs a second parameter");
 					return;
 				}
+			} else if (args[i].compareTo("-e") == 0) {
+				exec = true;
 			} else
 				inputFile.add(args[i]);
 		}
@@ -121,7 +127,11 @@ public class CodeGenerator {
 			String output = generateCode(file, debug, gui);
 			if (outputFile != null) {
 				try{
-				    FileOutputStream schreibeStrom = new FileOutputStream(outputFile);
+					FileOutputStream schreibeStrom;
+					if(exec == true)
+						schreibeStrom = new FileOutputStream(outputFile + ".s");
+					else
+						schreibeStrom = new FileOutputStream(outputFile);
 				    for (int i=0; i < output.length(); i++){
 				      schreibeStrom.write((byte)output.charAt(i));
 				    }
@@ -129,7 +139,85 @@ public class CodeGenerator {
 				}catch(Exception e) {
 					
 				}
-				}
 			}
 		}
+	
+		if (exec == true) {
+			if(System.getProperty("os.name").toLowerCase().indexOf("windows") >= 0) {
+				System.err.println("The -e option is not applicable for windows systems.");
+				System.err.println("Please change your operating system and do not support such stuff like windows");
+				return;
+			} else if(System.getProperty("os.name").toLowerCase().indexOf("linux") >= 0) {
+				System.out.println("Yeah LINUX :-)");
+				
+				String libc, ld_linux;
+				//String path = 
+				
+				try {
+					String command = "locate lib32/libc.so";
+					System.out.println(command);
+					Process process = Runtime.getRuntime().exec(command);
+					Reader r = new InputStreamReader(process.getInputStream());
+				    BufferedReader in = new BufferedReader(r);
+				    if((libc = in.readLine()) == null) {
+				    	System.out.println("Fehler");
+				    	//TODO: Fehlerausgabe
+				    	return;
+				    }	
+				    System.out.println("Found libc: " + libc);
+				    
+				    command = "locate lib32/ld-linux.so";
+				    System.out.println(command);
+				    process = Runtime.getRuntime().exec(command);
+					r = new InputStreamReader(process.getInputStream());
+				    in = new BufferedReader(r);
+				    if((ld_linux = in.readLine()) == null) {
+				    	//TODO: Fehlerausgabe
+				    	System.out.println("Fehler");
+				    	return;
+				    }	
+				    System.out.println("Found ld-linux: " + ld_linux);
+				    
+				    String line;
+				    command = "as -32 -o a.out " + outputFile + ".s";
+				    System.out.println(command);
+				    process = Runtime.getRuntime().exec(command);
+					r = new InputStreamReader(process.getInputStream());
+				    in = new BufferedReader(r);
+				    while((line = in.readLine()) != null) {
+				    	System.err.println(line);
+				    	return;
+				    }
+				    
+				    command = new String("ld -melf_i386 --dynamic-linker " + ld_linux + " " + libc + " -o " + outputFile + " a.out");
+				    System.out.println(command);
+				    process = Runtime.getRuntime().exec(command);
+					r = new InputStreamReader(process.getInputStream());
+				    in = new BufferedReader(r);
+				    while((line = in.readLine()) != null) {
+				    	System.err.println(line);
+				    	return;
+				    }
+				    
+				    command = "rm a.out";
+				    System.out.println(command);
+				    process = Runtime.getRuntime().exec(command);
+					r = new InputStreamReader(process.getInputStream());
+				    in = new BufferedReader(r);
+				    while((line = in.readLine()) != null) {
+				    	System.err.println(line);
+				    	return;
+				    }
+				    
+				    
+				    
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} else {
+				System.err.println("unknown oparating system detected");
+			}
+			
+		}
 	}
+}

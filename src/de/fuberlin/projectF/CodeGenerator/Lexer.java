@@ -332,7 +332,7 @@ public abstract class Lexer {
 				newToken.setOp1(line[i]);
 				
 				if(line[i].equals("@printf")) {
-					fillParameter(newToken, line[i + 2].replace((char) 1, ' '));
+					fillParameter(newToken, line[i + 3].replace((char) 1, ' '));
 					newToken.removeParameters(1);
 					newToken.removeParameters(1);
 				} else {

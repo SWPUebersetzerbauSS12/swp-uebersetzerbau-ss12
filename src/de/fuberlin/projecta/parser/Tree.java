@@ -107,7 +107,7 @@ public class Tree implements ISyntaxTree {
 		//remove prefix from class name
 		String className = this.getClass().getName().replaceAll("^.*\\.", "");		
 		if (getSymbol() != null)
-			System.out.println(StringUtils.repeat(' ', depth) + "Name: "
+			System.out.println(StringUtils.repeat(' ', depth)
 					+ getSymbol() + className);
 		else {
 			if (this instanceof BinaryOp) {

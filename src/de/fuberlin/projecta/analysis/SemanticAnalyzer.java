@@ -258,6 +258,7 @@ public class SemanticAnalyzer {
 				}
 				return;
 			case expr_:
+			case term_:
 				if (tree.getChildrenCount() != 0) {
 					// simply hang in both children trees
 					toAST(tree.getChild(1), insertNode);

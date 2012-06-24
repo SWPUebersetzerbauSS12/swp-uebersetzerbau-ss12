@@ -5,6 +5,7 @@ import java.util.List;
 
 import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.projecta.analysis.EntryType;
+import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.SymbolTableStack;
 import de.fuberlin.projecta.lexer.BasicTokenType;
 import de.fuberlin.commons.parser.ISyntaxTree;
@@ -24,7 +25,9 @@ public class FuncDef extends AbstractSyntaxTree {
 						.getChild(this.getChildrenCount() - 1);
 				if (!(block.getChild(block.getChildrenCount() - 1) instanceof Return)) {
 					if (((BasicType) this.getChild(0)).getType() != BasicTokenType.VOID) {
-						return canInsertReturn(block);
+						if(!canInsertReturn(block)){
+							throw new SemanticException("Methods needs to return a value");
+						}
 					} else {
 						// no return type. so just add empty return
 						Return r = new Return();
@@ -33,7 +36,7 @@ public class FuncDef extends AbstractSyntaxTree {
 				}
 			} else if (((BasicType) this.getChild(0)).getType() != BasicTokenType.VOID) {
 				// we do not have any statements but a return type => BAD!!!
-				return false;
+				throw new SemanticException("Methods needs to return a value");
 			}
 		}
 		return true;

@@ -20,7 +20,12 @@ public class BinaryOp extends Statement {
 		// wrong/ambiguous
 		case OP_ASSIGN:
 			if (!(this.getChild(0) instanceof Id)) {
-				return false;
+				throw new SemanticException(
+						"Left side of an assignment has to be an identifier, but is "
+								+ this.getChild(0).getClass().toString());
+			}
+			if (this.getChild(1) instanceof BinaryOp && (((BinaryOp)this.getChild(1)).getOp() == TokenType.OP_ASSIGN)){
+				throw new SemanticException("Left side of an assignment cannot be an assignment.");
 			}
 			break;
 		case OP_DIV:

@@ -56,7 +56,6 @@ public class BinaryOp extends Statement {
 		if (op == TokenType.OP_EQ || op == TokenType.OP_NE
 				|| op == TokenType.OP_LT || op == TokenType.OP_LE
 				|| op == TokenType.OP_GT || op == TokenType.OP_GE) {
-			SymbolTableHelper helper = new SymbolTableHelper();
 			// load value of id1 if it is an id!!!
 			if (getChild(0) instanceof Id) {
 				Id id = (Id) getChild(0);
@@ -64,7 +63,7 @@ public class BinaryOp extends Statement {
 				ret += "%"
 						+ regs[3]
 						+ " = load "
-						+ (helper.lookup(id.getValue(), this)).getType()
+						+ (SymbolTableHelper.lookup(id.getValue(), this)).getType()
 								.genCode() + "* %" + id.getValue() + "\n";
 			}
 			// load value of id2 if it is an id!!!
@@ -74,7 +73,7 @@ public class BinaryOp extends Statement {
 				ret += "%"
 						+ regs[4]
 						+ " = load "
-						+ (helper.lookup(id.getValue(), this)).getType()
+						+ (SymbolTableHelper.lookup(id.getValue(), this)).getType()
 								.genCode() + "* %" + id.getValue() + "\n";
 			}
 			if (getChild(0) instanceof Id && getChild(1) instanceof Id) {
@@ -145,9 +144,8 @@ public class BinaryOp extends Statement {
 		}
 		if (op == TokenType.OP_ASSIGN) {
 			EntryType eA = null;
-			SymbolTableHelper helper = new SymbolTableHelper();
 			a = ((Id) getChild(0));
-			eA = helper.lookup(a.getValue(), this);
+			eA = SymbolTableHelper.lookup(a.getValue(), this);
 			if (getChild(1) instanceof StringLiteral) {
 				StringLiteral str = (StringLiteral) getChild(1);
 				/*
@@ -192,9 +190,8 @@ public class BinaryOp extends Statement {
 		String ret = "";
 
 		EntryType eA = null, eB = null;
-		SymbolTableHelper helper = new SymbolTableHelper();
-		eA = helper.lookup(a.getValue(), this);
-		eB = helper.lookup(b.getValue(), this);
+		eA = SymbolTableHelper.lookup(a.getValue(), this);
+		eB = SymbolTableHelper.lookup(b.getValue(), this);
 
 		if (eA != null && eB != null) {
 			Type tA = eA.getType();

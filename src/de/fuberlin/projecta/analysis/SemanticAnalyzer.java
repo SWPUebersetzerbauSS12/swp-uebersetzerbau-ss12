@@ -43,9 +43,9 @@ public class SemanticAnalyzer {
 	private static final String LAttribute = "LAttribute";
 
 	private ISyntaxTree parseTree;
-	
+
 	private SymbolTableStack tables;
-	
+
 	private AbstractSyntaxTree AST;
 
 	public SemanticAnalyzer(ISyntaxTree tree) {
@@ -67,7 +67,7 @@ public class SemanticAnalyzer {
 
 	private Symbol translate(ISymbol symbol) {
 		if (symbol instanceof Symbol)
-			return (Symbol)symbol;
+			return (Symbol) symbol;
 		else {
 			// let Symbol figure out which type this is
 			return new Symbol(symbol.getName());
@@ -206,7 +206,8 @@ public class SemanticAnalyzer {
 				ISyntaxTree firstChild = tree.getChild(0);
 				Symbol firstChildSymbol = translate(firstChild.getSymbol());
 				if (firstChildSymbol.isTerminal()) {
-					TokenType terminal = translate(firstChild.getSymbol()).asTerminal();
+					TokenType terminal = translate(firstChild.getSymbol())
+							.asTerminal();
 					if (terminal == TokenType.IF) {
 						ISyntaxTree stmt_ = tree.getChild(5); //
 						if (stmt_.getChildrenCount() == 0)
@@ -246,8 +247,9 @@ public class SemanticAnalyzer {
 				if (tree.getChild(1).getChildrenCount() == 0) {
 					toAST(tree.getChild(0), insertNode);
 				} else {
-					BinaryOp bOp = new BinaryOp(translate(tree.getChild(1).getChild(0)
-							.getSymbol()).asTerminal());
+					BinaryOp bOp = new BinaryOp(translate(
+							tree.getChild(1).getChild(0).getSymbol())
+							.asTerminal());
 
 					if (bOp != null) {
 						// simply hang in both children trees
@@ -258,7 +260,8 @@ public class SemanticAnalyzer {
 				}
 				return;
 			case unary: {
-				Symbol firstChildSymbol = translate(tree.getChild(0).getSymbol());
+				Symbol firstChildSymbol = translate(tree.getChild(0)
+						.getSymbol());
 				if (firstChildSymbol.isNonTerminal()) {
 					toAST(tree.getChild(0), insertNode);
 				} else {
@@ -273,14 +276,16 @@ public class SemanticAnalyzer {
 			}
 			case factor:
 				if (translate(tree.getChild(0).getSymbol()).isNonTerminal()) {
-					if (tree.getChild(1).getChildrenCount() == 0) {
-						toAST(tree.getChild(0), insertNode);
-					} else {
-						FuncCall call = new FuncCall();
-						for (ISyntaxTree tmp : tree.getChildren()) {
-							toAST(tmp, call);
+					if (tree.getChildrenCount() >= 2) {
+						if (tree.getChild(1).getChildrenCount() == 0) {
+							toAST(tree.getChild(0), insertNode);
+						} else {
+							FuncCall call = new FuncCall();
+							for (ISyntaxTree tmp : tree.getChildren()) {
+								toAST(tmp, call);
+							}
+							insertNode.addChild(call);
 						}
-						insertNode.addChild(call);
 					}
 				} else {
 					for (ISyntaxTree tmp : tree.getChildren()) {

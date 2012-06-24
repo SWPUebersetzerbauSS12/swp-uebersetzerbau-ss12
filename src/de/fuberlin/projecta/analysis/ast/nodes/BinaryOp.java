@@ -1,5 +1,6 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
+import sun.org.mozilla.javascript.Token;
 import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SemanticException;
@@ -169,6 +170,26 @@ public class BinaryOp extends Statement {
 			} else {
 				ret = "store " + ((AbstractSyntaxTree) getChild(1)).genCode()
 						+ ", " + eA.getType().genCode() + "* %" + a.getValue();
+			}
+		}
+		if (op == TokenType.OP_ADD || op == TokenType.OP_MINUS
+				|| op == TokenType.OP_DIV || op == TokenType.OP_MUL) {
+			String op_name;
+
+			for (int i=0; i < getChildrenCount(); i++){
+				switch(op){
+				case OP_ADD:
+					op_name = "add";
+					break;
+				case OP_MINUS:
+					op_name = "sub";
+					break;
+				case OP_DIV:
+					op_name = "div";
+				case OP_MUL:
+					op_name = "mul";
+				}
+				//ret += block.getNewRegister() + op_name + "";
 			}
 		}
 

@@ -23,7 +23,7 @@ public class Print extends Statement {
 		EntryType id = SymbolTableHelper.lookup(((Id) getChild(0)).getValue(),
 				this);
 		if (id.getType() instanceof BasicType) {
-			if (((BasicType) id.getType()).getType() == BasicTokenType.STRING) {
+			if (((BasicType) id.getType()).getTokenType() == BasicTokenType.STRING) {
 				int reg = block.getNewRegister();
 				out += "%" + reg + " = load i8** %"
 						+ ((Id) getChild(0)).getValue() + "\n";
@@ -31,12 +31,12 @@ public class Print extends Statement {
 						+ "tail call i32 (i8*)* @puts(i8* %" + reg + ")";
 			} else {
 				String format = "";
-				if (((BasicType) id.getType()).getType() == BasicTokenType.INT) {
+				if (((BasicType) id.getType()).getTokenType() == BasicTokenType.INT) {
 					format = "%d";
 					out += "";
-				} else if (((BasicType) id.getType()).getType() == BasicTokenType.REAL) {
+				} else if (((BasicType) id.getType()).getTokenType() == BasicTokenType.REAL) {
 					format = "%f";
-				} else if (((BasicType) id.getType()).getType() == BasicTokenType.BOOL) {
+				} else if (((BasicType) id.getType()).getTokenType() == BasicTokenType.BOOL) {
 					format = "%d";
 				}
 				int tempReg = block.getNewRegister();

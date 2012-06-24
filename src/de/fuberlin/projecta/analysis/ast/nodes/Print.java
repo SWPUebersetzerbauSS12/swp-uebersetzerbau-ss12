@@ -20,8 +20,7 @@ public class Print extends Statement {
 	 */
 	public String genCode() {
 		String out = "";
-		SymbolTableHelper helper = new SymbolTableHelper();
-		EntryType id = helper.lookup(((Id) getChild(0)).getValue(), this);
+		EntryType id = SymbolTableHelper.lookup(((Id) getChild(0)).getValue(), this);
 		if (id.getType() instanceof BasicType) {
 			if(((BasicType)id.getType()).getType() == BasicTokenType.STRING){
 				int reg = getHighestBlock().getNewRegister();

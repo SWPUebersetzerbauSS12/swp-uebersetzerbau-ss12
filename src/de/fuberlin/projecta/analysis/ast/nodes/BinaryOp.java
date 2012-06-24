@@ -63,8 +63,9 @@ public class BinaryOp extends Statement {
 				ret += "%"
 						+ regs[3]
 						+ " = load "
-						+ (SymbolTableHelper.lookup(id.getValue(), this)).getType()
-								.genCode() + "* %" + id.getValue() + "\n";
+						+ (SymbolTableHelper.lookup(id.getValue(), this))
+								.getType().genCode() + "* %" + id.getValue()
+						+ "\n";
 			}
 			// load value of id2 if it is an id!!!
 			if (getChild(1) instanceof Id) {
@@ -73,8 +74,9 @@ public class BinaryOp extends Statement {
 				ret += "%"
 						+ regs[4]
 						+ " = load "
-						+ (SymbolTableHelper.lookup(id.getValue(), this)).getType()
-								.genCode() + "* %" + id.getValue() + "\n";
+						+ (SymbolTableHelper.lookup(id.getValue(), this))
+								.getType().genCode() + "* %" + id.getValue()
+						+ "\n";
 			}
 			if (getChild(0) instanceof Id && getChild(1) instanceof Id) {
 				a = ((Id) getChild(0));
@@ -129,16 +131,15 @@ public class BinaryOp extends Statement {
 				}
 				int tmp = block.getNewRegister();
 				ret += "%" + tmp + " = " + int_or_real + " " + cmp_op + " "
-						+ checkTypeOnEqual(a, b) + " %" ;
-				if(regs[3] == 0)
+						+ checkTypeOnEqual(a, b) + " %";
+				if (regs[3] == 0)
 					ret += a.getValue() + ", %";
 				else
 					ret += regs[3] + ", %";
-				if(regs[4] == 0)
+				if (regs[4] == 0)
 					ret += b.getValue() + "\n";
 				else
 					ret += regs[4] + "\n";
-						
 
 			}
 		}

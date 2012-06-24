@@ -35,13 +35,12 @@ public class Print extends Statement {
 					out += "";
 				} else if (((BasicType) id.getType()).getType() == BasicTokenType.REAL) {
 					format = "%f";
-
 				} else if (((BasicType) id.getType()).getType() == BasicTokenType.BOOL) {
 					format = "%d";
 				}
 				int tempReg = block.getNewRegister();
 				int tempReg2 = block.getNewRegister();
-				int strReg = block.getNewRegister();
+				int valReg = block.getNewRegister();
 				//format string
 				out += "%" + tempReg + " = alloca [4 x i8]\n";
 				out += "store [4 x i8] c\"" + format
@@ -49,7 +48,8 @@ public class Print extends Statement {
 						+ "\n";
 				out += "%" + tempReg2 + " = getelementptr [4 x i8]* %" + tempReg + ", i8 0, i8 0 \n";
 				//now we print
-				out += "call i32 (i8*, ...)* @printf(i8* %"+tempReg2+", "+ id.getType().genCode() +"* %"+ ((Id)getChild(0)).getValue() + ")";
+				out += "%"+valReg+ " = load "+id.getType().genCode() +"* %"+ ((Id)getChild(0)).getValue()+"\n";
+				out += "call i32 (i8*, ...)* @printf(i8* %"+tempReg2+", "+ id.getType().genCode() + " %" +valReg+")";
 				out += "\n";
 			}
 		}

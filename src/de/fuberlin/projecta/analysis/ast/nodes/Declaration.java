@@ -2,7 +2,6 @@ package de.fuberlin.projecta.analysis.ast.nodes;
 
 import de.fuberlin.projecta.analysis.SymbolTableStack;
 import de.fuberlin.projecta.lexer.BasicTokenType;
-import de.fuberlin.projecta.parser.ISyntaxTree;
 
 public class Declaration extends AbstractSyntaxTree {
 	@Override

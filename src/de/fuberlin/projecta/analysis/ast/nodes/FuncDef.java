@@ -7,7 +7,7 @@ import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SymbolTableStack;
 import de.fuberlin.projecta.lexer.BasicTokenType;
-import de.fuberlin.projecta.parser.ISyntaxTree;
+import de.fuberlin.commons.parser.ISyntaxTree;
 
 public class FuncDef extends AbstractSyntaxTree {
 

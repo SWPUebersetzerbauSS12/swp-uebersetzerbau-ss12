@@ -108,7 +108,7 @@ public class Tree implements ISyntaxTree {
 		String className = this.getClass().getName().replaceAll("^.*\\.", "");		
 		if (getSymbol() != null)
 			System.out.println(StringUtils.repeat(' ', depth)
-					+ getSymbol() + className);
+					+ getSymbol());
 		else {
 			if (this instanceof BinaryOp) {
 				System.out.println(StringUtils.repeat(' ', depth)

@@ -8,7 +8,6 @@ public class Print extends Statement {
 
 	@Override
 	public boolean checkSemantics() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 

@@ -6,11 +6,6 @@ import de.fuberlin.commons.parser.ISyntaxTree;
 
 public abstract class Statement extends AbstractSyntaxTree {
 	
-	@Override
-	public boolean checkSemantics() {
-		return true;
-	}
-	
 	public Block getHighestBlock(){
 		Block block = null;
 		if(getParent() != null){

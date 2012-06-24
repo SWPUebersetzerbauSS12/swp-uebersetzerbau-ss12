@@ -21,7 +21,12 @@ public class BinaryOp extends Statement {
 		// wrong/ambiguous
 		case OP_ASSIGN:
 			if (!(this.getChild(0) instanceof Id)) {
-				return false;
+				throw new SemanticException(
+						"Left side of an assignment has to be an identifier, but is "
+								+ this.getChild(0).getClass().toString());
+			}
+			if (this.getChild(1) instanceof BinaryOp && (((BinaryOp)this.getChild(1)).getOp() == TokenType.OP_ASSIGN)){
+				throw new SemanticException("Left side of an assignment cannot be an assignment.");
 			}
 			break;
 		case OP_DIV:
@@ -167,6 +172,16 @@ public class BinaryOp extends Statement {
 				ret += "%" + tempReg2 + " = getelementptr [" + strLength
 						+ " x i8]* %" + tempReg + ", i8 0, i8 0 \n";
 				ret += "store i8* %" + tempReg2 + ", i8** %" + a.getValue();
+			} else if (getChild(1) instanceof FuncCall) {
+				int reg = block.getNewRegister();
+				String id = ((Id) getChild(0)).getValue();
+				String type = SymbolTableHelper
+						.lookup(((Id) getChild(0)).getValue(), this).getType()
+						.genCode();
+				ret = "%" + reg + " = " + ((FuncCall) getChild(1)).genCode() + "\n";
+
+				ret += "store " + type + " %" + reg + ", " + type + "* %"
+						+ id;
 			} else {
 				ret = "store " + ((AbstractSyntaxTree) getChild(1)).genCode()
 						+ ", " + eA.getType().genCode() + "* %" + a.getValue();

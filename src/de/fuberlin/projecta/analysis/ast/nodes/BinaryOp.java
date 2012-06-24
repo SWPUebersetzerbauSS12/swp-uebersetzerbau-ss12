@@ -83,7 +83,7 @@ public class BinaryOp extends Statement {
 
 				String int_or_real = "";
 				String cmp_op = "";
-				if (checkType(a, b).equals("double")) {
+				if (checkTypeOnEqual(a, b).equals("double")) {
 					int_or_real = "fcmp";
 					switch (op) {
 					case OP_LT:
@@ -130,7 +130,7 @@ public class BinaryOp extends Statement {
 				}
 				int tmp = block.getNewRegister();
 				ret += "%" + tmp + " = " + int_or_real + " " + cmp_op + " "
-						+ checkType(a, b) + " %" ;
+						+ checkTypeOnEqual(a, b) + " %" ;
 				if(regs[3] == 0)
 					ret += a.getValue() + ", %";
 				else
@@ -188,7 +188,7 @@ public class BinaryOp extends Statement {
 	 *            the second id
 	 * @return the highest possible basicTokenType of both id's
 	 */
-	private String checkType(Id a, Id b) {
+	private String checkTypeOnEqual(Id a, Id b) {
 		String ret = "";
 
 		EntryType eA = null, eB = null;

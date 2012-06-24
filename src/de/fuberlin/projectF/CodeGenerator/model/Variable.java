@@ -1,12 +1,10 @@
 package de.fuberlin.projectF.CodeGenerator.model;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 public class Variable {
 	String type;
 	public String name;
-	LinkedList<Address> addresses;
 	ArrayList<RegisterAddress> regAddresses;
 	ArrayList<MMXRegisterAddress> mmxAddresses;
 	ArrayList<StackAddress> stackAddresses;

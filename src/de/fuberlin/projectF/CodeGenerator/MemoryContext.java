@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import de.fuberlin.projectF.CodeGenerator.model.Array;
+import de.fuberlin.projectF.CodeGenerator.model.ArrayPointer;
 import de.fuberlin.projectF.CodeGenerator.model.MMXRegisterAddress;
 import de.fuberlin.projectF.CodeGenerator.model.StackAddress;
 import de.fuberlin.projectF.CodeGenerator.model.Variable;
@@ -52,12 +53,13 @@ public class MemoryContext {
 	}
 	
 	public Array newArrayVar(String name, String type, int length) {
-		int size = getSize(type);
-		size *= length;
+		int typeSize = getSize(type);
+		int size = typeSize * length;
 		
 		stackVars++;
-		stackPointer -= size;
-		Array newArr = new Array(type, size, stackPointer, name);
+		stackPointer -= typeSize;
+		Array newArr = new Array(type, size, typeSize, stackPointer, name);
+		stackPointer -= size + typeSize;
 		variables.put(name, newArr);
 		return newArr;
 	}
@@ -212,6 +214,10 @@ public class MemoryContext {
 		if(type.equals("double"))
 			return 8;
 		return 0;
+	}
+
+	public void newArrayPtr(String name, String arr, String offset) {
+		variables.put(name, new ArrayPointer(variables.get(arr), new Integer(offset)));
 	}
 
 }

@@ -1,9 +1,12 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
+import javax.sql.rowset.spi.SyncFactoryException;
+
 import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
+import de.fuberlin.projecta.analysis.TypeErrorException;
 
 public class BinaryOp extends Statement {
 
@@ -232,7 +235,22 @@ public class BinaryOp extends Statement {
 
 	@Override
 	public boolean checkTypes() {
-		// TODO Auto-generated method stub
-		return false;
+		switch (this.getOp()){
+		case OP_ADD:
+		case OP_MINUS:
+		case OP_MUL:
+		case OP_DIV:
+			throw new TypeErrorException();
+		case OP_LT:
+		case OP_LE:
+		case OP_EQ:
+		case OP_GE:
+		case OP_GT:
+		case OP_NE:
+			throw new TypeErrorException();
+		case OP_AND:
+		case OP_OR:
+			default: throw new TypeErrorException();
+		}
 	}
 }

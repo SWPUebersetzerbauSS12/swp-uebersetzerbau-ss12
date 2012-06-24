@@ -14,7 +14,7 @@ public class Declaration extends AbstractSyntaxTree {
 	public boolean checkSemantics() {
 		for (int i = 0; i < this.getChildrenCount(); i++) {
 			if (this.getChild(i) instanceof BasicType
-					&& ((BasicType) this.getChild(i)).getType() == BasicTokenType.VOID) {
+					&& ((BasicType) this.getChild(i)).getTokenType() == BasicTokenType.VOID) {
 				throw new SemanticException("Variable cannot be from type void");
 			}
 			if (!((AbstractSyntaxTree) this.getChild(i)).checkSemantics()) {

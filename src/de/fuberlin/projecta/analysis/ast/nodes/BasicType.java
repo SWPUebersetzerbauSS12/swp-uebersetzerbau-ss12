@@ -33,7 +33,7 @@ public class BasicType extends Type {
 		return ret;
 	}
 
-	public BasicTokenType getType() {
+	public BasicTokenType getTokenType() {
 		return type;
 	}
 

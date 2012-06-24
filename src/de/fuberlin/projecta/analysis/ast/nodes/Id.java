@@ -1,5 +1,7 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
+import de.fuberlin.projecta.analysis.SymbolTableHelper;
+
 
 public class Id extends AbstractSyntaxTree {
 	
@@ -26,5 +28,9 @@ public class Id extends AbstractSyntaxTree {
 	
 	public String getValue(){
 		return this.value;
+	}
+	
+	public Type getType(){
+		return SymbolTableHelper.lookup(this.getValue(), this).getType();
 	}
 }

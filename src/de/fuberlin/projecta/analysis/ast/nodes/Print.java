@@ -21,7 +21,7 @@ public class Print extends Statement {
 		String out = "";
 		EntryType id = SymbolTableHelper.lookup(((Id) getChild(0)).getValue(), this);
 		if (id.getType() instanceof BasicType) {
-			if(((BasicType)id.getType()).getType() == BasicTokenType.STRING){
+			if(((BasicType)id.getType()).getTokenType() == BasicTokenType.STRING){
 				int reg = getHighestBlock().getNewRegister();
 				out += "%" + reg + " = load i8** %" + ((Id) getChild(0)).getValue()
 						+ "\n";

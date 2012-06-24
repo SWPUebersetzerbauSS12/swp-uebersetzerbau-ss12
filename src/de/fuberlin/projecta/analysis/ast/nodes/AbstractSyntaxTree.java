@@ -80,8 +80,8 @@ public abstract class AbstractSyntaxTree extends Tree {
 		if (object != null) {
 			if (object.getClass() == this.getClass()) {
 				if (this instanceof BasicType) {
-					if (((BasicType) this).getType() != ((BasicType) object)
-							.getType()) {
+					if (((BasicType) this).getTokenType() != ((BasicType) object)
+							.getTokenType()) {
 						return false;
 					}
 				}

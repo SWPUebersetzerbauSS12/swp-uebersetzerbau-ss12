@@ -24,7 +24,7 @@ public class FuncDef extends AbstractSyntaxTree {
 				Block block = (Block) this
 						.getChild(this.getChildrenCount() - 1);
 				if (!(block.getChild(block.getChildrenCount() - 1) instanceof Return)) {
-					if (((BasicType) this.getChild(0)).getType() != BasicTokenType.VOID) {
+					if (((BasicType) this.getChild(0)).getTokenType() != BasicTokenType.VOID) {
 						if(!canInsertReturn(block)){
 							throw new SemanticException("Methods needs to return a value");
 						}
@@ -34,7 +34,7 @@ public class FuncDef extends AbstractSyntaxTree {
 						block.addChild(r);
 					}
 				}
-			} else if (((BasicType) this.getChild(0)).getType() != BasicTokenType.VOID) {
+			} else if (((BasicType) this.getChild(0)).getTokenType() != BasicTokenType.VOID) {
 				// we do not have any statements but a return type => BAD!!!
 				throw new SemanticException("Methods needs to return a value");
 			}

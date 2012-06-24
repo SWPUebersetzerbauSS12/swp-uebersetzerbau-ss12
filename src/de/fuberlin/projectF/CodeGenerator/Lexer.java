@@ -42,6 +42,7 @@ public abstract class Lexer {
 		line = line.replace("}", " } ");
 		line = line.replace(",", " , ");
 		line = line.replace(":", " : ");
+		line = line.replace("\t", " ");
 
 		int p1 = line.lastIndexOf('(');
 		int p2 = line.indexOf(')', p1);
@@ -332,11 +333,20 @@ public abstract class Lexer {
 				newToken.setOp1(line[i]);
 				
 				if(line[i].equals("@printf")) {
-					fillParameter(newToken, line[i + 3].replace((char) 1, ' '));
-					newToken.removeParameters(1);
-					newToken.removeParameters(1);
+					int j;
+					for(j = i; j < line.length; j++)
+						if(line[j].charAt(0) == '(')
+							break;
+						
+					fillParameter(newToken, line[j].replace((char) 1, ' '));
+					//newToken.removeParameters(1);
+					//newToken.removeParameters(1);
 				} else {
-					fillParameter(newToken, line[i + 1].replace((char) 1, ' '));
+					int j;
+					for(j = i; j < line.length; j++)
+						if(line[j].charAt(0) == '(')
+							break;
+					fillParameter(newToken, line[j].replace((char) 1, ' '));
 				}
 			}
 

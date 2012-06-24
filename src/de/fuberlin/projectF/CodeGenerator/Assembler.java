@@ -17,11 +17,13 @@ public abstract class Assembler {
 		return sectionText;
 	}
 	
+	protected abstract String translate(String op);
+	
 	protected abstract void createEP();
 	
 	protected abstract void data(String label, String type, String value);
 
-	protected abstract void funcDec(String name);
+	protected abstract void funcDec(String name, String operand1, String operand2);
 	
 	protected abstract void funcEnd();
 	
@@ -39,15 +41,15 @@ public abstract class Assembler {
 
 	protected abstract void jmp(String label);
 
-	protected abstract void cmpl(String source, String target);
+	protected abstract void cmp(String source, String target);
 
 	protected abstract void label(String name);
 
 	protected abstract void call(String name);
 
-	protected abstract void pushl(String operand, String comment);
+	protected abstract void push(String operand, String comment);
 
-	protected abstract void movl(String source, String target, String comment);
+	protected abstract void mov(String source, String target, String comment);
 	
 	protected abstract void movsd(String source, String target, String comment);
 	
@@ -59,19 +61,19 @@ public abstract class Assembler {
 	
 	protected abstract void cvttss2si(String source, String target, String comment);
 
-	protected abstract void orl(String source, String target, String comment);
+	protected abstract void or(String source, String target, String comment);
 	
-	protected abstract void andl(String source, String target, String comment);
+	protected abstract void and(String source, String target, String comment);
 	
-	protected abstract void xorl(String source, String target, String comment);
+	protected abstract void xor(String source, String target, String comment);
 	
-	protected abstract void idivl(String source);
+	protected abstract void idiv(String source);
 
-	protected abstract void imull(String source, String target, String comment);
+	protected abstract void imul(String source, String target, String comment);
 
-	protected abstract void subl(String source, String target, String comment);
+	protected abstract void sub(String source, String target, String comment);
 
-	protected abstract void addl(String source, String target, String comment);
+	protected abstract void add(String source, String target, String comment);
 	
 	protected abstract void addsd(String source, String target, String comment);
 	

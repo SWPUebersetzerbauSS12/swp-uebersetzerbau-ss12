@@ -47,7 +47,7 @@ public class Translator {
 				mem.setContext(name);
 				// Deklaration
 				
-				asm.funcDec(name);
+				asm.funcDec(name, "0", "0");
 				
 				// Parameterbehandlung
 				if (tok.getParameterCount() > 0) {
@@ -68,17 +68,17 @@ public class Translator {
 				// Variable zurückgeben
 				if (tok.getOp1().startsWith("%")) {
 					if(tok.getTypeOp1().equals("double"))
-						asm.movsd(mem.getAddress(tok.getOp1()), "%xmm0", "Return value");
+						asm.movsd(mem.getAddress(tok.getOp1()), "xmm0", "Return value");
 					else
-						asm.movl(mem.getAddress(tok.getOp1()), "%eax", "Return value");
+						asm.mov(mem.getAddress(tok.getOp1()), "eax", "Return value");
 					
 				}
 				// Fester Wert
 				else {
 					if(tok.getTypeOp1().equals("double"))
-						asm.movl("$" + tok.getOp1(), "%xmm0", "Return Value");
+						asm.mov(tok.getOp1(), "xmm0", "Return Value");
 					else
-						asm.movl("$" + tok.getOp1(), "%eax", "Return Value");
+						asm.mov(tok.getOp1(), "eax", "Return Value");
 				}
 				break;
 
@@ -94,7 +94,7 @@ public class Translator {
 				for (Variable var : regVars) {
 					mem.regToStack(var);
 					// Stackpointer verschieben
-					asm.subl("$" + String.valueOf(var.getSize()), "%esp", "Move var to stack");
+					asm.sub(String.valueOf(var.getSize()), "esp", "Move var to stack");
 				}
 				// Alle Register sind nun frei und werden möglicherweise in der
 				// Aufgerufenen Funktion verwendet.
@@ -107,15 +107,15 @@ public class Translator {
 						if (p.getOperand().startsWith("%"))
 							operand = mem.getAddress(p.getOperand());
 						else
-							operand = "$" + p.getOperand();
+							operand = p.getOperand();
 						
 						
-						if (operand.charAt(1) == '@')
-							operand = "$" + operand.substring(3);
+						if (operand.charAt(0) == '@')
+							operand = operand.substring(2);
 						
 						if(p.getType().equals("double"))
-							asm.pushl(mem.getAddress(p.getOperand(), 4), "Parameter " + p.getOperand());
-						asm.pushl(operand, "Parameter " + p.getOperand());
+							asm.push(mem.getAddress(p.getOperand(), 4), "Parameter " + p.getOperand());
+						asm.push(operand, "Parameter " + p.getOperand());
 					}
 				}
 				// Funktionsaufruf
@@ -134,7 +134,7 @@ public class Translator {
 				// Parameter löschen
 				for (int i = 0; i < tok.getParameterCount(); i++) {
 					Parameter p = tok.getParameter(i);
-					asm.addl("$" + String.valueOf(getSize(p.getType())), "%esp", "Dismiss Parameter");
+					asm.add(String.valueOf(getSize(p.getType())), "esp", "Dismiss Parameter");
 				}
 				break;
 
@@ -162,7 +162,7 @@ public class Translator {
 						length *= i;
 					}
 					Variable newArr = mem.newArrayVar(tok.getTarget(), type, length);
-					asm.subl("$" + String.valueOf(newArr.getSize()), "%esp",
+					asm.sub(String.valueOf(newArr.getSize()), "esp",
 							"Allocation " + tok.getTarget());
 				}
 				// Kein Arryay
@@ -171,7 +171,7 @@ public class Translator {
 				Variable newVar = mem.newStackVar(tok.getTarget(),
 						tT);
 				// Stackpointer verschieben
-				asm.subl("$" + String.valueOf(newVar.getSize()), "%esp",
+				asm.sub(String.valueOf(newVar.getSize()), "esp",
 						"Allocation " + tok.getTarget());
 				}
 				break;
@@ -184,11 +184,11 @@ public class Translator {
 					// Zuweisung Zahl
 					if (!tok.getOp1().startsWith("%")) {
 						if(tok.getTypeTarget().equals("i32*"))
-							asm.movl("$" + tok.getOp1(), target, "Assignment " + tok.getTarget());
+							asm.mov(tok.getOp1(), target, "Assignment " + tok.getTarget());
 						else if(tok.getTypeTarget().equals("double*")) {
 							String target2 = mem.getAddress(tok.getTarget(), +4);
-							asm.movl("$" + tok.getOp1().substring(0,10), target2, "Assignment " + tok.getTarget());
-							asm.movl("$0x" + tok.getOp1().substring(10), target, "Assignment " + tok.getTarget());
+							asm.mov(tok.getOp1().substring(0,10), target2, "Assignment " + tok.getTarget());
+							asm.mov("0x" + tok.getOp1().substring(10), target, "Assignment " + tok.getTarget());
 						}
 					}
 					
@@ -201,8 +201,8 @@ public class Translator {
 							asm.movsd(tmp.getFullName(), target, tok.getTarget() + tok.getOp1());
 						} else {
 							RegisterAddress tmp = mem.getFreeRegister();
-							asm.movl(mem.getAddress(tok.getOp1()), tmp.getFullName(), "Copy assignment");
-							asm.movl(tmp.getFullName(), target, tok.getTarget() + tok.getOp1());
+							asm.mov(mem.getAddress(tok.getOp1()), tmp.getFullName(), "Copy assignment");
+							asm.mov(tmp.getFullName(), target, tok.getTarget() + tok.getOp1());
 							mem.freeRegister(tmp);
 						}
 						// Variable
@@ -212,7 +212,7 @@ public class Translator {
 						if(tok.getTypeTarget().equals("double*"))
 							asm.movsd(source, target, "Assignment double " + tok.getTarget());
 						else
-							asm.movl(source, target, "Assignment i32 " + tok.getTarget());
+							asm.mov(source, target, "Assignment i32 " + tok.getTarget());
 					}
 
 				break;
@@ -232,30 +232,30 @@ public class Translator {
 				if (tok.getOp1().startsWith("%"))
 					op1 = mem.getAddress(tok.getOp1());
 				else
-					op1 = "$" + tok.getOp1();
+					op1 = tok.getOp1();
 				if (tok.getOp2().startsWith("%"))
 					op2 = mem.getAddress(tok.getOp2());
 				else
-					op2 = "$" + tok.getOp2();
+					op2 = tok.getOp2();
 
-				asm.movl(op1, res.getFullName(), "Expression");
+				asm.mov(op1, res.getFullName(), "Expression");
 				if (tok.getTypeTarget().equals("or"))
-					asm.orl(op2, res.getFullName(), tok.getOp1() + " + " + tok.getOp2());
+					asm.or(op2, res.getFullName(), tok.getOp1() + " + " + tok.getOp2());
 				
 				else if (tok.getTypeTarget().equals("and"))
-					asm.andl(op2, res.getFullName(), tok.getOp1() + " + " + tok.getOp2());
+					asm.and(op2, res.getFullName(), tok.getOp1() + " + " + tok.getOp2());
 				
 				else if (tok.getTypeTarget().equals("xor"))
-					asm.xorl(op2, res.getFullName(), tok.getOp1() + " + " + tok.getOp2());
+					asm.xor(op2, res.getFullName(), tok.getOp1() + " + " + tok.getOp2());
 				
 				else if (tok.getTypeTarget().equals("add"))
-					asm.addl(op2, res.getFullName(), tok.getOp1() + " + " + tok.getOp2());
+					asm.add(op2, res.getFullName(), tok.getOp1() + " + " + tok.getOp2());
 				
 				else if (tok.getTypeTarget().equals("sub"))
-					asm.subl(op2, res.getFullName(), tok.getOp1() + " - " + tok.getOp2());
+					asm.sub(op2, res.getFullName(), tok.getOp1() + " - " + tok.getOp2());
 				
 				else if (tok.getTypeTarget().equals("mul"))
-					asm.imull(op2, res.getFullName(), tok.getOp1() + " * " + tok.getOp2());
+					asm.imul(op2, res.getFullName(), tok.getOp1() + " * " + tok.getOp2());
 				
 				else if (tok.getTypeTarget().equals("sdiv")) {
 					if (!isRegisterFree(new RegisterAddress(0))) {
@@ -266,11 +266,11 @@ public class Translator {
 						System.out.println("Register edx is not free");
 						saveRegisterValue(new RegisterAddress(3));
 					}
-					asm.movl(op1, new RegisterAddress(0).getFullName(), "");
-					asm.movl(new String("$0"),
+					asm.mov(op1, new RegisterAddress(0).getFullName(), "");
+					asm.mov(new String("0"),
 							new RegisterAddress(3).getFullName(), "");
 
-					asm.idivl(op2);
+					asm.idiv(op2);
 					res = new RegisterAddress(0);
 				}
 				mem.addRegVar(tok.getTarget(), "i32*", res);
@@ -281,11 +281,11 @@ public class Translator {
 				if (tok.getOp1().startsWith("%"))
 					op1 = mem.getAddress(tok.getOp1());
 				else
-					op1 = "$" + tok.getOp1();
+					op1 = tok.getOp1();
 				if (tok.getOp2().startsWith("%"))
 					op2 = mem.getAddress(tok.getOp2());
 				else
-					op2 = "$" + tok.getOp2();
+					op2 = tok.getOp2();
 
 				//if(!op1.startsWith("%xmm")) {
 					mmxRes = mem.getFreeMMXRegister();
@@ -384,14 +384,14 @@ public class Translator {
 				if (tok.getOp1().startsWith("%"))
 					op1 = mem.getAddress(tok.getOp1());
 				else
-					op1 = "$" + tok.getOp1();
+					op1 = tok.getOp1();
 				if (tok.getOp2().startsWith("%"))
 					op2 = mem.getAddress(tok.getOp2());
 				else
-					op2 = "$" + tok.getOp2();
+					op2 = tok.getOp2();
 
-				asm.movl(op1, res.getFullName(), "Compare");
-				asm.cmpl(op2, res.getFullName());
+				asm.mov(op1, res.getFullName(), "Compare");
+				asm.cmp(op2, res.getFullName());
 
 				mem.addRegVar(tok.getOp1(), tok.getTypeOp1(), res);
 				break;
@@ -438,9 +438,11 @@ public class Translator {
 				System.out.println("Size: " + tok.getOp2());
 
 				mem.addHeapVar(tok.getTarget(), 5);
+				break;
 				
 			case Getelementptr:
 				mem.newArrayPtr(tok.getTarget(), tok.getOp1(), tok.getOp2());
+				break;
 
 			default:
 				break;

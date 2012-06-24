@@ -18,10 +18,12 @@ public class GNUAssembler extends Assembler {
 				.append(value).append("\n");
 	}
 
-	protected void funcDec(String name) {
+	protected void funcDec(String name, String operand1, String operand2) {
+		operand1 = translate(operand1);
+		operand2 = translate(operand2);
 		sectionText.append(".type ").append(name)
 		.append(", @function\n").append(name).append(":\n");
-		sectionText.append("\tenter $0, $0\n");
+		sectionText.append("\tenter " + operand1 + ", " + operand2 + "\n");
 	}
 	protected void funcEnd() {
 		sectionText.append("\tleave\n");
@@ -56,7 +58,9 @@ public class GNUAssembler extends Assembler {
 		sectionText.append("\tjmp ").append(label).append("\n");
 	}
 
-	protected void cmpl(String source, String target) {
+	protected void cmp(String source, String target) {
+		source = translate(source);
+		target = translate(target);
 		sectionText.append("\tcmpl ").append(source).append(", ")
 				.append(target).append("\t\t\t#Label ").append("\n");
 	}
@@ -71,93 +75,158 @@ public class GNUAssembler extends Assembler {
 				.append(name).append("\n");
 	}
 
-	protected void pushl(String operand, String comment) {
+	protected void push(String operand, String comment) {
+		operand = translate(operand);
 		sectionText.append("\tpushl ").append(operand).append("\t#")
 				.append(comment).append("\n");
 	}
 
-	protected void movl(String source, String target, String comment) {
+	protected void mov(String source, String target, String comment) {
+		source = translate(source);
+		target = translate(target);
 		sectionText.append("\tmovl ").append(source).append(", ")
 				.append(target).append("\t#").append(comment).append("\n");
 	}
 	
 	protected void movsd(String source, String target, String comment) {
+		source = translate(source);
+		target = translate(target);
 		sectionText.append("\tmovsd ").append(source).append(", ")
 				.append(target).append("\t#").append(comment).append("\n");
 	}
 	
 	protected void movss(String source, String target, String comment) {
+		source = translate(source);
+		target = translate(target);
 		sectionText.append("\tmovss ").append(source).append(", ")
 				.append(target).append("\t#").append(comment).append("\n");
 	}
 	
 	protected void cvtsi2sd(String source, String target, String comment) {
+		source = translate(source);
+		target = translate(target);
 		sectionText.append("\tcvtsi2sd ").append(source).append(", ")
 				.append(target).append("\t#").append(comment).append("\n");
 	}
 	
 	protected void cvtsd2ss(String source, String target, String comment) {
+		source = translate(source);
+		target = translate(target);
 		sectionText.append("\tcvtsd2ss ").append(source).append(", ")
 				.append(target).append("\t#").append(comment).append("\n");
 	}
 	
 	protected void cvttss2si(String source, String target, String comment) {
+		source = translate(source);
+		target = translate(target);
 		sectionText.append("\tcvttss2si ").append(source).append(", ")
 				.append(target).append("\t#").append(comment).append("\n");
 	}
 
-	protected void orl(String source, String target, String comment) {
+	protected void or(String source, String target, String comment) {
+		source = translate(source);
+		target = translate(target);
 		sectionText.append("\torl ").append(source).append(", ")
 				.append(target).append("\t#").append(comment).append("\n");
 	}
 	
-	protected void andl(String source, String target, String comment) {
+	protected void and(String source, String target, String comment) {
+		source = translate(source);
+		target = translate(target);
 		sectionText.append("\tandl ").append(source).append(", ")
 				.append(target).append("\t#").append(comment).append("\n");
 	}
 	
-	protected void xorl(String source, String target, String comment) {
+	protected void xor(String source, String target, String comment) {
+		source = translate(source);
+		target = translate(target);
 		sectionText.append("\txorl ").append(source).append(", ")
 				.append(target).append("\t#").append(comment).append("\n");
 	}
 	
-	protected void idivl(String source) {
+	protected void idiv(String source) {
+		source = translate(source);
 		sectionText.append("\tidivl ").append(source).append("\n");
 	}
 
-	protected void imull(String source, String target, String comment) {
+	protected void imul(String source, String target, String comment) {
+		source = translate(source);
+		target = translate(target);
 		sectionText.append("\timull ").append(source).append(", ")
 				.append(target).append("\t#").append(comment).append("\n");
 	}
 
-	protected void subl(String source, String target, String comment) {
+	protected void sub(String source, String target, String comment) {
+		source = translate(source);
+		target = translate(target);
 		sectionText.append("\tsubl ").append(source).append(", ")
 				.append(target).append("\t#").append(comment).append("\n");
 	}
 
-	protected void addl(String source, String target, String comment) {
+	protected void add(String source, String target, String comment) {
+		source = translate(source);
+		target = translate(target);
 		sectionText.append("\taddl ").append(source).append(", ")
 				.append(target).append("\t#").append(comment).append("\n");
 	}
 	
 	protected void addsd(String source, String target, String comment) {
+		source = translate(source);
+		target = translate(target);
 		sectionText.append("\taddsd ").append(source).append(", ")
 				.append(target).append("\t#").append(comment).append("\n");
 	}
 	
 	protected void subsd(String source, String target, String comment) {
+		source = translate(source);
+		target = translate(target);
 		sectionText.append("\tsubsd ").append(source).append(", ")
 				.append(target).append("\t#").append(comment).append("\n");
 	}
 	
 	protected void mulsd(String source, String target, String comment) {
+		source = translate(source);
+		target = translate(target);
 		sectionText.append("\tmulsd ").append(source).append(", ")
 				.append(target).append("\t#").append(comment).append("\n");
 	}
 	
 	protected void divsd(String source, String target, String comment) {
+		source = translate(source);
+		target = translate(target);
 		sectionText.append("\tdivsd ").append(source).append(", ")
 				.append(target).append("\t#").append(comment).append("\n");
+	}
+	
+	protected String translate(String op) {
+		//Wenn Stackaddresse
+		if(op.indexOf(' ') != -1) {
+			String[] pair = op.split(" ");
+			op = pair[0] + "(%" + pair[1] + ")";
+		} 
+		//Wenn Register
+		else if(op.equals("eax")) op = "%" + op;
+		else if(op.equals("ebx")) op = "%" + op;
+		else if(op.equals("ecx")) op = "%" + op;
+		else if(op.equals("edx")) op = "%" + op;
+		else if(op.equals("edi")) op = "%" + op;
+		else if(op.equals("esi")) op = "%" + op;
+		else if(op.equals("ebp")) op = "%" + op;
+		else if(op.equals("esp")) op = "%" + op;
+		else if(op.equals("xmm0")) op = "%" + op;
+		else if(op.equals("xmm1")) op = "%" + op;
+		else if(op.equals("xmm2")) op = "%" + op;
+		else if(op.equals("xmm3")) op = "%" + op;
+		else if(op.equals("xmm4")) op = "%" + op;
+		else if(op.equals("xmm5")) op = "%" + op;
+		else if(op.equals("xmm6")) op = "%" + op;
+		else if(op.equals("xmm7")) op = "%" + op;
+		//Wenn Hexadezimalzeahl
+		else if(op.startsWith("0x")) op = "$" + op;
+		//Wenn Dezimalzahl oder irgendetwas anderes
+		else op = "$" + op;
+			
+		return op;
 	}
 	
 }

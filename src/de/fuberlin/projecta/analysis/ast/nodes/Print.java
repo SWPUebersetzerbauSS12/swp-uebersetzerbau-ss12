@@ -50,7 +50,6 @@ public class Print extends Statement {
 				//now we print
 				out += "%"+valReg+ " = load "+id.getType().genCode() +"* %"+ ((Id)getChild(0)).getValue()+"\n";
 				out += "call i32 (i8*, ...)* @printf(i8* %"+tempReg2+", "+ id.getType().genCode() + " %" +valReg+")";
-				out += "\n";
 			}
 		}
 		return out;

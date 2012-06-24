@@ -15,26 +15,26 @@ import de.fuberlin.projectF.CodeGenerator.model.TokenType;
 public class CodeGenerator {
 
 	//Variante f�r File-Input
-	public static String generateCode(File llvmFile, boolean debug,
+	public static String generateCode(File llvmFile, String asmType, boolean debug,
 			boolean guiFlag) {
 		
 		Lexer lex = new FileLexer(llvmFile);
-		return generateCode2(debug, guiFlag, lex);
+		return generateCode2(debug, asmType, guiFlag, lex);
 	}
 	
 	//Variante f�r String-Input
-	public static String generateCode(String llvmCode, boolean debug,
+	public static String generateCode(String llvmCode, String asmType, boolean debug,
 			boolean guiFlag) {
 		Lexer lex = new StringLexer(llvmCode);
 		
-		return generateCode2(debug, guiFlag, lex);
+		return generateCode2(debug, asmType, guiFlag, lex);
 	}
 	
 	//extrahiert weil wir jetzt 2 verschiedene Lexer haben
-	private static String generateCode2(boolean debug, boolean guiFlag,
+	private static String generateCode2(boolean debug, String asmType, boolean guiFlag,
 			Lexer lex) {
 		// Variablenverwaltung und Übersetzter erstellen
-		Translator trans = new Translator();
+		Translator trans = new Translator(asmType);
 
 		// Token durchgehen und übersetzten bis EOF
 		GUI gui = new GUI();
@@ -93,6 +93,7 @@ public class CodeGenerator {
 		boolean debug = true;
 		boolean gui = true;
 		boolean exec = false;
+		String asmType = "gnu";
 
 		ArrayList<String> inputFile = new ArrayList<String>();
 		//Inhalt der inputFiles als String
@@ -111,6 +112,10 @@ public class CodeGenerator {
 				}
 			} else if (args[i].compareTo("-e") == 0) {
 				exec = true;
+			} else if (args[i].compareTo("-intel") == 0) {
+				asmType = "intel";
+			} else if (args[i].compareTo("-gnu") == 0) {
+				asmType = "gnu";
 			} else
 				inputFile.add(args[i]);
 		}
@@ -124,7 +129,7 @@ public class CodeGenerator {
 
 		for (String filename : inputFile) {
 			File file = new File(filename);
-			String output = generateCode(file, debug, gui);
+			String output = generateCode(file, asmType, debug, gui);
 			if (outputFile != null) {
 				try{
 					FileOutputStream schreibeStrom;
@@ -160,8 +165,7 @@ public class CodeGenerator {
 					Reader r = new InputStreamReader(process.getInputStream());
 				    BufferedReader in = new BufferedReader(r);
 				    if((libc = in.readLine()) == null) {
-				    	System.out.println("Fehler");
-				    	//TODO: Fehlerausgabe
+				    	System.err.println("Couldn't find 32bit libc.so library");
 				    	return;
 				    }	
 				    System.out.println("Found libc: " + libc);
@@ -172,8 +176,7 @@ public class CodeGenerator {
 					r = new InputStreamReader(process.getInputStream());
 				    in = new BufferedReader(r);
 				    if((ld_linux = in.readLine()) == null) {
-				    	//TODO: Fehlerausgabe
-				    	System.out.println("Fehler");
+				    	System.err.println("Couldn't find 32bit ld-linux.so library");
 				    	return;
 				    }	
 				    System.out.println("Found ld-linux: " + ld_linux);
@@ -184,8 +187,10 @@ public class CodeGenerator {
 				    process = Runtime.getRuntime().exec(command);
 					r = new InputStreamReader(process.getInputStream());
 				    in = new BufferedReader(r);
-				    while((line = in.readLine()) != null) {
-				    	System.err.println(line);
+				    if((line = in.readLine()) != null) {
+				    	do {
+				    		System.err.println(line);
+				    	}while((line = in.readLine()) != null);
 				    	return;
 				    }
 				    
@@ -194,8 +199,10 @@ public class CodeGenerator {
 				    process = Runtime.getRuntime().exec(command);
 					r = new InputStreamReader(process.getInputStream());
 				    in = new BufferedReader(r);
-				    while((line = in.readLine()) != null) {
-				    	System.err.println(line);
+				    if((line = in.readLine()) != null) {
+				    	do {
+				    		System.err.println(line);
+				    	}while((line = in.readLine()) != null);
 				    	return;
 				    }
 				    
@@ -204,8 +211,10 @@ public class CodeGenerator {
 				    process = Runtime.getRuntime().exec(command);
 					r = new InputStreamReader(process.getInputStream());
 				    in = new BufferedReader(r);
-				    while((line = in.readLine()) != null) {
-				    	System.err.println(line);
+				    if((line = in.readLine()) != null) {
+				    	do {
+				    		System.err.println(line);
+				    	}while((line = in.readLine()) != null);
 				    	return;
 				    }
 				    

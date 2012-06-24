@@ -166,6 +166,16 @@ public class BinaryOp extends Statement {
 				ret += "%" + tempReg2 + " = getelementptr [" + strLength
 						+ " x i8]* %" + tempReg + ", i8 0, i8 0 \n";
 				ret += "store i8* %" + tempReg2 + ", i8** %" + a.getValue();
+			} else if (getChild(1) instanceof FuncCall) {
+				int reg = block.getNewRegister();
+				String id = ((Id) getChild(0)).getValue();
+				String type = SymbolTableHelper
+						.lookup(((Id) getChild(0)).getValue(), this).getType()
+						.genCode();
+				ret = "%" + reg + " = " + ((FuncCall) getChild(1)).genCode() + "\n";
+
+				ret += "store " + type + " %" + reg + ", " + type + "* %"
+						+ id;
 			} else {
 				ret = "store " + ((AbstractSyntaxTree) getChild(1)).genCode()
 						+ ", " + eA.getType().genCode() + "* %" + a.getValue();

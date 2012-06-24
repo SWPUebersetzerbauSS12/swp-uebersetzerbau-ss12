@@ -2,6 +2,7 @@ package de.fuberlin.projecta.analysis.ast.nodes;
 
 import de.fuberlin.projecta.analysis.SymbolTableStack;
 import de.fuberlin.projecta.lexer.BasicTokenType;
+import de.fuberlin.projecta.parser.ISyntaxTree;
 
 public class Declaration extends AbstractSyntaxTree {
 	@Override
@@ -33,7 +34,7 @@ public class Declaration extends AbstractSyntaxTree {
 
 	@Override
 	public boolean checkTypes() {
-		// TODO Auto-generated method stub
-		return false;
+		// declarations are by definition correctly typed
+		return true;
 	}
 }

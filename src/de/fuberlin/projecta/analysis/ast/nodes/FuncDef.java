@@ -7,6 +7,7 @@ import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SymbolTableStack;
 import de.fuberlin.projecta.lexer.BasicTokenType;
+import de.fuberlin.projecta.parser.ISyntaxTree;
 
 public class FuncDef extends AbstractSyntaxTree {
 
@@ -149,7 +150,12 @@ public class FuncDef extends AbstractSyntaxTree {
 
 	@Override
 	public boolean checkTypes() {
-		// TODO Auto-generated method stub
-		return false;
+		// check all children and we are good
+		for(ISyntaxTree child : this.getChildren()){
+			if(!((AbstractSyntaxTree)child).checkTypes()){
+				return false;
+			}
+		}
+		return true;
 	}
 }

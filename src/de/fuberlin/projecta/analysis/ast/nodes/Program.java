@@ -1,6 +1,7 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 import de.fuberlin.projecta.analysis.SymbolTableStack;
+import de.fuberlin.projecta.parser.ISyntaxTree;
 
 
 public class Program extends AbstractSyntaxTree {
@@ -35,8 +36,13 @@ public class Program extends AbstractSyntaxTree {
 
 	@Override
 	public boolean checkTypes() {
-		// TODO Auto-generated method stub
-		return false;
+		// check children and we are good.
+		for(ISyntaxTree child : this.getChildren()){
+			if(!((AbstractSyntaxTree)child).checkTypes()){
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	/*

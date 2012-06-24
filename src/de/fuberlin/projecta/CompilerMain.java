@@ -41,7 +41,7 @@ public class CompilerMain {
 						"-o", assemblyFile.getCanonicalPath()
 				};
 				Process p = Runtime.getRuntime().exec(command);
-				BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+				BufferedReader in = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 				String text;
 				while ((text = in.readLine()) != null) {
 					System.out.println(text);
@@ -59,7 +59,7 @@ public class CompilerMain {
 				};
 				Process p = Runtime.getRuntime().exec(command);
 				BufferedReader in = new BufferedReader(new InputStreamReader(
-						p.getInputStream()));
+						p.getErrorStream()));
 				String text;
 				while ((text = in.readLine()) != null) {
 					System.out.println(text);
@@ -70,6 +70,7 @@ public class CompilerMain {
 			// call generated executable
 			{
 				String[] command = { executableFile.getCanonicalPath() };
+				System.err.println("Running " + executableFile.getCanonicalPath());
 				Process p = Runtime.getRuntime().exec(command);
 				BufferedReader in = new BufferedReader(new InputStreamReader(
 						p.getInputStream()));

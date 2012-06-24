@@ -73,7 +73,12 @@ public class Do extends Statement {
 
 	@Override
 	public boolean checkTypes() {
-		// TODO Auto-generated method stub
-		return false;
+		// check children and we are good.
+		for (ISyntaxTree child : this.getChildren()) {
+			if (!((AbstractSyntaxTree) child).checkTypes()) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

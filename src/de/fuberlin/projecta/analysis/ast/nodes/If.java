@@ -1,6 +1,7 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 import de.fuberlin.commons.lexer.TokenType;
+import de.fuberlin.commons.parser.ISyntaxTree;
 
 public class If extends Statement {
 	private Block block;
@@ -60,8 +61,13 @@ public class If extends Statement {
 
 	@Override
 	public boolean checkTypes() {
-		// TODO Auto-generated method stub
-		return false;
+		// check children and we are good.
+		for (ISyntaxTree child : this.getChildren()) {
+			if (!((AbstractSyntaxTree) child).checkTypes()) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

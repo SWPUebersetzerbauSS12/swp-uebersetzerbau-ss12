@@ -340,10 +340,10 @@ public abstract class Lexer {
 						
 					fillParameter(newToken, line[j].replace((char) 1, ' '));
 					
-					//TODO muss nicht immer pasieren -.- bei code von den optimierern gibt es die parameter
-					//nicht, bei code von clang schon.
-					newToken.removeParameters(1);
-					newToken.removeParameters(1);
+					if(line[j].indexOf(')') != line[j].lastIndexOf(')')) {
+						newToken.removeParameters(1);
+						newToken.removeParameters(1);
+					}
 				} else {
 					int j;
 					for(j = i; j < line.length; j++)

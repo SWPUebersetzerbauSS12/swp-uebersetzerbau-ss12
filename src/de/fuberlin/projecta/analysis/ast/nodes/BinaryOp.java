@@ -182,7 +182,20 @@ public class BinaryOp extends Statement {
 
 				ret += "store " + type + " %" + reg + ", " + type + "* %"
 						+ id;
-			} else {
+			} else if (getChild(1) instanceof Id) {
+				String type1 = SymbolTableHelper
+						.lookup(((Id) getChild(1)).getValue(), this).getType()
+						.genCode();
+				int reg = block.getNewRegister();
+				ret = "%" + reg + " = load " + type1 + "* %" + ((Id) getChild(1)).getValue() + "\n";
+
+				String type0 = SymbolTableHelper
+						.lookup(((Id) getChild(0)).getValue(), this).getType()
+						.genCode();
+				ret += "store " + type0 + " %" + reg
+						+ ", " + eA.getType().genCode() + "* %" + a.getValue();
+				}
+			else {
 				ret = "store " + ((AbstractSyntaxTree) getChild(1)).genCode()
 						+ ", " + eA.getType().genCode() + "* %" + a.getValue();
 			}

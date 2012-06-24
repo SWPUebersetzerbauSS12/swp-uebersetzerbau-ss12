@@ -16,11 +16,11 @@ public class CompilerMain {
 	static final String LLC_EXE = "llc";
 	static final String GCC_EXE = "gcc";
 
-	static void run(ICharStream stream) {
+	public static String execute(ICharStream stream) {
 		final String code = FrontendMain.genCode(stream);
 		if (code == null) {
 			System.err.println("Code generation failed.");
-			return;
+			return null;
 		}
 
 		System.err.println("Generated code:");
@@ -74,15 +74,22 @@ public class CompilerMain {
 				Process p = Runtime.getRuntime().exec(command);
 				BufferedReader in = new BufferedReader(new InputStreamReader(
 						p.getInputStream()));
+				String result = "";
 				String text;
 				while ((text = in.readLine()) != null) {
-					System.out.println(text);
-					System.out.flush();
+					result += text;
 				}
+				return result;
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return null;
+	}
+
+	static void run(ICharStream stream) {
+		String output = execute(stream);
+		System.out.println(output);
 	}
 
 	public static void main(String[] args) {

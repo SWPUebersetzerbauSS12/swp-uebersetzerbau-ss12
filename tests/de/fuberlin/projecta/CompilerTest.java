@@ -9,6 +9,13 @@ import de.fuberlin.projecta.lexer.io.StringCharStream;
 
 public class CompilerTest {
 
+	static String mainC(String block) {
+		String code = "def int main() { ";
+		code += block;
+		code += "return 0; }";
+		return code;
+	}
+
 	static String executeCode(String code) {
 		ICharStream stream = new StringCharStream(code);
 		String output = CompilerMain.execute(stream);
@@ -16,10 +23,17 @@ public class CompilerTest {
 	}
 
 	@Test
-	public void testCompiler() {
-		final String code = "def int main() { string s; s = \"foo\"; print s; return 0;}";
+	public void testPrint() {
+		final String code = mainC( "string s; s = \"foo\"; print s;" );
 		String output = executeCode(code);
 		assertEquals(output, "foo");
+	}
+
+	@Test
+	public void testAdd() {
+		final String code = mainC("int a; a = 1 + 1; print a;");
+		String output = executeCode(code);
+		assertEquals(output, "2");
 	}
 
 }

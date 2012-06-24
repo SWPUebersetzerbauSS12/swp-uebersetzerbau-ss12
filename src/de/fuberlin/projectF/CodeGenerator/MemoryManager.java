@@ -136,4 +136,8 @@ public class MemoryManager {
 	public MMXRegisterAddress getFreeMMXRegister(int i) {
 		return current.getFreeMMXRegister(i);
 	}
+
+	public void newArrayPtr(String name, String arr, String offset) {
+		current.newArrayPtr(name, arr, offset);
+	}
 }

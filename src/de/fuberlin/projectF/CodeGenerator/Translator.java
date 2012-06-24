@@ -151,7 +151,6 @@ public class Translator {
 					m = p.matcher(tT);
 					m.find();
 					String type = m.group();
-					System.out.println(type);
 					
 					// Länge berechnen
 					int length = 1;
@@ -435,6 +434,9 @@ public class Translator {
 				System.out.println("Size: " + tok.getOp2());
 
 				mem.addHeapVar(tok.getTarget(), 5);
+				
+			case Getelementptr:
+				mem.newArrayPtr(tok.getTarget(), tok.getOp1(), tok.getOp2());
 
 			default:
 				break;

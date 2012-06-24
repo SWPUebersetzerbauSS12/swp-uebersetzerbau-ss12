@@ -114,5 +114,8 @@ public class Variable {
 				return true;
 		return false;
 	}
-
+	
+	public boolean inMMXReg() {
+		return !mmxAddresses.isEmpty();
+	}
 }

@@ -330,8 +330,10 @@ public class Translator {
 					System.out.println("Address:" + op1);
 					System.out.println(op1);
 					
+					
+					
 					//TODO wenn wert noch nicht in mmx register
-					if(!(op1.charAt(0) == '%')) {
+					if(!mem.inMMXReg(tok.getOp1())) {
 						mmxRes = mem.getFreeMMXRegister();
 						asm.movss(op1, mmxRes.getFullName(), "Convert to single precision");
 						op1 = mmxRes.getFullName();

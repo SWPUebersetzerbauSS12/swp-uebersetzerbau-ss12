@@ -128,6 +128,11 @@ public class MemoryManager {
 		if (heap.containsKey(name)) return false;
 		return current.inMMXReg(name, regNumber);
 	}
+	
+	public boolean inMMXReg(String name) {
+		if (heap.containsKey(name)) return false;
+		return current.inMMXReg(name);
+	}
 
 	public RegisterAddress getFreeRegister(int i) {
 		return current.getFreeRegister(i);

@@ -195,6 +195,11 @@ public class MemoryContext {
 		if (!variables.containsKey(name)) return false;
 		return variables.get(name).inMMXReg(regNumber);
 	}
+	
+	public boolean inMMXReg(String name) {
+		if (!variables.containsKey(name)) return false;
+		return variables.get(name).inMMXReg();
+	}
 
 	public RegisterAddress getFreeRegister(int i) {
 		for (RegisterAddress r : freeRegisters)

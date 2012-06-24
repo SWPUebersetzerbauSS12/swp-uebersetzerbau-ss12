@@ -23,8 +23,7 @@ public class ParserGenerator {
 	//Contains the Parsertable
 	//key = Head (nonterminal on left side of a production rule)
 	//value = HashMap where key = terminal and value = index of related production in grammaMap
-	private Map<String, HashMap<String,Vector<Integer>>> parserTable = 
-		new HashMap<String, HashMap<String,Vector<Integer>>>();
+	private Map<String, HashMap<String,Vector<Integer>>> parserTable;
 	
 	//start symbol of grammar
 	private String start;
@@ -34,9 +33,9 @@ public class ParserGenerator {
 	private Vector<String> Nonterminal;
 	
 	//FollowSets of each NonTerminal
-	private Map<String, Set<String>> followSets = new HashMap<String, Set<String>>();
+	private Map<String, Set<String>> followSets;
 	//FirstSets of each Production of each NonTerminal
-	private Map<String, HashMap<String,Vector<Integer>>> firstSetsProductions = new HashMap<String, HashMap<String,Vector<Integer>>>();
+	private Map<String, HashMap<String,Vector<Integer>>> firstSetsProductions;
 	
 	public ParserGenerator(){
 		
@@ -51,7 +50,11 @@ public class ParserGenerator {
 	 * @throws IOException
 	 */
 	public void initialize (boolean changeToLL1, String grammar) throws IOException{
-		//Read the Grammar from file
+	    grammarMap = new HashMap<String, Vector<Vector<String>>>();
+	    parserTable = new HashMap<String, HashMap<String,Vector<Integer>>>();
+	    start = "";
+	    followSets = new HashMap<String, Set<String>>();
+	    firstSetsProductions = new HashMap<String, HashMap<String,Vector<Integer>>>();
 	    Terminals = new Vector<String>();
         Nonterminal = new Vector<String>();
 		readGrammar(changeToLL1,grammar);

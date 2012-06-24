@@ -1,47 +1,45 @@
 package de.fuberlin.projecta;
 
-import de.fuberlin.commons.lexer.ILexer;
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.SemanticAnalyzer;
 import de.fuberlin.projecta.analysis.SemanticException;
-import de.fuberlin.projecta.lexer.Lexer;
 import de.fuberlin.projecta.lexer.io.FileCharStream;
 import de.fuberlin.projecta.lexer.io.ICharStream;
-import de.fuberlin.projecta.lexer.io.StringCharStream;
-import de.fuberlin.projecta.parser.ParseException;
 import de.fuberlin.projecta.parser.Parser;
-import de.fuberlin.projecta.utils.IOUtils;
 import de.fuberlin.projecta.utils.StringUtils;
 
 public class FrontendMain {
 
-	static void run(ICharStream stream) {
-		ILexer lexer = new Lexer(stream);
-		Parser parser = new Parser();
-		try {
-			parser.parse(lexer, "");
-		} catch (ParseException e) {
-			e.printStackTrace();
-			System.err.println(e.getDetails());
-			System.err.println("Parser failed.");
-			return;
+	static String genCode(ICharStream stream) {
+		Parser parser = ParserMain.parse(stream);
+		if (parser == null) {
+			System.err.println("Parsing failed.");
+			return null;
 		}
-		
+
 		ISyntaxTree tree = parser.getParseTree();
 		//parser.printParseTree();
-		
+
 		SemanticAnalyzer analyzer = new SemanticAnalyzer(tree);
 		analyzer.analyze();
-		try{
+		try {
 			analyzer.getAST().checkSemantics();
 			System.out.println("Semantics should be correct");
-		} catch (SemanticException e){
+		} catch (SemanticException e) {
 			System.out.println("Bad Semantics");
 			System.out.println(e.getMessage());
+			return null;
 		}
+
 		analyzer.getAST().printTree();
-		System.out.println(analyzer.getAST().genCode());
-		
+		return analyzer.getAST().genCode();
+	}
+
+	private static void run(ICharStream stream) {
+		final String code = genCode(stream);
+		System.out.println("Generated code:");
+		System.out.flush();
+		System.out.println(code);
 	}
 
 	public static void main(String[] args) {
@@ -56,6 +54,6 @@ public class FrontendMain {
 		} else {
 			System.out.println("Wrong number of parameters.");
 		}
-
 	}
+
 }

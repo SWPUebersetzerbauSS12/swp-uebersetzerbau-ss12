@@ -10,7 +10,7 @@ import de.fuberlin.projecta.utils.StringUtils;
 
 public class ParserMain {
 
-	static void parse(ICharStream stream) {
+	static Parser parse(ICharStream stream) {
 		ILexer lexer = new Lexer(stream);
 		Parser parser = new Parser();
 		try {
@@ -25,8 +25,17 @@ public class ParserMain {
 			System.out.println(e.getDetails());
 			System.out.println("Trace:");
 			e.printStackTrace();
-			return;
+			return null;
 		}
+
+		parser.printParseTree();
+		return parser;
+	}
+	
+	private static void run(ICharStream stream) {
+		Parser parser = parse(stream);
+		if (parser == null)
+			return;
 
 		parser.printParseTree();
 	}
@@ -35,11 +44,11 @@ public class ParserMain {
 		if (args.length == 0) {
 			System.out.println("Reading from stdin. Exit with new line and Ctrl+D.");
 			ICharStream stream = StringUtils.readFromStdin();
-			parse(stream);
+			run(stream);
 		} else if (args.length == 1) {
 			final String path = args[0];
 			FileCharStream stream = StringUtils.readFromFile(path);
-			parse(stream);
+			run(stream);
 		} else {
 			System.out.println("Wrong number of parameters.");
 		}

@@ -68,17 +68,17 @@ public class Translator {
 				// Variable zurückgeben
 				if (tok.getOp1().startsWith("%")) {
 					if(tok.getTypeOp1().equals("double"))
-						asm.movsd(mem.getAddress(tok.getOp1()), "xmm0", "Return value");
+						asm.movsd(mem.getAddress(tok.getOp1()), new MMXRegisterAddress(0).getFullName(), "Return value");
 					else
-						asm.mov(mem.getAddress(tok.getOp1()), "eax", "Return value");
+						asm.mov(mem.getAddress(tok.getOp1()), new RegisterAddress(0).getFullName(), "Return value");
 					
 				}
 				// Fester Wert
 				else {
 					if(tok.getTypeOp1().equals("double"))
-						asm.mov(tok.getOp1(), "xmm0", "Return Value");
+						asm.mov(tok.getOp1(), new MMXRegisterAddress(0).getFullName(), "Return Value");
 					else
-						asm.mov(tok.getOp1(), "eax", "Return Value");
+						asm.mov(tok.getOp1(), new RegisterAddress(0).getFullName(), "Return Value");
 				}
 				break;
 
@@ -103,7 +103,6 @@ public class Translator {
 					for (int i = tok.getParameterCount() - 1; i >= 0; i--) {
 						Parameter p = tok.getParameter(i);
 						String operand;
-						System.out.println(p.getOperand());
 						if (p.getOperand().startsWith("%"))
 							operand = mem.getAddress(p.getOperand());
 						else
@@ -126,9 +125,7 @@ public class Translator {
 					mem.addRegVar(tok.getTarget(), tok.getTypeTarget(), mem.getFreeRegister(0));
 				}
 				else if (tok.getTypeTarget().equals("double")) {
-					System.out.println("Register " + tok.getTarget());
 					mmxRes = new MMXRegisterAddress(0);
-					System.out.println("To: " + mmxRes.getFullName());
 					mem.addMMXRegVar(tok.getTarget(), tok.getTypeTarget(), mmxRes);
 				}
 				// Parameter löschen
@@ -208,7 +205,6 @@ public class Translator {
 						// Variable
 					} else {
 						source = mem.getAddress(tok.getOp1());
-						System.out.println("Source: " + source);
 						if(tok.getTypeTarget().equals("double*"))
 							asm.movsd(source, target, "Assignment double " + tok.getTarget());
 						else
@@ -325,14 +321,8 @@ public class Translator {
 
 			case Cast:
 				if(tok.getTypeTarget().equals("i32") && tok.getTypeOp1().equals("double")) {
-					System.out.println("Op1: " + tok.getOp1());
 					op1 = mem.getAddress(tok.getOp1());
-					System.out.println("Address:" + op1);
-					System.out.println(op1);
 					
-					
-					
-					//TODO wenn wert noch nicht in mmx register
 					if(!mem.inMMXReg(tok.getOp1())) {
 						mmxRes = mem.getFreeMMXRegister();
 						asm.movss(op1, mmxRes.getFullName(), "Convert to single precision");
@@ -405,8 +395,7 @@ public class Translator {
 					int result;
 					result = findToken(tokenNumber, true, TokenType.Compare,
 							null, null, null);
-					System.out.println("last compare was in token #" + result
-							+ " -> " + code.get(result).getTypeTarget());
+
 					if (code.get(result).getTypeTarget().equals("eq")) {
 						asm.je("label_" + tok.getOp1().substring(1));
 						asm.jmp("label_" + tok.getOp2().substring(1));
@@ -436,9 +425,6 @@ public class Translator {
 
 			case String:
 				asm.data(tok.getTarget().substring(2), ".ascii", tok.getOp1());
-
-				System.out.println("Size: " + tok.getOp2());
-
 				mem.addHeapVar(tok.getTarget(), 5);
 				break;
 				
@@ -485,7 +471,7 @@ public class Translator {
 	// TODO
 	private boolean isRegisterFree(RegisterAddress res) {
 		boolean result = true;
-
+		
 		return result;
 	}
 

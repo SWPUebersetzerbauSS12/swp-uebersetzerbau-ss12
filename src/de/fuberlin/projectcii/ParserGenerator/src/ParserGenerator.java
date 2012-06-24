@@ -36,7 +36,7 @@ public class ParserGenerator {
 	//FollowSets of each NonTerminal
 	private Map<String, Set<String>> followSets = new HashMap<String, Set<String>>();
 	//FirstSets of each Production of each NonTerminal
-	private Map<String, HashMap<String,Integer>> firstSetsProductions = new HashMap<String, HashMap<String,Integer>>();
+	private Map<String, HashMap<String,Vector<Integer>>> firstSetsProductions = new HashMap<String, HashMap<String,Vector<Integer>>>();
 	
 	public ParserGenerator(){
 		
@@ -130,11 +130,10 @@ public class ParserGenerator {
 	 * firstitems as key and indexes of related productions
 	 * in grammarMap as values
 	 */
-	private Map<String, HashMap<String,Integer>> createFirstSet(Map<String, Vector<Vector<String>>> grammarMap) {
-		Map<String, HashMap<String,Integer>> firstSet = new HashMap<String, HashMap<String,Integer>> ();
+	private Map<String, HashMap<String,Vector<Integer>>> createFirstSet(Map<String, Vector<Vector<String>>> grammarMap) {
+		Map<String, HashMap<String,Vector<Integer>>> firstSet = new HashMap<String, HashMap<String,Vector<Integer>>> ();
 		for (String head : Nonterminal) {
-			System.out.println("Begin: "+head);
-			firstSet.put(head, evalFirstSet(head, grammarMap,new HashSet<String>()));
+			firstSet.put(head, evalFirstSet(head, grammarMap,new HashSet<String>(),true));
 		}
 		Printer.printFirstSetsProductions(firstSet); 
 		return firstSet;		
@@ -148,35 +147,49 @@ public class ParserGenerator {
 	 * @return returns firstset as Hashmap where key = item of firstset 
 	 * and value = index of related production in grammarMap
 	 */
-	private HashMap<String,Integer> evalFirstSet(String head,
-			Map<String, Vector<Vector<String>>> grammarMap,Set<String> visitedNonTerminals) {
-		visitedNonTerminals.add(head);
+	private HashMap<String,Vector<Integer>> evalFirstSet(String head,
+			Map<String, Vector<Vector<String>>> grammarMap,Set<String> visitedNonTerminals,Boolean firstCall) {
+
 		if (firstSetsProductions.containsKey(head)) {
 			return firstSetsProductions.get(head);
 		}
 		
 		//FirstSet of current head for each production
-		HashMap<String,Integer> fsp = new HashMap<String,Integer>();
+		HashMap<String,Vector<Integer>> fsp = new HashMap<String,Vector<Integer>>();
 		
 		int i = 0;
 		for (Vector<String> production : grammarMap.get(head)) {
+			if(firstCall)
+			{
+				visitedNonTerminals.clear();
+			}
+			
 			//FirstSet of current production
 			Set<String> currentFS = new HashSet<String>();
 			String term = production.get(0);
 			
 			//FirstSet Evaluation Rule 1
-			if (Terminals.contains(term)) 
+			if (Terminals.contains(term))
 			{
 				currentFS.add(term);
 			} 
 			else 
-			{
+			{				
 				//Check if NonTerminal allready evaluated
 				if(!visitedNonTerminals.contains(term))
 				{
-					currentFS.addAll(evalFirstSet(term, grammarMap,visitedNonTerminals).keySet());
+					visitedNonTerminals.add(head);
+					if(term.equals(head))
+					{
+						currentFS.addAll(evalFirstSet(head, grammarMap,visitedNonTerminals,false).keySet());
+					}
+					else
+					{
+						currentFS.addAll(evalFirstSet(term, grammarMap,visitedNonTerminals,false).keySet());
+					}
 				}
 			}
+			
 			
 			//FirstSet Evaluation Rule 2 and 3
 			if(currentFS.contains(Settings.getEPSILON()))
@@ -194,7 +207,15 @@ public class ParserGenerator {
 						//Check if NonTerminal allready evaluated
 						if(!visitedNonTerminals.contains(nextTerm))
 						{
-							tempFS = evalFirstSet(nextTerm, grammarMap,visitedNonTerminals).keySet();
+							visitedNonTerminals.add(head);
+							if(nextTerm.equals(head))
+							{
+								currentFS.addAll(evalFirstSet(head, grammarMap,visitedNonTerminals,false).keySet());
+							}
+							else
+							{
+								tempFS = evalFirstSet(nextTerm, grammarMap,visitedNonTerminals,false).keySet();
+							}
 						}
 					}
 					else
@@ -215,18 +236,30 @@ public class ParserGenerator {
 					}
 				}
 			}
-			
-			
+
 			//add FirstSet of current production and it's index to FS of this production
 			for(String item : currentFS)
 			{
-				fsp.put(item, i);
+				Vector<Integer> tempProd;
+				if(fsp.get(item) == null)
+				{
+					tempProd = new Vector<Integer>();
+				}
+				else
+				{
+					tempProd = fsp.get(item);
+				}
+				tempProd.add(i);
+				fsp.put(item, tempProd);
 			}
 			i++;
+			
 		}
 		
 		return fsp;
 	}
+	
+	
 
 	/**
 	 * Evaluates all followsets of a grammar given by a grammarMap.
@@ -331,11 +364,9 @@ public class ParserGenerator {
 				if(currentFirstSet.contains(terminal))
 				{
 					if(!terminal.equals(Settings.getEPSILON()))
-					{
-						//System.out.println("Nonterminal: "+head+" Terminal: "+terminal);
-						
+					{						
 						//Get index of production for current FirstSet item
-						parseTableEntry.add(firstSetsProductions.get(head).get(terminal));
+						parseTableEntry.addAll(firstSetsProductions.get(head).get(terminal));
 					}
 					
 				}
@@ -343,7 +374,7 @@ public class ParserGenerator {
 				if(currentFirstSet.contains(Settings.getEPSILON()) && currentFollowSet.contains(terminal))
 				{
 					//Get index of production for current FirstSet item
-					parseTableEntry.add(firstSetsProductions.get(head).get(Settings.getEPSILON()));
+					parseTableEntry.addAll(firstSetsProductions.get(head).get(Settings.getEPSILON()));
 				}
 				parseTableColumn.put(terminal, parseTableEntry);				
 			}			

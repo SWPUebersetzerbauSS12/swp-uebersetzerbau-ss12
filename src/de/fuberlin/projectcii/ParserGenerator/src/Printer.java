@@ -217,8 +217,8 @@ public class Printer {
 	 * Use this Function to view the FirstSetProductions inside the ParserGenerator.
 	 * 
 	 */
-	static public void printFirstSetsProductions(Map<String, HashMap<String,Integer>> firstSetsProductions) {
-		for (Entry<String, HashMap<String,Integer>> fs : firstSetsProductions.entrySet()) {
+	static public void printFirstSetsProductions(Map<String, HashMap<String,Vector<Integer>>> firstSetsProductions) {
+		for (Entry<String, HashMap<String,Vector<Integer>>> fs : firstSetsProductions.entrySet()) {
 			System.out.println("First(" + fs.getKey() + ") = " + fs.getValue().keySet());
 		}
 		System.out.println("-----------");

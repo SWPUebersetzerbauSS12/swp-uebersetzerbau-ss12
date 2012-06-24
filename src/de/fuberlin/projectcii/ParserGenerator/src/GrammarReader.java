@@ -97,6 +97,9 @@ public class GrammarReader {
 		        // grammar.clear();
 		    }   
 		}
+		if (grammar.size() > 0){
+		    startSymbol = grammar.elementAt(0).getHead();
+		}
 		return buildGrammarMap(grammar);
 
 	}

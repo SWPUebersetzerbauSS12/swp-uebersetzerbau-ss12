@@ -237,10 +237,8 @@ public class ParserGenerator {
 	private HashMap<String, Set<String>> createFollowSet(Map<String, Vector<Vector<String>>> grammarMap) {
 		HashMap<String, Set<String>> followSets = new HashMap<String, Set<String>>();
 		for (String head : Nonterminal) {
-			// String head = p.getHead();
-			Set<String> visitedNonTerminals = new HashSet<String>();
-			
-			followSets.put(head, evalFollowSet(head,grammarMap,visitedNonTerminals));
+			// String head = p.getHead();			
+			followSets.put(head, evalFollowSet(head,grammarMap,new HashSet<String>()));
 		}
 		Printer.printFollowSets(followSets);
 		return followSets;
@@ -261,6 +259,7 @@ public class ParserGenerator {
 		}
 		//add "eof" into follow(start symbol)
 		Set<String> fs = new HashSet<String>();
+
 		if (start.equals(head)) {
 			fs.add(Settings.getEOF());
 		}

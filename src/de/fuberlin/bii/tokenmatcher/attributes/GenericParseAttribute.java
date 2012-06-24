@@ -89,7 +89,7 @@ public abstract class GenericParseAttribute<T> implements Attribute {
 	public int hashCode() {
 		int hashCode = 5;
 		hashCode = 31 * hashCode + this.valueType.hashCode();
-		hashCode = 31 * hashCode + this.lexem.hashCode();
+		hashCode = 31 * hashCode + (Test.isAssigned( this.lexem) ? this.lexem.hashCode() : 0);
 		
 		return hashCode;
 	}

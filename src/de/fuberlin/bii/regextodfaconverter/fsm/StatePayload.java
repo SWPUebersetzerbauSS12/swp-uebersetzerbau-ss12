@@ -136,6 +136,23 @@ public class StatePayload implements de.fuberlin.bii.tokenmatcher.StatePayload {
 		
 		return isEqual; 
 	}
+	
+	/**
+	 * Definiert die Gleichheit zweier Payload-Elemente
+	 * 
+	 * @Author Johannes Dahlke 
+	 */
+	@Override
+	public int hashCode() 
+	{ 
+		int hashCode = 5;
+		hashCode = 37 * hashCode + tokenType.hashCode();
+		hashCode = 37 * hashCode + attribute.hashCode();
+		hashCode = 37 * hashCode + priority;
+		
+		return hashCode;
+	}
+	
 
 	@Override
 	public String toString() {

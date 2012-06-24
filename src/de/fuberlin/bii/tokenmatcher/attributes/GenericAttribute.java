@@ -32,6 +32,9 @@
 
 package de.fuberlin.bii.tokenmatcher.attributes;
 
+import de.fuberlin.bii.regextodfaconverter.fsm.StatePayload;
+import de.fuberlin.bii.utils.Test;
+
 /**
  * Generische Basisklasse für Attribute, deren Wert 
  * bereits in der Tokendefinitionsdatei angeben ist.
@@ -63,6 +66,31 @@ public class GenericAttribute<T> implements Attribute {
 	@Override
 	public String toString() {
 		return value.toString();
+	}
+	
+	@Override
+	public boolean equals( Object obj) {
+		if ( Test.isUnassigned( obj))
+			return false;
+		
+		if ( !( obj instanceof GenericAttribute))
+			return false;
+		
+		GenericAttribute<T> theOtherGenericAttribute = (GenericAttribute<T>) obj;
+		
+		boolean isEqual = theOtherGenericAttribute.valueType.equals( this.valueType) 
+				&& theOtherGenericAttribute.value.equals( this.value);
+		
+		return isEqual;
+	}
+	
+	@Override
+	public int hashCode() {
+		int hashCode = 5;
+		hashCode = 31 * hashCode + this.valueType.hashCode();
+		hashCode = 31 * hashCode + ( Test.isAssigned( this.value) ? this.value.hashCode() : 0);
+		
+		return hashCode;
 	}
 	
 }

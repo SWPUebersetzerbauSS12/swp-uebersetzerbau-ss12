@@ -138,7 +138,7 @@ public class StatePayload implements de.fuberlin.bii.tokenmatcher.StatePayload {
 	}
 	
 	/**
-	 * Definiert die Gleichheit zweier Payload-Elemente
+	 * Definiert den Hashcode des Exemplares
 	 * 
 	 * @Author Johannes Dahlke 
 	 */

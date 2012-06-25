@@ -54,6 +54,14 @@ public class Symbol<Value extends Comparable<Value>, Payload> implements Compara
   	
   	return this.value.equals( theOtherSymbol.value);
   }
+  
+  @Override
+  public int hashCode() {
+  	int hashCode = 5;
+    hashCode = 37 * hashCode + (Test.isAssigned( value) ? value.hashCode() : 0);
+    //hashCode = 37 * hashCode + (Test.isAssigned( payload) ? payload.hashCode() : 0);
+    return hashCode;
+  }
 
   
 	

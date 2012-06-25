@@ -189,5 +189,42 @@ public class Grammars {
 		return grammar;
 	}
 	
+	public static ContextFreeGrammar getAnotherOriginalRegexGrammar() {
+		ContextFreeGrammar grammar = new ContextFreeGrammar();
+		// we define a simple regex grammar for testing
+		Nonterminal R = new Nonterminal( "R");
+		Nonterminal S = new Nonterminal( "S");
+		Nonterminal T = new Nonterminal( "T");
+		Nonterminal U = new Nonterminal( "U");
+		Nonterminal V = new Nonterminal( "V");
+		Terminal<Symbol<Character,Object>> a = new Terminal<Symbol<Character,Object>>( new Symbol( 'a'));
+		EmptyString epsilon = new EmptyString();
+		
+	
+		Terminal<Symbol<Character,Object>> leftBracket = new Terminal<Symbol<Character,Object>>( new Symbol('('));
+		Terminal<Symbol<Character,Object>> rightBracket = new Terminal<Symbol<Character,Object>>( new Symbol(')'));
+		Terminal<Symbol<Character,Object>> opKleeneClosure = new Terminal<Symbol<Character,Object>>( new Symbol('*'));
+		Terminal<Symbol<Character,Object>> opAlternative = new Terminal<Symbol<Character,Object>>( new Symbol('+'));
+		Terminal<Symbol<Character,Object>> opConcatenation = new Terminal<Symbol<Character,Object>>( new Symbol('.'));
+		
+		ProductionSet productions = new ProductionSet();
+		productions.add( new ProductionRule(R, R, opAlternative, S));
+		productions.add( new ProductionRule(R, S));
+		productions.add( new ProductionRule(S, T));
+		productions.add( new ProductionRule(S, epsilon));
+		
+		productions.add( new ProductionRule(T, U, opKleeneClosure));
+		productions.add( new ProductionRule(T, U));
+		productions.add( new ProductionRule(U, V));
+		productions.add( new ProductionRule(U, leftBracket, R, rightBracket));
+		productions.add( new ProductionRule(V, a));
+		productions.add( new ProductionRule(V, epsilon));
+		
+		grammar.addAll( productions);
+		grammar.setStartSymbol( R);
+		
+		return grammar;
+	}
+	
 	
 }

@@ -103,6 +103,14 @@ public class RegexCharSet {
 	}
 	
 	
+	public static List<Character> getCompleteDomain() {
+		List<Character> result = new ArrayList<Character>();
+		for ( int c = getFirstAsciiChar(); c <= getLastAsciiChar(); c++) {
+			result.add( (char) c);
+		}
+		return result;
+	}
+	
 	public static List<Character> getMetaCharsOfContext( RegexSection context) {
 		List<Character> result = new ArrayList<Character>();
 		for ( int c = getFirstAsciiChar(); c <= getLastAsciiChar(); c++) {
@@ -133,7 +141,7 @@ public class RegexCharSet {
 			case REGEX_GROUP_BEGIN: return defineAndGetStateByContext( context, TriState.TRUE, TriState.FALSE, TriState.FALSE);
 			case REGEX_GROUP_END: return defineAndGetStateByContext( context, TriState.TRUE, TriState.FALSE, TriState.FALSE);
 			case REGEX_CLASS_BEGIN: return defineAndGetStateByContext( context, TriState.TRUE, TriState.FALSE, TriState.FALSE);
-			case REGEX_CLASS_END: return defineAndGetStateByContext( context, TriState.TRUE, TriState.FALSE, TriState.FALSE);
+			case REGEX_CLASS_END: return defineAndGetStateByContext( context, TriState.TRUE, TriState.FALSE, TriState.TRUE);
 			case REGEX_ALTERNATIVE: return defineAndGetStateByContext( context, TriState.TRUE, TriState.FALSE, TriState.FALSE);
 			case REGEX_REPETITION_BEGIN: return defineAndGetStateByContext( context, TriState.TRUE, TriState.FALSE, TriState.FALSE);
 			case REGEX_REPETITION_END: return defineAndGetStateByContext( context, TriState.TRUE, TriState.FALSE, TriState.FALSE);
@@ -144,7 +152,7 @@ public class RegexCharSet {
 			//case REGEX_CLASS_SIGNUM: 
 			case REGEX_START_MARKER: return defineAndGetStateByContext( context, TriState.TRUE, TriState.FALSE, TriState.AMBIGUOUS);
 			case REGEX_END_MARKER: return defineAndGetStateByContext( context, TriState.TRUE, TriState.FALSE, TriState.FALSE);
-			case REGEX_RANGE: return defineAndGetStateByContext( context, TriState.FALSE, TriState.FALSE, TriState.TRUE);
+			case REGEX_RANGE: return defineAndGetStateByContext( context, TriState.FALSE, TriState.FALSE, TriState.AMBIGUOUS);
 			default:
 				return defineAndGetStateByContext( context, TriState.FALSE, TriState.FALSE, TriState.FALSE);
 		}

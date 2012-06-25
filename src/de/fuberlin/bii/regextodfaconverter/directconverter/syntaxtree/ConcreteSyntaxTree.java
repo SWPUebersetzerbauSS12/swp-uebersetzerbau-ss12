@@ -57,6 +57,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Prod
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionSet;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symbol;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Terminal;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.TerminalSet;
 import de.fuberlin.bii.regextodfaconverter.directconverter.regex.operatortree.OperatorType;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.InnerNode;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.Leaf;
@@ -127,7 +128,7 @@ public class ConcreteSyntaxTree<ExpressionElement extends Symbol> implements Tre
 
 		itemAutomat.setShiftEventHandler( getShiftEventHandler());
     // System.out.println( "isSLR1 = " + itemAutomat.isReduceConflictFree());
-    // System.out.println( itemAutomat);
+		//System.out.println( itemAutomat);
    	itemAutomat.match( inputElements);
 		rootNode = nodeStack.peek().getTreeNode();
 	}

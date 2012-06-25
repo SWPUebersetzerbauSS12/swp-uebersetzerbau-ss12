@@ -53,7 +53,7 @@ public class GrammarTest {
 
 		ContextFreeGrammar grammar = getRegexGrammar();
 		
-		Map<Nonterminal,Set<Terminal>> firstSets = grammar.getFirstSets();
+		Map<Nonterminal,TerminalSet> firstSets = grammar.getFirstSets();
 		for ( Nonterminal nonterminal : firstSets.keySet()) {
 			System.out.print( nonterminal + " -> ");
 			for (Terminal terminal : firstSets.get(nonterminal)) {
@@ -65,7 +65,7 @@ public class GrammarTest {
 		System.out.println();
 		
 		
-		Map<Nonterminal,Set<Terminal>> followSets = grammar.getFollowSets();
+		Map<Nonterminal,TerminalSet> followSets = grammar.getFollowSets();
 		for ( Nonterminal nonterminal : followSets.keySet()) {
 			
 			

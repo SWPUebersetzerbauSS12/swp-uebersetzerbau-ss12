@@ -139,8 +139,9 @@ public class ItemAutomataTest {
 	public void testLr1AutomataWithSimplifiedOriginalRegex() throws Exception {
 		Notification.enableDebugPrinting();
 		
-		ContextFreeGrammar grammar = Grammars.getSimplifiedOriginalRegexGrammar();
-		String expression = "(+)*";
+		//ContextFreeGrammar grammar = Grammars.getSimplifiedOriginalRegexGrammar();
+		ContextFreeGrammar grammar = Grammars.getAnotherOriginalRegexGrammar();
+		String expression = "(+a*)*";
 		ItemAutomat<Symbol> itemAutomata = new Slr1ItemAutomat<Symbol>( grammar);
 		
 		printGrammarInfo( grammar);

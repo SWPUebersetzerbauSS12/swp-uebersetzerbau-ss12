@@ -46,5 +46,15 @@ public class TerminalSet extends HashSet<Terminal> {
   	
   	return false;
   }
+  
+  
+  @Override
+  public boolean add( Terminal e) {
+  	if ( !contains( e))
+    	return super.add( e);
+  	else
+  		return false;
+  }
+  
 	
 }

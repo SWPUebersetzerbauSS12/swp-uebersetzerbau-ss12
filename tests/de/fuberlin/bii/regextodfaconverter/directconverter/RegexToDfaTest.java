@@ -9,6 +9,7 @@ import de.fuberlin.bii.regextodfaconverter.MinimalDfa;
 import de.fuberlin.bii.regextodfaconverter.directconverter.regex.RegexToDfaConverter;
 import de.fuberlin.bii.regextodfaconverter.directconverter.regex.RegexToPayloadMap;
 import de.fuberlin.bii.regextodfaconverter.fsm.FiniteStateMachine;
+import de.fuberlin.bii.regextodfaconverter.fsm.StatePayload;
 import de.fuberlin.bii.tokenmatcher.LexemIdentificationException;
 import de.fuberlin.bii.tokenmatcher.Token;
 import de.fuberlin.bii.tokenmatcher.Tokenizer;
@@ -23,9 +24,9 @@ public class RegexToDfaTest {
 		
 		Notification.enableDebugPrinting();
 		
-		RegexToPayloadMap<de.fuberlin.bii.tokenmatcher.StatePayload> regexToPayloadMap = new RegexToPayloadMap<de.fuberlin.bii.tokenmatcher.StatePayload>();
-		regexToPayloadMap.put( "(|2)?3\\|333", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "NUM", new ParseIntAttribute()));
-	  regexToPayloadMap.put( "c(1|2)*3", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "OP", new ParseStringAttribute()));
+		RegexToPayloadMap<StatePayload> regexToPayloadMap = new RegexToPayloadMap<StatePayload>();
+		regexToPayloadMap.put( "(a|b)*abb", new StatePayload( "NUM", new ParseIntAttribute()));
+	 // regexToPayloadMap.put( "c(1|2)*3", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "OP", new ParseStringAttribute()));
 		
 		
 		FiniteStateMachine<Character, ? extends de.fuberlin.bii.tokenmatcher.StatePayload> fsm = new RegexToDfaConverter()
@@ -38,7 +39,6 @@ public class RegexToDfaTest {
 
 		Assert.assertTrue( fsm.isDeterministic());		
 		
-		
 	}
 	
 	
@@ -47,15 +47,20 @@ public class RegexToDfaTest {
 		
 		Notification.enableDebugPrinting();
 		
-		RegexToPayloadMap<de.fuberlin.bii.tokenmatcher.StatePayload> regexToPayloadMap = new RegexToPayloadMap<de.fuberlin.bii.tokenmatcher.StatePayload>();
-		regexToPayloadMap.put( "(1|2)*3", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "NUM", new ParseIntAttribute()));
-		regexToPayloadMap.put( "c(1|2)*3", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "ID", new ParseStringAttribute()));
+		RegexToPayloadMap<StatePayload> regexToPayloadMap = new RegexToPayloadMap<StatePayload>();
+		regexToPayloadMap.put( "(1|2)*3", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "NUM", new ParseIntAttribute(), 2));
+		regexToPayloadMap.put( "c[12]*3", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "ID", new ParseStringAttribute(), 1));
+		regexToPayloadMap.put( "[1-5-A]", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "CHAR", new ParseStringAttribute(),0));
 				
 		FiniteStateMachine<Character, ? extends de.fuberlin.bii.tokenmatcher.StatePayload> fsm = new RegexToDfaConverter()
 		.convert( regexToPayloadMap);
 
 		LexemeReader lexemeReader = new BufferedLexemeReader("tests/resources/de/fuberlin/bii/source/tokenmatcher/regex.fun");// new SimpleLexemeReader(
 	
+		System.out.println( fsm);
+		System.out.println( new MinimalDfa( fsm));
+		System.out.println( "Deterministic: " + fsm.isDeterministic());
+		
 		Tokenizer tokenizer = new Tokenizer( lexemeReader, new MinimalDfa( fsm));
 	
 		Token currentToken = null;
@@ -95,6 +100,18 @@ public class RegexToDfaTest {
 		// it must be a string
 		Assert.assertTrue( currentToken.getAttribute() instanceof String);
 
+	  // recognize string 5
+		currentToken = tokenizer.getNextToken();
+		Assert.assertEquals( "<CHAR, 5>",currentToken.toString());
+	  // recognize string -
+		currentToken = tokenizer.getNextToken();
+		Assert.assertEquals( "<CHAR, ->",currentToken.toString());
+	  // recognize string A
+		currentToken = tokenizer.getNextToken();
+		Assert.assertEquals( "<CHAR, A>",currentToken.toString());
+
+
+		
 	}
 
 

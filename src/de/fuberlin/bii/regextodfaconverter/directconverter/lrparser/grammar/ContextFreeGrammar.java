@@ -213,7 +213,7 @@ public class ContextFreeGrammar extends ProductionMap implements Grammar {
 			TerminalSet result = new TerminalSet();
 			EmptyString emptyString = new EmptyString();
 			boolean isLastElementInSequenz = true;
-
+			
 			// lookup in each rule for occurences of the given thisNonterminal
 			for (Nonterminal nonterminal : this.keySet()) {
 			    // lookup in each rule for nonterminal for occurences of the given thisNonterminal
@@ -275,7 +275,6 @@ public class ContextFreeGrammar extends ProductionMap implements Grammar {
 
 				}
 			}
-
 		return result;
 	}
 

@@ -159,6 +159,12 @@ public abstract class Lexer {
 			newToken.setTypeTarget(line[1]);
 			fillParameter(newToken, line[3].replace((char) 1, ' '));
 		}
+		
+		// Declaration (bei externer Methodendeklarationen)
+		else if (line[0].contentEquals("declare")) {
+			newToken.setType(TokenType.Declare);
+			newToken.setTarget(line[2]);
+		}
 
 		// Wertzuweisungen
 		else if (line[0].contentEquals("store")) {

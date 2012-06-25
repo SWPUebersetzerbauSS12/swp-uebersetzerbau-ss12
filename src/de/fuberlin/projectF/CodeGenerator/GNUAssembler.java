@@ -4,6 +4,7 @@ public class GNUAssembler extends Assembler {
 	
 	public GNUAssembler() {
 		super();
+		sectionHead = new StringBuffer().append("");
 		sectionData = new StringBuffer().append(".section .data\n");
 		sectionText = new StringBuffer().append(".section .text\n");
 	}
@@ -20,6 +21,8 @@ public class GNUAssembler extends Assembler {
 				.append(value).append("\n");
 		
 	}
+	
+	protected void declare(String name) {}
 
 	protected void funcDec(String name, String operand1, String operand2) {
 		operand1 = translate(operand1);

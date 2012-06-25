@@ -2,11 +2,16 @@ package de.fuberlin.projectF.CodeGenerator;
 
 public abstract class Assembler {
 
+	public StringBuffer sectionHead;
 	public StringBuffer sectionData;
 	public StringBuffer sectionText;
 	
 	public Assembler() {
 		
+	}
+	
+	public StringBuffer getSectionHead() {
+		return sectionHead;
 	}
 	
 	public StringBuffer getSectionData() {
@@ -23,6 +28,8 @@ public abstract class Assembler {
 	
 	protected abstract void data(String label, String type, String value);
 
+	protected abstract void declare(String name);
+	
 	protected abstract void funcDec(String name, String operand1, String operand2);
 	
 	protected abstract void funcEnd();

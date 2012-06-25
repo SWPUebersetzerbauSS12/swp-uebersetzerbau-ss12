@@ -4,11 +4,13 @@ public class IntelAssembler extends Assembler{
 
 	public IntelAssembler() {
 		super();
+		sectionHead = new StringBuffer().append("");
 		sectionData = new StringBuffer().append("section .data\n");
 		sectionText = new StringBuffer().append("section .text\n");
 	}
 	
 	protected void createEP() {
+		sectionHead.append("extern exit\n");
 		sectionText.append("global _start\n_start:\n\tcall main\n" + "\tpush "
 				+ "eax" + "\n\tcall exit\n\n");
 		}
@@ -17,6 +19,10 @@ public class IntelAssembler extends Assembler{
 		value=requote(value);
 		sectionData.append(label).append(":\t").append("db").append(" ")
 				.append(value).append("\n");
+	}
+	
+	protected void declare(String name) {
+		sectionHead.append("extern ").append(name).append("\n");
 	}
 	
 	protected void funcDec(String name, String operand1, String operand2) {
@@ -90,36 +96,36 @@ public class IntelAssembler extends Assembler{
 	}
 	
 	protected void movsd(String source, String target, String comment) {
-		source = translate(source);
-		target = translate(target);
+		source = translate(source).replace("dword ", "");
+		target = translate(target).replace("dword ", "");
 		sectionText.append("\tmovsd ").append(target).append(", ")
 				.append(source).append("\t;").append(comment).append("\n");
 	}
 	
 	protected void movss(String source, String target, String comment) {
-		source = translate(source);
-		target = translate(target);
+		source = translate(source).replace("dword ", "");;
+		target = translate(target).replace("dword ", "");;
 		sectionText.append("\tmovss ").append(target).append(", ")
 				.append(source).append("\t;").append(comment).append("\n");
 	}
 	
 	protected void cvtsi2sd(String source, String target, String comment) {
-		source = translate(source);
-		target = translate(target);
+		source = translate(source).replace("dword ", "");;
+		target = translate(target).replace("dword ", "");;
 		sectionText.append("\tcvtsi2sd ").append(target).append(", ")
 				.append(source).append("\t;").append(comment).append("\n");
 	}
 	
 	protected void cvtsd2ss(String source, String target, String comment) {
-		source = translate(source);
-		target = translate(target);
+		source = translate(source).replace("dword ", "");;
+		target = translate(target).replace("dword ", "");;
 		sectionText.append("\tcvtsd2ss ").append(target).append(", ")
 				.append(source).append("\t;").append(comment).append("\n");
 	}
 	
 	protected void cvttss2si(String source, String target, String comment) {
-		source = translate(source);
-		target = translate(target);
+		source = translate(source).replace("dword ", "");;
+		target = translate(target).replace("dword ", "");;
 		sectionText.append("\tcvttss2si ").append(target).append(", ")
 				.append(source).append("\t;").append(comment).append("\n");
 	}
@@ -172,29 +178,29 @@ public class IntelAssembler extends Assembler{
 	}
 	
 	protected void addsd(String source, String target, String comment) {
-		source = translate(source);
-		target = translate(target);
+		source = translate(source).replace("dword ", "");;
+		target = translate(target).replace("dword ", "");;
 		sectionText.append("\taddsd ").append(target).append(", ")
 				.append(source).append("\t;").append(comment).append("\n");
 	}
 	
 	protected void subsd(String source, String target, String comment) {
-		source = translate(source);
-		target = translate(target);
+		source = translate(source).replace("dword ", "");;
+		target = translate(target).replace("dword ", "");;
 		sectionText.append("\tsubsd ").append(target).append(", ")
 				.append(source).append("\t;").append(comment).append("\n");
 	}
 	
 	protected void mulsd(String source, String target, String comment) {
-		source = translate(source);
-		target = translate(target);
+		source = translate(source).replace("dword ", "");;
+		target = translate(target).replace("dword ", "");;
 		sectionText.append("\tmulsd ").append(target).append(", ")
 				.append(source).append("\t;").append(comment).append("\n");
 	}
 	
 	protected void divsd(String source, String target, String comment) {
-		source = translate(source);
-		target = translate(target);
+		source = translate(source).replace("dword ", "");;
+		target = translate(target).replace("dword ", "");;
 		sectionText.append("\tdivsd ").append(target).append(", ")
 				.append(source).append("\t;").append(comment).append("\n");
 	}

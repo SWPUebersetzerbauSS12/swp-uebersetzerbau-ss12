@@ -40,6 +40,11 @@ public class Translator {
 			MMXRegisterAddress mmxRes2;
 
 			switch (tok.getType()) {
+			
+			case Declare:
+				asm.declare(tok.getTarget().substring(1));
+				break;
+			
 			case Definition:
 				// Neuen Variablenkontext anlegen
 				String name = tok.getTarget().substring(1);
@@ -504,11 +509,12 @@ public class Translator {
 	}
 
 	public String getCode() {
-		return (asm.getSectionData().toString() + asm.getSectionText().toString());
+		return (asm.getSectionHead() + asm.getSectionData().toString() + asm.getSectionText().toString());
 	}
 
 	public void print() {
 		System.out.println("\nGenerated Code:");
+		System.out.print(asm.getSectionHead());
 		System.out.print(asm.getSectionData());
 		System.out.print(asm.getSectionText());
 		System.out.println();

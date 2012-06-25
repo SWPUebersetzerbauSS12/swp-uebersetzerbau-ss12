@@ -9,13 +9,13 @@ public class IntelAssembler extends Assembler{
 	}
 	
 	protected void createEP() {
-		sectionText.append("global _start\n_start:\n\tcall main\n" + "\tpushl "
+		sectionText.append("global _start\n_start:\n\tcall main\n" + "\tpush "
 				+ "eax" + "\n\tcall exit\n\n");
 		}
 	
 	protected void data(String label, String type, String value) {
 		value=requote(value);
-		sectionData.append(label).append("\t").append("db").append(" ")
+		sectionData.append(label).append(":\t").append("db").append(" ")
 				.append(value).append("\n");
 	}
 	
@@ -203,7 +203,7 @@ public class IntelAssembler extends Assembler{
 		//Wenn Stackaddresse
 				if(op.indexOf(' ') != -1) {
 					String[] pair = op.split(" ");
-					op = "[" + pair[1] + " + " + pair[0] + "]";
+					op = "dword [" + pair[1] + " + " + pair[0] + "]";
 				} 
 				
 				return op;

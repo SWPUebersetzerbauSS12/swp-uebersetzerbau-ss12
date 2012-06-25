@@ -620,9 +620,13 @@ public class LLVM_Function {
 			
 			// keine Verwendungen, aber eine Definition
 			ILLVM_Command c = this.registerMap.getDefinition(registerName);
-			this.registerMap.deleteCommand(c);
-			c.deleteCommand();
-			return c;
+			// Nur entfernen, wenn c kein call-Befehl ist
+			if(c.getOperation()!=LLVM_Operation.CALL) {
+				this.registerMap.deleteCommand(c);
+				c.deleteCommand();
+				return c;
+			}
+			return null;
 
 		}
 		return null;

@@ -409,24 +409,23 @@ public class ParserGenerator {
 		for(String head :Nonterminal){
 			parseTableColumn=parsertable.get(head);
 			
-		}
 		
 		for(String terminal:Terminals){
 						
 			parseTableEntry=parseTableColumn.get(terminal);
 			//check the no. of entries of each terminal
-			if((parseTableEntry.size()==1)){
+			if((parseTableEntry.size()>1)){
 				System.out.println();
-				System.out.println("the grammar is parsable for LL(1).  ");
+				System.out.println("the grammar is NOT parsable for LL(1), please input a new one...");
 				System.out.println();
-				return true;
+				return false;
 			}
-			
+		}	
 		}
 		System.out.println();
-		System.out.println("the grammar is NOT parsable for LL(1), please input a new one...");
+		System.out.println("the grammar is parsable for LL(1).  ");
 		System.out.println();
-		return false;
+		return true;
 		
 	}
 

@@ -79,6 +79,8 @@ public class AbstractSyntaxTree<ExpressionElement extends Symbol> extends Concre
 
 			public Object handle( Object sender, ProductionRule reduceRule, int sequenceNumber) throws Exception {
 			
+				System.out.println( "r: " + reduceRule);
+
 				updateStackBySequenceNumber( sequenceNumber);
 				
 				// create the map contains attributes of this node
@@ -138,6 +140,7 @@ public class AbstractSyntaxTree<ExpressionElement extends Symbol> extends Concre
 
 			public Object handle( Object sender, Terminal shiftedTerminal, int sequenceNumber) throws Exception {
 			  
+				System.out.println( "s: " + shiftedTerminal);
 				updateStackBySequenceNumber( sequenceNumber);
 				
 				// create the map contains attributes of this node

@@ -49,7 +49,7 @@ public class RegexToDfaTest {
 		
 		RegexToPayloadMap<StatePayload> regexToPayloadMap = new RegexToPayloadMap<StatePayload>();
 		regexToPayloadMap.put( "(1|2)*3", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "NUM", new ParseIntAttribute(), 2));
-		regexToPayloadMap.put( "c[12]*3", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "ID", new ParseStringAttribute(), 1));
+		regexToPayloadMap.put( "c[12]{0,}3", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "ID", new ParseStringAttribute(), 1));
 		regexToPayloadMap.put( "[1-5-A]", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "CHAR", new ParseStringAttribute(),0));
 				
 		FiniteStateMachine<Character, ? extends de.fuberlin.bii.tokenmatcher.StatePayload> fsm = new RegexToDfaConverter()

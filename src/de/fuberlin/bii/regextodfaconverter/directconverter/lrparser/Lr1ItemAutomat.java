@@ -317,7 +317,8 @@ public class Lr1ItemAutomat<Element extends Symbol> implements ItemAutomat<Eleme
 		    		  handler = alternativeActionContext.getAction();
 		    			continue alternativeAction; 
 		    		} else {
-		    			throw new Exception( e);
+							Notification.printDebugException( e);
+							throw new Exception( "Cannot interpret symbol before " + inputQueue.toString());
 		    		}
 		    	}
 		    	break;

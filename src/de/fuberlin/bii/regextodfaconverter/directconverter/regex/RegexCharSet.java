@@ -64,6 +64,8 @@ public class RegexCharSet {
 	public static final char REGEX_CLASS_SIGNUM = '^';
 	public static final char REGEX_END_MARKER = '$';
 	public static final char REGEX_RANGE = '-';
+	public static final char REGEX_QUANTIFIER_SEPARATOR = ',';
+	
 
 	public static final char EMPTY_STRING = '€';//0x00;
 	public static final char TERMINATOR = 0x03; // ETX = End Of Text

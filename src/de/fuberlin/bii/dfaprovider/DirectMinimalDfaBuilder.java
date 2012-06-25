@@ -84,7 +84,7 @@ public class DirectMinimalDfaBuilder implements MinimalDfaBuilder {
 
 	  RegexToDfaConverter converter = new RegexToDfaConverter();
 		
-	  RegexToPayloadMap<StatePayload> regexToPayloadMap = new RegexToPayloadMap<StatePayload>();
+	  RegexToPayloadMap<de.fuberlin.bii.regextodfaconverter.fsm.StatePayload> regexToPayloadMap = new RegexToPayloadMap<de.fuberlin.bii.regextodfaconverter.fsm.StatePayload>();
 	  
 		StatePayload payload = null;
 		String regex = "";
@@ -107,12 +107,12 @@ public class DirectMinimalDfaBuilder implements MinimalDfaBuilder {
 			payload = new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload(
 					irule.getTokenType(), irule.getTokenValue(), counter * (-1));
 			regex = irule.getRegexp();
-			regexToPayloadMap.put( regex, payload);
+			regexToPayloadMap.put( regex, (de.fuberlin.bii.regextodfaconverter.fsm.StatePayload)payload);
 		}
 
 		// Aus allen regex einen vereinigten Dfa erstellen
 		try {
-			fsm = RegexToDfaConverter.convert( regexToPayloadMap);
+			fsm = (FiniteStateMachine<Character, StatePayload>) RegexToDfaConverter.convert( regexToPayloadMap);
 		} catch (DirectConverterException e) {
 			Notification.printDebugException( e);
 			throw new MinimalDfaBuilderException(

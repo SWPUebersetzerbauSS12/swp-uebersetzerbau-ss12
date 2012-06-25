@@ -69,6 +69,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.Inner
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.Leaf;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeNode;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeNodeCollection;
+import de.fuberlin.bii.regextodfaconverter.fsm.StatePayload;
 import de.fuberlin.bii.utils.Test;
 
 /**
@@ -84,6 +85,9 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 	private static final Nonterminal NONTERMINAL_T = new Nonterminal( "T");
 	private static final Nonterminal NONTERMINAL_U = new Nonterminal( "U");
 	private static final Nonterminal NONTERMINAL_V = new Nonterminal( "V");
+	private static final Nonterminal NONTERMINAL_Z = new Nonterminal( "Z");
+	
+	private static final Nonterminal NONTERMINAL_REPETITION_COUNT = new Nonterminal( "RZ");
 	
 	private static final Nonterminal NONTERMINAL_CLASS_SIGNUM = new Nonterminal( "CS");
 	private static final Nonterminal NONTERMINAL_CLASS_FIRST_ELEMENT = new Nonterminal( "CF");
@@ -121,6 +125,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 	private static final Terminal<RegularExpressionElement> CLASSIFIER_JOKER = new Terminal<RegularExpressionElement>( new RegularExpressionElement( RegexCharSet.REGEX_JOKER));
 	private static final Terminal<RegularExpressionElement> CLASSIFIER_CLASS_SIGNUM = new Terminal<RegularExpressionElement>( new RegularExpressionElement( RegexCharSet.REGEX_CLASS_SIGNUM));
 	private static final Terminal<RegularExpressionElement> OPERATOR_RANGE = new Terminal<RegularExpressionElement>( new RegularExpressionElement( RegexCharSet.REGEX_RANGE));
+	private static final Terminal<RegularExpressionElement> SEPARATOR_QUANTIFIER = new Terminal<RegularExpressionElement>( new RegularExpressionElement( RegexCharSet.REGEX_QUANTIFIER_SEPARATOR));
 	
 	
 	
@@ -139,7 +144,12 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 	private static final ProductionRule PRODUCTION_REGEX_KLEENE_CLOSURE = new ProductionRule(NONTERMINAL_T, NONTERMINAL_U, QUANTIFIER_KLEENE_CLOSURE);
 	private static final ProductionRule PRODUCTION_REGEX_POSITIVE_CLOSURE = new ProductionRule(NONTERMINAL_T, NONTERMINAL_U, QUANTIFIER_POSITIVE_CLOSURE);
 	private static final ProductionRule PRODUCTION_REGEX_OPTION = new ProductionRule(NONTERMINAL_T, NONTERMINAL_U, QUANTIFIER_OPTION);
-	//private static final ProductionRule PRODUCTION_REGEX_REPETITION = new ProductionRule(NONTERMINAL_T, NONTERMINAL_U, QUANTIFIER_OPTION);
+	private static final ProductionRule PRODUCTION_REGEX_REPETITION_RANGE = new ProductionRule(NONTERMINAL_T, NONTERMINAL_U, BRACKET_LEFT_QUANTIFIER, NONTERMINAL_REPETITION_COUNT, SEPARATOR_QUANTIFIER, NONTERMINAL_REPETITION_COUNT, BRACKET_RIGHT_QUANTIFIER);
+	private static final ProductionRule PRODUCTION_REGEX_REPETITION_RANGE_TO_INFTY = new ProductionRule(NONTERMINAL_T, NONTERMINAL_U, BRACKET_LEFT_QUANTIFIER, NONTERMINAL_REPETITION_COUNT, SEPARATOR_QUANTIFIER, BRACKET_RIGHT_QUANTIFIER);
+	private static final ProductionRule PRODUCTION_REGEX_REPETITION = new ProductionRule(NONTERMINAL_T, NONTERMINAL_U, BRACKET_LEFT_QUANTIFIER, NONTERMINAL_REPETITION_COUNT, BRACKET_RIGHT_QUANTIFIER);
+	private static final ProductionRule PRODUCTION_REGEX_REPETITION_COUNT = new ProductionRule( NONTERMINAL_REPETITION_COUNT, NONTERMINAL_REPETITION_COUNT, NONTERMINAL_Z);
+	private static final ProductionRule PRODUCTION_REGEX_REPETITION_COUNT_BYPASS = new ProductionRule( NONTERMINAL_REPETITION_COUNT, NONTERMINAL_Z);
+	
 	private static final ProductionRule PRODUCTION_REGEX_REPETITION_BYPASS = new ProductionRule(NONTERMINAL_T, NONTERMINAL_U);
 
   //Priority level 3 (Enclosure)
@@ -214,8 +224,13 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 		productions.add( PRODUCTION_REGEX_KLEENE_CLOSURE);
 		productions.add( PRODUCTION_REGEX_POSITIVE_CLOSURE);
 		productions.add( PRODUCTION_REGEX_OPTION);
-		//productions.add( PRODUCTION_REGEX_REPETITION);
 		productions.add( PRODUCTION_REGEX_REPETITION_BYPASS);
+	  // Priority level 2.1 (custom repetition)
+		productions.add( PRODUCTION_REGEX_REPETITION_RANGE);
+		productions.add( PRODUCTION_REGEX_REPETITION_RANGE_TO_INFTY);
+		productions.add( PRODUCTION_REGEX_REPETITION);
+		productions.add( PRODUCTION_REGEX_REPETITION_COUNT);
+		productions.add( PRODUCTION_REGEX_REPETITION_COUNT_BYPASS);
 	  // Priority level 3 (Enclosure)
 		productions.add( PRODUCTION_REGEX_GROUP);
 		// 3.1 Character class definition
@@ -250,6 +265,12 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 			productions.add( new ProductionRule(NONTERMINAL_V, TERMINAL_MASK, metaTerminal));	
 		}
 	   
+	  //REPETITION Terminals
+	  for ( int i = 0x30; i <= 0x39; i++) {
+	  	Terminal<RegularExpressionElement> terminal = new Terminal<RegularExpressionElement>( new RegularExpressionElement( (char) i));
+			productions.add( new ProductionRule(NONTERMINAL_Z, terminal));
+		}
+	  
 		
 	  // CLASS Terminals
 	  for ( char c : RegexCharSet.getUnguardedCharsOfContext( RegexSection.CHARACTER_CLASS)) {
@@ -422,7 +443,94 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 		});
 		result.put( PRODUCTION_REGEX_REPETITION_BYPASS, semanticRules);
 		
+		
+		// +++++++++++++++++++++++++++++
+		// Priority level 2.1 (Custom Repetition)
+		// +++++++++++++++++++++++++++++
 
+	  // T -> U { RZ , RZ1 }  
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) throws OperatorTreeException {
+				try {
+					TreeNode nodeU = (TreeNode) attributesMaps[1].get( "node");
+					int valueRZ = (Integer) attributesMaps[3].get( "value");
+					int valueRZ1 = (Integer) attributesMaps[5].get( "value");
+					List<TreeNode> repetitionNodes = new ArrayList<TreeNode>(); 
+					for ( int i = valueRZ; i <= valueRZ1; i++) {
+						repetitionNodes.add( getRepeatitionOfNode( nodeU, i));
+					}	
+					TreeNode relRootNode = getNodesAsAlternatives( repetitionNodes);  
+					attributesMaps[0].put( "node", relRootNode);
+				} catch (Exception e) {
+					throw new OperatorTreeException( "Invalid regular expression. Cannot resolv custom repetition statement.");
+				}
+			}
+		});
+		result.put( PRODUCTION_REGEX_REPETITION_RANGE, semanticRules);
+
+		// T -> U { RZ , }  
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) throws OperatorTreeException {
+				try {
+				  // like T -> U { RZ } 
+					TreeNode nodeU = (TreeNode) attributesMaps[1].get( "node");
+					int valueRZ = (Integer) attributesMaps[3].get( "value");
+					TreeNode relRootNode = getRepeatitionOfNode( nodeU, valueRZ);
+					// add RZ *
+					RepetitionRange repetitionRange = new RepetitionRange( 0, Integer.MAX_VALUE);
+					OperatorNode nodeInfty = new OperatorNode( OperatorType.REPETITION, repetitionRange);
+					nodeInfty.setLeftChildNode( (TreeNode) nodeU.clone());
+					TreeNode leftChild = relRootNode;
+					TreeNode rightChild = nodeInfty;
+					relRootNode = new OperatorNode( OperatorType.CONCATENATION);
+					((OperatorNode) relRootNode).setLeftChildNode( leftChild);
+					((OperatorNode) relRootNode).setRightChildNode( rightChild);
+					attributesMaps[0].put( "node", relRootNode);
+				} catch (Exception e) {
+					throw new OperatorTreeException( "Invalid regular expression. Cannot resolv custom repetition statement.");
+				}
+			}
+		});
+		result.put( PRODUCTION_REGEX_REPETITION_RANGE_TO_INFTY, semanticRules);
+	
+		// T -> U { RZ }  
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) throws OperatorTreeException {
+				try {
+					TreeNode nodeU = (TreeNode) attributesMaps[1].get( "node");
+					int valueRZ = (Integer) attributesMaps[3].get( "value");
+					TreeNode relRootNode = getRepeatitionOfNode( nodeU, valueRZ);
+					attributesMaps[0].put( "node", relRootNode);
+				} catch (Exception e) {
+					throw new OperatorTreeException( "Invalid regular expression. Cannot resolv custom repetition statement.");
+				}
+			}
+		});
+		result.put( PRODUCTION_REGEX_REPETITION, semanticRules);
+
+		// RZ -> RZ1 Z  
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) {
+				int valueRZ1 = (Integer) attributesMaps[1].get( "value");
+				int valueZ = (Integer) attributesMaps[2].get( "value");
+				int valueRZ = valueRZ1 *10 + valueZ;
+				attributesMaps[0].put( "value", valueRZ);
+			}
+		});
+		result.put( PRODUCTION_REGEX_REPETITION_COUNT, semanticRules);
+
+		// RZ -> Z  (bypass)  
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) {
+				attributesMaps[0].put( "value", attributesMaps[1].get( "value"));
+			}
+		});
+		result.put( PRODUCTION_REGEX_REPETITION_COUNT_BYPASS, semanticRules);
 		
 		
 		// +++++++++++++++++++++++++++++
@@ -502,20 +610,16 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 							value.setPayload( commonPayload);
 					}
 				}
-
-				// now convert the list to a chain of alternatives 
-				Queue<Symbol> valuesQueue = new ArrayBlockingQueue<Symbol>( values.size());
-				valuesQueue.addAll( values);
-				TreeNode relRootNode = new TerminalNode( valuesQueue.poll());
-				while ( !valuesQueue.isEmpty()) {
-					TreeNode leftChild = relRootNode;
-					TreeNode rightChild = new TerminalNode( valuesQueue.poll());
-					relRootNode = new OperatorNode( OperatorType.ALTERNATIVE);
-					((OperatorNode) relRootNode).setLeftChildNode( leftChild);
-					((OperatorNode) relRootNode).setRightChildNode( rightChild);
+				
+				// convert values to nodes
+				List<TreeNode> nodes = new ArrayList<TreeNode>();
+				for ( Symbol value : values) {
+				  nodes.add( new TerminalNode( value));
 				}
+					
+				TreeNode relRootNode = getNodesAsAlternatives( nodes);
 				attributesMaps[0].put( "node", relRootNode);
-			}
+		 	}
 		});
 		result.put( PRODUCTION_REGEX_CLASS, semanticRules);
 		result.put( PRODUCTION_REGEX_CLASS_SINGLE, semanticRules);
@@ -524,7 +628,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 		semanticRules = new SemanticRules();
 		semanticRules.add( new SemanticRule() {	
 			public void apply( AttributesMap... attributesMaps) {
-				Object payload = ((Symbol) attributesMaps[2].get( "value")).getPayload();
+				Object payload = ((Symbol) attributesMaps[1].get( "value")).getPayload();
 				attributesMaps[0].put( "complement", true);
 				attributesMaps[0].put( "payload", payload);
 			}
@@ -659,6 +763,23 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 		} 
 		
 		
+		// QUANTIFIER values
+		// Z -> 0..9
+		SemanticRules semanticRulesOfRepetitionValues = new SemanticRules();
+		semanticRulesOfRepetitionValues.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) {
+				Character nodeValue = ((RegularExpressionElement<StatePayload>) attributesMaps[1].get( "value")).getValue();
+				int intValue = Integer.valueOf( nodeValue + "");
+				attributesMaps[0].put( "value", intValue);
+			}
+		});
+		for ( int i = 0x30; i <= 0x39; i++) {
+	  	Terminal<RegularExpressionElement> terminal = new Terminal<RegularExpressionElement>( new RegularExpressionElement( (char) i));
+	  	result.put( new ProductionRule(NONTERMINAL_Z, terminal), semanticRulesOfRepetitionValues);
+		}
+	  
+		
+		
 		// CLASS Values
 		
 		SemanticRules semanticRulesOfUnguardedClassValues = new SemanticRules();
@@ -725,6 +846,35 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 		}
 	}
 
+	
+	
+	private static TreeNode getRepeatitionOfNode( TreeNode theNode, int times) throws CloneNotSupportedException {
+		TreeNode<Symbol> nodeZero = new TerminalNode( new RegularExpressionElement( RegexCharSet.EMPTY_STRING));
+		TreeNode relRootNode = times > 0 ? (TreeNode) theNode.clone() : nodeZero;
+		for ( int i = 1; i < times; i++) {
+			TreeNode leftChild = relRootNode;
+			TreeNode rightChild = (TreeNode) theNode.clone();
+			relRootNode = new OperatorNode( OperatorType.CONCATENATION);
+			((OperatorNode) relRootNode).setLeftChildNode( leftChild);
+			((OperatorNode) relRootNode).setRightChildNode( rightChild);
+		}
+		return relRootNode;
+	}
+	
+	
+	private static TreeNode getNodesAsAlternatives( Collection<TreeNode> theNodes) {
+		Queue<TreeNode> nodesQueue = new ArrayBlockingQueue<TreeNode>( theNodes.size());
+		nodesQueue.addAll( theNodes);
+		TreeNode relRootNode = nodesQueue.poll();
+		while ( !nodesQueue.isEmpty()) {
+			TreeNode leftChild = relRootNode;
+			TreeNode rightChild = nodesQueue.poll();
+			relRootNode = new OperatorNode( OperatorType.ALTERNATIVE);
+			((OperatorNode) relRootNode).setLeftChildNode( leftChild);
+			((OperatorNode) relRootNode).setRightChildNode( rightChild);
+		}
+		return relRootNode;
+	}
 
 
 	/**

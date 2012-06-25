@@ -4,8 +4,8 @@ public class IntelAssembler extends Assembler{
 
 	public IntelAssembler() {
 		super();
-		sectionData = new StringBuffer().append("segment .data\n");
-		sectionText = new StringBuffer().append("segment .text\n");
+		sectionData = new StringBuffer().append("section .data\n");
+		sectionText = new StringBuffer().append("section .text\n");
 	}
 	
 	protected void createEP() {
@@ -14,15 +14,15 @@ public class IntelAssembler extends Assembler{
 		}
 	
 	protected void data(String label, String type, String value) {
-		sectionData.append(label).append(":\t").append(type).append(" ")
+		value=requote(value);
+		sectionData.append(label).append("\t").append("db").append(" ")
 				.append(value).append("\n");
 	}
 	
 	protected void funcDec(String name, String operand1, String operand2) {
 		operand1 = translate(operand1);
 		operand2 = translate(operand2);
-		sectionText.append(".type ").append(name)
-		.append(", @function\n").append(name).append(":\n");
+		sectionText.append(name).append(":\n");
 		sectionText.append("\tenter " + operand1 + ", " + operand2 + "\n");
 	}
 	
@@ -62,141 +62,141 @@ public class IntelAssembler extends Assembler{
 	protected void cmp(String source, String target) {
 		source = translate(source);
 		target = translate(target);
-		sectionText.append("\tcmpl ").append(source).append(", ")
-				.append(target).append("\t\t\t#Label ").append("\n");
+		sectionText.append("\tcmp ").append(target).append(", ")
+				.append(source).append("\t\t\t;Label ").append("\n");
 	}
 
 	protected void label(String name) {
-		sectionText.append("label_").append(name).append(":\t\t\t#Label ")
+		sectionText.append("label_").append(name).append(":\t\t\t;Label ")
 				.append(name).append("\n");
 	}
 
 	protected void call(String name) {
-		sectionText.append("\tcall ").append(name).append("\t#Call ")
+		sectionText.append("\tcall ").append(name).append("\t;Call ")
 				.append(name).append("\n");
 	}
 
 	protected void push(String operand, String comment) {
 		operand = translate(operand);
-		sectionText.append("\tpushl ").append(operand).append("\t#")
+		sectionText.append("\tpush ").append(operand).append("\t;")
 				.append(comment).append("\n");
 	}
 
 	protected void mov(String source, String target, String comment) {
 		source = translate(source);
 		target = translate(target);
-		sectionText.append("\tmovl ").append(source).append(", ")
-				.append(target).append("\t#").append(comment).append("\n");
+		sectionText.append("\tmov ").append(target).append(", ")
+				.append(source).append("\t;").append(comment).append("\n");
 	}
 	
 	protected void movsd(String source, String target, String comment) {
 		source = translate(source);
 		target = translate(target);
-		sectionText.append("\tmovsd ").append(source).append(", ")
-				.append(target).append("\t#").append(comment).append("\n");
+		sectionText.append("\tmovsd ").append(target).append(", ")
+				.append(source).append("\t;").append(comment).append("\n");
 	}
 	
 	protected void movss(String source, String target, String comment) {
 		source = translate(source);
 		target = translate(target);
-		sectionText.append("\tmovss ").append(source).append(", ")
-				.append(target).append("\t#").append(comment).append("\n");
+		sectionText.append("\tmovss ").append(target).append(", ")
+				.append(source).append("\t;").append(comment).append("\n");
 	}
 	
 	protected void cvtsi2sd(String source, String target, String comment) {
 		source = translate(source);
 		target = translate(target);
-		sectionText.append("\tcvtsi2sd ").append(source).append(", ")
-				.append(target).append("\t#").append(comment).append("\n");
+		sectionText.append("\tcvtsi2sd ").append(target).append(", ")
+				.append(source).append("\t;").append(comment).append("\n");
 	}
 	
 	protected void cvtsd2ss(String source, String target, String comment) {
 		source = translate(source);
 		target = translate(target);
-		sectionText.append("\tcvtsd2ss ").append(source).append(", ")
-				.append(target).append("\t#").append(comment).append("\n");
+		sectionText.append("\tcvtsd2ss ").append(target).append(", ")
+				.append(source).append("\t;").append(comment).append("\n");
 	}
 	
 	protected void cvttss2si(String source, String target, String comment) {
 		source = translate(source);
 		target = translate(target);
-		sectionText.append("\tcvttss2si ").append(source).append(", ")
-				.append(target).append("\t#").append(comment).append("\n");
+		sectionText.append("\tcvttss2si ").append(target).append(", ")
+				.append(source).append("\t;").append(comment).append("\n");
 	}
 
 	protected void or(String source, String target, String comment) {
 		source = translate(source);
 		target = translate(target);
-		sectionText.append("\torl ").append(source).append(", ")
-				.append(target).append("\t#").append(comment).append("\n");
+		sectionText.append("\tor ").append(target).append(", ")
+				.append(source).append("\t;").append(comment).append("\n");
 	}
 	
 	protected void and(String source, String target, String comment) {
 		source = translate(source);
 		target = translate(target);
-		sectionText.append("\tandl ").append(source).append(", ")
-				.append(target).append("\t#").append(comment).append("\n");
+		sectionText.append("\tand ").append(target).append(", ")
+				.append(source).append("\t;").append(comment).append("\n");
 	}
 	
 	protected void xor(String source, String target, String comment) {
 		source = translate(source);
 		target = translate(target);
-		sectionText.append("\txorl ").append(source).append(", ")
-				.append(target).append("\t#").append(comment).append("\n");
+		sectionText.append("\txor ").append(target).append(", ")
+				.append(source).append("\t;").append(comment).append("\n");
 	}
 	
 	protected void idiv(String source) {
 		source = translate(source);
-		sectionText.append("\tidivl ").append(source).append("\n");
+		sectionText.append("\tidiv ").append(source).append("\n");
 	}
 
 	protected void imul(String source, String target, String comment) {
 		source = translate(source);
 		target = translate(target);
-		sectionText.append("\timull ").append(source).append(", ")
-				.append(target).append("\t#").append(comment).append("\n");
+		sectionText.append("\timul ").append(target).append(", ")
+				.append(source).append("\t;").append(comment).append("\n");
 	}
 
 	protected void sub(String source, String target, String comment) {
 		source = translate(source);
 		target = translate(target);
-		sectionText.append("\tsubl ").append(source).append(", ")
-				.append(target).append("\t#").append(comment).append("\n");
+		sectionText.append("\tsub ").append(target).append(", ")
+				.append(source).append("\t;").append(comment).append("\n");
 	}
 
 	protected void add(String source, String target, String comment) {
 		source = translate(source);
 		target = translate(target);
-		sectionText.append("\taddl ").append(source).append(", ")
-				.append(target).append("\t#").append(comment).append("\n");
+		sectionText.append("\tadd ").append(target).append(", ")
+				.append(source).append("\t;").append(comment).append("\n");
 	}
 	
 	protected void addsd(String source, String target, String comment) {
 		source = translate(source);
 		target = translate(target);
-		sectionText.append("\taddsd ").append(source).append(", ")
-				.append(target).append("\t#").append(comment).append("\n");
+		sectionText.append("\taddsd ").append(target).append(", ")
+				.append(source).append("\t;").append(comment).append("\n");
 	}
 	
 	protected void subsd(String source, String target, String comment) {
 		source = translate(source);
 		target = translate(target);
-		sectionText.append("\tsubsd ").append(source).append(", ")
-				.append(target).append("\t#").append(comment).append("\n");
+		sectionText.append("\tsubsd ").append(target).append(", ")
+				.append(source).append("\t;").append(comment).append("\n");
 	}
 	
 	protected void mulsd(String source, String target, String comment) {
 		source = translate(source);
 		target = translate(target);
-		sectionText.append("\tmulsd ").append(source).append(", ")
-				.append(target).append("\t#").append(comment).append("\n");
+		sectionText.append("\tmulsd ").append(target).append(", ")
+				.append(source).append("\t;").append(comment).append("\n");
 	}
 	
 	protected void divsd(String source, String target, String comment) {
 		source = translate(source);
 		target = translate(target);
-		sectionText.append("\tdivsd ").append(source).append(", ")
-				.append(target).append("\t#").append(comment).append("\n");
+		sectionText.append("\tdivsd ").append(target).append(", ")
+				.append(source).append("\t;").append(comment).append("\n");
 	}
 	
 	protected String translate(String op) {
@@ -207,6 +207,20 @@ public class IntelAssembler extends Assembler{
 				} 
 				
 				return op;
+	}
+	private String requote(String string) {
+		
+		string = string.replace("\\0A", "\",10,\"");
+		string = string.replace("\\09", "\",09,\"");
+		string = string.replace("\\00\"", "\",0");
+		string = string.replace("\\22", "\",0x22,\"");
+		string = string.replace("\\5C", "\",0x5C,\"");
+		string = string.replace("\\08", "\",08,\"");
+		string = string.replace("\\0C", "\",0x0C,\"");
+		string = string.replace("\\0D", "\",0x0D,\"");
+		string = string.replace("\\0B", "\",0x0B,\"");
+		
+		return string;
 	}
 	
 }

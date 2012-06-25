@@ -164,7 +164,7 @@ public abstract class Lexer {
 		else if (line[0].contentEquals("store")) {
 			if(line[2].startsWith("c\"")) {
 				newToken.setType(TokenType.String);
-				newToken.setOp1(requote(line[2].substring(1)));
+				newToken.setOp1(line[2].substring(1));
 				newToken.setTarget("@_str" + line[4].substring(1));
 				
 				deleteCandidate.put(newToken.getTarget(),new ArrayList<String>());
@@ -245,7 +245,7 @@ public abstract class Lexer {
 				newToken.setType(TokenType.String);
 				newToken.setTarget(line[0]);
 				newToken.setTypeTarget(line[2].replace((char) 1, ' '));
-				newToken.setOp1(requote(line[3].substring(1).replace((char) 1, ' ')
+				newToken.setOp1(line[3].substring(1).replace((char) 1, ' ')
 						.replace(" ( ", "(")
 						.replace(" ) ", ")")
 						.replace(" [ ", "[")
@@ -253,7 +253,7 @@ public abstract class Lexer {
 						.replace(" { ", "{")
 						.replace(" } ", "}")
 						.replace(" , ", ",")
-						.replace(" : ", ":")));
+						.replace(" : ", ":"));
 				newToken.setOp2("" + line[3].length());
 			}
 
@@ -395,24 +395,7 @@ public abstract class Lexer {
 		return new String("0x" + tmp2);
 	}
 
-	private String requote(String string) {
-		//TODO
-		string = string.replace("\\0A", "\\n");
-		string = string.replace("\\09", "\\t");
-		string = string.replace("\\00", "\\0");
-		string = string.replace("'", "\\'");
-		string = string.replace("\\22", "\\\"");
-		string = string.replace("?", "\\?");
-		string = string.replace("\\5C", "\\\\");
-		string = string.replace("\\07", "\\a");
-		string = string.replace("\\08", "\\b");
-		string = string.replace("\\0C", "\\f");
-		string = string.replace("\\0D", "\\r");
-		string = string.replace("\\0B", "\\v");
-		
-		//ToDo: Unicode zeichen etc
-		return string;
-	}
+
 
 	private void fillParameter(Token newToken, String line) {
 		line = line.replace('(', ' ');

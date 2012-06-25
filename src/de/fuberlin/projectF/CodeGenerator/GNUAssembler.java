@@ -14,8 +14,11 @@ public class GNUAssembler extends Assembler {
 	}
 	
 	protected void data(String label, String type, String value) {
+		value= requote(value);
+		
 		sectionData.append(label).append(":\t").append(type).append(" ")
 				.append(value).append("\n");
+		
 	}
 
 	protected void funcDec(String name, String operand1, String operand2) {
@@ -227,6 +230,23 @@ public class GNUAssembler extends Assembler {
 		else op = "$" + op;
 			
 		return op;
+	}
+	protected String requote(String string) {
+		
+		string = string.replace("\\0A", "\\n");
+		string = string.replace("\\09", "\\t");
+		string = string.replace("\\00", "\\0");
+		string = string.replace("'", "\\'");
+		string = string.replace("\\22", "\\\"");
+		string = string.replace("?", "\\?");
+		string = string.replace("\\5C", "\\\\");
+		string = string.replace("\\07", "\\a");
+		string = string.replace("\\08", "\\b");
+		string = string.replace("\\0C", "\\f");
+		string = string.replace("\\0D", "\\r");
+		string = string.replace("\\0B", "\\v");
+		
+		return string;
 	}
 	
 }

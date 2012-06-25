@@ -4,7 +4,7 @@ import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.projecta.analysis.SymbolTableStack;
 
 
-public class UnaryOp extends AbstractSyntaxTree {
+public class UnaryOp extends Type {
 	
 	TokenType op;
 	

@@ -484,9 +484,11 @@ public abstract class Lexer {
 		    for(int i = 0; i < tokenStream.size(); i++) {
 		    	if(tokenStream.get(i).getType() == TokenType.Call) {
 		    		for(int j = 0; j < tokenStream.get(i).getParameterCount(); j++) {
-		    			if(tokenStream.get(i).getParameter(j).getOperand().equals(entry.getValue().get(entry.getValue().size() - 1))) {
-		    				System.out.println("var: " + entry.getValue().get(entry.getValue().size() - 1));
-		    				tokenStream.get(i).getParameter(j).setOperand(key);
+		    			for(int k = 0; k < entry.getValue().size(); k++) {
+			    			if(tokenStream.get(i).getParameter(j).getOperand().equals(entry.getValue().get(k))) {
+			    				System.out.println("var: " + entry.getValue().get(entry.getValue().size() - 1));
+			    				tokenStream.get(i).getParameter(j).setOperand(key);
+			    			}
 		    			}
 		    		}
 		    	}

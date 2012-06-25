@@ -151,7 +151,7 @@ public class GrammarReader {
 				*if false format at the left side of the production, the line no. and the false nonterminal will be showed.
 				*
 				*/
-				if(!nonterminal.getHead().matches("<\\w+>")){
+				if(!nonterminal.getHead().matches("<[\\w']+>")){
 					throw new RuntimeException("invalid input garmmar at line "+lineNo+".\n " +"the format for nonterminal is false!!"); 
 				}
 
@@ -176,7 +176,7 @@ public class GrammarReader {
 				StringTokenizer st = new StringTokenizer(nonterminalLR[1]);
 				while (st.hasMoreTokens()) {
 					String token = st.nextToken().trim();
-					if (token.matches("<\\w+>")) {
+					if (token.matches("<[\\w']+>")) {
 						// non-terminal symbol
 						productionVector.add(token);
 					} else if (token.matches("\"\\S+\"")) {

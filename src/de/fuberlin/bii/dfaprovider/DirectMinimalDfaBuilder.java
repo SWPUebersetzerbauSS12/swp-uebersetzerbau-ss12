@@ -21,7 +21,8 @@
  * 
  * Projectgroup: bi, bii
  * 
- * Authors: 
+ * 
+ * Authors: Daniel Rotar, Benjamin Weißenfels, Alexander Niemeier, Johannes Dahlke
  * 
  * Module:  Softwareprojekt Übersetzerbau 2012 
  * 
@@ -53,7 +54,10 @@ import de.fuberlin.bii.utils.Notification;
  * Stellt einen MinimalDFA-Builder dar, der den DFA über den direkten Weg von
  * Regex zu DFA erstellt.
  * 
- * @author ?
+ * @author Daniel Rotar
+ * @author Benjamin Weißenfels
+ * @author Alexander Niemeier
+ * @author Johannes Dahlke
  * 
  */
 public class DirectMinimalDfaBuilder implements MinimalDfaBuilder {

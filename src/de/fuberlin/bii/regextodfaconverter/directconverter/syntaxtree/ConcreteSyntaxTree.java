@@ -45,6 +45,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 import de.fuberlin.bii.regextodfaconverter.directconverter.AutomatEventHandler;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.ItemAutomat;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.ItemAutomatException;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.Lr0ItemAutomat;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.ReduceEventHandler;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.Slr1ItemAutomat;
@@ -121,7 +122,7 @@ public class ConcreteSyntaxTree<ExpressionElement extends Symbol> implements Tre
 		return new Slr1ItemAutomat<ExpressionElement>( (ContextFreeGrammar) grammar);
 	}
 
-	protected void buildTree() {
+	protected void buildTree() throws ItemAutomatException {
 		ItemAutomat<ExpressionElement> itemAutomat = getNewItemAutomat( grammar);
 
 		itemAutomat.setReduceEventHandler( getReduceEventHandler());

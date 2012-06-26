@@ -32,32 +32,19 @@
 
 package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser;
 
-import java.util.List;
-
-import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symbol;
-
 /**
  * 
  * @author Johannes Dahlke
  *
- * @param <Element>
  */
-public interface ItemAutomat<Element extends Symbol> {
+public class ItemAutomatException extends Exception {
+	
+	public ItemAutomatException() {
+	  super();
+	}
+	
+	public ItemAutomatException( String message) {
+	  super( message);
+    }
 
-	boolean match( List<Element> input) throws ItemAutomatException;
-		
-	/**
-	 * - Keine shift-reduce Konflikte
-	 * - Keine reduce-reduce Konflikte
-	 * - reduce-Aktionen über Followmengen plaziert
-	 * @return
-	 */
-  boolean isReduceConflictFree();
-  
-	
-  void setReduceEventHandler( ReduceEventHandler reduceEventHandler);
-	
-	
-	void setShiftEventHandler( ShiftEventHandler shiftEventHandler);
-	
 }

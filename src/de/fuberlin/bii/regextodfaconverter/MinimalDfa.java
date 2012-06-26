@@ -86,8 +86,7 @@ public class MinimalDfa<ConditionType extends Serializable, PayloadType extends 
 		try {
 			if (!this.finiteStateMachine.isDeterministic()) {
 				NfaToDfaConverter<ConditionType, PayloadType> converter = new NfaToDfaConverter<ConditionType, PayloadType>();
-				this.finiteStateMachine = converter
-						.convertToDfa(this.finiteStateMachine);
+				this.finiteStateMachine = converter.convertToDfa(this.finiteStateMachine);
 			}
 			DfaMinimizer<ConditionType, PayloadType> minimizer = new DfaMinimizer<ConditionType, PayloadType>();
 			this.finiteStateMachine = minimizer.convertToMimimumDfa(this.finiteStateMachine);

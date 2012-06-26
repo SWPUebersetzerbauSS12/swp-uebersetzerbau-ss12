@@ -58,5 +58,4 @@ public class EmptyString extends Terminal  {
 		return true;
 	}
 	
-
 }

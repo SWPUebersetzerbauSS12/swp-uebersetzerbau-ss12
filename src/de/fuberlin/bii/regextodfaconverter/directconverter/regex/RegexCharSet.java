@@ -67,7 +67,7 @@ public class RegexCharSet {
 	public static final char REGEX_QUANTIFIER_SEPARATOR = ',';
 	
 
-	public static final char EMPTY_STRING = '€';//0x00;
+	public static final char EMPTY_STRING = 0x00;
 	public static final char TERMINATOR = 0x03; // ETX = End Of Text
 
 	

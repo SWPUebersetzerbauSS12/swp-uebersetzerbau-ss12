@@ -6,7 +6,7 @@
 \)						{return("BRACKET", ")")}
 \{						{return("BRACKET", "{")}
 \}						{return("BRACKET", "}")}
-\=						{return("ASSIGNEMENT", "=")}
+=						{return("ASSIGNEMENT", "=")}
 <						{return("OP", "L")}
 >						{return("OP", "G")}
 <=						{return("OP", "LE")}
@@ -14,7 +14,7 @@
 ==						{return("OP", "EQ")}
 !=						{return("OP", "NEQ")}
 \+						{return("OP", "PLUS")}
-\-						{return("OP", "MINUS")}
+-						{return("OP", "MINUS")}
 \*						{return("OP", "MUL")}
 /						{return("OP", "DIVIDE")}
 ;						{return("KEYWORD", "SEMIKOLON")}

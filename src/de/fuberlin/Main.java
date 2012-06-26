@@ -35,7 +35,7 @@ class Main {
 	/*
 	 * Standard Parameter
 	 */
-	static final String DEFAULT_GRAMMAR_FILE = "/input/parserci/quellsprache_bnf.txt";
+	static final String DEFAULT_GRAMMAR_FILE = "input/de/fuberlin/projectci/quellsprache_bnf.txt";
 	
 	/*
 	 * Ideen für Konsolenparameter:

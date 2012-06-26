@@ -282,7 +282,7 @@ public class Lr0ItemAutomat<Element extends Symbol> implements ItemAutomat<Eleme
 	}
 
 
-	public boolean match( List<Element> input) {
+	public boolean match( List<Element> input) throws ItemAutomatException {
 		ResetAutomata();
 		LoadInputIntoQueue( input);
 
@@ -353,7 +353,8 @@ public class Lr0ItemAutomat<Element extends Symbol> implements ItemAutomat<Eleme
 			
 		} catch ( Exception e) {
 			Notification.printDebugException( e);
-			return false;
+			throw new ItemAutomatException( e.getMessage()); 
+			//return false;
 		}
 		return true;
 	}

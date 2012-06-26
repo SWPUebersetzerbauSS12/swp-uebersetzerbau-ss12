@@ -127,8 +127,8 @@ public class ConcreteSyntaxTree<ExpressionElement extends Symbol> implements Tre
 		itemAutomat.setReduceEventHandler( getReduceEventHandler());
 
 		itemAutomat.setShiftEventHandler( getShiftEventHandler());
-    // System.out.println( "isSLR1 = " + itemAutomat.isReduceConflictFree());
-		//System.out.println( itemAutomat);
+    // Notification.printDebugInfoMessage( "isSLR1 = " + itemAutomat.isReduceConflictFree());
+		//Notification.printDebugInfoMessage( itemAutomat);
    	itemAutomat.match( inputElements);
 		rootNode = nodeStack.peek().getTreeNode();
 	}

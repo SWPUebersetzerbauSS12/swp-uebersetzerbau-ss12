@@ -902,7 +902,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 				embracingNonterminalNode.setLeftChildNode( priorStartSymbolNode);
 				embracingNonterminalNode.setRightChildNode( terminatorNode);
 	      attributesMaps[0].put( "node", embracingNonterminalNode);
-	      System.out.println( embracingNonterminalNode.toFullString());
+	      // System.out.println( embracingNonterminalNode.toFullString());
 			}
 		});
 		sdd.put( terminatorProductionRule, semanticRules);

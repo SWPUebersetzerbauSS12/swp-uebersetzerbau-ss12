@@ -15,6 +15,7 @@ import de.fuberlin.bii.tokenmatcher.Token;
 import de.fuberlin.bii.tokenmatcher.Tokenizer;
 import de.fuberlin.bii.tokenmatcher.attributes.ParseIntAttribute;
 import de.fuberlin.bii.tokenmatcher.attributes.ParseStringAttribute;
+import de.fuberlin.bii.tokenmatcher.attributes.StringAttribute;
 import de.fuberlin.bii.utils.Notification;
 
 public class RegexToDfaTest {
@@ -23,6 +24,7 @@ public class RegexToDfaTest {
 	public void testDeterminism() throws Exception {
 		
 		Notification.enableDebugPrinting();
+		Notification.enableDebugInfoPrinting();
 		
 		RegexToPayloadMap<StatePayload> regexToPayloadMap = new RegexToPayloadMap<StatePayload>();
 		regexToPayloadMap.put( "(a|b)*abb", new StatePayload( "NUM", new ParseIntAttribute()));
@@ -33,19 +35,63 @@ public class RegexToDfaTest {
 		.convert( regexToPayloadMap);
 
 		LexemeReader lexemeReader = new BufferedLexemeReader("tests/resources/de/fuberlin/bii/source/tokenmatcher/regex.fun");// new SimpleLexemeReader(
-		System.out.println( fsm);
-		System.out.println( "isDeterministic: " + fsm.isDeterministic());
-		System.out.println( new MinimalDfa( fsm));
+		Notification.printDebugInfoMessage( fsm.toString());
+		Notification.printDebugInfoMessage( (new MinimalDfa( fsm)).toString());
+		Notification.printDebugInfoMessage( "Deterministic: " + fsm.isDeterministic());
 
 		Assert.assertTrue( fsm.isDeterministic());		
 		
 	}
 	
+	@Test
+	public void testSubTokenRecognition() throws Exception {
+		
+		Notification.enableDebugPrinting();
+		Notification.enableDebugInfoPrinting();
+		
+		
+		RegexToPayloadMap<StatePayload> regexToPayloadMap = new RegexToPayloadMap<StatePayload>();
+		regexToPayloadMap.put( "def", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "SYM", new StringAttribute( "DEF"), 2));
+		regexToPayloadMap.put( "if", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "SYM", new StringAttribute( "IF"), 1));
+		regexToPayloadMap.put( "[ifdef]*", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "ID", new ParseStringAttribute(),0));
+				
+		FiniteStateMachine<Character, ? extends de.fuberlin.bii.tokenmatcher.StatePayload> fsm = new RegexToDfaConverter()
+		.convert( regexToPayloadMap);
+
+		LexemeReader lexemeReader = new BufferedLexemeReader("tests/resources/de/fuberlin/bii/source/tokenmatcher/regex2.fun");// new SimpleLexemeReader(
 	
+		Notification.printDebugInfoMessage( fsm.toString());
+		Notification.printDebugInfoMessage( (new MinimalDfa( fsm)).toString());
+		Notification.printDebugInfoMessage( "Deterministic: " + fsm.isDeterministic());
+		
+		Tokenizer tokenizer = new Tokenizer( lexemeReader, new MinimalDfa( fsm));
+	
+		Token currentToken = null;
+		
+		Boolean tokenIdentificationFailed = false;
+		
+		// recognize symbol if
+		currentToken = tokenizer.getNextToken();
+		Assert.assertEquals( "<SYM, IF>",currentToken.toString());
+
+		// recognize identifier ide
+		currentToken = tokenizer.getNextToken();
+		Assert.assertEquals( "<ID, ide>",currentToken.toString());
+
+		// recognize symbol def
+		currentToken = tokenizer.getNextToken();
+		Assert.assertEquals( "<SYM, DEF>",currentToken.toString());
+
+
+
+	}
+
+
 	@Test
 	public void testTokenRecognition() throws Exception {
 		
 		Notification.enableDebugPrinting();
+		Notification.enableDebugInfoPrinting();
 		
 		RegexToPayloadMap<StatePayload> regexToPayloadMap = new RegexToPayloadMap<StatePayload>();
 		regexToPayloadMap.put( "(1|2)*3", new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload( "NUM", new ParseIntAttribute(), 2));
@@ -57,9 +103,9 @@ public class RegexToDfaTest {
 
 		LexemeReader lexemeReader = new BufferedLexemeReader("tests/resources/de/fuberlin/bii/source/tokenmatcher/regex.fun");// new SimpleLexemeReader(
 	
-		System.out.println( fsm);
-		System.out.println( new MinimalDfa( fsm));
-		System.out.println( "Deterministic: " + fsm.isDeterministic());
+		Notification.printDebugInfoMessage( fsm.toString());
+		Notification.printDebugInfoMessage( (new MinimalDfa( fsm)).toString());
+		Notification.printDebugInfoMessage( "Deterministic: " + fsm.isDeterministic());
 		
 		Tokenizer tokenizer = new Tokenizer( lexemeReader, new MinimalDfa( fsm));
 	

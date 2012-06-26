@@ -112,7 +112,6 @@ public class RegexToDfaConverter {
 		  concatenatedRegex += "(" + regex +")";
 		  positionToPayloadMap.put( concatenatedRegex.length() -1, regexToPayloadMap.get( regex));  
    	}
-		System.out.println( concatenatedRegex);
 		return convert( concatenatedRegex, positionToPayloadMap);
 	}
 	
@@ -188,9 +187,17 @@ public class RegexToDfaConverter {
 	
 	
 	
-	private static boolean setPayloadPriorityDependentForTransitionFromStateToStateByCharacter( Map<State,Map<State, Map<Character,StatePayload>>> stateToStateMap, State fromState, State toState, Character theCharacter, StatePayload thePayloadToSet) {
+	/**
+	 * Speichert den Payload für einen Zielzustand ausgehend von einem Quellzustand durch lesen des angegebenen Zeichens in der gegebenen stateToStateMap.
+	 * @param stateToStateMap
+	 * @param fromState
+	 * @param toState
+	 * @param theCharacter
+	 * @param thePayloadToSet
+	 * @return
+	 */
+	private static boolean storePayloadPriorityDependentForTransitionFromStateToStateByCharacter( Map<State,Map<State, Map<Character,StatePayload>>> stateToStateMap, State fromState, State toState, Character theCharacter, StatePayload thePayloadToSet) {
 	
-	  
 	  Map<State, Map<Character,StatePayload>> stateToCharacterPayloadMap = stateToStateMap.get( toState);
 	  if ( Test.isUnassigned( stateToCharacterPayloadMap)) {
 	  	stateToCharacterPayloadMap = new HashMap<State, Map<Character,StatePayload>>();
@@ -216,6 +223,14 @@ public class RegexToDfaConverter {
   	return false;
 	}
 
+	/**
+	 * Liefert den in der stateToStateMap gespeicherten Payload für das angegebene Zeichen. 
+	 * @param stateToStateMap
+	 * @param fromState
+	 * @param toState
+	 * @param theCharacter
+	 * @return Den gefundenen Payload oder null.
+	 */
 	private static StatePayload getPayloadForTransitionFromStateToStateByCharacter( Map<State,Map<State, Map<Character,StatePayload>>> stateToStateMap, State fromState, State toState, Character theCharacter) {
 
 	  Map<State, Map<Character,StatePayload>> stateToCharacterPayloadMap = stateToStateMap.get( toState);
@@ -232,6 +247,71 @@ public class RegexToDfaConverter {
 	  
 	  return storedPayload;
 	}
+	
+
+	/**
+	 * Liefert einen der Payloads mit der höchsten Priorität für einen gegeben Zustand mit Blick auf die stateToStateMap Struktur.
+	 * @param stateToStateMap
+	 * @param theState
+	 * @return
+	 */
+	private static StatePayload getBestPayloadForState( Map<State,Map<State, Map<Character,StatePayload>>> stateToStateMap, State theState) {
+
+	  Map<State, Map<Character,StatePayload>> stateToCharacterPayloadMap = stateToStateMap.get( theState);
+	  if ( Test.isUnassigned( stateToCharacterPayloadMap))
+	  	return null;
+
+	  StatePayload result = null;
+		
+	  for ( State<Character, StatePayload> sourceState : stateToCharacterPayloadMap.keySet()) {
+	  	Map<Character,StatePayload> characterToPayloadMap = stateToCharacterPayloadMap.get( sourceState);
+	  	for ( Character character : characterToPayloadMap.keySet()) {
+	  		StatePayload storedPayload = characterToPayloadMap.get( character);
+	  		if ( Test.isUnassigned( storedPayload))
+	  				continue;
+	  		if ( Test.isUnassigned( result))
+		  	  result = storedPayload;
+	  		else if ( result.getPriority() < storedPayload.getPriority()) {
+	  			result = storedPayload;
+	  		}	
+			}	
+		}
+	  return result;
+	}
+	
+	
+	/**
+	 * Liefert einen der Payloads mit der niedrigsten Priorität für einen gegeben Zustand mit Blick auf die stateToStateMap Struktur.
+	 * @param stateToStateMap
+	 * @param theState
+	 * @return
+	 */
+	private static StatePayload getWeakestPayloadForState( Map<State,Map<State, Map<Character,StatePayload>>> stateToStateMap, State theState) {
+
+	  Map<State, Map<Character,StatePayload>> stateToCharacterPayloadMap = stateToStateMap.get( theState);
+	  if ( Test.isUnassigned( stateToCharacterPayloadMap))
+	  	return null;
+
+	  StatePayload result = null;
+		
+	  for ( State<Character, StatePayload> sourceState : stateToCharacterPayloadMap.keySet()) {
+	  	Map<Character,StatePayload> characterToPayloadMap = stateToCharacterPayloadMap.get( sourceState);
+	  	for ( Character character : characterToPayloadMap.keySet()) {
+	  		StatePayload storedPayload = characterToPayloadMap.get( character);
+	  		if ( Test.isUnassigned( storedPayload))
+	  				continue;
+	  		if ( Test.isUnassigned( result))
+		  	  result = storedPayload;
+	  		else if ( result.getPriority() > storedPayload.getPriority()) {
+	  			result = storedPayload;
+	  		}	
+			}	
+	  }
+	  return result;
+	}
+	
+	
+	
 		
 	
 	/**
@@ -331,7 +411,7 @@ public class RegexToDfaConverter {
 										targetState.setPayload( currentStatePayload); 
 
 									
-									setPayloadPriorityDependentForTransitionFromStateToStateByCharacter( payloadToStateMap, currentState, targetState, currentRegexElement.getValue(), currentStatePayload);
+									storePayloadPriorityDependentForTransitionFromStateToStateByCharacter( payloadToStateMap, currentState, targetState, currentRegexElement.getValue(), currentStatePayload);
 								}
 							} else {
 								// setze Folgezustand finite
@@ -339,7 +419,7 @@ public class RegexToDfaConverter {
 								// and set payload
 								targetState.setPayload( currentStatePayload);
 								// speichere Datum für die Nachbereitung
-								setPayloadPriorityDependentForTransitionFromStateToStateByCharacter(payloadToStateMap, currentState, targetState, currentRegexElement.getValue(), currentStatePayload);
+								storePayloadPriorityDependentForTransitionFromStateToStateByCharacter(payloadToStateMap, currentState, targetState, currentRegexElement.getValue(), currentStatePayload);
 							}
 						
 							
@@ -354,13 +434,18 @@ public class RegexToDfaConverter {
 
 			}
 			
-		
+
+		  //------------------------------------
 			// +++ slightly Modification of algorithm of Glushkov / McNaughton and Yamada +++
+			// ---------------------------------------
+			
 			// posthumously untie the finate and terminating node by payloads
 			Map<UUID, State<Character, StatePayload>> dfaStates = (Map<UUID, State<Character, StatePayload>>) dfa.getStates().clone();
 			State<Character, StatePayload> currentDfaState;
-			Set<UUID> knownFiniteStates = new HashSet<UUID>();
+			Set<UUID> knownFiniteTerminateStates = new HashSet<UUID>();
+			Map<UUID,StatePayload> knownFiniteIntermediateStates = new HashMap<UUID, StatePayload>();
 			for ( UUID stateId : dfaStates.keySet()) {
+				
 				// Untersuche alle Zustände auf Übergänge in den final Zustand
 				currentDfaState = dfaStates.get( stateId);
 				
@@ -368,31 +453,66 @@ public class RegexToDfaConverter {
 				Set< Transition<Character, StatePayload>> transitionSetCopy = (Set<Transition<Character, StatePayload>>) currentDfaState.getTransitions().clone();
 				for ( Transition<Character, StatePayload> transition : transitionSetCopy) {
 					// wenn der Übergang in einen final Zustand führt
-					if ( transition.getState().isFiniteState() 
-							// und von dort keine weiteren Übergänge mehr ausgehen.
-							&& transition.getState().getElementsOfOutgoingTransitions().isEmpty()) {
-					  
-						// get original payload
-						State targetState = transition.getState();
-						State sourceState = currentDfaState;
-										
+					if ( transition.getState().isFiniteState()) {
+					  // get original payload
+						State<Character, StatePayload> targetState = transition.getState();
+						State<Character, StatePayload> sourceState = currentDfaState;
+
 						StatePayload payload = getPayloadForTransitionFromStateToStateByCharacter( payloadToStateMap, sourceState, targetState, transition.getCondition());
 						if ( Test.isAssigned( payload)) { 
-							if ( !knownFiniteStates.contains( transition.getState().getUUID())) {
-								// the first transition must not handled
-								knownFiniteStates.add( transition.getState().getUUID());
-								// but update the payload
-								transition.getState().setPayload( payload);
+
+							if ( transition.getState().getElementsOfOutgoingTransitions().isEmpty()) {
+								// Fall 1: Es gehen aus diesem Endzustand keine weiteren Übergänge mehr aus.  ->(F)
+								if ( !knownFiniteTerminateStates.contains( targetState.getUUID())) {
+									// the first transition must not handled
+									knownFiniteTerminateStates.add( targetState.getUUID());
+									// but update the payload
+									targetState.setPayload( payload);
+								} else {
+									Character terminal = transition.getCondition();
+									// Biege den Übergang auf einen neuen Endzustand um.
+									transitionSet.remove( transition);
+									State<Character, StatePayload> newFinalState = new State<Character, StatePayload>( payload, true);
+									dfa.setCurrentState( currentDfaState);
+									dfa.addTransition( newFinalState, terminal);
+								}
+
 							} else {
-								Character terminal = transition.getCondition();
-								// Biege den Übergang auf einen neuen Endzustand um.
-								transitionSet.remove( transition);
-								State<Character, StatePayload> newFinalState = new State<Character, StatePayload>( payload, true);
-								dfa.setCurrentState( currentDfaState);
-								dfa.addTransition( newFinalState, terminal);
+								// Fall 2: Es ist ein akzeptierender Zustand, aber es führen auch wieder Übergänger heraus.  ->(F)->
+								 
+								StatePayload weakestPayload = getWeakestPayloadForState( payloadToStateMap, targetState);
+								// Merke den Zustand mit ausgerechnetem niederwertigsten Payload beim ersten Besuch 
+                if ( !knownFiniteIntermediateStates.containsKey( targetState.getUUID())) {
+                	targetState.setPayload( weakestPayload);
+                	knownFiniteIntermediateStates.put( targetState.getUUID(), weakestPayload);
+                } 
+                
+                // Wenn der Payload bereits der niederwertigste ist, dann belasse die Übergänge wie gehabt 
+                if ( payload.equals( weakestPayload)) {
+                	// do nothing
+                	continue;
+                }
+                
+                // anderenfalls, wenn der Payload höherwertig ist, dann füge einen akzeptierenden Zwischenzustand ein
+                
+                // assert payload != weakestpayload
+                Character terminal = transition.getCondition();
+        
+                // füge einen akzeptierenden Zwischenzustand mit dem entsprechenden Payload ein
+                State<Character, StatePayload> interState = new State<Character, StatePayload>( payload, true);
+                dfa.addTransition( sourceState, interState, terminal);
+                // kopiere alle ausgehenden Zustände der Ursprungszustand 
+                for ( Transition<Character, StatePayload> targetTransition : targetState.getTransitions()) {
+                	dfa.addTransition( interState, targetTransition.getState(), targetTransition.getCondition());
+                }
+
+                // entferne die direkte Verbindung in den ursprünglichen targetState
+                transitionSet.remove( transition);
+
+                
+																
 							}
 						}
-
 					}
 				} 
 			}

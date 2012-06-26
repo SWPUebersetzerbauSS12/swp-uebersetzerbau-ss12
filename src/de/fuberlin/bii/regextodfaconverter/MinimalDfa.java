@@ -38,6 +38,7 @@ import java.util.Collection;
 import de.fuberlin.bii.regextodfaconverter.fsm.FiniteStateMachine;
 import de.fuberlin.bii.tokenmatcher.DeterministicFiniteAutomata;
 import de.fuberlin.bii.tokenmatcher.State;
+import de.fuberlin.bii.utils.Notification;
 
 /**
  * Adapter zur Anpassung an das DFA Interface des TokenMatchers. Garantiert,
@@ -89,9 +90,9 @@ public class MinimalDfa<ConditionType extends Serializable, PayloadType extends 
 						.convertToDfa(this.finiteStateMachine);
 			}
 			DfaMinimizer<ConditionType, PayloadType> minimizer = new DfaMinimizer<ConditionType, PayloadType>();
-			this.finiteStateMachine = minimizer
-					.convertToMimimumDfa(this.finiteStateMachine);
+			this.finiteStateMachine = minimizer.convertToMimimumDfa(this.finiteStateMachine);
 		} catch (Exception e) {
+			Notification.printDebugException( e);
 			throw new ConvertExecption(
 					"Cannot convert given fsa to minimal dfa.");
 		}

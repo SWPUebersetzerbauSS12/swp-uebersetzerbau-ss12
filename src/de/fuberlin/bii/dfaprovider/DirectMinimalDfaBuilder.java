@@ -129,7 +129,7 @@ public class DirectMinimalDfaBuilder implements MinimalDfaBuilder {
 					"Fehler beim Erstellen des minimalen DFA's: "
 							+ e.getMessage());
 		}
-
+		
 		return mDfa;
 	}
 

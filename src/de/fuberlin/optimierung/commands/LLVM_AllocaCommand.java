@@ -19,7 +19,7 @@ public class LLVM_AllocaCommand extends LLVM_GenericCommand{
 		setOperation(LLVM_Operation.ALLOCA);
 		
 		String result = cmdLine.substring(0, cmdLine.indexOf("=")).trim();
-		cmdLine = cmdLine.substring(cmdLine.indexOf("alloca ") + 6, cmdLine.length());
+		cmdLine = cmdLine.substring(cmdLine.indexOf("alloca ") + 6);
 		String[] comma = cmdLine.split(",");
 
 		// <result> <type>

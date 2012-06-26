@@ -93,7 +93,7 @@ public class LLVM_ArithmeticCommand extends LLVM_GenericCommand{
 				return "";
 		}
 		
-		cmd_output += has_nuw==true?"unw ":"";
+		cmd_output += has_nuw==true?"nuw ":"";
 		cmd_output += has_nsw==true?"nsw ":"";
 		cmd_output += operands.get(0).getTypeString()+" ";
 		cmd_output += operands.get(0).getName()+", ";

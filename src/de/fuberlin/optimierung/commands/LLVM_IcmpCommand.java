@@ -17,6 +17,9 @@ public class LLVM_IcmpCommand extends LLVM_GenericCommand{
 	
 	public LLVM_IcmpCommand(String cmdLine, ILLVM_Command predecessor, ILLVM_Block block){
 		super(predecessor, block, cmdLine);
+		// Kommentar entfernen
+		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
+		
 		String[] cmd = command.split("[ \t]");
 		
 		if (cmd[3].compareTo("eq") == 0){

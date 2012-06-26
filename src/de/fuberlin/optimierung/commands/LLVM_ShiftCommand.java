@@ -27,6 +27,8 @@ public class LLVM_ShiftCommand extends LLVM_GenericCommand{
 	public LLVM_ShiftCommand(String cmdLine, ILLVM_Command predecessor, ILLVM_Block block) {
 		super(predecessor, block, cmdLine);
 		setOperation(LLVM_Operation.SHL);
+		// Kommentar entfernen
+		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
 		
 		String[] cmd = command.split("[ \t]");
 		// Kommaposition ermitteln

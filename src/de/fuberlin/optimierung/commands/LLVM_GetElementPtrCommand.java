@@ -20,6 +20,8 @@ public class LLVM_GetElementPtrCommand extends LLVM_GenericCommand {
 	public LLVM_GetElementPtrCommand(String cmdLine, ILLVM_Command predecessor, ILLVM_Block block){
 		super(predecessor, block, cmdLine);
 		setOperation(LLVM_Operation.GETELEMENTPTR);
+		// Kommentar entfernen
+		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
 		
 		String[] cmd = command.split("[ \t]");
 		int i = 3;

@@ -23,6 +23,8 @@ public class LLVM_CallCommand extends LLVM_GenericCommand{
 	public LLVM_CallCommand(String cmdLine, ILLVM_Command predecessor, ILLVM_Block block){
 		super(predecessor, block, cmdLine);
 		setOperation(LLVM_Operation.CALL);
+		// Kommentar entfernen
+		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));		
 		
 		String result = cmdLine.substring(0, cmdLine.indexOf("=")).trim();
 		if (cmdLine.contains(" tail ")) tail = true;

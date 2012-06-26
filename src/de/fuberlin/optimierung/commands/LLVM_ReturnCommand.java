@@ -25,6 +25,9 @@ public class LLVM_ReturnCommand extends LLVM_GenericCommand{
 			setOperation(LLVM_Operation.RET_CODE);
 		}
 		
+		// Kommentar entfernen
+		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
+		
 		String[] cmd = command.split("[ \t]");
 		if (operation == LLVM_Operation.RET){
 			// ohne Return-Code 

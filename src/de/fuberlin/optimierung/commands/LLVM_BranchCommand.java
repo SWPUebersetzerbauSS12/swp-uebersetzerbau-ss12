@@ -25,6 +25,9 @@ public class LLVM_BranchCommand extends LLVM_GenericCommand{
 			setOperation(LLVM_Operation.BR);
 		}
 		
+		// Kommentar entfernen
+		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
+		
 		String[] cmd = command.split("[ \t]");
 		if (this.operation == LLVM_Operation.BR){
 			// unconditional Branch

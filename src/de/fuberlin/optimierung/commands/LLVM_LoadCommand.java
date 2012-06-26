@@ -22,6 +22,8 @@ public class LLVM_LoadCommand extends LLVM_GenericCommand{
 		super(predecessor, block, cmdLine);
 		
 		setOperation(LLVM_Operation.LOAD);
+		// Kommentar entfernen
+		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
 		
 		String[] cmd = command.split("[ \t]");
 		if (cmd[3].trim().equals("atomic")){

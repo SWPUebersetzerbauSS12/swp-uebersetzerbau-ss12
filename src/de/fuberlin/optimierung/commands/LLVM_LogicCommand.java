@@ -18,6 +18,8 @@ public class LLVM_LogicCommand extends LLVM_GenericCommand{
 	public LLVM_LogicCommand(String cmdLine, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block){
 		super(predecessor, block, cmdLine);
 		setOperation(operation);
+		// Kommentar entfernen
+		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
 		
 		String[] cmd = command.split("[ \t]");
 		

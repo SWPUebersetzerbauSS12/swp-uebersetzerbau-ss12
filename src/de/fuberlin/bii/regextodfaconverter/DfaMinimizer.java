@@ -99,7 +99,7 @@ public class DfaMinimizer<TransitionConditionType extends Serializable, StatePay
 		//trenne die Zustände und die Übergänge
 		String[] finiteStatesString = finiteStateMachine.toString().split("\n");
 		//erstelle eine Map der Zustände und möglicher Übergänge mitsamt der neuen Zustände
-		filterTransitions(finiteStatesString);
+		//filterTransitions(finiteStatesString); //wird nicht mehr gebraucht
 		
 		//erstelle eine Liste mit allen disjunkten Zustandspaaren
 		LinkedList<String> statePairList = new LinkedList<String>();

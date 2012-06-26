@@ -262,7 +262,7 @@ public class Regex {
 			} else if (c == '\\') {
 				regexTasks.add("(" + c + "" + regex.charAt(i + 1) + ")");
 				i++;
-			} else if (isAlphaChar(c)) {
+			} else if (isAlphaChar(c) || c=='-') {
 				regexTasks.add("(" + c + ")");
 			} else {
 				throw new RegexInvalidException(
@@ -730,11 +730,10 @@ public class Regex {
 	 * @param c
 	 *            Das zu überprüfende Zeichen
 	 * @return true, wenn es sich um eins der nachfolgenden Metazeichen handelt
-	 *         '[', ']', '{', '}', '?', '+', '-', '^', '$', '.', sonst false.
+	 *         '[', ']', '{', '}', '?', '+', '^', '$', '.', sonst false.
 	 */
 	private static boolean isExtendedMetaCharacter(char c) {
-		char[] extendedMetaChars = { '[', ']', '{', '}', '?', '+', '-', '^',
-				'$', '.' };
+		char[] extendedMetaChars = { '[', ']', '{', '}', '?', '+', '^', '$', '.' };
 		for (char rc : extendedMetaChars) {
 			if (rc == c) {
 				return true;

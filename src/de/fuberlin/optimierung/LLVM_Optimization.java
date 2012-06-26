@@ -44,16 +44,16 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 			// Optimierungsfunktionen
 			tmp.createRegisterMaps();
 			
-			// Dead register elimination
-			//tmp.eliminateDeadRegisters();
-			tmp.eliminateDeadBlocks();
-			
 			//Constant Folding
 			tmp.constantFolding();
 			
 			// Reaching vor Lebendigkeitsanalyse
 			// Koennen tote Stores entstehen
 			tmp.reachingAnalysis();
+			
+			// Dead register elimination
+			tmp.eliminateDeadRegisters();
+			tmp.eliminateDeadBlocks();
 			
 			// CommonExpressions
 			tmp.removeCommonExpressions();

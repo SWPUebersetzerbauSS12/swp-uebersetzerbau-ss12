@@ -184,7 +184,7 @@ class LLVM_Block implements ILLVM_Block {
 			while(c!=null) {
 				if(LLVM_Operation.STORE==c.getOperation()) {
 					// Register mit Speicheradresse steht in zweitem Operanden
-					LLVM_Parameter p = c.getOperands().getLast();
+					LLVM_Parameter p = c.getOperands().get(1);
 					String registerName = p.getName();
 					
 					// registerName muss in this.def, falls es keine vorherige Verwendung
@@ -257,7 +257,6 @@ class LLVM_Block implements ILLVM_Block {
 	 * werden zu Registerzuweisung.
 	 * Diese wird hier weiterpropagiert.
 	 * Koennen tote Stores entstehen.
-	 * TODO: weiterpropagieren
 	 */
 	public void foldStoreLoad() {
 		

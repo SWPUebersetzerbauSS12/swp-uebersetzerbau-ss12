@@ -145,6 +145,18 @@ class Main {
 					System.out.println("Keine Quelldatei angegeben!");
 					arguments.put(PARAM_SOURCE_FILE, null);
 				}
+			} else if(args[i].equalsIgnoreCase(PARAM_DEF_FILE)) {
+				// Es wurde ein -d gelesen, erwarte nun Quelldatei
+				System.out.println("Para: -d");
+				if(i+1 < args.length && !args[i+1].trim().startsWith("-")) { // Eine Quelldatei wurde angegeben
+					System.out.println("-f Option: "+args[i+1].trim());
+					arguments.put(PARAM_DEF_FILE, args[i+1].trim());
+					i++;
+				} else {
+					// Keine Quelldatei angeben
+					System.out.println("Keine Definitionsdatei angegeben!");
+					arguments.put(PARAM_DEF_FILE, null);
+				}			
 			} else if(args[i].equalsIgnoreCase(PARAM_BI_LEXER) || args[i].equalsIgnoreCase(PARAM_BII_LEXER)) {
 				String lexerType = args[i];
 				System.out.println("Benutze "+lexerType+" Lexer");
@@ -153,7 +165,12 @@ class Main {
 				arguments.remove(PARAM_BII_LEXER);
 				
 				arguments.put(lexerType, null);
-				
+			} else if(args[i].equalsIgnoreCase(PARAM_REBUILD_DFA)) {
+				String rebuild = args[i];
+				// Mehrfacheinträge vermeiden
+				arguments.remove(PARAM_REBUILD_DFA);
+								
+				arguments.put(rebuild, null);				
 			}  else if(args[i].equalsIgnoreCase(PARAM_LL_PARSER) || args[i].equalsIgnoreCase(PARAM_LR_PARSER)) {
 				// Der Parser wird festgelegt  Prüfe, ob eine Grammatik Datei eingelesen werden soll.
 				String parserType = args[i];

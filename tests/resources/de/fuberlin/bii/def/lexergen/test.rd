@@ -30,6 +30,9 @@ return					{return("KEYWORD", "RETURN")}
 break					{return("KEYWORD", "BREAK")}
 true					{return("KEYWORD", "TRUE")}
 false					{return("KEYWORD", "FALSE")}
+int					{return("KEYWORD", "INT")}
+real					{return("KEYWORD", "REAL")}
+stringint				{return("KEYWORD", "STRING")}
 {num}					{return("NUM", parseInt())}
 {num}?\.{num}			{return("RAT", parseDouble())}
 [a-z]+[a-zA-Z0-9]*		{return("ID", parseString())}

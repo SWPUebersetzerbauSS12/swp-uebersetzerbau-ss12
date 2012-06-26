@@ -266,18 +266,32 @@ public class SemanticAnalyzer {
 				if(tree.getChildrenCount() == 0){
 					insertNode.addChild(((ISyntaxTree)tree.getAttribute(LAttribute)).getChild(0));
 				} else {
-					ISyntaxTree tmp2 = new Program();
+					ISyntaxTree tmp = new Program();
 					BinaryOp bOp = new BinaryOp(translate(
 							tree.getChild(0).getSymbol()).asTerminal());
 					// ((ISyntaxTree)tree.getAttribute(LAttribute)) = tmp
 					bOp.addChild(((ISyntaxTree)tree.getAttribute(LAttribute)).getChild(0));
 					toAST(tree.getChild(1), bOp);
-					tmp2.addChild(bOp);
+					tmp.addChild(bOp);
 					// simply hang in both children trees
 					tree.getChild(2).addAttribute(LAttribute);
-					tree.getChild(2).setAttribute(LAttribute, tmp2);
+					tree.getChild(2).setAttribute(LAttribute, tmp);
 					
 					toAST(tree.getChild(2), insertNode);
+				}
+				return;
+			case rel_:
+				// currently it assumes tmp only got one child !!! 
+				// TODO: is this always the case?
+				if(tree.getChildrenCount() == 0){
+					insertNode.addChild(((ISyntaxTree)tree.getAttribute(LAttribute)).getChild(0));
+				} else {
+					BinaryOp bOp = new BinaryOp(translate(
+							tree.getChild(0).getSymbol()).asTerminal());
+					// ((ISyntaxTree)tree.getAttribute(LAttribute)) = tmp
+					bOp.addChild(((ISyntaxTree)tree.getAttribute(LAttribute)).getChild(0));
+					toAST(tree.getChild(1), bOp);
+					insertNode.addChild(bOp);
 				}
 				return;
 			case unary: {

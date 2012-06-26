@@ -214,8 +214,10 @@ public class BinaryOp extends Statement {
 					break;
 				case OP_DIV:
 					op_name = "div";
+					break;
 				case OP_MUL:
 					op_name = "mul";
+					break;
 				}
 				//ret += block.getNewRegister() + op_name + "";
 			}

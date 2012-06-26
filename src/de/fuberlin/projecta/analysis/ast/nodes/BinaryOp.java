@@ -6,7 +6,7 @@ import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
 import de.fuberlin.projecta.analysis.TypeErrorException;
 
-public class BinaryOp extends Statement {
+public class BinaryOp extends Type {
 
 	TokenType op;
 
@@ -268,15 +268,14 @@ public class BinaryOp extends Statement {
 
 	@Override
 	public boolean checkTypes() {
-		AbstractSyntaxTree leftChild, rightChild;
-		leftChild = (AbstractSyntaxTree) this.getChild(0);
-		rightChild = (AbstractSyntaxTree) this.getChild(1);
+		Type leftChild = (Type) this.getChild(0);
+		Type rightChild = (Type) this.getChild(1);
 		switch (this.getOp()){
 		case OP_ADD:
 		case OP_MINUS:
 		case OP_MUL:
 		case OP_DIV:
-			if (leftChild.getType().equals(rightChild.getType())){
+			if (leftChild.toTypeString().equals(rightChild.toTypeString())){
 				return true;
 			}
 			throw new TypeErrorException();

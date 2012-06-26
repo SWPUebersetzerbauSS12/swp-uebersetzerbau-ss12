@@ -58,6 +58,7 @@ import java.util.UUID;
  *            Automaten.
  */
 public class DfaMinimizer<TransitionConditionType extends Serializable, StatePayloadType extends Serializable> {
+	private int startPos = 0;
 	
 	private FiniteStateMachine<TransitionConditionType, StatePayloadType> input;			//Eingabe
 	private HashMap<UUID, State<TransitionConditionType, StatePayloadType>> originalStates;	//enthält die ursprünglichen Zustände der Eingabe, die bearbeitet werden
@@ -99,7 +100,8 @@ public class DfaMinimizer<TransitionConditionType extends Serializable, StatePay
 		//trenne die Zustände und die Übergänge
 		String[] finiteStatesString = finiteStateMachine.toString().split("\n");
 		//erstelle eine Map der Zustände und möglicher Übergänge mitsamt der neuen Zustände
-		filterTransitions(finiteStatesString);
+		startPos = finiteStatesString.length;
+		filterTransitions(finiteStatesString); //wird nicht mehr gebraucht
 		
 		//erstelle eine Liste mit allen disjunkten Zustandspaaren
 		LinkedList<String> statePairList = new LinkedList<String>();
@@ -234,7 +236,7 @@ public class DfaMinimizer<TransitionConditionType extends Serializable, StatePay
 	private void filterTransitions(String[] statesString){
 		this.transitionsMap = new HashMap<String, String>();
 		//parse das String Array
-		for(int i = 0; i < statesString.length; i++){
+		for(int i = startPos; i < statesString.length; i++){
 			//wenn der String nicht mit einem Tab beginnt, also ein Zustand ist
 			if(!statesString[i].matches("^\\t")){
 				for(int j = i+1; j < statesString.length; j++){

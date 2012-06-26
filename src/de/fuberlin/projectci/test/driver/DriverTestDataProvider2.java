@@ -67,8 +67,8 @@ public class DriverTestDataProvider2 implements DriverTestDataProvider{
 	
 	private void setUp(){
 		
-		Grammar sourceGrammar=sourceGrammar();
-		ParseTableBuilder ptb=new SLRParseTableBuilder(sourceGrammar);
+		grammar=sourceGrammar();
+		ParseTableBuilder ptb=new SLRParseTableBuilder(grammar);
 		try {
 			parseTable=ptb.buildParseTable();
 			logger.info("Valid source grammar.");
@@ -78,7 +78,7 @@ public class DriverTestDataProvider2 implements DriverTestDataProvider{
 		}	
 
 		String strProgram=
-				"def int fib(int n/{\n"+
+				"def int fib(int n){\n"+
 				"  if (n <= 1) return n;\n"+
 				"  else {\n"+
 				"    int fib;\n"+
@@ -101,7 +101,7 @@ public class DriverTestDataProvider2 implements DriverTestDataProvider{
 		GrammarReader grammarReader = new GrammarReader();
 		Grammar g3 = null;
 		try {
-			g3 = grammarReader.readGrammar("./input/de/fuberlin/projectci/quellsprache_bnf.txt");
+			g3 = grammarReader.readGrammar("./input/de/fuberlin/projectci/non-ambigous.txt");
 		} catch (BNFParsingErrorException e) {
 			fail(e.getClass()+": "+e.getMessage());
 		}

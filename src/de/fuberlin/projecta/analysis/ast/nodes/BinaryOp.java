@@ -1,6 +1,6 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
-import sun.org.mozilla.javascript.Token;
+//import sun.org.mozilla.javascript.Token;
 import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SemanticException;

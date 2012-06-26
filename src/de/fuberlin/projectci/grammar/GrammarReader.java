@@ -54,7 +54,7 @@ public class GrammarReader {
 			throw new BNFParsingErrorException(e);
 		} catch (BNFParsingErrorException e) {
 			// falls beim Parsen einer Zeile ein Fehler auftritt, wird Zeilennummer mit angegeben
-			throw new BNFParsingErrorException(e.getMessage()+" (Line "+lineNumber+")");
+			throw new BNFParsingErrorException(e.getMessage()+" (Line "+lineNumber+")",e);
 		}
 		
 		if(foundProductions == 0)

@@ -255,6 +255,10 @@ public class SemanticAnalyzer {
 				}
 
 				return;
+			case assign_:
+			case bool_:
+			case join_:
+			case equality_:
 			case expr_:
 			case term_:
 				// currently it assumes tmp only got one child !!! 

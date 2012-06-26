@@ -146,15 +146,26 @@ class LLVM_Block implements ILLVM_Block {
 		ILLVM_Command c = this.lastCommand;
 		for(;c!=null; c = c.getPredecessor()) {
 			if(c.getOperation()==LLVM_Operation.STORE) {
-				if(!active.contains(c.getOperands().get(1).getName())) {
-					// c kann geloescht werden
-					this.function.getRegisterMap().deleteCommand(c);
-					c.deleteCommand("deleteDeadStores");
-					deletedCommands.add(c);
+				String registerName = c.getOperands().get(1).getName();
+				if(!active.contains(registerName)) {
+					
+					ILLVM_Command def = this.function.getRegisterMap().
+							getDefinition(registerName);
+					
+					if(def!=null && def.getOperation()!=LLVM_Operation.GETELEMENTPTR 
+							&& !(def.getOperation()==LLVM_Operation.ALLOCA
+							&& def.getTarget().getTypeString().startsWith("["))) {
+						
+						// c kann geloescht werden
+						this.function.getRegisterMap().deleteCommand(c);
+						c.deleteCommand("deleteDeadStores");
+						deletedCommands.add(c);
+					}
+			
 				}
 				else {
 					// jetzt ist es nicht mehr aktiv
-					active.remove(c.getOperands().get(1).getName());
+					active.remove(registerName);
 				}
 			}
 			if(c.getOperation()==LLVM_Operation.LOAD) {
@@ -184,7 +195,7 @@ class LLVM_Block implements ILLVM_Block {
 			while(c!=null) {
 				if(LLVM_Operation.STORE==c.getOperation()) {
 					// Register mit Speicheradresse steht in zweitem Operanden
-					LLVM_Parameter p = c.getOperands().getLast();
+					LLVM_Parameter p = c.getOperands().get(1);
 					String registerName = p.getName();
 					
 					// registerName muss in this.def, falls es keine vorherige Verwendung
@@ -257,7 +268,6 @@ class LLVM_Block implements ILLVM_Block {
 	 * werden zu Registerzuweisung.
 	 * Diese wird hier weiterpropagiert.
 	 * Koennen tote Stores entstehen.
-	 * TODO: weiterpropagieren
 	 */
 	public void foldStoreLoad() {
 		

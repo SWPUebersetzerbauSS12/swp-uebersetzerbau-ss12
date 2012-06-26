@@ -12,6 +12,7 @@ import de.fuberlin.optimierung.commands.LLVM_LogicCommand;
 public class LLVM_Function {
 
 	String func_define = "";
+	String afterFunc = "";
 	
 	private ILLVM_Block startBlock;
 	private ILLVM_Block endBlock;
@@ -29,6 +30,7 @@ public class LLVM_Function {
 		func_define = "define"+firstSplit[0];
 		
 		String codeBlocks[] = firstSplit[1].split("\n\n");
+		if (firstSplit.length == 3) this.afterFunc = firstSplit[2]; 
 		this.numberBlocks = codeBlocks.length;
 		this.blocks = new ArrayList<ILLVM_Block>(this.numberBlocks);
 		for(int i = 0; i < this.numberBlocks; i++) {
@@ -592,7 +594,7 @@ public class LLVM_Function {
 				}
 			}
 			
-			cmd.deleteCommand();
+			cmd.deleteCommand("constantPropagation");
 			registerMap.deleteCommand(cmd);
 		}
 		
@@ -623,7 +625,7 @@ public class LLVM_Function {
 			// Nur entfernen, wenn c kein call-Befehl ist
 			if(c.getOperation()!=LLVM_Operation.CALL) {
 				this.registerMap.deleteCommand(c);
-				c.deleteCommand();
+				c.deleteCommand("eliminateDeadRegister");
 				return c;
 			}
 			return null;
@@ -1021,10 +1023,12 @@ public class LLVM_Function {
 	
 	public String toString() {
 		String output = func_define + "{\n";
+		
 		for (int i = 0; i < this.numberBlocks; i++) {
 			output += blocks.get(i).toString();
 		}
-		output += "}";
+		output += "}\n";
+		output += this.afterFunc;
 		return output;
 	}
 	

@@ -18,14 +18,17 @@ public class LLVM_AllocaCommand extends LLVM_GenericCommand{
 		super(predecessor, block, cmdLine);
 		setOperation(LLVM_Operation.ALLOCA);
 		
-		String[] cmd = command.split("[ \t]");
+		String result = cmdLine.substring(0, cmdLine.indexOf("=")).trim();
+		cmdLine = cmdLine.substring(cmdLine.indexOf("alloca ") + 6, cmdLine.length());
+		String[] comma = cmdLine.split(",");
+
 		// <result> <type>
-		target = new LLVM_Parameter(cmd[0], cmd[3]);
+		target = new LLVM_Parameter(result, comma[0].trim());
 		
-		// optionale Parameter
-		for (int j = 4; (j + 1 < cmd.length); j = j + 2){
+		for (int i = 1; i < comma.length; i++){
+			String[] tmp = comma[i].split(" ");
 			// <ty> <num>
-			operands.add(new LLVM_Parameter(cmd[j+1], cmd[j]));
+			operands.add(new LLVM_Parameter(tmp[0], tmp[1]));
 		}
 		
 		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());

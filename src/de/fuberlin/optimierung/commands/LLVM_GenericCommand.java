@@ -52,8 +52,8 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 		
 	}
 	
-	public void deleteCommand() {
-		if (LLVM_Optimization.DEBUG) System.out.println("del in block " + this.block.getLabel() + " command " + this.toString());
+	public void deleteCommand(String source) {
+		if (LLVM_Optimization.DEBUG) System.out.println("del in block " + this.block.getLabel() + " by " + source + " command " + this.toString());
 
 		if (this.isSingleCommand()){
 			this.successor = null;
@@ -95,6 +95,14 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 		}
 	}
 	
+	public String getCommand(){
+		if (command == ""){
+			return "\n";
+		}else{
+			return command + "\n";
+		}
+	}
+	
 	public static LLVM_Parameter readArrayListToLLVM_Parameter(ArrayList<String> input, parseTypes type, boolean opt){
 		if (type == parseTypes.array){
 			if (!input.get(0).contains("[")) return null;
@@ -119,9 +127,10 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 				for (int i = 0; i <= count; i++){
 					input.remove(0);
 				}
-				//TODO: Anpassung LLVM_Parameter
 				// name, array
-				return new LLVM_Parameter(input.get(0), str);
+				LLVM_Parameter tmp = new LLVM_Parameter(input.get(0), str); 
+				input.remove(0);
+				return tmp;
 			}
 		}
 		return null;		

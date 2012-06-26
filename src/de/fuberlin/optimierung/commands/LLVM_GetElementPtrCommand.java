@@ -43,7 +43,6 @@ public class LLVM_GetElementPtrCommand extends LLVM_GenericCommand {
 			if (operands.get(0) == null){
 				operands.remove(0);
 			}
-			rest_cmd.remove(0);
 		}
 
 		while (rest_cmd.size() % 2 == 0 && rest_cmd.size() >= 2){

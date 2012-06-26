@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 public interface ILLVM_Command {
 	
-	public void deleteCommand();
+	public void deleteCommand(String source);
 	public void replaceCommand(ILLVM_Command c);
 	
 	public LinkedList<LLVM_Parameter> getOperands();

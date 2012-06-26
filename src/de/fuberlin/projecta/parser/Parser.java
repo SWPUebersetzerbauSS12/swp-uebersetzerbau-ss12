@@ -5,6 +5,8 @@ import java.util.Stack;
 import de.fuberlin.commons.lexer.ILexer;
 import de.fuberlin.commons.lexer.IToken;
 import de.fuberlin.commons.lexer.TokenType;
+import de.fuberlin.commons.parser.IParser;
+import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.lexer.SyntaxErrorException;
 
 public class Parser implements IParser {
@@ -134,33 +136,8 @@ public class Parser implements IParser {
 		return parseTree;
 	}
 
-	/**
-	 * Prints the generated parse tree turned by 90 degree clockwise. Read
-	 * direction is still from the top to the bottom.
-	 */
-	public void printParseTree() {
-		printParseTree(parseTree, 0);
-	}
-
 	private void printStack() {
 		System.out.println(stack);
-	}
-
-	private static void printParseTree(ISyntaxTree tree, int depth) {
-		if (tree == null)
-			return;
-
-		for (int i = 0; i <= depth; i++) {
-			System.out.print("\t");
-		}
-		System.out.print(tree.getSymbol());
-		System.out.println("");
-		int count = tree.getChildrenCount();
-		if (count != 0) {
-			for (int i = 0; i < count; i++) {
-				printParseTree(tree.getChild(i), depth + 1);
-			}
-		}
 	}
 
 	/**

@@ -26,6 +26,9 @@ public class BasicType extends Type {
 		case BOOL:
 			ret += "i8";
 			break;
+		case VOID:
+			ret += "void";
+			break;
 		}
 		return ret;
 	}

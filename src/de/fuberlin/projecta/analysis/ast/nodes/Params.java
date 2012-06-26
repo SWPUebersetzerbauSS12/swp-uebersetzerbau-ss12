@@ -1,6 +1,7 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 import de.fuberlin.projecta.analysis.EntryType;
+import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.SymbolTableStack;
 import de.fuberlin.projecta.lexer.BasicTokenType;
 
@@ -20,7 +21,7 @@ public class Params extends AbstractSyntaxTree {
 		for (int i = 0; i < this.getChildrenCount(); i++) {
 			if (this.getChild(i) instanceof BasicType
 					&& ((BasicType) this.getChild(i)).getType() == BasicTokenType.VOID) {
-				return false;
+				throw new SemanticException("Parameter must have a type. \"void\" is not allowed!");
 			}
 			if (!((AbstractSyntaxTree) this.getChild(i)).checkSemantics()) {
 				return false;
@@ -47,7 +48,6 @@ public class Params extends AbstractSyntaxTree {
 
 	@Override
 	public boolean checkTypes() {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 }

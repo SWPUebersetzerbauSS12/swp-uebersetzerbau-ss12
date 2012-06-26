@@ -19,8 +19,7 @@ public class Return extends Statement {
 
 		if ((AbstractSyntaxTree) getChild(0) instanceof Id) {
 			EntryType eA = null;
-			SymbolTableHelper helper = new SymbolTableHelper();
-			eA = helper.lookup(((Id) getChild(0)).getValue(), this);
+			eA = SymbolTableHelper.lookup(((Id) getChild(0)).getValue(), this);
 			int reg = block.getNewRegister();
 			ret = "%" + reg + " = load " + eA.getType().genCode() + "* %"
 					+ ((AbstractSyntaxTree) getChild(0)).genCode() + "\n";

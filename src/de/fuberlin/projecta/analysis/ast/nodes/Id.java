@@ -30,7 +30,7 @@ public class Id extends AbstractSyntaxTree {
 
 	@Override
 	public boolean checkTypes() {
-		// TODO Auto-generated method stub
-		return false;
+		// an identifier by itself is ok.
+		return true;
 	}
 }

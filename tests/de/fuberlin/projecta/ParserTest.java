@@ -30,6 +30,6 @@ public class ParserTest {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		parser.printParseTree();
+		parser.getParseTree().printTree();
 	}
 }

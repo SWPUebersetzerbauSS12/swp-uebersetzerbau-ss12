@@ -3,7 +3,7 @@ package de.fuberlin.projecta.analysis.ast.nodes;
 import java.util.List;
 
 import de.fuberlin.commons.lexer.TokenType;
-import de.fuberlin.projecta.parser.ISyntaxTree;
+import de.fuberlin.commons.parser.ISyntaxTree;
 
 /**
  * root node of do-while-loop

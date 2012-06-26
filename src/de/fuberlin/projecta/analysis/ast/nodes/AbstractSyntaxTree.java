@@ -1,8 +1,8 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
+import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.SymbolTable;
 import de.fuberlin.projecta.analysis.SymbolTableStack;
-import de.fuberlin.projecta.parser.ISyntaxTree;
 import de.fuberlin.projecta.parser.Symbol;
 import de.fuberlin.projecta.parser.Tree;
 
@@ -28,6 +28,20 @@ public abstract class AbstractSyntaxTree extends Tree {
 			}
 		}		
 		return null;
+	}
+	
+	public Block getHighestBlock(){
+		Block block = null;
+		if(getParent() != null){
+			ISyntaxTree parent = getParent();
+			while(parent != null){
+				if(parent instanceof Block){
+					block = (Block) parent;					
+				}
+				parent = parent.getParent();
+			}
+		}		
+		return block;
 	}
 
 	public AbstractSyntaxTree() {

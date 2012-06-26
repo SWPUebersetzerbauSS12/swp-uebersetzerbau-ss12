@@ -1,5 +1,6 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
+//import sun.org.mozilla.javascript.Token;
 import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SemanticException;
@@ -20,7 +21,12 @@ public class BinaryOp extends Statement {
 		// wrong/ambiguous
 		case OP_ASSIGN:
 			if (!(this.getChild(0) instanceof Id)) {
-				return false;
+				throw new SemanticException(
+						"Left side of an assignment has to be an identifier, but is "
+								+ this.getChild(0).getClass().toString());
+			}
+			if (this.getChild(1) instanceof BinaryOp && (((BinaryOp)this.getChild(1)).getOp() == TokenType.OP_ASSIGN)){
+				throw new SemanticException("Left side of an assignment cannot be an assignment.");
 			}
 			break;
 		case OP_DIV:
@@ -56,7 +62,6 @@ public class BinaryOp extends Statement {
 		if (op == TokenType.OP_EQ || op == TokenType.OP_NE
 				|| op == TokenType.OP_LT || op == TokenType.OP_LE
 				|| op == TokenType.OP_GT || op == TokenType.OP_GE) {
-			SymbolTableHelper helper = new SymbolTableHelper();
 			// load value of id1 if it is an id!!!
 			if (getChild(0) instanceof Id) {
 				Id id = (Id) getChild(0);
@@ -64,8 +69,9 @@ public class BinaryOp extends Statement {
 				ret += "%"
 						+ regs[3]
 						+ " = load "
-						+ (helper.lookup(id.getValue(), this)).getType()
-								.genCode() + "* %" + id.getValue() + "\n";
+						+ (SymbolTableHelper.lookup(id.getValue(), this))
+								.getType().genCode() + "* %" + id.getValue()
+						+ "\n";
 			}
 			// load value of id2 if it is an id!!!
 			if (getChild(1) instanceof Id) {
@@ -74,8 +80,9 @@ public class BinaryOp extends Statement {
 				ret += "%"
 						+ regs[4]
 						+ " = load "
-						+ (helper.lookup(id.getValue(), this)).getType()
-								.genCode() + "* %" + id.getValue() + "\n";
+						+ (SymbolTableHelper.lookup(id.getValue(), this))
+								.getType().genCode() + "* %" + id.getValue()
+						+ "\n";
 			}
 			if (getChild(0) instanceof Id && getChild(1) instanceof Id) {
 				a = ((Id) getChild(0));
@@ -83,7 +90,7 @@ public class BinaryOp extends Statement {
 
 				String int_or_real = "";
 				String cmp_op = "";
-				if (checkType(a, b).equals("double")) {
+				if (checkTypeOnEqual(a, b).equals("double")) {
 					int_or_real = "fcmp";
 					switch (op) {
 					case OP_LT:
@@ -130,24 +137,22 @@ public class BinaryOp extends Statement {
 				}
 				int tmp = block.getNewRegister();
 				ret += "%" + tmp + " = " + int_or_real + " " + cmp_op + " "
-						+ checkType(a, b) + " %" ;
-				if(regs[3] == 0)
+						+ checkTypeOnEqual(a, b) + " %";
+				if (regs[3] == 0)
 					ret += a.getValue() + ", %";
 				else
 					ret += regs[3] + ", %";
-				if(regs[4] == 0)
+				if (regs[4] == 0)
 					ret += b.getValue() + "\n";
 				else
 					ret += regs[4] + "\n";
-						
 
 			}
 		}
 		if (op == TokenType.OP_ASSIGN) {
 			EntryType eA = null;
-			SymbolTableHelper helper = new SymbolTableHelper();
 			a = ((Id) getChild(0));
-			eA = helper.lookup(a.getValue(), this);
+			eA = SymbolTableHelper.lookup(a.getValue(), this);
 			if (getChild(1) instanceof StringLiteral) {
 				StringLiteral str = (StringLiteral) getChild(1);
 				/*
@@ -167,9 +172,52 @@ public class BinaryOp extends Statement {
 				ret += "%" + tempReg2 + " = getelementptr [" + strLength
 						+ " x i8]* %" + tempReg + ", i8 0, i8 0 \n";
 				ret += "store i8* %" + tempReg2 + ", i8** %" + a.getValue();
-			} else {
+			} else if (getChild(1) instanceof FuncCall) {
+				int reg = block.getNewRegister();
+				String id = ((Id) getChild(0)).getValue();
+				String type = SymbolTableHelper
+						.lookup(((Id) getChild(0)).getValue(), this).getType()
+						.genCode();
+				ret = "%" + reg + " = " + ((FuncCall) getChild(1)).genCode() + "\n";
+
+				ret += "store " + type + " %" + reg + ", " + type + "* %"
+						+ id;
+			} else if (getChild(1) instanceof Id) {
+				String type1 = SymbolTableHelper
+						.lookup(((Id) getChild(1)).getValue(), this).getType()
+						.genCode();
+				int reg = block.getNewRegister();
+				ret = "%" + reg + " = load " + type1 + "* %" + ((Id) getChild(1)).getValue() + "\n";
+
+				String type0 = SymbolTableHelper
+						.lookup(((Id) getChild(0)).getValue(), this).getType()
+						.genCode();
+				ret += "store " + type0 + " %" + reg
+						+ ", " + eA.getType().genCode() + "* %" + a.getValue();
+				}
+			else {
 				ret = "store " + ((AbstractSyntaxTree) getChild(1)).genCode()
 						+ ", " + eA.getType().genCode() + "* %" + a.getValue();
+			}
+		}
+		if (op == TokenType.OP_ADD || op == TokenType.OP_MINUS
+				|| op == TokenType.OP_DIV || op == TokenType.OP_MUL) {
+			String op_name;
+
+			for (int i=0; i < getChildrenCount(); i++){
+				switch(op){
+				case OP_ADD:
+					op_name = "add";
+					break;
+				case OP_MINUS:
+					op_name = "sub";
+					break;
+				case OP_DIV:
+					op_name = "div";
+				case OP_MUL:
+					op_name = "mul";
+				}
+				//ret += block.getNewRegister() + op_name + "";
 			}
 		}
 
@@ -188,13 +236,12 @@ public class BinaryOp extends Statement {
 	 *            the second id
 	 * @return the highest possible basicTokenType of both id's
 	 */
-	private String checkType(Id a, Id b) {
+	private String checkTypeOnEqual(Id a, Id b) {
 		String ret = "";
 
 		EntryType eA = null, eB = null;
-		SymbolTableHelper helper = new SymbolTableHelper();
-		eA = helper.lookup(a.getValue(), this);
-		eB = helper.lookup(b.getValue(), this);
+		eA = SymbolTableHelper.lookup(a.getValue(), this);
+		eB = SymbolTableHelper.lookup(b.getValue(), this);
 
 		if (eA != null && eB != null) {
 			Type tA = eA.getType();

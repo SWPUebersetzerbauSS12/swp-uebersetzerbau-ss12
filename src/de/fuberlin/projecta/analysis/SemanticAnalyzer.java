@@ -1,6 +1,8 @@
 package de.fuberlin.projecta.analysis;
 
 import de.fuberlin.commons.lexer.TokenType;
+import de.fuberlin.commons.parser.ISymbol;
+import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.ast.nodes.AbstractSyntaxTree;
 import de.fuberlin.projecta.analysis.ast.nodes.Args;
 import de.fuberlin.projecta.analysis.ast.nodes.Array;
@@ -31,9 +33,9 @@ import de.fuberlin.projecta.analysis.ast.nodes.Type;
 import de.fuberlin.projecta.analysis.ast.nodes.UnaryOp;
 import de.fuberlin.projecta.analysis.ast.nodes.While;
 import de.fuberlin.projecta.lexer.BasicTokenType;
-import de.fuberlin.projecta.parser.ISyntaxTree;
 import de.fuberlin.projecta.parser.NonTerminal;
 import de.fuberlin.projecta.parser.Parser;
+import de.fuberlin.projecta.parser.Symbol;
 import de.fuberlin.projecta.parser.Symbol.Reserved;
 
 public class SemanticAnalyzer {
@@ -41,9 +43,9 @@ public class SemanticAnalyzer {
 	private static final String LAttribute = "LAttribute";
 
 	private ISyntaxTree parseTree;
-	
+
 	private SymbolTableStack tables;
-	
+
 	private AbstractSyntaxTree AST;
 
 	public SemanticAnalyzer(ISyntaxTree tree) {
@@ -63,6 +65,15 @@ public class SemanticAnalyzer {
 		toAST(tree, null);
 	}
 
+	private Symbol translate(ISymbol symbol) {
+		if (symbol instanceof Symbol)
+			return (Symbol) symbol;
+		else {
+			// let Symbol figure out which type this is
+			return new Symbol(symbol.getName());
+		}
+	}
+
 	/**
 	 * Traverses through the parseTree in depth-first-search and adds new nodes
 	 * to the given insertNode. Only l-attributed nodes must be passed through
@@ -76,9 +87,9 @@ public class SemanticAnalyzer {
 	 *            syntaxTree-Node, in which new nodes get added
 	 */
 	public void toAST(ISyntaxTree tree, ISyntaxTree insertNode) {
-
-		if (tree.getSymbol().isNonTerminal()) {
-			NonTerminal nonT = tree.getSymbol().asNonTerminal();
+		Symbol symbol = translate(tree.getSymbol());
+		if (symbol.isNonTerminal()) {
+			NonTerminal nonT = symbol.asNonTerminal();
 
 			switch (nonT) {
 			case program:
@@ -98,7 +109,7 @@ public class SemanticAnalyzer {
 				insertNode.addChild(func);
 				return;
 			case type:
-				if (tree.getChild(0).getSymbol().asTerminal() == TokenType.BASIC) {
+				if (translate(tree.getChild(0).getSymbol()).asTerminal() == TokenType.BASIC) {
 
 					// this is type_ and it must exist!
 					if (tree.getChild(1).getChildrenCount() != 0) {
@@ -190,28 +201,31 @@ public class SemanticAnalyzer {
 				}
 				insertNode.addChild(decl);
 				return;
-			case stmt:
+			case stmt: {
 				Statement stmt = null;
 				ISyntaxTree firstChild = tree.getChild(0);
-				if (firstChild.getSymbol().isTerminal()) {
-					if (firstChild.getSymbol().asTerminal() == TokenType.IF) {
+				Symbol firstChildSymbol = translate(firstChild.getSymbol());
+				if (firstChildSymbol.isTerminal()) {
+					TokenType terminal = translate(firstChild.getSymbol())
+							.asTerminal();
+					if (terminal == TokenType.IF) {
 						ISyntaxTree stmt_ = tree.getChild(5); //
 						if (stmt_.getChildrenCount() == 0)
 							stmt = new If();
 						else
 							stmt = new IfElse();
-					} else if (firstChild.getSymbol().asTerminal() == TokenType.WHILE) {
+					} else if (terminal == TokenType.WHILE) {
 						stmt = new While();
-					} else if (firstChild.getSymbol().asTerminal() == TokenType.DO) {
+					} else if (terminal == TokenType.DO) {
 						stmt = new Do();
-					} else if (firstChild.getSymbol().asTerminal() == TokenType.BREAK) {
+					} else if (terminal == TokenType.BREAK) {
 						stmt = new Break();
-					} else if (firstChild.getSymbol().asTerminal() == TokenType.RETURN) {
+					} else if (terminal == TokenType.RETURN) {
 						stmt = new Return();
-					} else if (firstChild.getSymbol().asTerminal() == TokenType.PRINT) {
+					} else if (terminal == TokenType.PRINT) {
 						stmt = new Print();
 					}
-				} else if (firstChild.getSymbol().isNonTerminal()) {
+				} else if (firstChildSymbol.isNonTerminal()) {
 					toAST(firstChild, insertNode);
 				}
 
@@ -222,6 +236,7 @@ public class SemanticAnalyzer {
 					insertNode.addChild(stmt);
 				}
 				return;
+			}
 			case assign:
 			case bool:
 			case join:
@@ -232,23 +247,31 @@ public class SemanticAnalyzer {
 				if (tree.getChild(1).getChildrenCount() == 0) {
 					toAST(tree.getChild(0), insertNode);
 				} else {
-					BinaryOp bOp = new BinaryOp(tree.getChild(1).getChild(0)
-							.getSymbol().asTerminal());
+					BinaryOp bOp = new BinaryOp(translate(
+							tree.getChild(1).getChild(0).getSymbol())
+							.asTerminal());
 
-					if (bOp != null) {
-						// simply hang in both children trees
-						toAST(tree.getChild(0), bOp); // rel
-						toAST(tree.getChild(1), bOp); // equality'
-						insertNode.addChild(bOp);
-					}
+					// simply hang in both children trees
+					toAST(tree.getChild(0), bOp); // rel
+					toAST(tree.getChild(1), bOp); // equality'
+					insertNode.addChild(bOp);
 				}
 				return;
-			case unary:
-				if (tree.getChild(0).getSymbol().isNonTerminal()) {
+			case expr_:
+			case term_:
+				if (tree.getChildrenCount() != 0) {
+					// simply hang in both children trees
+					toAST(tree.getChild(1), insertNode);
+					toAST(tree.getChild(2), insertNode);
+				}
+				return;
+			case unary: {
+				Symbol firstChildSymbol = translate(tree.getChild(0)
+						.getSymbol());
+				if (firstChildSymbol.isNonTerminal()) {
 					toAST(tree.getChild(0), insertNode);
 				} else {
-					UnaryOp uOp = new UnaryOp(tree.getChild(0).getSymbol()
-							.asTerminal());
+					UnaryOp uOp = new UnaryOp(firstChildSymbol.asTerminal());
 
 					if (uOp != null) {
 						// simply hang in both children trees
@@ -256,17 +279,19 @@ public class SemanticAnalyzer {
 						insertNode.addChild(uOp);
 					}
 				}
-				return;
+			}
 			case factor:
-				if (tree.getChild(0).getSymbol().isNonTerminal()) {
-					if (tree.getChild(1).getChildrenCount() == 0) {
-						toAST(tree.getChild(0), insertNode);
-					} else {
-						FuncCall call = new FuncCall();
-						for (ISyntaxTree tmp : tree.getChildren()) {
-							toAST(tmp, call);
+				if (translate(tree.getChild(0).getSymbol()).isNonTerminal()) {
+					if (tree.getChildrenCount() >= 2) {
+						if (tree.getChild(1).getChildrenCount() == 0) {
+							toAST(tree.getChild(0), insertNode);
+						} else {
+							FuncCall call = new FuncCall();
+							for (ISyntaxTree tmp : tree.getChildren()) {
+								toAST(tmp, call);
+							}
+							insertNode.addChild(call);
 						}
-						insertNode.addChild(call);
 					}
 				} else {
 					for (ISyntaxTree tmp : tree.getChildren()) {
@@ -312,7 +337,7 @@ public class SemanticAnalyzer {
 				return;
 			case loc_:
 				// TODO: not everything is well thought atm...
-				if (tree.getChild(0).getSymbol().asTerminal() == TokenType.OP_DOT) {
+				if (translate(tree.getChild(0).getSymbol()).asTerminal() == TokenType.OP_DOT) {
 					RecordVarCall varCall = new RecordVarCall();
 					varCall.addChild((ISyntaxTree) tree
 							.getAttribute(LAttribute));
@@ -338,8 +363,8 @@ public class SemanticAnalyzer {
 				}
 			}
 
-		} else if (tree.getSymbol().isTerminal()) {
-			TokenType t = tree.getSymbol().asTerminal();
+		} else if (symbol.isTerminal()) {
+			TokenType t = symbol.asTerminal();
 			switch (t) {
 			case BASIC:
 				BasicTokenType type = (BasicTokenType) tree
@@ -369,8 +394,8 @@ public class SemanticAnalyzer {
 			default:// everything, which has no class member in its node uses
 					// the default.
 			}
-		} else if (tree.getSymbol().isReservedTerminal()) {
-			Reserved res = tree.getSymbol().asReservedTerminal();
+		} else if (symbol.isReservedTerminal()) {
+			Reserved res = symbol.asReservedTerminal();
 			switch (res) {
 			case EPSILON:
 				if (tree.getChildrenCount() == 1) {

@@ -7,6 +7,7 @@ import org.junit.Test;
 
 
 import de.fuberlin.commons.lexer.IToken;
+import de.fuberlin.bii.tokenmatcher.Token;
 import de.fuberlin.bii.tokenmatcher.errorhandler.ErrorCorrector.CorrectionMode;
 import de.fuberlin.commons.lexer.ILexer;
 
@@ -21,14 +22,21 @@ public class LexergenTest {
 		File sourceFile = new File("tests/resources/de/fuberlin/bii/source/lexergen/test.fun");
 		
 
-	  //Lexergenerator lexergen = new Lexergen(rdFile, sourceFile, BuilderType.indirectBuilder, CorrectionMode.PANIC_MODE, true);		
-		ILexer lexergen = new Lexergen(rdFile, sourceFile, BuilderType.directBuilder, CorrectionMode.PANIC_MODE, true);		
+		ILexer lexergen = new Lexergen(rdFile, sourceFile, BuilderType.indirectBuilder, CorrectionMode.PANIC_MODE, true);		
+		//ILexer lexergen = new Lexergen(rdFile, sourceFile, BuilderType.directBuilder, CorrectionMode.PANIC_MODE, true);		
 
-		IToken currentToken = null;
+		IToken currentToken;
+		String tokenString;
+		String[] tokensToFind = {""}; //TODO: ...
+		int i = 0;
 		
-		currentToken = lexergen.getNextToken();
-		Assert.assertEquals("KEYWORD", currentToken.getType());
-		Assert.assertEquals("IF", currentToken.getAttribute().toString());
-		//TODO: Test zu Ende schreiben...
+		while ( !Token.isEofToken( currentToken = lexergen.getNextToken())) {
+			tokenString = "<" + currentToken.getType() + ", " + currentToken.getAttribute().toString() + ">";
+			//Assert.assertEquals(tokensToFind[i], tokenString);
+			System.out.println(tokenString);
+			i++;
+		}
+		
+		//Assert.assertEquals(i, tokensToFind.length);
 	}
 }

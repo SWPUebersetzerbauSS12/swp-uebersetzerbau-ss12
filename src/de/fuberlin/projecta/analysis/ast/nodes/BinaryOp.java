@@ -25,8 +25,10 @@ public class BinaryOp extends Type {
 						"Left side of an assignment has to be an identifier, but is "
 								+ this.getChild(0).getClass().toString());
 			}
-			if (this.getChild(1) instanceof BinaryOp && (((BinaryOp)this.getChild(1)).getOp() == TokenType.OP_ASSIGN)){
-				throw new SemanticException("Left side of an assignment cannot be an assignment.");
+			if (this.getChild(1) instanceof BinaryOp
+					&& (((BinaryOp) this.getChild(1)).getOp() == TokenType.OP_ASSIGN)) {
+				throw new SemanticException(
+						"Left side of an assignment cannot be an assignment.");
 			}
 			break;
 		case OP_DIV:
@@ -148,7 +150,33 @@ public class BinaryOp extends Type {
 					ret += regs[4] + "\n";
 
 			}
+		}else if (op == TokenType.OP_ADD || op == TokenType.OP_MINUS
+				|| op == TokenType.OP_DIV || op == TokenType.OP_MUL) {
+			// load value of id1 if it is an id!!!
+			if (getChild(0) instanceof Id) {
+				Id id = (Id) getChild(0);
+				ret += "%"
+						+ block.getNewRegister()
+						+ " = load "
+						+ (SymbolTableHelper.lookup(id.getValue(), this))
+								.getType().genCode() + "* %" + id.getValue()
+						+ "\n";
+			}
+			// load value of id2 if it is an id!!!
+			if (getChild(1) instanceof Id) {
+				Id id = (Id) getChild(1);
+				ret += "%"
+						+ block.getNewRegister()
+						+ " = load "
+						+ (SymbolTableHelper.lookup(id.getValue(), this))
+								.getType().genCode() + "* %" + id.getValue()
+						+ "\n";
+			}
+			
+		}else{
+			System.out.println("Unknown Binary OP: " + op);
 		}
+		/***********/
 		if (op == TokenType.OP_ASSIGN) {
 			EntryType eA = null;
 			a = ((Id) getChild(0));
@@ -175,51 +203,35 @@ public class BinaryOp extends Type {
 			} else if (getChild(1) instanceof FuncCall) {
 				int reg = block.getNewRegister();
 				String id = ((Id) getChild(0)).getValue();
-				String type = SymbolTableHelper
-						.lookup(((Id) getChild(0)).getValue(), this).getType()
+				String type = SymbolTableHelper.lookup(
+						((Id) getChild(0)).getValue(), this).getType()
 						.genCode();
-				ret = "%" + reg + " = " + ((FuncCall) getChild(1)).genCode() + "\n";
+				ret = "%" + reg + " = " + ((FuncCall) getChild(1)).genCode()
+						+ "\n";
 
-				ret += "store " + type + " %" + reg + ", " + type + "* %"
-						+ id;
+				ret += "store " + type + " %" + reg + ", " + type + "* %" + id;
 			} else if (getChild(1) instanceof Id) {
-				String type1 = SymbolTableHelper
-						.lookup(((Id) getChild(1)).getValue(), this).getType()
+				String type1 = SymbolTableHelper.lookup(
+						((Id) getChild(1)).getValue(), this).getType()
 						.genCode();
 				int reg = block.getNewRegister();
-				ret = "%" + reg + " = load " + type1 + "* %" + ((Id) getChild(1)).getValue() + "\n";
+				ret = "%" + reg + " = load " + type1 + "* %"
+						+ ((Id) getChild(1)).getValue() + "\n";
 
-				String type0 = SymbolTableHelper
-						.lookup(((Id) getChild(0)).getValue(), this).getType()
+				String type0 = SymbolTableHelper.lookup(
+						((Id) getChild(0)).getValue(), this).getType()
 						.genCode();
-				ret += "store " + type0 + " %" + reg
-						+ ", " + eA.getType().genCode() + "* %" + a.getValue();
-				}
-			else {
+				ret += "store " + type0 + " %" + reg + ", "
+						+ eA.getType().genCode() + "* %" + a.getValue();
+			} else if (getChild(1) instanceof BinaryOp) {
+					//First execute operations, then save the result
+					ret += ((BinaryOp)getChild(1)).genCode();
+					int result = block.getCurrentRegister();
+					ret += "%" + block.getNewRegister() + " = load "+ eA.getType().genCode() + "* %" + result + "\n";
+					ret += "store "+ eA.getType().genCode() + " %" + block.getCurrentRegister() +", " + eA.getType().genCode() + "* %" + a.getValue();
+			} else {
 				ret = "store " + ((AbstractSyntaxTree) getChild(1)).genCode()
 						+ ", " + eA.getType().genCode() + "* %" + a.getValue();
-			}
-		}
-		if (op == TokenType.OP_ADD || op == TokenType.OP_MINUS
-				|| op == TokenType.OP_DIV || op == TokenType.OP_MUL) {
-			String op_name;
-
-			for (int i=0; i < getChildrenCount(); i++){
-				switch(op){
-				case OP_ADD:
-					op_name = "add";
-					break;
-				case OP_MINUS:
-					op_name = "sub";
-					break;
-				case OP_DIV:
-					op_name = "div";
-					break;
-				case OP_MUL:
-					op_name = "mul";
-					break;
-				}
-				//ret += block.getNewRegister() + op_name + "";
 			}
 		}
 
@@ -270,12 +282,12 @@ public class BinaryOp extends Type {
 	public boolean checkTypes() {
 		Type leftChild = (Type) this.getChild(0);
 		Type rightChild = (Type) this.getChild(1);
-		switch (this.getOp()){
+		switch (this.getOp()) {
 		case OP_ADD:
 		case OP_MINUS:
 		case OP_MUL:
 		case OP_DIV:
-			if (leftChild.toTypeString().equals(rightChild.toTypeString())){
+			if (leftChild.toTypeString().equals(rightChild.toTypeString())) {
 				return true;
 			}
 			throw new TypeErrorException();
@@ -288,8 +300,9 @@ public class BinaryOp extends Type {
 			throw new TypeErrorException();
 		case OP_AND:
 		case OP_OR:
-			
-			default: throw new TypeErrorException();
+
+		default:
+			throw new TypeErrorException();
 		}
 	}
 }

@@ -105,8 +105,8 @@ public class Token implements IToken {
 		return eofToken;
 	}
 
-	public static boolean isEofToken(Token token) {
-		return Test.isAssigned(token) && token.type.equals("EOF");
+	public static boolean isEofToken(IToken iToken) {
+		return Test.isAssigned(iToken) && iToken.getType().equals("EOF");
 	}
 
 	public boolean isEofToken() {

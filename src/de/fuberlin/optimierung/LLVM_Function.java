@@ -419,8 +419,9 @@ public class LLVM_Function {
 						break;	
 					}
 					
-					op1.setName(""+result);
+					op1.setName(result?"1":"0");
 					op2.setName("0");
+					op1.setTypeString("i1");
 					
 					return true;
 				}else if(op1.getType() == LLVM_ParameterType.DOUBLE && op2.getType() == LLVM_ParameterType.DOUBLE){
@@ -461,8 +462,9 @@ public class LLVM_Function {
 						break;	
 					}
 					
-					op1.setName(""+result);
+					op1.setName(result?"1":"0");
 					op2.setName("0");
+					op1.setTypeString("i1");
 					
 					return true;
 				}

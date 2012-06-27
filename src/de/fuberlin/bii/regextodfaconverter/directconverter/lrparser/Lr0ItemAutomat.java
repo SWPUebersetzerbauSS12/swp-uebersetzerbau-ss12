@@ -162,28 +162,8 @@ public class Lr0ItemAutomat<Element extends Symbol> implements ItemAutomat<Eleme
 
 		while ( unhandledClosures.size() > 0) {
 			Lr0Closure currentClosure = unhandledClosures.iterator().next();
-			Map<RuleElement, AutomatEventHandler> handlerMap = new HashMap<RuleElement, AutomatEventHandler>() {
-
-				@Override
-				public boolean containsKey( Object key) {
-					for ( RuleElement element : this.keySet()) {
-						if ( element.equals( key))
-							return true;
-					}
-					return false;
-				}
-
-
-				@Override
-				public AutomatEventHandler get( Object key) {
-					for ( RuleElement element : this.keySet()) {
-						if ( element.equals( key))
-							return super.get( element);
-					}
-					return null;
-				}
-
-			};
+			Map<RuleElement, AutomatEventHandler> handlerMap = new HandlerMap();
+			
 			for ( Lr0Item item : currentClosure.getItemSet()) {
 				nextRuleElement = item.peekNextRuleElement();
 				if ( Test.isAssigned( nextRuleElement)) {

@@ -76,29 +76,13 @@ public class Slr1ItemAutomat<Element extends Symbol> extends
 	public Slr1ItemAutomat(ContextFreeGrammar grammar) {
 		super(grammar);
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	protected void SetupParserTable(Lr0Closure startClosure) {
 
-		// checken, ob eine persistente Version vorhanden ist:
-		File dir = new File("/tmp/lexergen/");
-		File parserTableObject = new File("/tmp/lexergen/parserTable");
-
-		// TODO maybe check hashvalue
-		if (dir.exists() && dir.isDirectory() && parserTableObject.exists()) {
-			
-			try {
-				FileInputStream fInp = new FileInputStream(parserTableObject);
-				ObjectInputStream inp = new ObjectInputStream(fInp);
-				Object o = inp.readObject();
-				this.parserTable = (Map<Lr0Closure, Map<RuleElement, AutomatEventHandler>>) o;
-				return;
-			} catch (Exception e) {
-				System.err
-						.println("could not find or read parser table object");
-				e.printStackTrace();
-			}
+		if (readPersistenParserTable()) {
+			return;
 		}
 
 		HashSet<Lr0Closure> unhandledClosures = new HashSet<Lr0Closure>() {
@@ -211,7 +195,35 @@ public class Slr1ItemAutomat<Element extends Symbol> extends
 			parserTable.put(currentClosure, handlerMap);
 		}
 
-		// write back
+		writePersistentParserTable();
+	}
+
+	private boolean readPersistenParserTable() {
+		System.out.println("try to read parser table");
+		File dir = new File("/tmp/lexergen/");
+		File parserTableObject = new File("/tmp/lexergen/parserTable");
+
+		if (dir.exists() && dir.isDirectory() && parserTableObject.exists()) {
+			try {
+				FileInputStream fInp = new FileInputStream(parserTableObject);
+				ObjectInputStream inp = new ObjectInputStream(fInp);
+				Object o = inp.readObject();
+				this.parserTable = (Map<Lr0Closure, Map<RuleElement, AutomatEventHandler>>) o;
+				return true;
+			} catch (Exception e) {
+				System.err
+						.println("could not find or read parser table object");
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
+
+	private void writePersistentParserTable() {
+
+		File dir = new File("/tmp/lexergen/");
+		File parserTableObject = new File("/tmp/lexergen/parserTable");
+
 		dir.mkdirs();
 		ObjectOutputStream out;
 		try {
@@ -225,5 +237,6 @@ public class Slr1ItemAutomat<Element extends Symbol> extends
 			parserTableObject.delete();
 			e.printStackTrace();
 		}
+
 	}
 }

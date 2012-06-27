@@ -1,7 +1,7 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 import de.fuberlin.commons.lexer.TokenType;
-import de.fuberlin.projecta.parser.ISyntaxTree;
+import de.fuberlin.commons.parser.ISyntaxTree;
 
 public class IfElse extends Statement {
 

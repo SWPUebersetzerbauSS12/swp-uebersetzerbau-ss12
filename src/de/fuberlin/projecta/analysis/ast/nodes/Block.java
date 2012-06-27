@@ -1,8 +1,8 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 import de.fuberlin.commons.lexer.TokenType;
+import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.SymbolTableStack;
-import de.fuberlin.projecta.parser.ISyntaxTree;
 
 
 public class Block extends Statement {
@@ -85,7 +85,12 @@ public class Block extends Statement {
 
 	@Override
 	public boolean checkTypes() {
-		// TODO Auto-generated method stub
-		return false;
+		// check children and we are good.
+		for (ISyntaxTree child : this.getChildren()) {
+			if (!((AbstractSyntaxTree) child).checkTypes()) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

@@ -1,6 +1,8 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
+import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.SymbolTableStack;
+import de.fuberlin.commons.parser.ISyntaxTree;
 
 
 public class Program extends AbstractSyntaxTree {
@@ -17,26 +19,37 @@ public class Program extends AbstractSyntaxTree {
 
 	@Override
 	public boolean checkSemantics() {
-		boolean mainExists = false;
-		for(int i = 0; i < this.getChildrenCount(); i++){
-			AbstractSyntaxTree child = (AbstractSyntaxTree)this.getChild(i);
-			if(!child.checkSemantics()){
+		int mains = 0;
+		for (int i = 0; i < this.getChildrenCount(); i++) {
+			AbstractSyntaxTree child = (AbstractSyntaxTree) this.getChild(i);
+			if (!child.checkSemantics()) {
 				return false;
 			}
-			if(child instanceof FuncDef){
-				String name = ((Id)child.getChild(1)).getValue();
-				if(name.equals("main")){
-					mainExists = true;
+			if (child instanceof FuncDef) {
+				String name = ((Id) child.getChild(1)).getValue();
+				if (name.equals("main")) {
+					mains++;
 				}
 			}
 		}
-		return mainExists;
+		if (mains == 1) {
+			return true;
+		} else {
+			throw new SemanticException(
+					"Program needs exactly one main method! Program contains "
+							+ mains + " main methods.");
+		}
 	}
 
 	@Override
 	public boolean checkTypes() {
-		// TODO Auto-generated method stub
-		return false;
+		// check children and we are good.
+		for(ISyntaxTree child : this.getChildren()){
+			if(!((AbstractSyntaxTree)child).checkTypes()){
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	/*
@@ -46,6 +59,7 @@ public class Program extends AbstractSyntaxTree {
 	public String genCode(){
 		//we use puts to print to screen
 		String out = "declare i32 @puts(i8*) nounwind\n";
+		out += "declare i32 @printf(i8*, ...) nounwind\n";
 		out += super.genCode();
 		return out;
 	}

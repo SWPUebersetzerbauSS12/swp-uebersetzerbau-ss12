@@ -1,41 +1,16 @@
 package de.fuberlin.projecta;
 
-import java.io.File;
-
 import de.fuberlin.commons.lexer.ILexer;
 import de.fuberlin.projecta.lexer.Lexer;
 import de.fuberlin.projecta.lexer.io.FileCharStream;
 import de.fuberlin.projecta.lexer.io.ICharStream;
-import de.fuberlin.projecta.lexer.io.StringCharStream;
 import de.fuberlin.projecta.parser.ParseException;
 import de.fuberlin.projecta.parser.Parser;
-import de.fuberlin.projecta.utils.IOUtils;
+import de.fuberlin.projecta.utils.StringUtils;
 
 public class ParserMain {
 
-	static void readStdin() {
-		String data = IOUtils.readMultilineStringFromStdin();
-		parse(new StringCharStream(data));
-	}
-
-	static void readFile(String path) {
-		File sourceFile = new File(path);
-		if (!sourceFile.exists()) {
-			System.out.println("File does not exist.");
-			return;
-		}
-
-		if (!sourceFile.canRead()) {
-			System.out.println("File is not readable");
-		}
-
-		assert (sourceFile.exists());
-		assert (sourceFile.canRead());
-
-		parse(new FileCharStream(path));
-	}
-
-	static void parse(ICharStream stream) {
+	static Parser parse(ICharStream stream) {
 		ILexer lexer = new Lexer(stream);
 		Parser parser = new Parser();
 		try {
@@ -46,25 +21,36 @@ public class ParserMain {
 					", column: " + e.getOffset() +
 					", token: \"" + e.getText() + "\")"
 			);
-			System.out.println("Details:\n" + e.getDetails());
+			System.out.println("Details:");
+			System.out.println(e.getDetails());
 			System.out.println("Trace:");
 			e.printStackTrace();
-			return;
+			return null;
 		}
 
-		parser.printParseTree();
+		parser.getParseTree().printTree();
+		return parser;
+	}
+	
+	private static void run(ICharStream stream) {
+		Parser parser = parse(stream);
+		if (parser == null)
+			return;
+
+		parser.getParseTree().printTree();
 	}
 
 	public static void main(String[] args) {
 		if (args.length == 0) {
 			System.out.println("Reading from stdin. Exit with new line and Ctrl+D.");
-			readStdin();
+			ICharStream stream = StringUtils.readFromStdin();
+			run(stream);
 		} else if (args.length == 1) {
 			final String path = args[0];
-			readFile(path);
+			FileCharStream stream = StringUtils.readFromFile(path);
+			run(stream);
 		} else {
 			System.out.println("Wrong number of parameters.");
 		}
-
 	}
 }

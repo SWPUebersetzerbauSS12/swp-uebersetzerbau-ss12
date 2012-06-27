@@ -1,12 +1,42 @@
 package de.fuberlin.projecta.parser;
 
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+
 import de.fuberlin.commons.lexer.TokenType;
+import de.fuberlin.commons.parser.ISymbol;
 
-public class Symbol {
+public class Symbol implements ISymbol {
 
+	/**
+	 * Internal symbols, for building up the parse tree
+	 */
 	public enum Reserved {
-		EPSILON, // epsilon production
-		SP, // stack pointer
+		EPSILON("ε"), // epsilon production
+		SP(""); // stack pointer
+		
+		private static Map<String,Reserved> terminalSymbol2Reserved=new HashMap<String, Reserved>();
+		
+		static{
+			for(Reserved t : EnumSet.allOf(Reserved.class)){
+				terminalSymbol2Reserved.put(t.getTerminalSymbol(), t);
+			}
+		}
+		
+		private final String terminalSymbol;
+		
+		private Reserved(String terminalSymbol) {
+			this.terminalSymbol=terminalSymbol;			
+		}
+		
+		public String getTerminalSymbol(){
+			return this.terminalSymbol;
+		}
+
+		public static Reserved byTerminalSymbol(String s){
+			return terminalSymbol2Reserved.get(s);
+		}
 	}
 
 	private Object symbol;
@@ -19,27 +49,34 @@ public class Symbol {
 	}
 
 	/**
-	 * Construct from string
+	 * Construct Symbol instance from string
 	 * 
-	 * FIXME: This ctor should be removed. It's not type-safe
-	 * 
-	 * @param string
+	 * @param string A string describing a terminal or non-terminal or reserved symbol 
 	 */
 	public Symbol(String string) {
-		try {
-			this.symbol = Reserved.valueOf(string);
-			return;
-		} catch (IllegalArgumentException e) {
-		}
-		try {
-			this.symbol = NonTerminal.valueOf(string);
-			return;
-		} catch (IllegalArgumentException e) {
-		}
-
-		if (this.symbol == null) {
-			this.symbol = TokenType.valueOf(string);
-		}
+		
+		// TODO Der (generische) LRParser kennt die verwendeten Enum-Typen nicht
+		// Daher haben wir einfach mal spezielle Lookup-Methoden für das Mapping von Symbolwert auf Enum-Typ verwendet
+		this.symbol=Reserved.byTerminalSymbol(string);
+		if (symbol!=null) return;
+		this.symbol = NonTerminal.byNonTerminalSymbol(string);
+		if (symbol!=null) return;
+		this.symbol = TokenType.byTerminalSymbol(string);
+		
+//		try {
+//			this.symbol = Reserved.byTerminalSymbol(string);
+//			return;
+//		} catch (IllegalArgumentException e) {
+//		}
+//		try {
+//			this.symbol = NonTerminal.byNonTerminalSymbol(string);
+//			return;
+//		} catch (IllegalArgumentException e) {
+//		}
+//
+//		if (this.symbol == null) {
+//			this.symbol = TokenType.valueOf(string);
+//		}
 	}
 
 	public Symbol(TokenType terminal) {
@@ -85,6 +122,19 @@ public class Symbol {
 		}
 		// never reached
 		return "<invalid>";
+	}
+
+	@Override
+	public String getName() {
+		if (isTerminal())
+			return asTerminal().toString();
+		if (isNonTerminal())
+			return asNonTerminal().toString();
+		if (isReservedTerminal()) {
+			return asReservedTerminal().toString();
+		}
+		// never reached
+		return "invalid";
 	}
 
 }

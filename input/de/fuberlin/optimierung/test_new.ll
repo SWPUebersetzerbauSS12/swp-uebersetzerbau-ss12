@@ -30,6 +30,6 @@ br label %14
 br label %14
 
 ; <label>:14
-ret i32 0
+ret i32 %1
 }
 

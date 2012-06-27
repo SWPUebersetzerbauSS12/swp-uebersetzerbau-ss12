@@ -913,6 +913,7 @@ public class LLVM_Function {
 	 */
 	public void deleteEmptyBlocks() {
 		// Gehe Bloecke durch
+		LinkedList<ILLVM_Block> toDelete = new LinkedList<ILLVM_Block>();
 		for(ILLVM_Block actualBlock : this.blocks) {
 			// Enthaelt Block nur einen unbedingten Sprungbefehl?
 			if(!actualBlock.isEmpty() && actualBlock.getFirstCommand().
@@ -946,20 +947,46 @@ public class LLVM_Function {
 					previousBlock.appendToNextBlocks(targetBlock);
 					previousBlock.removeFromNextBlocks(actualBlock);
 				}
+				toDelete.add(actualBlock);
+			}else if (!actualBlock.isEmpty() && (actualBlock.getFirstCommand().
+					getOperation()==LLVM_Operation.RET || actualBlock.getFirstCommand().
+					getOperation()==LLVM_Operation.RET_CODE)){
 				
-				// Entferne zu loeschenden Block aus Flussgraph
-				actualBlock.deleteBlock();
-				
-				// Entferne Sprungbefehl aus entferntem Block aus Registermap
-				this.registerMap.deleteCommand(actualBlock.getFirstCommand());
-				
-				// Entferne zu loeschenden Block aus this.blocks
-				this.blocks.remove(actualBlock);
-				this.numberBlocks--;
-				
+				// Gehe Vorgaengerbloecke durch
+				for(ILLVM_Block previousBlock : actualBlock.getPreviousBlocks()) {
+					// Hole Sprungbefehl des Vorgaengerblocks
+					// Dieser muss ersetzt werden
+					ILLVM_Command branchCommand = previousBlock.getLastCommand();
+					// Befehl aus Registermap austragen
+					this.registerMap.deleteCommand(branchCommand);
+					branchCommand.replaceCommand(actualBlock.getFirstCommand());
+					
+					// Setze Registermapeintrag neu
+					this.registerMap.addCommand(previousBlock.getLastCommand());
+					
+					// Passe Flussgraph an:
+					// previousBlock hat actualBlock nicht mehr als Nachfolger,
+					previousBlock.removeFromNextBlocks(actualBlock);
+				}
+				toDelete.add(actualBlock);
 			}
 		}
 
+		// Alle gelöschten Blöcke entfernen
+		for (ILLVM_Block del : toDelete){
+			// Entferne zu loeschenden Block aus Flussgraph
+			del.deleteBlock();
+			
+			// Entferne nur Branch-Befehle aus entferntem Block aus Registermap
+			// Return-Befehle sind nur einmalig vorhanden (an mehreren Stellen) und würden sonst fälschlicherweise entfernt
+			if (del.getFirstCommand().getOperation()==LLVM_Operation.BR){
+				this.registerMap.deleteCommand(del.getFirstCommand());
+			}
+			
+			// Entferne zu loeschenden Block aus this.blocks
+			this.blocks.remove(del);
+			this.numberBlocks--;
+		}
 	}
 	
 	/*

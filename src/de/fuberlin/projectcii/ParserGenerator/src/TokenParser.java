@@ -16,8 +16,8 @@ import de.fuberlin.commons.parser.StringSymbol;
  *
  */
 public class TokenParser {
-	//ToDo: entfernen wenn IToken angepasst
-	private HashMap<String,String> Terminals = new HashMap<String,String>();
+	//TODO: entfernen wenn IToken angepasst
+	//private HashMap<String,String> Terminals = new HashMap<String,String>();
 	
 	private ILexer lexer;
 	private Map<String, HashMap<String,Vector<Integer>>> parserTable;
@@ -40,6 +40,8 @@ public class TokenParser {
 		this.grammar = grammar;
 		this.StartSymbol = StartSymbol;
 		
+		//TODO entfernen
+		/*
 		Terminals.put("OP_LE","<");
 		Terminals.put("OP_LE","<=");
 		Terminals.put("OP_EQ","==");
@@ -78,7 +80,7 @@ public class TokenParser {
 		Terminals.put("RBRACKET","]");
 		Terminals.put("LBRACE","{");
 		Terminals.put("RBRACE","}");
-		Terminals.put("EOF","eof");
+		Terminals.put("EOF","eof");*/
 	}
 
 	/**
@@ -158,6 +160,9 @@ public class TokenParser {
 	 */
 	private void getNextToken() {
 		Token = lexer.getNextToken();
+		TokenTerminal = Token.getText();
+		//TODO entfernen
+		/*
 		if(Token.getType().equals("BOOL_LITERAL"))
 		{			
 			if((Boolean)Token.getAttribute())
@@ -168,6 +173,6 @@ public class TokenParser {
 		else
 		{
 			TokenTerminal = Terminals.get(Token.getType());			
-		}		
+		}*/
 	}
 }

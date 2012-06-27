@@ -13,7 +13,7 @@ public class Main {
 		
 		String data;
 		try {
-			data = IOUtils.readFile("fibonacci.txt");
+			data = IOUtils.readFile("program.txt");
 			ILexer lexer = new Lexer(new StringCharStream(data));
 			LL1Parser ll1 = new LL1Parser();
 			ll1.parse(lexer,"language_mod.txt");		

@@ -58,6 +58,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symb
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Terminal;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.TerminalSet;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Terminator;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Lr0Closure;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Lr1Closure;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Lr1Item;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Lr1ItemSet;
@@ -84,6 +85,8 @@ public class Lr1ItemAutomat<Element extends Symbol> implements ItemAutomat<Eleme
 	
 	private ReduceEventHandler reduceEventHandler;
 	private ShiftEventHandler shiftEventHandler;
+	
+	private Lr1Closure startClosure;
 	
 	protected boolean isReduceConflictFree = true;
 	
@@ -116,7 +119,7 @@ public class Lr1ItemAutomat<Element extends Symbol> implements ItemAutomat<Eleme
 	public Lr1ItemAutomat( ContextFreeGrammar grammar) {
 		super();
 		this.grammar = grammar;
-		InitializeAutomata();
+		InitializeAutomat();
 	}
 
 
@@ -128,8 +131,8 @@ public class Lr1ItemAutomat<Element extends Symbol> implements ItemAutomat<Eleme
 	}
 
 
-	private void InitializeAutomata() {
-		Lr1Closure startClosure = calcStartClosure();
+	private void InitializeAutomat() {
+		startClosure = calcStartClosure();
 		closures.add( startClosure);
 		currentClosure = startClosure;
 
@@ -239,7 +242,8 @@ public class Lr1ItemAutomat<Element extends Symbol> implements ItemAutomat<Eleme
 		symbolStack = new Stack<RuleElement>();
 		symbolStack.add( new Terminator());
 		closureStack = new Stack<Lr1Closure>();
-		closureStack.add( currentClosure); // assert currentClosure == startClosure;
+		currentClosure = startClosure;
+		closureStack.add( currentClosure); 
 	}
 
 
@@ -251,16 +255,17 @@ public class Lr1ItemAutomat<Element extends Symbol> implements ItemAutomat<Eleme
 	}
 
 
-	protected void ResetAutomata() {
+	protected void ResetAutomat() {
 		closures = new HashSet<Lr1Closure>();
 		currentClosure = null;
 		isReduceConflictFree = true;
-		InitializeAutomata();
+		
+		InitializeStacks();
 	}
 
 
 	public boolean match( List<Element> input) throws ItemAutomatException {
-		ResetAutomata();
+		ResetAutomat();
 		LoadInputIntoQueue( input);
 
 		int currentSequenceNumber = 0;

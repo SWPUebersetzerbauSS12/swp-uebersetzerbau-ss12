@@ -86,6 +86,8 @@ public class Lr0ItemAutomat<Element extends Symbol> implements ItemAutomat<Eleme
 	private ReduceEventHandler reduceEventHandler;
 	private ShiftEventHandler shiftEventHandler;
 	
+	private Lr0Closure startClosure;
+	
 	protected boolean isReduceConflictFree = true;
 	
 
@@ -117,7 +119,7 @@ public class Lr0ItemAutomat<Element extends Symbol> implements ItemAutomat<Eleme
 	public Lr0ItemAutomat( ContextFreeGrammar grammar) {
 		super();
 		this.grammar = grammar;
-		InitializeAutomata();
+		InitializeAutomat();
 	}
 
 
@@ -129,8 +131,8 @@ public class Lr0ItemAutomat<Element extends Symbol> implements ItemAutomat<Eleme
 	}
 
 
-	private void InitializeAutomata() {
-		Lr0Closure startClosure = calcStartClosure();
+	private void InitializeAutomat() {
+		startClosure = calcStartClosure();
 		closures.add( startClosure);
 		currentClosure = startClosure;
 
@@ -242,7 +244,8 @@ public class Lr0ItemAutomat<Element extends Symbol> implements ItemAutomat<Eleme
 		symbolStack = new Stack<RuleElement>();
 		symbolStack.add( new Terminator());
 		closureStack = new Stack<Lr0Closure>();
-		closureStack.add( currentClosure); // assert currentClosure == startClosure;
+		currentClosure = startClosure;
+		closureStack.add( currentClosure); 
 	}
 
 
@@ -254,16 +257,17 @@ public class Lr0ItemAutomat<Element extends Symbol> implements ItemAutomat<Eleme
 	}
 
 
-	protected void ResetAutomata() {
+	protected void ResetAutomat() {
 		closures = new HashSet<Lr0Closure>();
 		currentClosure = null;
 		isReduceConflictFree = true;
-		InitializeAutomata();
+		
+		InitializeStacks();
 	}
 
 
 	public boolean match( List<Element> input) throws ItemAutomatException {
-		ResetAutomata();
+		ResetAutomat();
 		LoadInputIntoQueue( input);
 
 		int currentSequenceNumber = 0;

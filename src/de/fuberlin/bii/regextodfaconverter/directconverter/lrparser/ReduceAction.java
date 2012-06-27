@@ -70,7 +70,6 @@ public class ReduceAction<Element extends Symbol, SpecializedClosure extends Clo
 			     throw new ReduceException(String.format("Missing expected element %s while reduce with rule %s. Found instead %s.", reduceRuleElement, reduceRule, elementFromStack));
 		   } else {
 		  	 // do nothing to reduce \epsilon
-		  	 // System.out.println( "\\eps");
 		   }
 		}
 		itemAutomat.getSymbolStack().push( reduceRule.getLeftRuleSide());

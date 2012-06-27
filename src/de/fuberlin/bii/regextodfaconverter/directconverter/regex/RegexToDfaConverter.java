@@ -325,6 +325,7 @@ public class RegexToDfaConverter {
 	 */
 	private static FiniteStateMachine<Character, StatePayload> convertRegexTreeToDfa( RegexOperatorTree<StatePayload> regexTree, StatePayload commonPayload) throws DirectConverterException {
 		try {
+			
 			HashMap<TreeNodeCollection, State<Character, StatePayload>> unhandledStates = new HashMap<TreeNodeCollection, State<Character, StatePayload>>();
 
 			HashMap<TreeNodeCollection, State<Character, StatePayload>> handledStates = new HashMap<TreeNodeCollection, State<Character, StatePayload>>();
@@ -362,7 +363,6 @@ public class RegexToDfaConverter {
 					for ( TreeNode node : currentCollection) {
 						if ( node instanceof TerminalNode) {
 							RegularExpressionElement terminalNodeRegexElement = (RegularExpressionElement)((TerminalNode)node).getValue();
-							//	System.out.println( terminalNodeRegexElement + " <> " + currentRegexElement);
 							if ( terminalNodeRegexElement.equals( currentRegexElement)) { // use equals() instead of equalsTotally()
 								followPositionsOfTerminal.addAll( regexTree.getFollowPositions().get( node));
 							}
@@ -375,7 +375,7 @@ public class RegexToDfaConverter {
 				
 					if ( !followPositionsOfTerminal.isEmpty()) {
 						
-						// setze Übergang-spezifischen Payload 
+						// ermittle Übergang-spezifischen Payload 
 						currentStatePayload = getBestPayloadFromTreeNodeCollectionForCharacter( currentCollection, currentRegexElement.getValue()); 
 						// Oder falls keiner definiert, dann den allgemeinen Payload, sofern es sich um das Ende handelt
 						if ( Test.isUnassigned( currentStatePayload)
@@ -399,7 +399,6 @@ public class RegexToDfaConverter {
 						if ( Test.isAssigned( currentStatePayload) &&
 							   followPositionsOfTerminal.contains( regexTree.getTerminatorNode())) {
 							
-							//System.out.println("%%: " + currentStatePayload  +  " for   "  + targetState.getUUID()  + "  from  " + currentState.getUUID());
 							if ( targetState.isFiniteState()) {
 								// es ist bereits ein payload gesetzt.
 								// überschreibe je nach Priorität
@@ -437,7 +436,6 @@ public class RegexToDfaConverter {
 		  //------------------------------------
 			// +++ slightly Modification of algorithm of Glushkov / McNaughton and Yamada +++
 			// ---------------------------------------
-			
 			// posthumously untie the finate and terminating node by payloads
 			Map<UUID, State<Character, StatePayload>> dfaStates = (Map<UUID, State<Character, StatePayload>>) dfa.getStates().clone();
 			State<Character, StatePayload> currentDfaState;
@@ -478,20 +476,24 @@ public class RegexToDfaConverter {
 
 							} else {
 								// Fall 2: Es ist ein akzeptierender Zustand, aber es führen auch wieder Übergänger heraus.  ->(F)->
-								 
-								StatePayload weakestPayload = getWeakestPayloadForState( payloadToStateMap, targetState);
+								StatePayload weakestPayload = null;
 								// Merke den Zustand mit ausgerechnetem niederwertigsten Payload beim ersten Besuch 
                 if ( !knownFiniteIntermediateStates.containsKey( targetState.getUUID())) {
+                	weakestPayload = getWeakestPayloadForState( payloadToStateMap, targetState);
                 	targetState.setPayload( weakestPayload);
                 	knownFiniteIntermediateStates.put( targetState.getUUID(), weakestPayload);
-                } 
+                } else {
+                	weakestPayload = knownFiniteIntermediateStates.get( targetState.getUUID());
+                }
                 
                 // Wenn der Payload bereits der niederwertigste ist, dann belasse die Übergänge wie gehabt 
-                if ( payload.equals( weakestPayload)) {
+                if ( Test.isUnassigned( weakestPayload) 
+                		 || payload.equals( weakestPayload)) {
                 	// do nothing
                 	continue;
                 }
                 
+              	
                 // anderenfalls, wenn der Payload höherwertig ist, dann füge einen akzeptierenden Zwischenzustand ein
                 
                 // assert payload != weakestpayload

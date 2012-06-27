@@ -12,6 +12,10 @@ public interface ILLVM_Block {
 	public void createDefUseSets();
 	public boolean updateInOutLiveVariables();
 	public void deleteDeadStores();
+	
+	public void createGenKillSets();
+	public boolean updateInOutReaching();
+	public void foldStoreLoad();
 
 	public void setFirstCommand(ILLVM_Command first);
 	public void setLastCommand(ILLVM_Command last);
@@ -20,6 +24,7 @@ public interface ILLVM_Block {
 	public String getLabel();
 	public void setLabel(String label);
 	public LinkedList<String> getInLive();
+	public LinkedList<ILLVM_Command> getOutReaching();
 	
 	public LinkedList<ILLVM_Block> getNextBlocks();
 	public LinkedList<ILLVM_Block> getPreviousBlocks();

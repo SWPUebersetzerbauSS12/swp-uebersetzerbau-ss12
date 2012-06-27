@@ -3,6 +3,7 @@ package de.fuberlin.optimierung.commands;
 import de.fuberlin.optimierung.ILLVM_Block;
 import de.fuberlin.optimierung.ILLVM_Command;
 import de.fuberlin.optimierung.LLVM_Operation;
+import de.fuberlin.optimierung.LLVM_Optimization;
 import de.fuberlin.optimierung.LLVM_Parameter;
 
 /*
@@ -15,65 +16,77 @@ public class LLVM_CallCommand extends LLVM_GenericCommand{
 	private boolean tail = false;
 	private String cconv = "";
 	private String reta = "";
-	private String rest = "";
+	private String fnty = "";
+	private String fnptrval = "";
+	private String fnattrs = "";
 	
-	public LLVM_CallCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
-		super(operation, predecessor, block, comment);
+	public LLVM_CallCommand(String cmdLine, ILLVM_Command predecessor, ILLVM_Block block){
+		super(predecessor, block, cmdLine);
+		setOperation(LLVM_Operation.CALL);
+		// Kommentar entfernen
+		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));		
 		
-		// tail?
-		if (cmd[2].trim().equals("tail")){
-			tail = true;
+		String result = cmdLine.substring(0, cmdLine.indexOf("=")).trim();
+		if (cmdLine.contains(" tail ")) tail = true;
+		
+		// tail und call entfernen
+		cmdLine = cmdLine.substring(cmdLine.indexOf("call ") + 4).trim();
+		
+		// cconv einlesen
+		if (cmdLine.startsWith("ccc") ||
+			cmdLine.startsWith("fastcc") || 
+			cmdLine.startsWith("coldcc") ||
+			cmdLine.startsWith("cc")){
+			this.cconv = cmdLine.substring(0, cmdLine.indexOf(" ", 3)).trim();
+			cmdLine = cmdLine.substring(cmdLine.indexOf(" ", 3)).trim();
 		}
 		
-		int start = 3;
-		int end = 0;
-		start = (tail) ? start + 1 : start;
+		// ret attrs einlesen
+		while (cmdLine.startsWith("zeroext") ||
+				cmdLine.startsWith("signext") ||
+				cmdLine.startsWith("inreg")){
+			this.reta += cmdLine.substring(0, cmdLine.indexOf(" ", 4)) + " ";
+			cmdLine = cmdLine.substring(cmdLine.indexOf(" ", 4)).trim();
+		}
+
+		// ty einlesen
+		String ty = cmdLine.substring(0, cmdLine.indexOf("("));
+		ty = (cmdLine.indexOf("@") > ty.length())?ty:cmdLine.substring(0, cmdLine.indexOf("@"));
+		ty = ty.trim();
+		cmdLine = cmdLine.substring(ty.length()).trim();
 		
-		//cconv angegeben?
-		if (cmd.length >= start && (cmd[start].trim().equals("ccc") ||
-			cmd[start].trim().equals("fastcc") ||
-			cmd[start].trim().equals("coldcc")	||
-			cmd[start].trim().equals("cc"))){
-			if (cmd[start].trim().equals("cc")){
-				cconv = cmd[start] + " " + cmd[start+1];
-				start = start + 2;
-			}else{
-				cconv = cmd[start];
-				start = start + 1;
-			}
+		// fnty einlesen
+		if (!cmdLine.startsWith("@")){
+			this.fnty = cmdLine.substring(0, cmdLine.indexOf("@")).trim();
+			cmdLine = cmdLine.substring(this.fnty.length()).trim();
 		}
 		
-		//ret attrs angegeben?
-		if (cmd.length >= start && (cmd[start].trim().equals("zeroext") ||
-			cmd[start].trim().equals("signext") ||
-			cmd[start].trim().equals("inreg"))){
-			reta = cmd[start];
-			start = start + 1;
+		// fnptrval einlesen
+		this.fnptrval = cmdLine.substring(0, cmdLine.indexOf("(")).trim();
+		cmdLine = cmdLine.substring(this.fnptrval.length()).trim();
+		
+		// function args einlesen
+		String funcargs = cmdLine.substring(1, cmdLine.indexOf(")"));
+		cmdLine = cmdLine.substring(funcargs.length()+2).trim();
+		
+		for(String pair : funcargs.split(",")){
+			operands.add(new LLVM_Parameter(pair.substring(pair.lastIndexOf(" ")).trim(), pair.substring(0, pair.lastIndexOf(" ")).trim()));
+		}
+		
+		// fn attrs einlesen
+		while (cmdLine.startsWith("noreturn") ||
+				cmdLine.startsWith("nounwind") ||
+				cmdLine.startsWith("readnone") ||
+				cmdLine.startsWith("readonly")){
+			this.fnattrs += cmdLine.substring(0, cmdLine.indexOf(" ", 7)) + " ";
+			cmdLine = cmdLine.substring(cmdLine.indexOf(" ", 7)).trim() + " ";
 		}
 		
 		// <result> <ty>
-		target = new LLVM_Parameter(cmd[0], cmd[start]);
-		start = start + 1;
-		/*end = start;
+		this.target = new LLVM_Parameter(result, ty);
+		this.fnattrs = this.fnattrs.trim();
 		
-		while(cmd.length >= end && (!cmd[end].trim().startsWith("@"))){
-			end = end + 1; 
-		}
-		
-		if (start != end){
-			for (int i = start; i <= end; i++){
-				fnty += cmd[i].trim() + " ";
-			}
-		}
-		start = end;
-		*/
-		
-		for (int i = start; i < cmd.length; i++){
-			rest += cmd[i] + " ";
-		}
-		rest.trim();
-		
-		System.out.println("Operation generiert: " + this.toString());
+		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());
 	}
 	
 	public String toString() {
@@ -85,7 +98,20 @@ public class LLVM_CallCommand extends LLVM_GenericCommand{
 		if (reta != "") cmd_out += reta + " ";
 		
 		cmd_out += target.getTypeString() + " ";
-		cmd_out += rest;
+		
+		if (fnty != "") cmd_out += fnty + " ";
+		if (fnptrval != "") cmd_out += fnptrval;
+		
+		if (operands.size() > 0){
+			cmd_out += "(";
+			for (int i = 0; i < operands.size(); i++){
+				cmd_out += operands.get(i).getTypeString() + " " + operands.get(i).getName();
+				if (i+1 < operands.size()) cmd_out += ", "; 
+			}
+			cmd_out += ") ";
+		}
+		
+		if (fnattrs != "") cmd_out += fnattrs + " ";
 		
 		cmd_out += " " + getComment();
 		

@@ -9,15 +9,16 @@ import de.fuberlin.optimierung.LLVM_Optimization;
  * Kommentarzeilen
  */
 
-public class LLVM_Comment extends LLVM_GenericCommand{
+public class LLVM_DummyCommand extends LLVM_GenericCommand{
 	
-	public LLVM_Comment(String cmdLine, ILLVM_Command predecessor, ILLVM_Block block){
+	public LLVM_DummyCommand(String cmdLine, ILLVM_Command predecessor, ILLVM_Block block){
 		super(predecessor, block, cmdLine);
-		setOperation(LLVM_Operation.COMMENT);
-		if (LLVM_Optimization.DEBUG) System.out.println("Kommentar generiert: " + this.toString());
+		setOperation(LLVM_Operation.DUMMY);
+		this.command = cmdLine;
+		if (LLVM_Optimization.DEBUG) System.out.println("Dummy generiert: " + this.toString());
 	}
 	
 	public String toString() {
-		return getComment();
+		return getCommand();
 	}
 }

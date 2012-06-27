@@ -1,0 +1,199 @@
+ret i32 5                       ; Return an integer value of 5
+ret void                        ; Return from a void function
+ret { i32, i8 } { i32 4, i8 2 } ; Return a struct of values 4 and 2
+
+br i1 %cond, label %IfEqual, label %IfUnequal
+br label %blub
+
+; Emulate a conditional br instruction
+switch i32 %Val, label %truedest [ i32 0, label %falsedest ]
+
+; Emulate an unconditional br instruction
+switch i32 0, label %dest [ ]
+
+; Implement a jump table:
+switch i32 %val, label %otherwise [ i32 0, label %onzero, i32 1, label %onone, i32 2, label %ontwo ]
+
+indirectbr i8* %Addr, [ label %bb1, label %bb2, label %bb3 ]
+
+%retval = invoke i32 @Test(i32 15) to label %Continue unwind label %TestCleanup              ; {i32}:retval set
+%retval = invoke coldcc i32 %Testfnptr(i32 15) to label %Continue unwind label %TestCleanup              ; {i32}:retval set
+
+resume { i8*, i32 } %exn
+
+<result> = add i32 4, %var          ; yields {i32}:result = 4 + %var
+
+<result> = fadd float 4.0, %var          ; yields {float}:result = 4.0 + %var
+
+<result> = sub i32 4, %var          ; yields {i32}:result = 4 - %var
+<result> = sub i32 0, %val          ; yields {i32}:result = -%var
+
+<result> = fsub float 4.0, %var           ; yields {float}:result = 4.0 - %var
+<result> = fsub float -0.0, %val          ; yields {float}:result = -%var
+
+<result> = mul i32 4, %var          ; yields {i32}:result = 4 * %var
+
+<result> = fmul float 4.0, %var          ; yields {float}:result = 4.0 * %var
+
+<result> = udiv i32 4, %var          ; yields {i32}:result = 4 / %var
+
+<result> = sdiv i32 4, %var          ; yields {i32}:result = 4 / %var
+
+<result> = fdiv float 4.0, %var          ; yields {float}:result = 4.0 / %var
+
+<result> = urem i32 4, %var          ; yields {i32}:result = 4 % %var
+
+<result> = srem i32 4, %var          ; yields {i32}:result = 4 % %var
+
+<result> = frem float 4.0, %var          ; yields {float}:result = 4.0 % %var
+
+<result> = shl i32 4, %var   ; yields {i32}: 4 << %var
+<result> = shl i32 4, 2      ; yields {i32}: 16
+<result> = shl i32 1, 10     ; yields {i32}: 1024
+<result> = shl i32 1, 32     ; undefined
+<result> = shl <2 x i32> < i32 1, i32 1>, < i32 1, i32 2>   ; yields: result=<2 x i32> < i32 2, i32 4>
+
+<result> = lshr i32 4, 1   ; yields {i32}:result = 2
+<result> = lshr i32 4, 2   ; yields {i32}:result = 1
+<result> = lshr i8  4, 3   ; yields {i8}:result = 0
+<result> = lshr i8 -2, 1   ; yields {i8}:result = 0x7FFFFFFF 
+<result> = lshr i32 1, 32  ; undefined
+<result> = lshr <2 x i32> < i32 -2, i32 4>, < i32 1, i32 2>   ; yields: result=<2 x i32> < i32 0x7FFFFFFF, i32 1>
+
+<result> = ashr i32 4, 1   ; yields {i32}:result = 2
+<result> = ashr i32 4, 2   ; yields {i32}:result = 1
+<result> = ashr i8  4, 3   ; yields {i8}:result = 0
+<result> = ashr i8 -2, 1   ; yields {i8}:result = -1
+<result> = ashr i32 1, 32  ; undefined
+<result> = ashr <2 x i32> < i32 -2, i32 4>, < i32 1, i32 3>   ; yields: result=<2 x i32> < i32 -1, i32 0>
+
+<result> = and i32 4, %var         ; yields {i32}:result = 4 & %var
+<result> = and i32 15, 40          ; yields {i32}:result = 8
+<result> = and i32 4, 8            ; yields {i32}:result = 0
+
+<result> = or i32 4, %var         ; yields {i32}:result = 4 | %var
+<result> = or i32 15, 40          ; yields {i32}:result = 47
+<result> = or i32 4, 8            ; yields {i32}:result = 12
+
+<result> = xor i32 4, %var         ; yields {i32}:result = 4 ^ %var
+<result> = xor i32 15, 40          ; yields {i32}:result = 39
+<result> = xor i32 4, 8            ; yields {i32}:result = 12
+<result> = xor i32 %V, -1          ; yields {i32}:result = ~%V
+
+<result> = extractelement <4 x i32> %vec, i32 0    ; yields i32
+
+<result> = insertelement <4 x i32> %vec, i32 1, i32 0    ; yields <4 x i32>
+
+<result> = shufflevector <4 x i32> %v1, <4 x i32> %v2, <4 x i32> <i32 0, i32 4, i32 1, i32 5>  ; yields <4 x i32>
+<result> = shufflevector <4 x i32> %v1, <4 x i32> undef, <4 x i32> <i32 0, i32 1, i32 2, i32 3>  ; yields <4 x i32> - Identity shuffle.
+<result> = shufflevector <8 x i32> %v1, <8 x i32> undef, <4 x i32> <i32 0, i32 1, i32 2, i32 3>  ; yields <4 x i32>
+<result> = shufflevector <4 x i32> %v1, <4 x i32> %v2, <8 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7 >  ; yields <8 x i32>
+
+<result> = extractvalue {i32, float} %agg, 0    ; yields i32
+%agg1 = insertvalue {i32, float} undef, i32 1, 0              ; yields {i32 1, float undef}
+%agg2 = insertvalue {i32, float} %agg1, float %val, 1         ; yields {i32 1, float %val}
+%agg3 = insertvalue {i32, {float}} %agg1, float %val, 1, 0    ; yields {i32 1, float %val}
+
+%ptr = alloca i32                             ; yields {i32*}:ptr
+%ptr = alloca i32, i32 4                      ; yields {i32*}:ptr
+%ptr = alloca i32, i32 4, align 1024          ; yields {i32*}:ptr
+%ptr = alloca i32, align 1024                 ; yields {i32*}:ptr
+
+%val = load i32* %ptr                           ; yields {i32}:val = i32 3
+
+store i32 3, i32* %ptr                          ; yields {void}
+
+fence acquire                          ; yields {void}
+fence singlethread seq_cst             ; yields {void}
+
+%old = cmpxchg i32* %ptr, i32 %cmp, i32 %squared          ; yields {i32}
+
+%old = atomicrmw add i32* %ptr, i32 1 acquire                        ; yields {i32}
+
+; yields [12 x i8]*:aptr
+%aptr = getelementptr {i32, [12 x i8]}* %saptr, i64 0, i32 1
+; yields i8*:vptr
+%vptr = getelementptr {i32, <2 x i8>}* %svptr, i64 0, i32 1, i32 1
+; yields i8*:eptr
+%eptr = getelementptr [12 x i8]* %aptr, i64 0, i32 1
+; yields i32*:iptr
+%iptr = getelementptr [10 x i32]* @arr, i16 0, i16 0
+
+%X = trunc i32 257 to i8                        ; yields i8:1
+%Y = trunc i32 123 to i1                        ; yields i1:true
+%Z = trunc i32 122 to i1                        ; yields i1:false
+%W = trunc <2 x i16> <i16 8, i16 7> to <2 x i8> ; yields <i8 8, i8 7>
+
+%X = zext i32 257 to i64              ; yields i64:257
+%Y = zext i1 true to i32              ; yields i32:1
+%Z = zext <2 x i16> <i16 8, i16 7> to <2 x i32> ; yields <i32 8, i32 7>
+
+%X = sext i8  -1 to i16              ; yields i16   :65535
+%Y = sext i1 true to i32             ; yields i32:-1
+%Z = sext <2 x i16> <i16 8, i16 7> to <2 x i32> ; yields <i32 8, i32 7>
+
+%X = fptrunc double 123.0 to float         ; yields float:123.0
+%Y = fptrunc double 1.0E+300 to float      ; yields undefined
+
+%X = fpext float 3.125 to double         ; yields double:3.125000e+00
+%Y = fpext double %X to fp128            ; yields fp128:0xL00000000000000004000900000000000
+
+%X = fptoui double 123.0 to i32      ; yields i32:123
+%Y = fptoui float 1.0E+300 to i1     ; yields undefined:1
+%Z = fptoui float 1.04E+17 to i8     ; yields undefined:1
+
+%X = fptosi double -123.0 to i32      ; yields i32:-123
+%Y = fptosi float 1.0E-247 to i1      ; yields undefined:1
+%Z = fptosi float 1.04E+17 to i8      ; yields undefined:1
+
+%X = uitofp i32 257 to float         ; yields float:257.0
+%Y = uitofp i8 -1 to double          ; yields double:255.0
+
+%X = sitofp i32 257 to float         ; yields float:257.0
+%Y = sitofp i8 -1 to double          ; yields double:-1.0
+
+%X = ptrtoint i32* %P to i8                         ; yields truncation on 32-bit architecture
+%Y = ptrtoint i32* %P to i64                        ; yields zero extension on 32-bit architecture
+%Z = ptrtoint <4 x i32*> %P to <4 x i64>; yields vector zero extension for a vector of addresses on 32-bit architecture
+
+%X = inttoptr i32 255 to i32*          ; yields zero extension on 64-bit architecture
+%Y = inttoptr i32 255 to i32*          ; yields no-op on 32-bit architecture
+%Z = inttoptr i64 0 to i32*            ; yields truncation on 32-bit architecture
+%Z = inttoptr <4 x i32> %G to <4 x i8*>; yields truncation of vector G to four pointers
+
+%X = bitcast i8 255 to i8              ; yields i8 :-1
+%Y = bitcast i32* %x to sint*          ; yields sint*:%x
+%Z = bitcast <2 x int> %V to i64;        ; yields i64: %V
+%Z = bitcast <2 x i32*> %V to <2 x i64*> ; yields <2 x i64*>
+
+<result> = icmp eq i32 4, 5          ; yields: result=false
+<result> = icmp ne float* %X, %X     ; yields: result=false
+<result> = icmp ult i16  4, 5        ; yields: result=true
+<result> = icmp sgt i16  4, 5        ; yields: result=false
+<result> = icmp ule i16 -4, 5        ; yields: result=false
+<result> = icmp sge i16  4, 5        ; yields: result=false
+
+<result> = fcmp oeq float 4.0, 5.0    ; yields: result=false
+<result> = fcmp one float 4.0, 5.0    ; yields: result=true
+<result> = fcmp olt float 4.0, 5.0    ; yields: result=true
+<result> = fcmp ueq double 1.0, 2.0   ; yields: result=false
+
+%indvar = phi i32 [ 0, %LoopHeader ], [ %nextindvar, %Loop ]
+
+%X = select i1 true, i8 17, i8 42          ; yields i8:17
+
+call i32 (i8*, ...)* @printf(i8* %msg, i32 12, i8 42)        ; yields i32
+%X = tail call i32 @foo()                                    ; yields i32
+%Y = tail call fastcc i32 @foo()  ; yields i32
+call void %foo(i8 97 signext)
+%r = call %struct.A @foo()                        ; yields { 32, i8 }
+%Z = call void @foo() noreturn                    ; indicates that %foo never returns normally
+%ZZ = call zeroext i32 @bar()                     ; Return value is %zero extended
+
+;; A landing pad which can catch an integer.
+%res = landingpad { i8*, i32 } personality i32 (...)* @__gxx_personality_v0 catch i8** @_ZTIi
+;; A landing pad that is a cleanup.
+%res = landingpad { i8*, i32 } personality i32 (...)* @__gxx_personality_v0 cleanup
+;; A landing pad which can catch an integer and can only throw a double.
+%res = landingpad { i8*, i32 } personality i32 (...)* @__gxx_personality_v0 catch i8** @_ZTIi filter [1 x i8**] [@_ZTId]
+

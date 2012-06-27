@@ -11,6 +11,8 @@ public class LLVM_Parameter {
 		if (name.length() > 0){
 			if (name.charAt(0) == '%')
 				type = LLVM_ParameterType.REGISTER;
+			else if(name.charAt(0) == '[')
+				type = LLVM_ParameterType.ARRAY;
 			else
 				type = LLVM_ParameterType.INTEGER;
 		}

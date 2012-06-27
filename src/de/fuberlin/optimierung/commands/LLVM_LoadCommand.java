@@ -3,6 +3,7 @@ package de.fuberlin.optimierung.commands;
 import de.fuberlin.optimierung.ILLVM_Block;
 import de.fuberlin.optimierung.ILLVM_Command;
 import de.fuberlin.optimierung.LLVM_Operation;
+import de.fuberlin.optimierung.LLVM_Optimization;
 import de.fuberlin.optimierung.LLVM_Parameter;
 
 /*
@@ -17,9 +18,14 @@ public class LLVM_LoadCommand extends LLVM_GenericCommand{
 	private boolean vol = false;
 	private boolean atom = false;
 	
-	public LLVM_LoadCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
-		super(operation, predecessor, block, comment);
+	public LLVM_LoadCommand(String cmdLine, ILLVM_Command predecessor, ILLVM_Block block){
+		super(predecessor, block, cmdLine);
 		
+		setOperation(LLVM_Operation.LOAD);
+		// Kommentar entfernen
+		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
+		
+		String[] cmd = command.split("[ \t]");
 		if (cmd[3].trim().equals("atomic")){
 			atom = true;
 			if (cmd[4].trim().equals("volatile")) vol = true;
@@ -40,7 +46,7 @@ public class LLVM_LoadCommand extends LLVM_GenericCommand{
 			operands.add(new LLVM_Parameter(cmd[j+1], cmd[j]));
 		}
 		
-		System.out.println("Operation generiert: " + this.toString());
+		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());
 	}
 	
 	public String toString() {

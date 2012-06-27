@@ -55,6 +55,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Term
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Terminator;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Lr0Closure;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Lr0Item;
+import de.fuberlin.bii.utils.Notification;
 import de.fuberlin.bii.utils.Test;
 
 /**
@@ -199,20 +200,32 @@ public class Slr1ItemAutomat<Element extends Symbol> extends
 	}
 
 	private boolean readPersistenParserTable() {
-		System.out.println("try to read parser table");
 		File dir = new File("/tmp/lexergen/");
 		File parserTableObject = new File("/tmp/lexergen/parserTable");
+		long start;
+		long end;
+		long length;
 
 		if (dir.exists() && dir.isDirectory() && parserTableObject.exists()) {
 			try {
 				FileInputStream fInp = new FileInputStream(parserTableObject);
 				ObjectInputStream inp = new ObjectInputStream(fInp);
+
+				// benchmark reading process
+				start = System.currentTimeMillis();
+
 				Object o = inp.readObject();
+
+				end = System.currentTimeMillis();
+				length = (end - start);
+				Notification.printDebugInfoMessage("Read parser table in "
+						+ (length / 1000) + "." + (length % 1000) + "s");
+
 				this.parserTable = (Map<Lr0Closure, Map<RuleElement, AutomatEventHandler>>) o;
 				return true;
 			} catch (Exception e) {
-				System.err
-						.println("could not find or read parser table object");
+				Notification
+						.printErrorMessage("could not find or read parser table object");
 				e.printStackTrace();
 			}
 		}
@@ -233,7 +246,8 @@ public class Slr1ItemAutomat<Element extends Symbol> extends
 			out.writeObject(parserTable);
 
 		} catch (Exception e) {
-			System.err.println("problems with writing back parser table");
+			Notification
+					.printErrorMessage("problems with writing back parser table");
 			parserTableObject.delete();
 			e.printStackTrace();
 		}

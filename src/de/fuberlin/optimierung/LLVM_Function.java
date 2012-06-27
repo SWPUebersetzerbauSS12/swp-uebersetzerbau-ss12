@@ -661,11 +661,18 @@ public class LLVM_Function {
 			// Nur entfernen, wenn c kein call-Befehl ist
 			if(c.getOperation()!=LLVM_Operation.CALL) {
 				this.registerMap.deleteCommand(c);
-				c.deleteCommand("eliminateDeadRegister");
+				c.deleteCommand("eliminateDeadRegister - normal");
 				return c;
 			}
 			return null;
 
+		}
+		// Wenn einzige Verwendung ein Store, dann löschen
+		if (this.registerMap.getUses(registerName).size() == 1 && this.registerMap.getUses(registerName).get(0).getOperation() == LLVM_Operation.STORE ){
+			ILLVM_Command store = this.registerMap.getUses(registerName).get(0);
+			this.registerMap.deleteCommand(store);
+			store.deleteCommand("eliminateDeadRegister - store");
+			return store;
 		}
 		return null;
 	}

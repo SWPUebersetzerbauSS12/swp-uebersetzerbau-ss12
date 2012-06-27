@@ -442,7 +442,9 @@ class LLVM_Block implements ILLVM_Block {
 			//String[] splitedLabel = label.split("[:;]");
 			//this.label = "%"+splitedLabel[2].trim();
 			//this.label_line = label;
-			return true;
+			//return true;
+			if (label.contains("label") || label.contains(":")) return true;
+			return false;
 		}else{
 			String[] splitedLabel = label.split(":");
 			
@@ -469,7 +471,6 @@ class LLVM_Block implements ILLVM_Block {
 		if(labelCheck(commandsArray[i])){
 			i++;
 		}
-		
 		
 		this.firstCommand = mapCommands(commandsArray[i].trim(), null);
 		
@@ -498,10 +499,12 @@ class LLVM_Block implements ILLVM_Block {
 		// command handling
 		if(cmdLine.startsWith("store ")){
 			return new LLVM_StoreCommand(cmdLine, predecessor, this);
-		}else if(cmdLine.contains("ret ")){
+		}else if(cmdLine.startsWith("ret ")){
 			return new LLVM_ReturnCommand(cmdLine, predecessor, this);
-		}else if(cmdLine.contains("br ")){
+		}else if(cmdLine.startsWith("br ")){
 			return new LLVM_BranchCommand(cmdLine, predecessor, this);
+		}else if(cmdLine.contains(" = insertvalue ") || cmdLine.contains(" = extractvalue ")){
+			return new LLVM_InsertExtractValueCommand(cmdLine, predecessor, this);
 		}else if(cmdLine.contains(" = add ")){
 			return new LLVM_ArithmeticCommand(cmdLine, LLVM_Operation.ADD, predecessor, this);
 		}else if(cmdLine.contains(" = sub ")){

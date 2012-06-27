@@ -25,13 +25,13 @@ public class LLVM_Function {
 	private LLVM_RegisterMap registerMap = new LLVM_RegisterMap();
 	
 	public LLVM_Function(String code) {
+		func_define = "define " + code.substring(0, code.indexOf("\n"));
+		code = code.substring(code.indexOf("\n")+1);
 		
-		String[] firstSplit = code.split("[{}]");
+		afterFunc = code.substring(code.lastIndexOf("}")+1);
+		code = code.substring(0, code.lastIndexOf("}"));
 		
-		func_define = "define"+firstSplit[0];
-		
-		String codeBlocks[] = firstSplit[1].split("\n\n");
-		if (firstSplit.length == 3) this.afterFunc = firstSplit[2]; 
+		String codeBlocks[] = code.split("\n\n"); 
 		this.numberBlocks = codeBlocks.length;
 		this.blocks = new ArrayList<ILLVM_Block>(this.numberBlocks);
 		for(int i = 0; i < this.numberBlocks; i++) {
@@ -70,6 +70,7 @@ public class LLVM_Function {
 		for(ILLVM_Block block : this.blocks) {	// Durchlaufe Bloecke
 			
 			ILLVM_Command branchCommand = block.getLastCommand();
+			if (branchCommand == null) continue;
 			LinkedList<LLVM_Parameter> operands = branchCommand.getOperands();
 			
 			if(branchCommand.getOperation()==LLVM_Operation.RET) {
@@ -570,6 +571,7 @@ public class LLVM_Function {
 		for(ILLVM_Block block : blocks){
 			ILLVM_Command cmd = block.getFirstCommand();
 			
+			if (cmd == null) continue;
 			while(!cmd.isLastCommand()){
 				
 				if(fold(cmd)){

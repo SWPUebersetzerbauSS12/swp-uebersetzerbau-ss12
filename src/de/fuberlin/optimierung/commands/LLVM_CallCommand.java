@@ -68,10 +68,13 @@ public class LLVM_CallCommand extends LLVM_GenericCommand{
 		
 		// function args einlesen
 		String funcargs = cmdLine.substring(1, cmdLine.indexOf(")"));
-		cmdLine = cmdLine.substring(funcargs.length()+2).trim();
+		cmdLine = cmdLine.substring(funcargs.length()+2).trim() + " ";
 		
-		for(String pair : funcargs.split(",")){
-			operands.add(new LLVM_Parameter(pair.substring(pair.lastIndexOf(" ")).trim(), pair.substring(0, pair.lastIndexOf(" ")).trim()));
+		if (funcargs.length() > 0){
+			String[] funcsplits = funcargs.split(",");
+			for(String pair : funcsplits){
+				operands.add(new LLVM_Parameter(pair.substring(pair.lastIndexOf(" ")).trim(), pair.substring(0, pair.lastIndexOf(" ")).trim()));
+			}
 		}
 		
 		// fn attrs einlesen
@@ -102,15 +105,15 @@ public class LLVM_CallCommand extends LLVM_GenericCommand{
 		
 		if (fnty != "") cmd_out += fnty + " ";
 		if (fnptrval != "") cmd_out += fnptrval;
-		
+
+		cmd_out += "(";
 		if (operands.size() > 0){
-			cmd_out += "(";
 			for (int i = 0; i < operands.size(); i++){
 				cmd_out += operands.get(i).getTypeString() + " " + operands.get(i).getName();
 				if (i+1 < operands.size()) cmd_out += ", "; 
 			}
-			cmd_out += ") ";
 		}
+		cmd_out += ") ";
 		
 		if (fnattrs != "") cmd_out += fnattrs + " ";
 		

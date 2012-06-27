@@ -20,36 +20,48 @@ public class LLVM_IcmpCommand extends LLVM_GenericCommand{
 		// Kommentar entfernen
 		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
 		
-		String[] cmd = command.split("[ \t]");
+		// result einlesen
+		String result = cmdLine.substring(0, cmdLine.indexOf("=")).trim();
+		cmdLine = cmdLine.substring(cmdLine.indexOf("icmp ") + 4).trim();
 		
-		if (cmd[3].compareTo("eq") == 0){
+		target = new LLVM_Parameter(result, "i1");
+		
+		// cond festlegen
+		if (cmdLine.startsWith("eq")){
 			setOperation(LLVM_Operation.ICMP_EQ);
-		}else if (cmd[3].compareTo("ne") == 0){
+		}else if (cmdLine.startsWith("ne")){
 			setOperation(LLVM_Operation.ICMP_NE);
-		}else if (cmd[3].compareTo("ugt") == 0){
+		}else if (cmdLine.startsWith("ugt")){
 			setOperation(LLVM_Operation.ICMP_UGT);
-		}else if (cmd[3].compareTo("uge") == 0){
+		}else if (cmdLine.startsWith("uge")){
 			setOperation(LLVM_Operation.ICMP_UGE);
-		}else if (cmd[3].compareTo("ult") == 0){
+		}else if (cmdLine.startsWith("ult")){
 			setOperation(LLVM_Operation.ICMP_ULT);
-		}else if (cmd[3].compareTo("ule") == 0){
+		}else if (cmdLine.startsWith("ule")){
 			setOperation(LLVM_Operation.ICMP_ULE);
-		}else if (cmd[3].compareTo("sgt") == 0){
+		}else if (cmdLine.startsWith("sgt")){
 			setOperation(LLVM_Operation.ICMP_SGT);
-		}else if (cmd[3].compareTo("sge") == 0){
+		}else if (cmdLine.startsWith("sge")){
 			setOperation(LLVM_Operation.ICMP_SGE);
-		}else if (cmd[3].compareTo("slt") == 0){
+		}else if (cmdLine.startsWith("slt")){
 			setOperation(LLVM_Operation.ICMP_SLT);
-		}else if (cmd[3].compareTo("sle") == 0){
+		}else if (cmdLine.startsWith("sle")){
 			setOperation(LLVM_Operation.ICMP_SLE);
 		}
+		// cond entfernen
+		cmdLine = cmdLine.substring(cmdLine.indexOf(" ")).trim();
 		
-		// <result> i1
-		target = new LLVM_Parameter(cmd[0], "i1");
-		// <op1> <ty>
-		operands.add(new LLVM_Parameter(cmd[5], cmd[4]));
-		// <op2> <ty>
-		operands.add(new LLVM_Parameter(cmd[6], cmd[4]));
+		// ty einlesen
+		int count = getComplexStructEnd(cmdLine);
+		String ty = cmdLine.substring(0, cmdLine.indexOf(" ", count));
+		cmdLine = cmdLine.substring(cmdLine.indexOf(" ", count)).trim();
+		
+		// ops einlesen
+		String op1 = cmdLine.substring(0, cmdLine.indexOf(",")).trim();
+		String op2 = cmdLine.substring(cmdLine.indexOf(",")+1).trim();
+		
+		operands.add(new LLVM_Parameter(op1, ty));
+		operands.add(new LLVM_Parameter(op2, ty));
 		
 		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " +  this.toString());
 	}

@@ -103,6 +103,38 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 		}
 	}
 	
+	public static int getComplexStructEnd (String cmdLine){
+		int count = 0;
+		if (cmdLine.startsWith("[")){
+			// Arrayende finden
+			for (int i = 0; i < cmdLine.length(); i++){
+				String str = cmdLine.substring(i, i+1);
+				if (str.contains("[")) count++;
+				if (str.contains("]")) count--;
+				if (count == 0){
+					// Arrayende bei count
+					count = i;
+					break;
+				}
+			}
+		}
+		
+		if (cmdLine.startsWith("{")){
+			// Structende finden
+			for (int i = 0; i < cmdLine.length(); i++){
+				String str = cmdLine.substring(i, i+1);
+				if (str.contains("{")) count++;
+				if (str.contains("}")) count--;
+				if (count == 0){
+					// Structende bei count
+					count = i;
+					break;
+				}
+			}
+		}
+		return count;
+	}
+	
 	public static LLVM_Parameter readArrayListToLLVM_Parameter(ArrayList<String> input, parseTypes type, boolean opt){
 		if (type == parseTypes.array){
 			if (!input.get(0).contains("[")) return null;

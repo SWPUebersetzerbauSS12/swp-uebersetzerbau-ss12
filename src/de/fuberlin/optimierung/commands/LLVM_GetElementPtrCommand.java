@@ -32,14 +32,22 @@ public class LLVM_GetElementPtrCommand extends LLVM_GenericCommand {
 			cmdLine = cmdLine.substring(cmdLine.indexOf("inbounds ") + 8).trim();
 		}
 		
+		int count = getComplexStructEnd(cmdLine);
+				
+		if (count == 0) count = cmdLine.indexOf("* ");
+		count = count + 2;
+		
 		// ty einlesen
 		String ty = "";
-		if (cmdLine.contains(",")) ty = cmdLine.substring(0, cmdLine.lastIndexOf(" ", cmdLine.indexOf(","))).trim();
-		else ty = cmdLine.substring(0, cmdLine.lastIndexOf(" ")).trim();
+		ty = cmdLine.substring(0, count).trim();
 		target = new LLVM_Parameter(result, ty);
 		
+		cmdLine = cmdLine.substring(count).trim();
+		
 		String[] comma = cmdLine.split(",");
-		for (int i = 0; i < comma.length; i++){
+		operands.add(new LLVM_Parameter(comma[0].trim(), ty));
+		
+		for (int i = 1; i < comma.length; i++){
 			int cutAt = comma[i].lastIndexOf(" ");
 			operands.add(new LLVM_Parameter(comma[i].substring(cutAt).trim(), comma[i].substring(0, cutAt).trim()));
 		}

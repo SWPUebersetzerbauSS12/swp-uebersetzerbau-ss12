@@ -19,7 +19,7 @@ public class LLVM_Parameter {
 		this.typeString = typeString;
 		
 		// Kommas entfernen
-		this.typeString = typeString.replace(',', ' ').trim();
+		this.typeString = typeString.trim();
 		this.name = name.replace(',', ' ').trim();
 	}
 	

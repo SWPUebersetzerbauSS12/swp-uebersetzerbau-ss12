@@ -31,6 +31,8 @@
 <rel'> ::= "<" <expr> | "<=" <expr> | ">=" <expr> | ">" <expr> | "@"
 <expr> ::= <term> <expr'>
 <expr'> ::= "+" <term> <expr'> | "-" <term> <expr'> | "@"
+<term> ::= <unary> <term'>
+<term'> ::= "*" <unary> <term'> | "/" <unary> <term'> | "@"
 <unary> ::= "!" <unary> | "-" <unary> | <factor>
 <factor> ::= "(" <assign> ")" | <loc> <factor'> | "num" | "real" | "true" | "false" | "string"
 <factor'> ::= "(" <optargs> ")" | "@"

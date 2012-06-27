@@ -25,25 +25,32 @@ public class LLVM_LoadCommand extends LLVM_GenericCommand{
 		// Kommentar entfernen
 		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
 		
-		String[] cmd = command.split("[ \t]");
-		if (cmd[3].trim().equals("atomic")){
+		// result einlesen
+		String result = cmdLine.substring(0, cmdLine.indexOf("=")).trim();
+		cmdLine = cmdLine.substring(cmdLine.indexOf("load ") + 4).trim();
+		
+		// atomic einlesen
+		if (cmdLine.startsWith("atomic ")){
 			atom = true;
-			if (cmd[4].trim().equals("volatile")) vol = true;
-		}else{
-			if (cmd[3].trim().equals("volatile")) vol = true;
+			cmdLine = cmdLine.substring(cmdLine.indexOf("atomic ") + 6).trim();
 		}
 		
-		int start = 3;
-		start = (atom) ? start + 1 : start;
-		start = (vol) ? start + 1 : start;
+		// volatile einlesen
+		if (cmdLine.startsWith("volatile ")){
+			vol = true;
+			cmdLine = cmdLine.substring(cmdLine.indexOf("volatile ") + 8).trim();
+		}
 		
-		// <result> <ty>*
-		target = new LLVM_Parameter(cmd[0], cmd[start]);
-
-		// optionale Parameter
-		for (int j = start; (j + 1 < cmd.length); j = j + 2){
-			// <ty> <pointer>
-			operands.add(new LLVM_Parameter(cmd[j+1], cmd[j]));
+		// ty einlesen
+		String ty = "";
+		if (cmdLine.contains(",")) ty = cmdLine.substring(0, cmdLine.lastIndexOf(" ", cmdLine.indexOf(","))).trim();
+		else ty = cmdLine.substring(0, cmdLine.lastIndexOf(" ")).trim();
+		target = new LLVM_Parameter(result, ty);
+		
+		String[] comma = cmdLine.split(",");
+		for (int i = 0; i < comma.length; i++){
+			int cutAt = comma[i].lastIndexOf(" ");
+			operands.add(new LLVM_Parameter(comma[i].substring(cutAt).trim(), comma[i].substring(0, cutAt).trim()));
 		}
 		
 		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());

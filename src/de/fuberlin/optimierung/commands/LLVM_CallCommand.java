@@ -27,7 +27,8 @@ public class LLVM_CallCommand extends LLVM_GenericCommand{
 		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));		
 		
 		String result = cmdLine.substring(0, cmdLine.indexOf("=")).trim();
-		if (cmdLine.contains(" tail ")) tail = true;
+		cmdLine = cmdLine.substring(cmdLine.indexOf("=") + 1).trim();
+		if (cmdLine.startsWith("tail ")) tail = true;
 		
 		// tail und call entfernen
 		cmdLine = cmdLine.substring(cmdLine.indexOf("call ") + 4).trim();

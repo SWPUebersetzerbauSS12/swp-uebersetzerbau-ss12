@@ -496,12 +496,12 @@ class LLVM_Block implements ILLVM_Block {
 		}
 		
 		// command handling
-		if(cmdLine.contains("br ")){
-			return new LLVM_BranchCommand(cmdLine, predecessor, this);
+		if(cmdLine.startsWith("store ")){
+			return new LLVM_StoreCommand(cmdLine, predecessor, this);
 		}else if(cmdLine.contains("ret ")){
 			return new LLVM_ReturnCommand(cmdLine, predecessor, this);
-		}else if(cmdLine.contains("store ")){
-			return new LLVM_StoreCommand(cmdLine, predecessor, this);
+		}else if(cmdLine.contains("br ")){
+			return new LLVM_BranchCommand(cmdLine, predecessor, this);
 		}else if(cmdLine.contains(" = add ")){
 			return new LLVM_ArithmeticCommand(cmdLine, LLVM_Operation.ADD, predecessor, this);
 		}else if(cmdLine.contains(" = sub ")){

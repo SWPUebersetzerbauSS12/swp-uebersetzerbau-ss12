@@ -668,7 +668,7 @@ public class LLVM_Function {
 
 		}
 		// Wenn einzige Verwendung ein Store, dann löschen
-		if (this.registerMap.getUses(registerName).size() == 1 && this.registerMap.getUses(registerName).get(0).getOperation() == LLVM_Operation.STORE ){
+		if (this.registerMap.existsUses(registerName) && this.registerMap.getUses(registerName).size() == 1 && this.registerMap.getUses(registerName).get(0).getOperation() == LLVM_Operation.STORE ){
 			ILLVM_Command store = this.registerMap.getUses(registerName).get(0);
 			this.registerMap.deleteCommand(store);
 			store.deleteCommand("eliminateDeadRegister - store");

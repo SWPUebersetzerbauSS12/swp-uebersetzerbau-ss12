@@ -11,6 +11,7 @@ import de.fuberlin.commons.lexer.ILexer;
 import de.fuberlin.commons.parser.IParser;
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.optimierung.LLVM_Optimization;
+import de.fuberlin.projectF.CodeGenerator.CodeGenerator;
 import de.fuberlin.projecta.lexer.Lexer;
 import de.fuberlin.projecta.lexer.io.StringCharStream;
 import de.fuberlin.projecta.utils.IOUtils;
@@ -128,6 +129,18 @@ class Main {
 
 		String optimized_llvm_code = llvm_optimizer.optimizeCodeFromString(llvm_code);	// Muss angepasst werden
 		//--------------------------
+		
+		
+		//--------------------------
+		/*
+		 * Codegenerierung
+		 * input : String llvm_code
+		 * output: String machineCode 
+		 */
+		boolean debug = false;
+    	boolean guiFlag = false;
+       String machineCode = CodeGenerator.generateCode(optimized_llvm_code, debug, guiFlag);
+        //--------------------------
 	}
 	
 	// alle Parameter, die mit "-" beginnen als Key benutzen und eventueller 

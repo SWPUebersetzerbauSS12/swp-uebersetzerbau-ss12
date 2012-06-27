@@ -1,6 +1,5 @@
 package de.fuberlin.optimierung.commands;
 
-import java.util.ArrayList;
 import de.fuberlin.optimierung.ILLVM_Block;
 import de.fuberlin.optimierung.ILLVM_Command;
 import de.fuberlin.optimierung.LLVM_Operation;
@@ -23,34 +22,26 @@ public class LLVM_GetElementPtrCommand extends LLVM_GenericCommand {
 		// Kommentar entfernen
 		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
 		
-		String[] cmd = command.split("[ \t]");
-		int i = 3;
+		// result einlesen
+		String result = cmdLine.substring(0, cmdLine.indexOf("=")).trim();
+		cmdLine = cmdLine.substring(cmdLine.indexOf("getelementptr ") + 13).trim();
 		
-		if(cmd[3].compareTo("inbounds") == 0){
+		// inbounds einlesen
+		if (cmdLine.startsWith("inbounds ")){
 			hasInbounds = true;
-			i++;
+			cmdLine = cmdLine.substring(cmdLine.indexOf("inbounds ") + 8).trim();
 		}
 		
-		// <result> <ty>
-		target = new LLVM_Parameter(cmd[0], cmd[4]);
+		// ty einlesen
+		String ty = "";
+		if (cmdLine.contains(",")) ty = cmdLine.substring(0, cmdLine.lastIndexOf(" ", cmdLine.indexOf(","))).trim();
+		else ty = cmdLine.substring(0, cmdLine.lastIndexOf(" ")).trim();
+		target = new LLVM_Parameter(result, ty);
 		
-		ArrayList<String> rest_cmd = new ArrayList<String>();
-		
-		for(int j = i; j < cmd.length;j++){
-			rest_cmd.add(cmd[j]);
-		}
-		
-		if(cmd[i].contains("[")){
-			operands.add(readArrayListToLLVM_Parameter(rest_cmd, parseTypes.array, false));
-			if (operands.get(0) == null){
-				operands.remove(0);
-			}
-		}
-
-		while (rest_cmd.size() % 2 == 0 && rest_cmd.size() >= 2){
-			operands.add(new LLVM_Parameter(rest_cmd.get(1), rest_cmd.get(0)));
-			rest_cmd.remove(0);
-			rest_cmd.remove(0);
+		String[] comma = cmdLine.split(",");
+		for (int i = 0; i < comma.length; i++){
+			int cutAt = comma[i].lastIndexOf(" ");
+			operands.add(new LLVM_Parameter(comma[i].substring(cutAt).trim(), comma[i].substring(0, cutAt).trim()));
 		}
 		
 		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());

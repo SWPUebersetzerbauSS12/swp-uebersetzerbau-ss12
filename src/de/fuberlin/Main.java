@@ -11,7 +11,11 @@ import de.fuberlin.commons.lexer.ILexer;
 import de.fuberlin.commons.parser.IParser;
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.optimierung.LLVM_Optimization;
+import de.fuberlin.projecta.lexer.Lexer;
+import de.fuberlin.projecta.lexer.io.StringCharStream;
+import de.fuberlin.projecta.utils.IOUtils;
 import de.fuberlin.projectci.lrparser.LRParser;
+import de.fuberlin.projectcii.ParserGenerator.src.LL1Parser;
 
 
 
@@ -97,9 +101,9 @@ class Main {
 			IParser parser = new LRParser();
 			parseTree = parser.parse(lexer, arguments.get(PARAM_LR_PARSER));
 			
-		} else if( arguments.containsKey(PARAM_LL_PARSER) ) {	// -ll ["/path/to/bnfGrammar"]
-			
-			// Codeschnipsel von cii
+		} else if( arguments.containsKey(PARAM_LL_PARSER) ) {	// -ll ["/path/to/bnfGrammar"]			
+			IParser parser = new LL1Parser();
+			parseTree = parser.parse(lexer,arguments.get(PARAM_LL_PARSER));
 			
 		} else {									// -lr or no explicit parameter for parser
 			//FIXME Dieser Fall wird niemals eintreten!

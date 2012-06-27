@@ -32,6 +32,7 @@
 
 package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -46,7 +47,9 @@ import de.fuberlin.bii.utils.Test;
  * @author Johannes Dahlke
  *
  */
-public class ProductionRule implements Iterable<RuleElement> {
+public class ProductionRule implements Iterable<RuleElement>, Serializable {
+
+	private static final long serialVersionUID = 652665932709829362L;
 
 	private Nonterminal leftRuleSide;
 

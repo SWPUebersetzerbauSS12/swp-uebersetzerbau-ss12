@@ -33,12 +33,11 @@
 package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser;
 
 
-import de.fuberlin.bii.regextodfaconverter.directconverter.AutomatEventHandler;
+import java.io.Serializable;
+
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symbol;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Terminal;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Closure;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Lr0Closure;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Lr1Item;
 import de.fuberlin.bii.utils.Test;
 
 /**
@@ -47,8 +46,10 @@ import de.fuberlin.bii.utils.Test;
  *
  * @param <Element>
  */
-public class ShiftAction<Element extends Symbol, SpecializedClosure extends Closure> extends Action<Element, SpecializedClosure> {
+@SuppressWarnings("rawtypes")
+public class ShiftAction<Element extends Symbol, SpecializedClosure extends Closure> extends Action<Element, SpecializedClosure> implements Serializable{
 
+	private static final long serialVersionUID = -1737644534363947153L;
 	private SpecializedClosure toClosure;
 	private Terminal<Element> terminalToHandle;
 

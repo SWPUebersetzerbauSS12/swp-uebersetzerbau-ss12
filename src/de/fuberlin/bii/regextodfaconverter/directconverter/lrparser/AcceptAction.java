@@ -32,6 +32,8 @@
 
 package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser;
 
+import java.io.Serializable;
+
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symbol;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Closure;
 
@@ -41,7 +43,9 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Clos
  *
  * @param <Element>
  */
-public class AcceptAction<Element extends Symbol, SpecializedClosure extends Closure> extends Action<Element, SpecializedClosure> {
+public class AcceptAction<Element extends Symbol, SpecializedClosure extends Closure> extends Action<Element, SpecializedClosure> implements Serializable {
+
+	private static final long serialVersionUID = 1504940521718982284L;
 
 	public AcceptAction() {
 		super();

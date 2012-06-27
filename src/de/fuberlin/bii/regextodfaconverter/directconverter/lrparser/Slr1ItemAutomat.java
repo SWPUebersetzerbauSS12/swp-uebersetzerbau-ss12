@@ -76,7 +76,7 @@ public class Slr1ItemAutomat<Element extends Symbol> extends
 	public Slr1ItemAutomat(ContextFreeGrammar grammar) {
 		super(grammar);
 	}
-
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	protected void SetupParserTable(Lr0Closure startClosure) {
@@ -87,20 +87,16 @@ public class Slr1ItemAutomat<Element extends Symbol> extends
 
 		// TODO maybe check hashvalue
 		if (dir.exists() && dir.isDirectory() && parserTableObject.exists()) {
+			
 			try {
 				FileInputStream fInp = new FileInputStream(parserTableObject);
 				ObjectInputStream inp = new ObjectInputStream(fInp);
 				Object o = inp.readObject();
 				this.parserTable = (Map<Lr0Closure, Map<RuleElement, AutomatEventHandler>>) o;
 				return;
-			} catch (FileNotFoundException e) {
-				System.err.println("could not find parser table object");
-				e.printStackTrace();
-			} catch (IOException e) {
-				System.err.println("could not read parser table object");
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				System.err.println("could not find parser table object");
+			} catch (Exception e) {
+				System.err
+						.println("could not find or read parser table object");
 				e.printStackTrace();
 			}
 		}
@@ -226,6 +222,7 @@ public class Slr1ItemAutomat<Element extends Symbol> extends
 
 		} catch (Exception e) {
 			System.err.println("problems with writing back parser table");
+			parserTableObject.delete();
 			e.printStackTrace();
 		}
 	}

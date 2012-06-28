@@ -16,34 +16,27 @@ public class LLVM_StoreCommand extends LLVM_GenericCommand{
 	public LLVM_StoreCommand(String cmdLine, LLVM_GenericCommand predecessor, LLVM_Block block){
 		super(predecessor, block, cmdLine);
 		setOperation(LLVM_Operation.STORE);
-		// Kommentar entfernen
-		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
+
+		StringBuilder cmd = new StringBuilder(cmdLine);
+		parseEraseComment(cmd);
+		parseOptionalString(cmd, "store");
 		
-		// store entfernen
-		cmdLine = cmdLine.substring(cmdLine.indexOf("store ") + 5).trim();
+		atom = parseOptionalString(cmd, "atomic");
+		vol = parseOptionalString(cmd, "volatile");
 		
-		// atomic einlesen
-		if (cmdLine.startsWith("atomic")){
-			this.atom = true;
-			cmdLine = cmdLine.substring(cmdLine.indexOf("atomic ") + 6).trim();
-		}
+		String ty = parseReadType(cmd);
+		String value = parseReadValue(cmd);
+		parseEraseString(cmd, ",");
+		String typ = parseReadType(cmd);
+		String pointer = parseReadValue(cmd);
 		
-		// volatile einlesen
-		if (cmdLine.startsWith("volatile")){
-			this.vol = true;
-			cmdLine = cmdLine.substring(cmdLine.indexOf("volatile ") + 8).trim();
-		}
+		operands.add(new LLVM_Parameter(value, ty));
+		operands.add(new LLVM_Parameter(pointer, typ));
 		
-		for(String pair : cmdLine.split(",")){
-			pair = pair.trim();
-			if (pair.endsWith("\"")){
-				// falls Inline-String
-				int cutAt = pair.lastIndexOf(" ", pair.lastIndexOf("\"", pair.length()-1));
-				operands.add(new LLVM_Parameter(pair.substring(cutAt).trim(), pair.substring(0, cutAt).trim()));
-			}else{
-				// sonst
-				operands.add(new LLVM_Parameter(pair.substring(pair.lastIndexOf(" ")).trim(), pair.substring(0, pair.lastIndexOf(" ")).trim()));
-			}
+		while (parseEraseString(cmd, ",")){
+			String type = parseReadType(cmd);
+			String name = parseReadValue(cmd);
+			operands.add(new LLVM_Parameter(name, type));
 		}
 		
 		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());

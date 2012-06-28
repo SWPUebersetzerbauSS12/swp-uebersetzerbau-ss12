@@ -142,9 +142,11 @@ public class SyntaxTree implements ISyntaxTree {
 	 */
 	@Override
 	public void printTree() {
-		Printer.parsetreeToXML(this);
-		System.out.println("-------");
-		printChild(this,0,true);
+	    if (Settings.getXMLTREE()){
+	        Printer.parsetreeToXML(this);
+	    }
+//		System.out.println("-------");
+//		printChild(this,0,true);
 	}
 
 	@Override

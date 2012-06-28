@@ -63,21 +63,31 @@ public class ParserGenerator {
 		Terminals = new Vector<String>();
 		Nonterminal = new Vector<String>();
 		readGrammar(changeToLL1, grammar);
-		Printer.printGrammar(grammarMap);
 		fillTerminalNonterminal();
 		/*
 		 * computeFirstSet
 		 */
 		firstSetsProductions = createFirstSet(grammarMap);
+		if (Settings.getFIRSTSET()){
+		    System.out.println("First-Set:");
+		    Printer.printFirstSetsProductions(firstSetsProductions);
+		}
 		/*
 		 * computeFollowSet
 		 */
 		followSets = createFollowSet(grammarMap);
+		if (Settings.getFOLLOWSET()){
+		    System.out.println("Follow-Set:");
+		    Printer.printFollowSets(followSets);
+		}
 		/*
 		 * Create Parsetable
 		 */
 		parserTable = createParserTable();
-		Printer.printParserTable(Terminals, Nonterminal, parserTable);
+		if (Settings.getPARSERTABLE()){
+		    System.out.println("Parsertabelle");
+		    Printer.printParserTable(Terminals, Nonterminal, parserTable);
+		}
 	}
 
 	/**
@@ -146,7 +156,6 @@ public class ParserGenerator {
 			firstSet.put(head,
 					evalFirstSet(head, grammarMap, new HashSet<String>(), true));
 		}
-		Printer.printFirstSetsProductions(firstSet);
 		return firstSet;
 	}
 
@@ -273,7 +282,6 @@ public class ParserGenerator {
 			followSets.put(head,
 					evalFollowSet(head, grammarMap, new HashSet<String>()));
 		}
-		Printer.printFollowSets(followSets);
 		return followSets;
 	}
 

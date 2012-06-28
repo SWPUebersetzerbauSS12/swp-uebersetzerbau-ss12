@@ -91,9 +91,12 @@ public class TokenParser {
 	public SyntaxTree parseTokenStream(){
 		getNextToken();
 		// creates the parsetree
+		if (Settings.getPARSING_STEPS()){
+		    System.out.println("Parsingschritte:");
+		}
 		SyntaxTree tree = parseToken(StartSymbol,new SyntaxTree());
 		if (TokenTerminal.equals(Settings.getEOF())){
-			System.out.println("accepted");
+			System.out.println("Tokenstream accepted");
 		}else{
 			throw new RuntimeException("Too Much Symbols, No 'EOF'");
 		}
@@ -131,7 +134,9 @@ public class TokenParser {
 			int productionNr = parserTable.get(head).get(TokenTerminal).firstElement();
 			// get Production by Number
 			Vector<String> Production = grammar.get(head).elementAt(productionNr);
-			Printer.printProduction(grammar, head, productionNr);
+			if (Settings.getPARSING_STEPS()){
+			    Printer.printProduction(grammar, head, productionNr);
+			}
 			// reduce symbol to children acording to the selected production
 			for (int i=0;i < Production.size() ;i++){
 				// Create Child-Nodes recursively for all childs

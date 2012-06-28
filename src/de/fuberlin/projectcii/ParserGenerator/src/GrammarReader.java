@@ -58,11 +58,13 @@ public class GrammarReader {
 		// Read the file
 	    this.file=file;
 		Vector<Productions> grammar = ReadFile();
-		Printer.printGrammar(grammar);
+		if (Settings.getGRAMMAR_READ()){
+		    System.out.println("Ausgangsgrammatik:");
+		    Printer.printGrammar(grammar);
+		}
 		// Perform Leftfactorisation
 		if (changeToLL1){
 		    grammar = combineLeftFactorization(grammar);
-		    Printer.printGrammar(grammar); 
 		    // Eliminate indirect and direct leftrekursions
 
 		    heads = new Vector<String>();
@@ -72,7 +74,6 @@ public class GrammarReader {
 		    Boolean[] rekursive = { true };
 		    int iteration = 0;
 		    grammar = eliminateDirectLeftRekursion(grammar);
-		    Printer.printGrammar(grammar);
 
 		    while (rekursive[0] && iteration < NItr) {
 		        rekursive[0] = false;
@@ -96,6 +97,10 @@ public class GrammarReader {
 		        // System.out.println("Too Many Iterations, it's unparsable with LL(1), please input a right file!!");
 		        // grammar.clear();
 		    }   
+		    if (Settings.getGRAMMAR_MOD()){
+		        System.out.println("Umgewandelte Grammatik:");
+	            Printer.printGrammar(grammar);
+		    }
 		}
 		if (grammar.size() > 0){
 		    startSymbol = grammar.elementAt(0).getHead();

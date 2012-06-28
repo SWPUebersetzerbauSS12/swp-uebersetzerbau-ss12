@@ -322,10 +322,10 @@ public class FiniteStateMachine<TransitionConditionType extends Serializable, St
 			throw new NullStateException();
 		if (!containsStateWithUUID(sourceState.getUUID()))
 			throw new StateNotReachableException();
-
 		if (!containsStateWithUUID(destinationState.getUUID())) {
 			getStates().put(destinationState.getUUID(), destinationState);
 		}
+
 		return sourceState.addState(condition, destinationState);
 	}
 

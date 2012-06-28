@@ -35,7 +35,7 @@ package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
 import java.util.Collection;
 import java.util.HashSet;
 
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Grammar;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Grammar;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.Leaf;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeNode;
 import de.fuberlin.bii.utils.Test;

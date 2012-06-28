@@ -1,12 +1,18 @@
 package de.fuberlin.optimierung.commands;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import de.fuberlin.optimierung.ILLVM_Block;
 import de.fuberlin.optimierung.ILLVM_Command;
 import de.fuberlin.optimierung.LLVM_Operation;
+import de.fuberlin.optimierung.LLVM_Optimization;
 import de.fuberlin.optimierung.LLVM_Parameter;
 
 public abstract class LLVM_GenericCommand implements ILLVM_Command{
+	
+	public enum parseTypes{
+		array, struct, vector, i, f, label
+	}
 	
 	protected ILLVM_Block block;
 
@@ -18,12 +24,21 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 	protected LinkedList<LLVM_Parameter> operands = new LinkedList<LLVM_Parameter>();;
 	
 	protected String comment = "";
+	protected String command = "";
 	
-	public LLVM_GenericCommand(LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
+	public LLVM_GenericCommand(ILLVM_Command predecessor, ILLVM_Block block, String cmdLine){
 		// Setze die Zeiger
 		this.predecessor = predecessor;
-		this.operation = operation;
-		this.comment = comment;
+		
+		String[] com = cmdLine.trim().split(";");
+		
+		if (com.length > 1){
+			for (int i = 1; i < com.length; i++){
+				this.comment += com[i]; 
+			}
+		}
+		
+		this.command = com[0];
 		
 		// Setze den zugehoerigen Basisblock
 		this.setBlock(block);
@@ -33,8 +48,12 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 		}
 	}
 	
-	public void deleteCommand() {
-		System.out.println("del in block " + this.block.getLabel() + " command " + this.toString());
+	public LLVM_GenericCommand(){
+		
+	}
+	
+	public void deleteCommand(String source) {
+		if (LLVM_Optimization.DEBUG) System.out.println("del in block " + this.block.getLabel() + " by " + source + " command " + this.toString());
 
 		if (this.isSingleCommand()){
 			this.successor = null;
@@ -51,12 +70,102 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 		}
 	}
 	
+	public void replaceCommand(ILLVM_Command c) {
+		c.setPredecessor(this.predecessor);
+		c.setSuccessor(this.successor);
+		if (this.isSingleCommand()){
+			
+		} else if(this.isFirstCommand()) {	// Loesche erstes Element
+			this.successor.setPredecessor(c);
+			this.getBlock().setFirstCommand(c);
+		} else if(this.isLastCommand()) {	// Loesche letztes Element
+			this.predecessor.setSuccessor(c);
+			this.getBlock().setLastCommand(c);
+		} else{
+			this.predecessor.setSuccessor(c);
+			this.successor.setPredecessor(c);
+		}
+	}
+	
 	public String getComment(){
 		if (comment == ""){
 			return "\n";
 		}else{
 			return "; " + comment + "\n";
 		}
+	}
+	
+	public String getCommand(){
+		if (command == ""){
+			return "\n";
+		}else{
+			return command + "\n";
+		}
+	}
+	
+	public static int getComplexStructEnd (String cmdLine){
+		int count = 0;
+		if (cmdLine.startsWith("[")){
+			// Arrayende finden
+			for (int i = 0; i < cmdLine.length(); i++){
+				String str = cmdLine.substring(i, i+1);
+				if (str.contains("[")) count++;
+				if (str.contains("]")) count--;
+				if (count == 0){
+					// Arrayende bei count
+					count = i;
+					break;
+				}
+			}
+		}
+		
+		if (cmdLine.startsWith("{")){
+			// Structende finden
+			for (int i = 0; i < cmdLine.length(); i++){
+				String str = cmdLine.substring(i, i+1);
+				if (str.contains("{")) count++;
+				if (str.contains("}")) count--;
+				if (count == 0){
+					// Structende bei count
+					count = i;
+					break;
+				}
+			}
+		}
+		return count;
+	}
+	
+	public static LLVM_Parameter readArrayListToLLVM_Parameter(ArrayList<String> input, parseTypes type, boolean opt){
+		if (type == parseTypes.array){
+			if (!input.get(0).contains("[")) return null;
+			else{
+				// Arrayende finden
+				int count = 0;
+				for (int i = 0; i < input.size(); i++){
+					String str = input.get(i);
+					if (str.contains("[")) count++;
+					if (str.contains("]")) count--;
+					if (count == 0){
+						// Arrayende bei count
+						count = i;
+						break;
+					}
+				}
+				// Arraylist zu String
+				String str = "";
+				for (int i = 0; i <= count; i++){
+					str += input.get(i) + " ";
+				}
+				for (int i = 0; i <= count; i++){
+					input.remove(0);
+				}
+				// name, array
+				LLVM_Parameter tmp = new LLVM_Parameter(input.get(0), str); 
+				input.remove(0);
+				return tmp;
+			}
+		}
+		return null;		
 	}
 	
 	public boolean isFirstCommand() {

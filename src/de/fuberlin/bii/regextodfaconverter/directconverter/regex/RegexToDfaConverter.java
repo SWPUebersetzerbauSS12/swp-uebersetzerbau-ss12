@@ -33,11 +33,16 @@
 package de.fuberlin.bii.regextodfaconverter.directconverter.regex;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import de.fuberlin.bii.regextodfaconverter.Regex;
 import de.fuberlin.bii.regextodfaconverter.RegexInvalidException;
 import de.fuberlin.bii.regextodfaconverter.directconverter.DirectConverterException;
 import de.fuberlin.bii.regextodfaconverter.directconverter.PositionToPayloadMap;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Terminal;
 import de.fuberlin.bii.regextodfaconverter.directconverter.regex.operatortree.RegexOperatorTree;
 import de.fuberlin.bii.regextodfaconverter.directconverter.regex.operatortree.RegularExpressionElement;
 import de.fuberlin.bii.regextodfaconverter.directconverter.regex.operatortree.TerminalNode;
@@ -47,7 +52,8 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeN
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeNodeSet;
 import de.fuberlin.bii.regextodfaconverter.fsm.FiniteStateMachine;
 import de.fuberlin.bii.regextodfaconverter.fsm.State;
-import de.fuberlin.bii.tokenmatcher.StatePayload;
+import de.fuberlin.bii.regextodfaconverter.fsm.StatePayload;
+import de.fuberlin.bii.regextodfaconverter.fsm.Transition;
 import de.fuberlin.bii.utils.Notification;
 import de.fuberlin.bii.utils.Test;
 
@@ -89,42 +95,32 @@ public class RegexToDfaConverter {
 	 * @throws Exception
 	 * 
 	 */
-	public static FiniteStateMachine<Character, StatePayload> convert( String regex, StatePayload commonPayload)
+	public static FiniteStateMachine<Character, ? extends de.fuberlin.bii.tokenmatcher.StatePayload> convert( String regex, StatePayload commonPayload)
 			throws DirectConverterException {
 		PositionToPayloadMap<StatePayload> positionToPayloadMap = new PositionToPayloadMap<StatePayload>();
 		return convert( regex, positionToPayloadMap, commonPayload);
 	}
 	
-	public static FiniteStateMachine<Character, StatePayload> convert( RegexToPayloadMap<StatePayload> regexToPayloadMap)
+	public static FiniteStateMachine<Character, ? extends de.fuberlin.bii.tokenmatcher.StatePayload> convert( RegexToPayloadMap<StatePayload> regexToPayloadMap)
 			throws DirectConverterException {
-		
-		String concatenatedRegex = "";
+				String concatenatedRegex = "";
 		PositionToPayloadMap<StatePayload> positionToPayloadMap = new PositionToPayloadMap<StatePayload>();
 		
 		for ( String regex : regexToPayloadMap.keySet()) {
 			if ( !concatenatedRegex.isEmpty())
 				concatenatedRegex += "|";
-			
-			try {
-				regex = Regex.reduceAndBracketRegex(regex);
-			} catch (RegexInvalidException e) {
-				throw new DirectConverterException(
-						"Der verwendete reguläre Ausdruck '"
-								+ regex
-								+ "' ist ungültig oder verwendet nicht unterstütze Operatoren!");
-			}
-		  concatenatedRegex += regex;
+		  concatenatedRegex += "(" + regex +")";
 		  positionToPayloadMap.put( concatenatedRegex.length() -1, regexToPayloadMap.get( regex));  
    	}
 		return convert( concatenatedRegex, positionToPayloadMap);
 	}
 	
-	public static FiniteStateMachine<Character, StatePayload> convert( String regex, PositionToPayloadMap<StatePayload> positionToPayloadMap)
+	public static FiniteStateMachine<Character, ? extends de.fuberlin.bii.tokenmatcher.StatePayload> convert( String regex, PositionToPayloadMap<StatePayload> positionToPayloadMap)
 			throws DirectConverterException {
 		return convert( regex, positionToPayloadMap, null);
 	}
 	
-	public static FiniteStateMachine<Character, StatePayload> convert( String regex, PositionToPayloadMap<StatePayload> positionToPayloadMap,  StatePayload commonPayload)
+	public static FiniteStateMachine<Character, ? extends de.fuberlin.bii.tokenmatcher.StatePayload> convert( String regex, PositionToPayloadMap<StatePayload> positionToPayloadMap,  StatePayload commonPayload)
 			throws DirectConverterException {
 		
 		int regexLength = regex.length();
@@ -138,7 +134,7 @@ public class RegexToDfaConverter {
 	}
 	
 	
-	public static FiniteStateMachine<Character, StatePayload> convert( RegularExpressionElement<StatePayload>[] regularExpression, StatePayload commonPayload)
+	public static FiniteStateMachine<Character, ? extends de.fuberlin.bii.tokenmatcher.StatePayload> convert( RegularExpressionElement<StatePayload>[] regularExpression, StatePayload commonPayload)
 			throws DirectConverterException {
 		try {
 			RegexOperatorTree regexTree = convertRegexToTree( regularExpression);
@@ -168,6 +164,156 @@ public class RegexToDfaConverter {
 	}
 
 
+	private static StatePayload getBestPayloadFromTreeNodeCollectionForCharacter( TreeNodeCollection collection, Character theCharacter) {
+		StatePayload result = null;
+		for ( TreeNode node : collection) {
+			if ( node instanceof TerminalNode) {
+				RegularExpressionElement<StatePayload> nodeValue = (RegularExpressionElement<StatePayload>)((TerminalNode)node).getValue();
+				if ( nodeValue.getValue().equals( theCharacter)) { 
+					StatePayload currentPayload = nodeValue.getPayload();
+					if ( Test.isAssigned(  currentPayload)) {
+						if (Test.isUnassigned(  result))
+							result = currentPayload;
+						else {
+							if ( result.getPriority() < currentPayload.getPriority())
+								result = currentPayload;
+						}
+					} 
+				}
+			}
+		}
+		return result;
+	}
+	
+	
+	
+	/**
+	 * Speichert den Payload für einen Zielzustand ausgehend von einem Quellzustand durch lesen des angegebenen Zeichens in der gegebenen stateToStateMap.
+	 * @param stateToStateMap
+	 * @param fromState
+	 * @param toState
+	 * @param theCharacter
+	 * @param thePayloadToSet
+	 * @return
+	 */
+	private static boolean storePayloadPriorityDependentForTransitionFromStateToStateByCharacter( Map<State,Map<State, Map<Character,StatePayload>>> stateToStateMap, State fromState, State toState, Character theCharacter, StatePayload thePayloadToSet) {
+	
+	  Map<State, Map<Character,StatePayload>> stateToCharacterPayloadMap = stateToStateMap.get( toState);
+	  if ( Test.isUnassigned( stateToCharacterPayloadMap)) {
+	  	stateToCharacterPayloadMap = new HashMap<State, Map<Character,StatePayload>>();
+	  	stateToStateMap.put( toState, stateToCharacterPayloadMap);
+	  }	
+	  	
+	  Map<Character,StatePayload> characterToPayloadMap = stateToCharacterPayloadMap.get( fromState);
+	  if ( Test.isUnassigned( characterToPayloadMap)) { 
+	  	characterToPayloadMap = new HashMap<Character,StatePayload>();
+	  	stateToCharacterPayloadMap.put( fromState, characterToPayloadMap);
+	  }
+
+	  StatePayload storedPayload = characterToPayloadMap.get( theCharacter);
+	  if ( Test.isAssigned( storedPayload)) {
+	  	if ( storedPayload.getPriority() < thePayloadToSet.getPriority()) {
+	  		characterToPayloadMap.put( theCharacter, thePayloadToSet);
+	  		return true;
+	  	}
+	  } else {
+	  	characterToPayloadMap.put( theCharacter, thePayloadToSet);
+	  	return true;
+	  }
+  	return false;
+	}
+
+	/**
+	 * Liefert den in der stateToStateMap gespeicherten Payload für das angegebene Zeichen. 
+	 * @param stateToStateMap
+	 * @param fromState
+	 * @param toState
+	 * @param theCharacter
+	 * @return Den gefundenen Payload oder null.
+	 */
+	private static StatePayload getPayloadForTransitionFromStateToStateByCharacter( Map<State,Map<State, Map<Character,StatePayload>>> stateToStateMap, State fromState, State toState, Character theCharacter) {
+
+	  Map<State, Map<Character,StatePayload>> stateToCharacterPayloadMap = stateToStateMap.get( toState);
+	  if ( Test.isUnassigned( stateToCharacterPayloadMap))
+	  	return null;
+	  	
+	  Map<Character,StatePayload> characterToPayloadMap = stateToCharacterPayloadMap.get( fromState);
+	  if ( Test.isUnassigned( characterToPayloadMap)) 
+	  	return null;
+
+	  StatePayload storedPayload = characterToPayloadMap.get( theCharacter);
+	  if ( Test.isUnassigned( storedPayload))
+	  	return null;
+	  
+	  return storedPayload;
+	}
+	
+
+	/**
+	 * Liefert einen der Payloads mit der höchsten Priorität für einen gegeben Zustand mit Blick auf die stateToStateMap Struktur.
+	 * @param stateToStateMap
+	 * @param theState
+	 * @return
+	 */
+	private static StatePayload getBestPayloadForState( Map<State,Map<State, Map<Character,StatePayload>>> stateToStateMap, State theState) {
+
+	  Map<State, Map<Character,StatePayload>> stateToCharacterPayloadMap = stateToStateMap.get( theState);
+	  if ( Test.isUnassigned( stateToCharacterPayloadMap))
+	  	return null;
+
+	  StatePayload result = null;
+		
+	  for ( State<Character, StatePayload> sourceState : stateToCharacterPayloadMap.keySet()) {
+	  	Map<Character,StatePayload> characterToPayloadMap = stateToCharacterPayloadMap.get( sourceState);
+	  	for ( Character character : characterToPayloadMap.keySet()) {
+	  		StatePayload storedPayload = characterToPayloadMap.get( character);
+	  		if ( Test.isUnassigned( storedPayload))
+	  				continue;
+	  		if ( Test.isUnassigned( result))
+		  	  result = storedPayload;
+	  		else if ( result.getPriority() < storedPayload.getPriority()) {
+	  			result = storedPayload;
+	  		}	
+			}	
+		}
+	  return result;
+	}
+	
+	
+	/**
+	 * Liefert einen der Payloads mit der niedrigsten Priorität für einen gegeben Zustand mit Blick auf die stateToStateMap Struktur.
+	 * @param stateToStateMap
+	 * @param theState
+	 * @return
+	 */
+	private static StatePayload getWeakestPayloadForState( Map<State,Map<State, Map<Character,StatePayload>>> stateToStateMap, State theState) {
+
+	  Map<State, Map<Character,StatePayload>> stateToCharacterPayloadMap = stateToStateMap.get( theState);
+	  if ( Test.isUnassigned( stateToCharacterPayloadMap))
+	  	return null;
+
+	  StatePayload result = null;
+		
+	  for ( State<Character, StatePayload> sourceState : stateToCharacterPayloadMap.keySet()) {
+	  	Map<Character,StatePayload> characterToPayloadMap = stateToCharacterPayloadMap.get( sourceState);
+	  	for ( Character character : characterToPayloadMap.keySet()) {
+	  		StatePayload storedPayload = characterToPayloadMap.get( character);
+	  		if ( Test.isUnassigned( storedPayload))
+	  				continue;
+	  		if ( Test.isUnassigned( result))
+		  	  result = storedPayload;
+	  		else if ( result.getPriority() > storedPayload.getPriority()) {
+	  			result = storedPayload;
+	  		}	
+			}	
+	  }
+	  return result;
+	}
+	
+	
+	
+		
+	
 	/**
 	 * Konvertiert einen annotierten Syntaxbaum in einen deterministischen
 	 * endlichen Automaten
@@ -189,7 +335,15 @@ public class RegexToDfaConverter {
 			// add start state as unhandled
 			unhandledStates.put( regexTree.getFirstPositions().get( regexTree.getRoot()), dfa.getInitialState());
 
+			// maps the target states to a map of source states with corresponding payloads
+			Map<State,Map<State, Map<Character,StatePayload>>> payloadToStateMap = new HashMap<State,Map<State, Map<Character,StatePayload>>>();
+			
 			StatePayload currentStatePayload = null;
+
+			Set<RegularExpressionElement<StatePayload>> alphabetSubset = new HashSet<RegularExpressionElement<StatePayload>>();
+			for ( Leaf leaf : regexTree.getLeafSet()) {
+				alphabetSubset.add( (RegularExpressionElement<StatePayload> ) leaf.getValue());
+			} 
 			
 			State<Character, StatePayload> currentState;
 			TreeNodeCollection currentCollection;
@@ -203,45 +357,33 @@ public class RegexToDfaConverter {
 
 				HashMap<Character, TreeNodeCollection> stateCandidates = new HashMap<Character, TreeNodeCollection>();
 				Character currentTerminalCharacter;
-
-				for ( Leaf leafNode : regexTree.getLeafSet()) {
-					RegularExpressionElement<StatePayload> currentRegexElement = (RegularExpressionElement<StatePayload> ) leafNode.getValue();
+				
+				for ( RegularExpressionElement<StatePayload> currentRegexElement : alphabetSubset) {
 					TreeNodeCollection followPositionsOfTerminal = new TreeNodeSet();
 					for ( TreeNode node : currentCollection) {
 						if ( node instanceof TerminalNode) {
 							RegularExpressionElement terminalNodeRegexElement = (RegularExpressionElement)((TerminalNode)node).getValue();
-						//	System.out.println( terminalNodeRegexElement + " <> " + currentRegexElement);
-							if ( terminalNodeRegexElement.equalsTotally( currentRegexElement)) {
+							if ( terminalNodeRegexElement.equals( currentRegexElement)) { // use equals() instead of equalsTotally()
 								followPositionsOfTerminal.addAll( regexTree.getFollowPositions().get( node));
 							}
 						}
 					}
 
+
 					// if set not empty, then add set to states
 					State<Character, StatePayload> targetState = null;
-			//		System.out.println( "followpos EMPTY?: " +currentRegexElement.getValue() + "  " + followPositionsOfTerminal.isEmpty() + "   "  + followPositionsOfTerminal);
-					
+				
 					if ( !followPositionsOfTerminal.isEmpty()) {
 						
-						// setze Übergang-spezifischen Payload 
-						currentStatePayload = Test.isAssigned( currentRegexElement.getPayload()) ? currentRegexElement.getPayload() : null; 
+						// ermittle Übergang-spezifischen Payload 
+						currentStatePayload = getBestPayloadFromTreeNodeCollectionForCharacter( currentCollection, currentRegexElement.getValue()); 
 						// Oder falls keiner definiert, dann den allgemeinen Payload, sofern es sich um das Ende handelt
 						if ( Test.isUnassigned( currentStatePayload)
 								&& followPositionsOfTerminal.contains( regexTree.getTerminatorNode()))						
 							currentStatePayload = commonPayload;
-						
-						
-						if ( Test.isAssigned( currentStatePayload)) {
-							// BEGIN: Modification of Algorithm of Glushkov / McNaughton and Yamada 
-							// Why? To provide to return more than one payload element (matching more than one word in one dfa)
-							targetState = new State<Character, StatePayload>();
-							// we do not put it to unhandledStates
-							// setze Folgezustand finite
-							targetState.setFinite( true);
-							// and set payload
-							targetState.setPayload( currentStatePayload);
-						  // END: Modification of Algorithm of Glushkov / McNaughton and Yamada 
-						} else if ( !handledStates.containsKey( followPositionsOfTerminal) && !unhandledStates.containsKey( followPositionsOfTerminal)) {
+					
+						// Ansonsten wie im Algorithmus von Glushkov / McNaughton and Yamada beschrieben verfahren 
+						if ( !handledStates.containsKey( followPositionsOfTerminal) && !unhandledStates.containsKey( followPositionsOfTerminal)) {
 							targetState = new State<Character, StatePayload>();
 							unhandledStates.put( followPositionsOfTerminal, targetState);
 						} else if ( handledStates.containsKey( followPositionsOfTerminal)) {
@@ -252,12 +394,131 @@ public class RegexToDfaConverter {
 
 						// setze Übergang
 						dfa.addTransition( targetState, currentRegexElement.getValue());
-					
+
+						// falls ein Payload gegeben, setze finite
+						if ( Test.isAssigned( currentStatePayload) &&
+							   followPositionsOfTerminal.contains( regexTree.getTerminatorNode())) {
+							
+							if ( targetState.isFiniteState()) {
+								// es ist bereits ein payload gesetzt.
+								// überschreibe je nach Priorität
+								if ( Test.isAssigned( currentStatePayload)) {
+									if ( Test.isUnassigned( targetState.getPayload())
+											|| ( Test.isAssigned( targetState.getPayload())
+													&& targetState.getPayload().getPriority() < currentStatePayload.getPriority()))
+										targetState.setPayload( currentStatePayload); 
+
+									
+									storePayloadPriorityDependentForTransitionFromStateToStateByCharacter( payloadToStateMap, currentState, targetState, currentRegexElement.getValue(), currentStatePayload);
+								}
+							} else {
+								// setze Folgezustand finite
+								targetState.setFinite( true);
+								// and set payload
+								targetState.setPayload( currentStatePayload);
+								// speichere Datum für die Nachbereitung
+								storePayloadPriorityDependentForTransitionFromStateToStateByCharacter(payloadToStateMap, currentState, targetState, currentRegexElement.getValue(), currentStatePayload);
+							}
+						
+							
+						} else if (followPositionsOfTerminal.contains( regexTree.getTerminatorNode())) {
+							// falls ein Endzustand nach dem Terminalzeichen # ist, dann setzte Zustand in jedem Fall final
+							targetState.setFinite( true);
+						}
+						
 					}
 
 				}
 
 			}
+			
+
+		  //------------------------------------
+			// +++ slightly Modification of algorithm of Glushkov / McNaughton and Yamada +++
+			// ---------------------------------------
+			// posthumously untie the finate and terminating node by payloads
+			Map<UUID, State<Character, StatePayload>> dfaStates = (Map<UUID, State<Character, StatePayload>>) dfa.getStates().clone();
+			State<Character, StatePayload> currentDfaState;
+			Set<UUID> knownFiniteTerminateStates = new HashSet<UUID>();
+			Map<UUID,StatePayload> knownFiniteIntermediateStates = new HashMap<UUID, StatePayload>();
+			for ( UUID stateId : dfaStates.keySet()) {
+				
+				// Untersuche alle Zustände auf Übergänge in den final Zustand
+				currentDfaState = dfaStates.get( stateId);
+				
+				Set< Transition<Character, StatePayload>> transitionSet = currentDfaState.getTransitions();
+				Set< Transition<Character, StatePayload>> transitionSetCopy = (Set<Transition<Character, StatePayload>>) currentDfaState.getTransitions().clone();
+				for ( Transition<Character, StatePayload> transition : transitionSetCopy) {
+					// wenn der Übergang in einen final Zustand führt
+					if ( transition.getState().isFiniteState()) {
+					  // get original payload
+						State<Character, StatePayload> targetState = transition.getState();
+						State<Character, StatePayload> sourceState = currentDfaState;
+
+						StatePayload payload = getPayloadForTransitionFromStateToStateByCharacter( payloadToStateMap, sourceState, targetState, transition.getCondition());
+						if ( Test.isAssigned( payload)) { 
+
+							if ( transition.getState().getElementsOfOutgoingTransitions().isEmpty()) {
+								// Fall 1: Es gehen aus diesem Endzustand keine weiteren Übergänge mehr aus.  ->(F)
+								if ( !knownFiniteTerminateStates.contains( targetState.getUUID())) {
+									// the first transition must not handled
+									knownFiniteTerminateStates.add( targetState.getUUID());
+									// but update the payload
+									targetState.setPayload( payload);
+								} else {
+									Character terminal = transition.getCondition();
+									// Biege den Übergang auf einen neuen Endzustand um.
+									transitionSet.remove( transition);
+									State<Character, StatePayload> newFinalState = new State<Character, StatePayload>( payload, true);
+									dfa.setCurrentState( currentDfaState);
+									dfa.addTransition( newFinalState, terminal);
+								}
+
+							} else {
+								// Fall 2: Es ist ein akzeptierender Zustand, aber es führen auch wieder Übergänger heraus.  ->(F)->
+								StatePayload weakestPayload = null;
+								// Merke den Zustand mit ausgerechnetem niederwertigsten Payload beim ersten Besuch 
+                if ( !knownFiniteIntermediateStates.containsKey( targetState.getUUID())) {
+                	weakestPayload = getWeakestPayloadForState( payloadToStateMap, targetState);
+                	targetState.setPayload( weakestPayload);
+                	knownFiniteIntermediateStates.put( targetState.getUUID(), weakestPayload);
+                } else {
+                	weakestPayload = knownFiniteIntermediateStates.get( targetState.getUUID());
+                }
+                
+                // Wenn der Payload bereits der niederwertigste ist, dann belasse die Übergänge wie gehabt 
+                if ( Test.isUnassigned( weakestPayload) 
+                		 || payload.equals( weakestPayload)) {
+                	// do nothing
+                	continue;
+                }
+                
+              	
+                // anderenfalls, wenn der Payload höherwertig ist, dann füge einen akzeptierenden Zwischenzustand ein
+                
+                // assert payload != weakestpayload
+                Character terminal = transition.getCondition();
+        
+                // füge einen akzeptierenden Zwischenzustand mit dem entsprechenden Payload ein
+                State<Character, StatePayload> interState = new State<Character, StatePayload>( payload, true);
+                dfa.addTransition( sourceState, interState, terminal);
+                // kopiere alle ausgehenden Zustände der Ursprungszustand 
+                for ( Transition<Character, StatePayload> targetTransition : targetState.getTransitions()) {
+                	dfa.addTransition( interState, targetTransition.getState(), targetTransition.getCondition());
+                }
+
+                // entferne die direkte Verbindung in den ursprünglichen targetState
+                transitionSet.remove( transition);
+
+                
+																
+							}
+						}
+					}
+				} 
+			}
+			
+			
 
 			assert dfa.isDeterministic();
 

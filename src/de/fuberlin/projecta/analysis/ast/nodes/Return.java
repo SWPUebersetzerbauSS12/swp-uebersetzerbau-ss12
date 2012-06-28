@@ -1,9 +1,10 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
+import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
 
-public class Return extends Type {
+public class Return extends Statement {
 
 	@Override
 	public boolean checkSemantics() {
@@ -35,7 +36,20 @@ public class Return extends Type {
 
 	@Override
 	public boolean checkTypes() {
-		// TODO Auto-generated method stub
-		return false;
+		String funcType = ((Type)getParentFunction().getChild(0)).toTypeString();
+		if(this.getChildrenCount() == 0){
+			// return type must be void!
+			return funcType.equals(Type.TYPE_VOID_STRING);
+		} else {
+			return funcType.equals(((Type)getChild(0)).toTypeString());
+		}
+	}
+	
+	private FuncDef getParentFunction(){
+		ISyntaxTree func = this;
+		do{
+			func = func.getParent();
+		}while(!(func instanceof FuncDef));
+		return (FuncDef) func;
 	}
 }

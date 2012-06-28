@@ -10,9 +10,16 @@ public class IntelAssembler extends Assembler{
 	}
 	
 	protected void createEP() {
-		sectionHead.append("extern exit\n");
-		sectionText.append("global _start\n_start:\n\tcall main\n" + "\tpush "
+		if(System.getProperty("os.name").toLowerCase().indexOf("linux") >= 0) {
+			sectionHead.append("extern exit\n");
+		}
+		else if(System.getProperty("os.name").toLowerCase().indexOf("windows") >= 0) {
+			sectionHead.append("extern _exit\n");
+		}
+			sectionText.append("global _start\n_start:\n\tcall main\n" + "\tpush "
 				+ "eax" + "\n\tcall exit\n\n");
+	
+		
 		}
 	
 	protected void data(String label, String type, String value) {
@@ -22,7 +29,13 @@ public class IntelAssembler extends Assembler{
 	}
 	
 	protected void declare(String name) {
-		sectionHead.append("extern ").append(name).append("\n");
+		if(System.getProperty("os.name").toLowerCase().indexOf("linux") >= 0) {
+			sectionHead.append("extern ").append(name).append("\n");
+		}
+		else if(System.getProperty("os.name").toLowerCase().indexOf("windows") >= 0) {
+			sectionHead.append("extern _").append(name).append("\n");
+		}
+		
 	}
 	
 	protected void funcDec(String name, String operand1, String operand2) {

@@ -14,19 +14,19 @@ public class LLVM_ReturnCommand extends LLVM_GenericCommand{
 	
 	public LLVM_ReturnCommand(String cmdLine, LLVM_GenericCommand predecessor, LLVM_Block block){
 		super(predecessor, block, cmdLine);
-		// Kommentar entfernen
-		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
 		
-		cmdLine = cmdLine.substring(cmdLine.indexOf("ret ") + 3).trim();
+		StringBuilder cmd = new StringBuilder(cmdLine);
+		parseEraseComment(cmd);
+		parseEraseString(cmd, "ret");
 		
-		if (cmdLine.startsWith("void")){
+		if (parseOptionalString(cmd, "void")){
 			setOperation(LLVM_Operation.RET);
 			operands.add(new LLVM_Parameter("void", "void"));
 		}else{
 			setOperation(LLVM_Operation.RET_CODE);
-			int count = getComplexStructEnd(cmdLine);
-			String type = cmdLine.substring(0, cmdLine.indexOf(" ", count)).trim();
-			operands.add(new LLVM_Parameter(cmdLine.substring(type.length()).trim(), type));
+			String type = parseReadType(cmd);
+			String value = parseReadValue(cmd);
+			operands.add(new LLVM_Parameter(value, type));
 		}
 		
 		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());

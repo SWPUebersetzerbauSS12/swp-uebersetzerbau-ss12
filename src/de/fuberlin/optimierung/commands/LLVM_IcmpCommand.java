@@ -17,7 +17,7 @@ public class LLVM_IcmpCommand extends LLVM_GenericCommand{
 		StringBuilder cmd = new StringBuilder(cmdLine);
 		parseEraseComment(cmd);
 		String result = parseReadResult(cmd);
-		parseReadValue(cmd); // Operation löschen
+		parseReadValue(cmd); // ICMP löschen
 		target = new LLVM_Parameter(result, "i1");
 		
 		String cond = parseReadValue(cmd);

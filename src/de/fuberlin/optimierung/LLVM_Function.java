@@ -9,6 +9,7 @@ import de.fuberlin.optimierung.commands.LLVM_BranchCommand;
 import de.fuberlin.optimierung.commands.LLVM_FloatArithmeticCommand;
 import de.fuberlin.optimierung.commands.LLVM_IcmpCommand;
 import de.fuberlin.optimierung.commands.LLVM_LogicCommand;
+import de.fuberlin.optimierung.commands.LLVM_ReturnCommand;
 
 public class LLVM_Function {
 
@@ -959,10 +960,13 @@ public class LLVM_Function {
 					ILLVM_Command branchCommand = previousBlock.getLastCommand();
 					// Befehl aus Registermap austragen
 					this.registerMap.deleteCommand(branchCommand);
-					branchCommand.replaceCommand(actualBlock.getFirstCommand());
+					
+					// Clone für Registermap erstellen
+					ILLVM_Command tmp = new LLVM_ReturnCommand(actualBlock.getFirstCommand().toString(), branchCommand.getPredecessor(), previousBlock);
+					branchCommand.replaceCommand(tmp);
 					
 					// Setze Registermapeintrag neu
-					this.registerMap.addCommand(previousBlock.getLastCommand());
+					this.registerMap.addCommand(tmp);
 					
 					// Passe Flussgraph an:
 					// previousBlock hat actualBlock nicht mehr als Nachfolger,
@@ -977,11 +981,8 @@ public class LLVM_Function {
 			// Entferne zu loeschenden Block aus Flussgraph
 			del.deleteBlock();
 			
-			// Entferne nur Branch-Befehle aus entferntem Block aus Registermap
-			// Return-Befehle sind nur einmalig vorhanden (an mehreren Stellen) und würden sonst fälschlicherweise entfernt
-			if (del.getFirstCommand().getOperation()==LLVM_Operation.BR){
-				this.registerMap.deleteCommand(del.getFirstCommand());
-			}
+			// Entferne Befehle aus entferntem Block aus Registermap
+			this.registerMap.deleteCommand(del.getFirstCommand());
 			
 			// Entferne zu loeschenden Block aus this.blocks
 			this.blocks.remove(del);

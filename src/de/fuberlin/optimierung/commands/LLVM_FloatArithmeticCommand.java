@@ -1,11 +1,6 @@
 package de.fuberlin.optimierung.commands;
 
-
-import de.fuberlin.optimierung.ILLVM_Block;
-import de.fuberlin.optimierung.ILLVM_Command;
-import de.fuberlin.optimierung.LLVM_Operation;
-import de.fuberlin.optimierung.LLVM_Optimization;
-import de.fuberlin.optimierung.LLVM_Parameter;
+import de.fuberlin.optimierung.*;
 
 /*
  * Syntax: sample "fadd" but also for "fsub", "fmul", "fdiv"
@@ -15,7 +10,7 @@ import de.fuberlin.optimierung.LLVM_Parameter;
 
 public class LLVM_FloatArithmeticCommand extends LLVM_GenericCommand{
 
-	public LLVM_FloatArithmeticCommand(String cmdLine, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block) {
+	public LLVM_FloatArithmeticCommand(String cmdLine, LLVM_Operation operation, LLVM_GenericCommand predecessor, LLVM_Block block) {
 		super(predecessor, block, cmdLine);
 		setOperation(operation);
 		// Kommentar entfernen

@@ -1,10 +1,6 @@
 package de.fuberlin.optimierung.commands;
 
-import de.fuberlin.optimierung.ILLVM_Block;
-import de.fuberlin.optimierung.ILLVM_Command;
-import de.fuberlin.optimierung.LLVM_Operation;
-import de.fuberlin.optimierung.LLVM_Optimization;
-import de.fuberlin.optimierung.LLVM_Parameter;
+import de.fuberlin.optimierung.*;
 
 /*
  *  Syntax:
@@ -16,7 +12,7 @@ public class LLVM_GetElementPtrCommand extends LLVM_GenericCommand {
 	
 	boolean hasInbounds = false;
 	
-	public LLVM_GetElementPtrCommand(String cmdLine, ILLVM_Command predecessor, ILLVM_Block block){
+	public LLVM_GetElementPtrCommand(String cmdLine, LLVM_GenericCommand predecessor, LLVM_Block block){
 		super(predecessor, block, cmdLine);
 		setOperation(LLVM_Operation.GETELEMENTPTR);
 		// Kommentar entfernen

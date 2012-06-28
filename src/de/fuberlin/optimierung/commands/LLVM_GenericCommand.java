@@ -1,26 +1,18 @@
 package de.fuberlin.optimierung.commands;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.*;
+import de.fuberlin.optimierung.*;
 
-import javax.activation.CommandInfo;
-
-import de.fuberlin.optimierung.ILLVM_Block;
-import de.fuberlin.optimierung.ILLVM_Command;
-import de.fuberlin.optimierung.LLVM_Operation;
-import de.fuberlin.optimierung.LLVM_Optimization;
-import de.fuberlin.optimierung.LLVM_Parameter;
-
-public abstract class LLVM_GenericCommand implements ILLVM_Command{
+public abstract class LLVM_GenericCommand{
 	
 	public enum parseTypes{
 		array, struct, vector, i, f, label
 	}
 	
-	protected ILLVM_Block block;
+	protected LLVM_Block block;
 
-	protected ILLVM_Command predecessor = null;
-	protected ILLVM_Command successor = null;
+	protected LLVM_GenericCommand predecessor = null;
+	protected LLVM_GenericCommand successor = null;
 	
 	protected LLVM_Operation operation = null;
 	protected LLVM_Parameter target = null;
@@ -29,7 +21,7 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 	protected String comment = "";
 	protected String command = "";
 	
-	public LLVM_GenericCommand(ILLVM_Command predecessor, ILLVM_Block block, String cmdLine){
+	public LLVM_GenericCommand(LLVM_GenericCommand predecessor, LLVM_Block block, String cmdLine){
 		// Setze die Zeiger
 		this.predecessor = predecessor;
 		
@@ -73,7 +65,7 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 		}
 	}
 	
-	public void replaceCommand(ILLVM_Command c) {
+	public void replaceCommand(LLVM_GenericCommand c) {
 		c.setPredecessor(this.predecessor);
 		c.setSuccessor(this.successor);
 		if (this.isSingleCommand()){
@@ -439,10 +431,10 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 		return (this.isFirstCommand() && this.isLastCommand());
 	}
 	
-	public ILLVM_Command getPredecessor() {
+	public LLVM_GenericCommand getPredecessor() {
 		return this.predecessor;
 	}
-	public ILLVM_Command getSuccessor() {
+	public LLVM_GenericCommand getSuccessor() {
 		return this.successor;
 	}
 	public LinkedList<LLVM_Parameter> getOperands() {
@@ -454,14 +446,14 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 	public LLVM_Parameter getTarget() {
 		return target;
 	}
-	public ILLVM_Block getBlock() {
+	public LLVM_Block getBlock() {
 		return block;
 	}
 	
-	public void setPredecessor(ILLVM_Command c) {
+	public void setPredecessor(LLVM_GenericCommand c) {
 		this.predecessor = c;
 	}
-	public void setSuccessor(ILLVM_Command c) {
+	public void setSuccessor(LLVM_GenericCommand c) {
 		this.successor = c;
 	}
 	public void setOperation(LLVM_Operation operation) {
@@ -473,7 +465,7 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 	public void setTarget(LLVM_Parameter target) {
 		this.target = target;
 	}
-	public void setBlock(ILLVM_Block block) {
+	public void setBlock(LLVM_Block block) {
 		this.block = block;
 	}
 }

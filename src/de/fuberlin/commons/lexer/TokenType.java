@@ -90,8 +90,6 @@ public enum TokenType {
 			terminalSymbol2TokenType.put(t.terminalSymbol(), t);
 	}
 
-
-
 	private final String terminalSymbol;
 
 	private TokenType(String terminalSymbol) {
@@ -102,7 +100,7 @@ public enum TokenType {
 		return this.terminalSymbol;
 	}
 
-	public static TokenType byTerminalSymbol(String s){
+	public static TokenType byTerminalSymbol(String s) {
 		return terminalSymbol2TokenType.get(s);
 	}
 

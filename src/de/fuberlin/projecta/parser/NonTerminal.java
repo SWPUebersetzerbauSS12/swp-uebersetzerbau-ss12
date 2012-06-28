@@ -63,7 +63,7 @@ public enum NonTerminal {
 		return this.nonTerminalSymbol;
 	}
 
-	public static NonTerminal byNonTerminalSymbol(String s){
+	public static NonTerminal byNonTerminalSymbol(String s) {
 		return nonTerminalSymbol2NonTerminal.get(s);
 	}
 }

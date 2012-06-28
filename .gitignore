@@ -1,0 +1,19 @@
+# general
+*~
+*.rej
+*.orig
+*.out
+.*
+
+# from git merge
+*.BACKUP.*
+*.BASE.*
+*.LOCAL.*
+*.REMOTE.*
+
+# java
+bin/*
+*.class
+
+# project-specific
+target/

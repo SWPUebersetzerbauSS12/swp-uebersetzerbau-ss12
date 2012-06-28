@@ -80,7 +80,7 @@ public class LLVM_Block{
 						matched = true;
 						if (LLVM_Optimization.DEBUG) System.out.println("same command at " + command.getTarget().getName() + ", command replaced : " + i.toString());
 						this.function.getRegisterMap().deleteCommand(i);
-						LLVM_GenericCommand neu = new LLVM_ArithmeticCommand();
+						LLVM_GenericCommand neu = new LLVM_BinaryCommand();
 						neu.setOperation(LLVM_Operation.ADD);
 						LinkedList<LLVM_Parameter> neu2 = new LinkedList<LLVM_Parameter>();
 						neu2.add(new LLVM_Parameter(command.getTarget().getName(), command.getTarget().getTypeString()));
@@ -327,7 +327,7 @@ public class LLVM_Block{
 						this.function.getRegisterMap().deleteCommand(c);
 						
 						// Erstelle  neuen Befehl
-						LLVM_GenericCommand newCommand = new LLVM_ArithmeticCommand();
+						LLVM_GenericCommand newCommand = new LLVM_BinaryCommand();
 						newCommand.setOperation(LLVM_Operation.ADD);
 						LinkedList<LLVM_Parameter> parameterList = new LinkedList<LLVM_Parameter>();
 						LLVM_Parameter newParameter = store.getOperands().getFirst();
@@ -506,28 +506,6 @@ public class LLVM_Block{
 			return new LLVM_BranchCommand(cmdLine, predecessor, this);
 		}else if(cmdLine.contains(" = insertvalue ") || cmdLine.contains(" = extractvalue ")){
 			return new LLVM_InsertExtractValueCommand(cmdLine, predecessor, this);
-		}else if(cmdLine.contains(" = add ")){
-			return new LLVM_ArithmeticCommand(cmdLine, LLVM_Operation.ADD, predecessor, this);
-		}else if(cmdLine.contains(" = sub ")){
-			return new LLVM_ArithmeticCommand(cmdLine, LLVM_Operation.SUB, predecessor, this);
-		}else if(cmdLine.contains(" = mul ")){
-			return new LLVM_ArithmeticCommand(cmdLine, LLVM_Operation.MUL, predecessor, this);
-		}else if(cmdLine.contains(" = div ")){
-			return new LLVM_ArithmeticCommand(cmdLine, LLVM_Operation.DIV, predecessor, this);
-		}else if(cmdLine.contains(" = urem ")){
-			return new LLVM_ArithmeticCommand(cmdLine, LLVM_Operation.UREM, predecessor, this);
-		}else if(cmdLine.contains(" = srem ")){
-			return new LLVM_ArithmeticCommand(cmdLine, LLVM_Operation.SREM, predecessor, this);
-		}else if(cmdLine.contains(" = fadd ")){
-			return new LLVM_FloatArithmeticCommand(cmdLine, LLVM_Operation.FADD, predecessor, this);
-		}else if(cmdLine.contains(" = fsub ")){
-			return new LLVM_FloatArithmeticCommand(cmdLine, LLVM_Operation.FSUB, predecessor, this);
-		}else if(cmdLine.contains(" = fmul ")){
-			return new LLVM_FloatArithmeticCommand(cmdLine, LLVM_Operation.FMUL, predecessor, this);
-		}else if(cmdLine.contains(" = fdiv ")){
-			return new LLVM_FloatArithmeticCommand(cmdLine, LLVM_Operation.FDIV, predecessor, this);
-		}else if(cmdLine.contains(" = frem ")){
-			return new LLVM_FloatArithmeticCommand(cmdLine, LLVM_Operation.FREM, predecessor, this);
 		}else if(cmdLine.contains(" = alloca ")){
 			return new LLVM_AllocaCommand(cmdLine, predecessor, this);
 		}else if(cmdLine.contains(" = and ") ||
@@ -535,8 +513,20 @@ public class LLVM_Block{
 				cmdLine.contains(" = xor ") ||
 				cmdLine.contains(" = shl ") ||
 				cmdLine.contains(" = lshr ") ||
-				cmdLine.contains(" = ashr ")){
-			return new LLVM_BitwiseBinaryCommand(cmdLine, predecessor, this);
+				cmdLine.contains(" = ashr ") ||
+				cmdLine.contains(" = add ") ||
+				cmdLine.contains(" = fadd ") ||
+				cmdLine.contains(" = sub ") ||
+				cmdLine.contains(" = fsub ") ||
+				cmdLine.contains(" = mul ") ||
+				cmdLine.contains(" = fmul ") ||
+				cmdLine.contains(" = udiv ") ||
+				cmdLine.contains(" = sdiv ") ||
+				cmdLine.contains(" = fdiv ") ||
+				cmdLine.contains(" = urem ") ||
+				cmdLine.contains(" = srem ") ||
+				cmdLine.contains(" = frem ")){
+			return new LLVM_BinaryCommand(cmdLine, predecessor, this);		
 		}else if(cmdLine.contains(" = load ")){
 			return new LLVM_LoadCommand(cmdLine, predecessor, this);
 		}else if(cmdLine.contains(" = getelementptr ")){
@@ -550,91 +540,6 @@ public class LLVM_Block{
 		}else{
 			return null;
 		}
-		
-		
-		/*String[] com = cmdLine.trim().split(";");
-		String comment = "";
-		
-		if (com.length > 1){
-			for (int i = 1; i < com.length; i++){
-				comment += com[i]; 
-			}
-		}
-		
-		if (com.length == 0) return null;
-		
-		// Kommando Handling
-		String[] cmd = com[0].trim().split("[ \t]");
-		
-		if (cmd.length > 0){
-			if (cmd[0].compareTo("br") == 0){
-				if (cmd[1].compareTo("label") == 0){
-					return new LLVM_BranchCommand(cmd, LLVM_Operation.BR, predecessor, this, comment);
-				}else{
-					return new LLVM_BranchCommand(cmd, LLVM_Operation.BR_CON, predecessor, this, comment);
-				}
-			} else if (cmd[0].compareTo("ret") == 0){
-				if (cmd[1].compareTo("void") == 0){
-					return new LLVM_ReturnCommand(cmd, LLVM_Operation.RET, predecessor, this, comment);
-				}else{
-					return new LLVM_ReturnCommand(cmd, LLVM_Operation.RET_CODE, predecessor, this, comment);
-				}
-			} else if (cmd[0].compareTo("store") == 0){
-				return new LLVM_StoreCommand(cmd, LLVM_Operation.STORE, predecessor, this, comment);
-			}
-			if (cmd.length > 3 && cmd[1].equals("=")){
-				
-				if (cmd[2].compareTo("add") == 0){
-					return new LLVM_ArithmeticCommand(cmd, LLVM_Operation.ADD, predecessor, this, comment);
-				}else if(cmd[2].compareTo("sub") == 0){
-					return new LLVM_ArithmeticCommand(cmd, LLVM_Operation.SUB, predecessor, this, comment);
-				}else if(cmd[2].compareTo("mul") == 0){
-					return new LLVM_ArithmeticCommand(cmd, LLVM_Operation.MUL, predecessor, this, comment);
-				}else if(cmd[2].compareTo("div") == 0){
-					return new LLVM_ArithmeticCommand(cmd, LLVM_Operation.DIV, predecessor, this, comment);
-				}else if(cmd[2].compareTo("urem") == 0){
-					return new LLVM_ArithmeticCommand(cmd, LLVM_Operation.UREM, predecessor, this, comment);
-				}else if(cmd[2].compareTo("srem") == 0){
-					return new LLVM_ArithmeticCommand(cmd, LLVM_Operation.SREM, predecessor, this, comment);
-				}else if (cmd[2].compareTo("alloca") == 0){
-					return new LLVM_AllocaCommand(cmd, LLVM_Operation.ALLOCA, predecessor, this, comment);
-				}else if (cmd[2].compareTo("and") == 0){
-					return new LLVM_LogicCommand(cmd, LLVM_Operation.AND, predecessor, this, comment);
-				}else if (cmd[2].compareTo("or") == 0){
-					return new LLVM_LogicCommand(cmd, LLVM_Operation.OR, predecessor, this, comment);
-				}else if (cmd[2].compareTo("xor") == 0){
-					return new LLVM_LogicCommand(cmd, LLVM_Operation.XOR, predecessor, this, comment);
-				}else if (cmd[2].compareTo("load") == 0){
-					return new LLVM_LoadCommand(cmd, LLVM_Operation.LOAD, predecessor, this, comment);
-				}else if (cmd[2].compareTo("getelementptr") == 0){
-					return new LLVM_GetElementPtrCommand(cmd, LLVM_Operation.GETELEMENTPTR, predecessor, this, comment);
-				}else if (cmd[2].compareTo("call") == 0 || cmd[3].compareTo("call") == 0){
-					return new LLVM_CallCommand(cmd, LLVM_Operation.CALL, predecessor, this, comment);
-				}else if (cmd[2].compareTo("icmp") == 0){
-					if (cmd[3].compareTo("eq") == 0){
-						
-					}else if (cmd[3].compareTo("ne") == 0){
-						return new LLVM_IcmpCommand(cmd, LLVM_Operation.ICMP_NE, predecessor, this, comment);
-					}else if (cmd[3].compareTo("ugt") == 0){
-						return new LLVM_IcmpCommand(cmd, LLVM_Operation.ICMP_UGT, predecessor, this, comment);
-					}else if (cmd[3].compareTo("uge") == 0){
-						return new LLVM_IcmpCommand(cmd, LLVM_Operation.ICMP_UGE, predecessor, this, comment);
-					}else if (cmd[3].compareTo("ult") == 0){
-						return new LLVM_IcmpCommand(cmd, LLVM_Operation.ICMP_ULT, predecessor, this, comment);
-					}else if (cmd[3].compareTo("ule") == 0){
-						return new LLVM_IcmpCommand(cmd, LLVM_Operation.ICMP_ULE, predecessor, this, comment);
-					}else if (cmd[3].compareTo("sgt") == 0){
-						return new LLVM_IcmpCommand(cmd, LLVM_Operation.ICMP_SGT, predecessor, this, comment);
-					}else if (cmd[3].compareTo("sge") == 0){
-						return new LLVM_IcmpCommand(cmd, LLVM_Operation.ICMP_SGE, predecessor, this, comment);
-					}else if (cmd[3].compareTo("slt") == 0){
-						return new LLVM_IcmpCommand(cmd, LLVM_Operation.ICMP_SLT, predecessor, this, comment);
-					}else if (cmd[3].compareTo("sle") == 0){
-						return new LLVM_IcmpCommand(cmd, LLVM_Operation.ICMP_SLE, predecessor, this, comment);
-					}
-				}
-			}
-		}*/
 	}
 	
 	/*

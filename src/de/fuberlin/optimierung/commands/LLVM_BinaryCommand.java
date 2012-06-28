@@ -4,6 +4,7 @@ import de.fuberlin.optimierung.*;
 
 /*
  * Syntax:
+ *   sample "add" but also for "sub", "mul", "div"
   <result> = shl <ty> <op1>, <op2>           ; yields {ty}:result
   <result> = shl nuw <ty> <op1>, <op2>       ; yields {ty}:result
   <result> = shl nsw <ty> <op1>, <op2>       ; yields {ty}:result
@@ -17,12 +18,15 @@ import de.fuberlin.optimierung.*;
   <result> = xor <ty> <op1>, <op2>   ; yields {ty}:result
  */
 
-public class LLVM_BitwiseBinaryCommand extends LLVM_GenericCommand{
+public class LLVM_BinaryCommand extends LLVM_GenericCommand{
 	private boolean has_nuw = false;
 	private boolean has_nsw = false;
 	private boolean has_exact = false;
 	
-	public LLVM_BitwiseBinaryCommand(String cmdLine, LLVM_GenericCommand predecessor, LLVM_Block block){
+	public LLVM_BinaryCommand(){
+	}
+	
+	public LLVM_BinaryCommand(String cmdLine, LLVM_GenericCommand predecessor, LLVM_Block block){
 		super(predecessor, block, cmdLine);
 		setOperation(operation);
 		
@@ -45,6 +49,30 @@ public class LLVM_BitwiseBinaryCommand extends LLVM_GenericCommand{
 			setOperation(LLVM_Operation.OR);
 		}else if (cond.startsWith("xor")){
 			setOperation(LLVM_Operation.XOR);
+		}else if (cond.startsWith("add")){
+			setOperation(LLVM_Operation.ADD);
+		}else if (cond.startsWith("fadd")){
+			setOperation(LLVM_Operation.FADD);
+		}else if (cond.startsWith("sub")){
+			setOperation(LLVM_Operation.SUB);
+		}else if (cond.startsWith("fsub")){
+			setOperation(LLVM_Operation.FSUB);
+		}else if (cond.startsWith("mul")){
+			setOperation(LLVM_Operation.MUL);
+		}else if (cond.startsWith("fmul")){
+			setOperation(LLVM_Operation.FMUL);
+		}else if (cond.startsWith("udiv")){
+			setOperation(LLVM_Operation.UDIV);
+		}else if (cond.startsWith("sdiv")){
+			setOperation(LLVM_Operation.SDIV);
+		}else if (cond.startsWith("fdiv")){
+			setOperation(LLVM_Operation.FDIV);
+		}else if (cond.startsWith("urem")){
+			setOperation(LLVM_Operation.UREM);
+		}else if (cond.startsWith("srem")){
+			setOperation(LLVM_Operation.SREM);
+		}else if (cond.startsWith("frem")){
+			setOperation(LLVM_Operation.FREM);
 		}
 		
 		has_nuw = parseOptionalString(cmd, "nuw");
@@ -85,6 +113,42 @@ public class LLVM_BitwiseBinaryCommand extends LLVM_GenericCommand{
 				break;
 			case LSHR :
 				cmd_output +="lshr ";
+				break;
+			case ADD :
+				cmd_output +="add ";
+				break;
+			case FADD :
+				cmd_output +="fadd ";
+				break;
+			case SUB :
+				cmd_output +="sub ";
+				break;
+			case FSUB :
+				cmd_output +="fsub ";
+				break;
+			case MUL :
+				cmd_output +="mul ";
+				break;
+			case FMUL :
+				cmd_output +="fmul ";
+				break;
+			case UDIV :
+				cmd_output +="udiv ";
+				break;
+			case SDIV :
+				cmd_output +="sdiv ";
+				break;
+			case FDIV :
+				cmd_output +="fdiv ";
+				break;
+			case UREM :
+				cmd_output +="urem ";
+				break;
+			case SREM :
+				cmd_output +="srem ";
+				break;
+			case FREM :
+				cmd_output +="frem ";
 				break;
 			default:
 				return "";

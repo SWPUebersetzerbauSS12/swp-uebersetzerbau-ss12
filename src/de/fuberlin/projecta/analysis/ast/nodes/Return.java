@@ -3,7 +3,7 @@ package de.fuberlin.projecta.analysis.ast.nodes;
 import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
 
-public class Return extends Statement {
+public class Return extends Type {
 
 	@Override
 	public boolean checkSemantics() {

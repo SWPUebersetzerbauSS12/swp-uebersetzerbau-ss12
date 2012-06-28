@@ -6,7 +6,7 @@ package de.fuberlin.projecta.analysis.ast.nodes;
  * second child Type
  * 
  */
-public class ArrayCall extends AbstractSyntaxTree {
+public class ArrayCall extends Type {
 
 	@Override
 	public boolean checkSemantics() {

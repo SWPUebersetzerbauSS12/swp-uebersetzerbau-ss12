@@ -5,12 +5,15 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import de.fuberlin.optimierung.commands.LLVM_ArithmeticCommand;
+import de.fuberlin.optimierung.commands.LLVM_BranchCommand;
+import de.fuberlin.optimierung.commands.LLVM_FloatArithmeticCommand;
 import de.fuberlin.optimierung.commands.LLVM_IcmpCommand;
 import de.fuberlin.optimierung.commands.LLVM_LogicCommand;
 
 public class LLVM_Function {
 
 	String func_define = "";
+	String afterFunc = "";
 	
 	private ILLVM_Block startBlock;
 	private ILLVM_Block endBlock;
@@ -22,12 +25,13 @@ public class LLVM_Function {
 	private LLVM_RegisterMap registerMap = new LLVM_RegisterMap();
 	
 	public LLVM_Function(String code) {
+		func_define = "define " + code.substring(0, code.indexOf("\n"));
+		code = code.substring(code.indexOf("\n")+1);
 		
-		String[] firstSplit = code.split("[{}]");
+		afterFunc = code.substring(code.lastIndexOf("}")+1);
+		code = code.substring(0, code.lastIndexOf("}"));
 		
-		func_define = "define"+firstSplit[0];
-		
-		String codeBlocks[] = firstSplit[1].split("\n\n");
+		String codeBlocks[] = code.split("\n\n"); 
 		this.numberBlocks = codeBlocks.length;
 		this.blocks = new ArrayList<ILLVM_Block>(this.numberBlocks);
 		for(int i = 0; i < this.numberBlocks; i++) {
@@ -66,6 +70,7 @@ public class LLVM_Function {
 		for(ILLVM_Block block : this.blocks) {	// Durchlaufe Bloecke
 			
 			ILLVM_Command branchCommand = block.getLastCommand();
+			if (branchCommand == null) continue;
 			LinkedList<LLVM_Parameter> operands = branchCommand.getOperands();
 			
 			if(branchCommand.getOperation()==LLVM_Operation.RET) {
@@ -240,6 +245,46 @@ public class LLVM_Function {
 	
 	/*
 	 * *********************************************************
+	 * *********** Reaching Analysis ***************************
+	 * *********************************************************
+	 */
+	
+	/**
+	 * Erstelle IN und OUT Mengen fuer Reaching Analyse
+	 * Arbeitet nicht auf Registern, sondern auf Speicheradressen
+	 * Dient dazu, spaeter store/load-paare zusammenfuegen zu koennen
+	 * Vorraussetzung: gen und kill Mengen der Bloecke sind gesetzt
+	 */
+	private void createInOutReaching() {
+		// Algorithmus siehe Seite 607 Drachenbuch
+		boolean changes = true;
+		while(changes) {
+			changes = false;
+			for(ILLVM_Block b : this.blocks) {
+				if(b.updateInOutReaching()) {
+					changes = true;
+				}
+			}
+		}
+		
+	}
+	
+	/**
+	 * Erstelle IN OUT Mengen pro Block fuer Lebendigkeitsanalyse
+	 * Entferne anschliessend ueberfluessige Stores
+	 */
+	public void reachingAnalysis() {
+		for(ILLVM_Block b : this.blocks) {
+			b.createGenKillSets();
+		}
+		this.createInOutReaching();
+		for(ILLVM_Block b : this.blocks) {
+			b.foldStoreLoad();
+		}
+	}
+	
+	/*
+	 * *********************************************************
 	 * *********** CommonExpressions ***************************
 	 * *********************************************************
 	 */
@@ -292,6 +337,7 @@ public class LLVM_Function {
 						
 					return true;
 				}else if(op1.getType() == LLVM_ParameterType.REGISTER && op2.getType() == LLVM_ParameterType.INTEGER){
+				
 					int iOP2 = Integer.parseInt(op2.getName());
 					if(iOP2 == 0){
 						return true;
@@ -300,7 +346,38 @@ public class LLVM_Function {
 			}catch(NumberFormatException e){
 				// no numbers
 			}
+		}else if(cmd.getClass().equals(LLVM_FloatArithmeticCommand.class)){
+			LinkedList<LLVM_Parameter> operands = cmd.getOperands();
+			LLVM_Parameter op1 = operands.get(0);
+			LLVM_Parameter op2 = operands.get(1);
+			
+			if(op1.getType() == LLVM_ParameterType.DOUBLE && op2.getType() == LLVM_ParameterType.DOUBLE){
+				double iOP1 = Double.parseDouble(op1.getName());
+				double iOP2 = Double.parseDouble(op2.getName());
+				double result = 0;
+				
+				switch(cmd.getOperation()){
+				case FADD :
+					result = iOP1 + iOP2;
+					break;
+				case FSUB :
+					result = iOP1 - iOP2;
+					break;
+				case FMUL :
+					result = iOP1 * iOP2;
+					break;
+				case FDIV :
+					result = iOP1 / iOP2;
+					break;
+				}
+				
+				op1.setName(""+result);
+				op2.setName("0");
+					
+				return true;
+			}
 		}else if(cmd.getClass().equals(LLVM_IcmpCommand.class)){
+		
 			LinkedList<LLVM_Parameter> operands = cmd.getOperands();
 			LLVM_Parameter op1 = operands.get(0);
 			LLVM_Parameter op2 = operands.get(1);
@@ -344,8 +421,52 @@ public class LLVM_Function {
 						break;	
 					}
 					
-					op1.setName(""+result);
+					op1.setName(result?"1":"0");
 					op2.setName("0");
+					op1.setTypeString("i1");
+					
+					return true;
+				}else if(op1.getType() == LLVM_ParameterType.DOUBLE && op2.getType() == LLVM_ParameterType.DOUBLE){
+					double iOP1 = Double.parseDouble(op1.getName());
+					double iOP2 = Double.parseDouble(op2.getName());
+					boolean result = false;
+					
+					switch(cmd.getOperation()){
+					case ICMP_EQ :
+						result = iOP1 == iOP2;
+						break;
+					case ICMP_NE :
+						result = iOP1 != iOP2;
+						break;
+					case ICMP_UGT :
+						result = iOP1 > iOP2;
+						break;
+					case ICMP_UGE :
+						result = iOP1 >= iOP2;
+						break;
+					case ICMP_ULT :
+						result = iOP1 < iOP2;
+						break;
+					case ICMP_ULE :
+						result = iOP1 <= iOP2;
+						break;
+					case ICMP_SGT :
+						result = iOP1 > iOP2;
+						break;
+					case ICMP_SGE :
+						result = iOP1 >= iOP2;
+						break;
+					case ICMP_SLT :
+						result = iOP1 < iOP2;
+						break;
+					case ICMP_SLE :
+						result = iOP1 <= iOP2;
+						break;	
+					}
+					
+					op1.setName(result?"1":"0");
+					op2.setName("0");
+					op1.setTypeString("i1");
 					
 					return true;
 				}
@@ -361,21 +482,42 @@ public class LLVM_Function {
 				if(op1.getType() == LLVM_ParameterType.INTEGER && op2.getType() == LLVM_ParameterType.INTEGER){
 					int iOP1 = Integer.parseInt(op1.getName());
 					int iOP2 = Integer.parseInt(op2.getName());
-					boolean result = false;
+					int result = 0;
 					
 					switch(cmd.getOperation()){
 					case AND :
-						result = iOP1 == iOP2;
+						result = iOP1 & iOP2;
 						break;
 					case OR :
-						result = ((iOP1 != iOP2) || (iOP1 == iOP2));
+						result = iOP1 | iOP2;
 						break;
 					case XOR :
-						result = iOP1 != iOP2;
+						result = iOP1 ^ iOP2;
 						break;
 					}
 					
-					op1.setName(result?"1":"0");
+					op1.setName(""+result);
+					op2.setName("0");
+					
+					return true;
+				}else if(op1.getType() == LLVM_ParameterType.DOUBLE && op2.getType() == LLVM_ParameterType.DOUBLE){
+					int iOP1 = Integer.parseInt(op1.getName());
+					int iOP2 = Integer.parseInt(op2.getName());
+					double result = 0.0;
+					
+					switch(cmd.getOperation()){
+					case AND :
+						result = iOP1 & iOP2;
+						break;
+					case OR :
+						result = iOP1 | iOP2;
+						break;
+					case XOR :
+						result = iOP1 ^ iOP2;
+						break;
+					}
+					
+					op1.setName(""+result);
 					op2.setName("0");
 					
 					return true;
@@ -383,7 +525,41 @@ public class LLVM_Function {
 			}catch(NumberFormatException e){
 				// no numbers
 			}
+		}else if(cmd.getClass().equals(LLVM_BranchCommand.class)){
+			LinkedList<LLVM_Parameter> operands = cmd.getOperands();
+			LLVM_Parameter op1 = operands.get(0);
+			
+			if(cmd.getOperation() == LLVM_Operation.BR_CON){
+				
+				if(op1.getType() == LLVM_ParameterType.INTEGER){
+					int iOP = Integer.parseInt(op1.getName());
+					
+					registerMap.deleteCommand(cmd);
+					operands.remove(0);
+					
+					LLVM_Parameter p;
+					if(iOP == 0){
+						p = operands.remove(0);
+					}else{
+						p = operands.remove(1);
+					}
+					cmd.setOperation(LLVM_Operation.BR);
+					registerMap.addCommand(cmd);
+					
+					ILLVM_Block block = cmd.getBlock();
+					
+					for(ILLVM_Block b : block.getNextBlocks()){
+						if(p.getName().compareTo(b.getLabel()) == 0){
+							b.removeFromPreviousBlocks(block);
+							block.removeFromNextBlocks(b);
+							
+							break;
+						}
+					}
+				}
+			}
 		}
+		
 		return false;
 	}
 	
@@ -395,6 +571,7 @@ public class LLVM_Function {
 		for(ILLVM_Block block : blocks){
 			ILLVM_Command cmd = block.getFirstCommand();
 			
+			if (cmd == null) continue;
 			while(!cmd.isLastCommand()){
 				
 				if(fold(cmd)){
@@ -446,15 +623,16 @@ public class LLVM_Function {
 							if(!changed_cmds.contains(_cmds.get(j)))
 								changed_cmds.add(_cmds.get(j));
 							LLVM_Parameter op = cmd.getOperands().get(0);
-							registerMap.deleteCommand(_cmds.get(j), cmd.getTarget());
+							registerMap.deleteCommand(_cmds.get(j));
+							//registerMap.deleteCommand(_cmds.get(j), cmd.getTarget());
 							operands.set(k, new LLVM_Parameter(op.getName(), op.getType(), op.getTypeString()));
+							registerMap.addCommand(_cmds.get(j));
 						}
 					}
-					
 				}
 			}
 			
-			cmd.deleteCommand();
+			cmd.deleteCommand("constantPropagation");
 			registerMap.deleteCommand(cmd);
 		}
 		
@@ -482,10 +660,21 @@ public class LLVM_Function {
 			
 			// keine Verwendungen, aber eine Definition
 			ILLVM_Command c = this.registerMap.getDefinition(registerName);
-			this.registerMap.deleteCommand(c);
-			c.deleteCommand();
-			return c;
+			// Nur entfernen, wenn c kein call-Befehl ist
+			if(c.getOperation()!=LLVM_Operation.CALL) {
+				this.registerMap.deleteCommand(c);
+				c.deleteCommand("eliminateDeadRegister - normal");
+				return c;
+			}
+			return null;
 
+		}
+		// Wenn einzige Verwendung ein Store, dann löschen
+		if (this.registerMap.existsUses(registerName) && this.registerMap.getUses(registerName).size() == 1 && this.registerMap.getUses(registerName).get(0).getOperation() == LLVM_Operation.STORE ){
+			ILLVM_Command store = this.registerMap.getUses(registerName).get(0);
+			this.registerMap.deleteCommand(store);
+			store.deleteCommand("eliminateDeadRegister - store");
+			return store;
 		}
 		return null;
 	}
@@ -724,6 +913,7 @@ public class LLVM_Function {
 	 */
 	public void deleteEmptyBlocks() {
 		// Gehe Bloecke durch
+		LinkedList<ILLVM_Block> toDelete = new LinkedList<ILLVM_Block>();
 		for(ILLVM_Block actualBlock : this.blocks) {
 			// Enthaelt Block nur einen unbedingten Sprungbefehl?
 			if(!actualBlock.isEmpty() && actualBlock.getFirstCommand().
@@ -757,20 +947,46 @@ public class LLVM_Function {
 					previousBlock.appendToNextBlocks(targetBlock);
 					previousBlock.removeFromNextBlocks(actualBlock);
 				}
+				toDelete.add(actualBlock);
+			}else if (!actualBlock.isEmpty() && (actualBlock.getFirstCommand().
+					getOperation()==LLVM_Operation.RET || actualBlock.getFirstCommand().
+					getOperation()==LLVM_Operation.RET_CODE)){
 				
-				// Entferne zu loeschenden Block aus Flussgraph
-				actualBlock.deleteBlock();
-				
-				// Entferne Sprungbefehl aus entferntem Block aus Registermap
-				this.registerMap.deleteCommand(actualBlock.getFirstCommand());
-				
-				// Entferne zu loeschenden Block aus this.blocks
-				this.blocks.remove(actualBlock);
-				this.numberBlocks--;
-				
+				// Gehe Vorgaengerbloecke durch
+				for(ILLVM_Block previousBlock : actualBlock.getPreviousBlocks()) {
+					// Hole Sprungbefehl des Vorgaengerblocks
+					// Dieser muss ersetzt werden
+					ILLVM_Command branchCommand = previousBlock.getLastCommand();
+					// Befehl aus Registermap austragen
+					this.registerMap.deleteCommand(branchCommand);
+					branchCommand.replaceCommand(actualBlock.getFirstCommand());
+					
+					// Setze Registermapeintrag neu
+					this.registerMap.addCommand(previousBlock.getLastCommand());
+					
+					// Passe Flussgraph an:
+					// previousBlock hat actualBlock nicht mehr als Nachfolger,
+					previousBlock.removeFromNextBlocks(actualBlock);
+				}
+				toDelete.add(actualBlock);
 			}
 		}
 
+		// Alle gelöschten Blöcke entfernen
+		for (ILLVM_Block del : toDelete){
+			// Entferne zu loeschenden Block aus Flussgraph
+			del.deleteBlock();
+			
+			// Entferne nur Branch-Befehle aus entferntem Block aus Registermap
+			// Return-Befehle sind nur einmalig vorhanden (an mehreren Stellen) und würden sonst fälschlicherweise entfernt
+			if (del.getFirstCommand().getOperation()==LLVM_Operation.BR){
+				this.registerMap.deleteCommand(del.getFirstCommand());
+			}
+			
+			// Entferne zu loeschenden Block aus this.blocks
+			this.blocks.remove(del);
+			this.numberBlocks--;
+		}
 	}
 	
 	/*
@@ -821,8 +1037,10 @@ public class LLVM_Function {
 						block.setLabel(nextUnnamed);
 						// Setze alle Verwendungen auf nextUnnamed
 						LinkedList<ILLVM_Command> uses = this.registerMap.getUses(label);
-						for(ILLVM_Command u : uses) {
-							this.changeOperandName(u, label, nextUnnamed);
+						if(uses != null){
+							for(ILLVM_Command u : uses) {
+								this.changeOperandName(u, label, nextUnnamed);
+							}
 						}
 					}
 					nextNumber++;
@@ -847,8 +1065,10 @@ public class LLVM_Function {
 								p.setName(nextUnnamed);
 								// Ersetze in allen Verwendungen durch nextUnnamed
 								LinkedList<ILLVM_Command> uses = this.registerMap.getUses(name);
-								for(ILLVM_Command u : uses) {
-									this.changeOperandName(u, name, nextUnnamed);
+								if(uses != null) {
+									for(ILLVM_Command u : uses) {
+										this.changeOperandName(u, name, nextUnnamed);
+									}
 								}
 							}
 							
@@ -877,10 +1097,12 @@ public class LLVM_Function {
 	
 	public String toString() {
 		String output = func_define + "{\n";
+		
 		for (int i = 0; i < this.numberBlocks; i++) {
 			output += blocks.get(i).toString();
 		}
-		output += "}";
+		output += "}\n";
+		output += this.afterFunc;
 		return output;
 	}
 	

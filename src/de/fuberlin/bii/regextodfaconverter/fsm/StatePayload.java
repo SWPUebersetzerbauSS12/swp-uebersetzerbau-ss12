@@ -33,6 +33,7 @@
 package de.fuberlin.bii.regextodfaconverter.fsm;
 
 import de.fuberlin.bii.tokenmatcher.attributes.Attribute;
+import de.fuberlin.bii.utils.Test;
 
 /**
  * Implementiert Interface {@link tokenmatcher.StatePayload}
@@ -112,6 +113,46 @@ public class StatePayload implements de.fuberlin.bii.tokenmatcher.StatePayload {
 	public void setPriority(int priority) {
 		this.priority = priority;
 	}
+	
+	/**
+	 * Definiert die Gleichheit zweier Payload-Elemente
+	 * 
+	 * @Author Johannes Dahlke 
+	 */
+	@Override
+	public boolean equals( Object obj) {
+		if ( Test.isUnassigned( obj))
+			return false;
+		
+		if ( !( obj instanceof StatePayload))
+			return false;
+		
+		StatePayload theOtherStatePayload = (StatePayload) obj;
+		
+		boolean isEqual = 
+				this.tokenType == theOtherStatePayload.tokenType
+		    && this.attribute == theOtherStatePayload.attribute
+		    && this.priority == theOtherStatePayload.priority;
+		
+		return isEqual; 
+	}
+	
+	/**
+	 * Definiert den Hashcode des Exemplares
+	 * 
+	 * @Author Johannes Dahlke 
+	 */
+	@Override
+	public int hashCode() 
+	{ 
+		int hashCode = 5;
+		hashCode = 37 * hashCode + tokenType.hashCode();
+		hashCode = 37 * hashCode + attribute.hashCode();
+		hashCode = 37 * hashCode + priority;
+		
+		return hashCode;
+	}
+	
 
 	@Override
 	public String toString() {

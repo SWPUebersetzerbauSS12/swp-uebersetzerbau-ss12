@@ -8,7 +8,7 @@ def{test}				{dummy}
 \)						{return("BRACKET", ")")}
 \{						{return("BRACKET", "{")}
 \}						{return("BRACKET", "}")}
-\=						{return("ASSIGNEMENT", "=")}
+=						{return("ASSIGNEMENT", "=")}
 <						{return("OP", "L")}
 >						{return("OP", "G")}
 <=						{return("OP", "LE")}

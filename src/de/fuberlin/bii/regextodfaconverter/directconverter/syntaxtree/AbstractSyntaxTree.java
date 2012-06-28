@@ -33,17 +33,21 @@
 
 package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
 
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.ReduceEventHandler;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.ShiftEventHandler;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.ContextFreeGrammar;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.ItemAutomat;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.ReduceEventHandler;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.ShiftEventHandler;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ContextFreeGrammar;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.EmptyString;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionRule;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symbol;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Terminal;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.InnerNode;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.Leaf;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.NewNodeEventHandler;
+import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.NumberedTreeNode;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.ScalableInnerNode;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeNode;
+import de.fuberlin.bii.utils.Notification;
 import de.fuberlin.bii.utils.Test;
 
 /**
@@ -74,8 +78,12 @@ public class AbstractSyntaxTree<ExpressionElement extends Symbol> extends Concre
 	protected ReduceEventHandler getReduceEventHandler() {
 		return new ReduceEventHandler() {
 
-			public Object handle( Object sender, ProductionRule reduceRule) throws Exception {
+			public Object handle( Object sender, ProductionRule reduceRule, int sequenceNumber) throws Exception {
 			
+				// Notification.printDebugInfoMessage( "r: " + reduceRule);
+
+				updateStackBySequenceNumber( sequenceNumber);
+				
 				// create the map contains attributes of this node
 				AttributesMap thisAttributesMap = new AttributesMap();
 				rootAttributesMap = thisAttributesMap;;
@@ -93,13 +101,15 @@ public class AbstractSyntaxTree<ExpressionElement extends Symbol> extends Concre
 				// By the way, assemble the attributes of rule elements of right rule side representing by the nodes
 			  AttributesMap[] nodeAttributesMaps = new AttributesMap[countOfReducedElements+1];
 				nodeAttributesMaps[0] = thisAttributesMap;
-			  for ( int i = 0; i < countOfReducedElements; i++) {
-			  	// get child from stack
-					TreeNode childNode = getNodeStack().pop();
+			 	for ( int i = countOfReducedElements; i > 0; i--) {
+			  	if ( reduceRule.getRightRuleSide().get( i-1) instanceof EmptyString)
+			  		continue;
+					// get child from stack
+					TreeNode childNode = getNodeStack().pop().getTreeNode();
 					// insert child into parent node
 					newInnerNode.insertChild( childNode, 0);
 					// add attributes from end to front
-					nodeAttributesMaps[countOfReducedElements-i] = (AttributesMap) childNode.getValue();
+					nodeAttributesMaps[i] = (AttributesMap) childNode.getValue();
 				}
 			  
 			  // apply all defined semantic rules
@@ -109,37 +119,46 @@ public class AbstractSyntaxTree<ExpressionElement extends Symbol> extends Concre
 				  }
 				}
 				
-				
 				if ( Test.isAssigned( onNewNodeEvent))
 					onNewNodeEvent.doOnEvent( this, newInnerNode);
 
 				// push the inner node onto stack
-				getNodeStack().push( newInnerNode);
+				NumberedTreeNode newNumberedNode = new NumberedTreeNode( newInnerNode, sequenceNumber);
+				getNodeStack().push( newNumberedNode);
 
+				snapshotCurrentStackWithSequenceNumber( sequenceNumber);
 				return null;
 			}
 		};
 	}
 	
-	
+
+
+
 	@Override
 	protected ShiftEventHandler getShiftEventHandler() {
 		return new ShiftEventHandler() {
 
-			public Object handle( Object sender, Terminal shiftedTerminal) throws Exception {
+			public Object handle( Object sender, Terminal shiftedTerminal, int sequenceNumber) throws Exception {
 			  
+				// Notification.printDebugInfoMessage(  "s: " + shiftedTerminal);
+				updateStackBySequenceNumber( sequenceNumber);
+				
 				// create the map contains attributes of this node
 				AttributesMap thisAttributesMap = new AttributesMap();
 				// create attribute value to pass the terminal
 				thisAttributesMap.put( "value", shiftedTerminal.getSymbol());
-        
+        		
 				// create new leaf node
 				Leaf<AttributesMap> newLeaf = new Leaf<AttributesMap>( thisAttributesMap);
 				
 				if ( Test.isAssigned( onNewNodeEvent))
 					onNewNodeEvent.doOnEvent( this, newLeaf);
 
-				getNodeStack().push( newLeaf);
+				NumberedTreeNode newNumberedLeaf = new NumberedTreeNode( newLeaf, sequenceNumber);
+				getNodeStack().push( newNumberedLeaf);
+				
+				snapshotCurrentStackWithSequenceNumber( sequenceNumber);
 				return null;
 			}
 		};

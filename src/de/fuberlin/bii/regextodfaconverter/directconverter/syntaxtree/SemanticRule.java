@@ -32,7 +32,7 @@
 
 package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
 
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionRule;
 
 /**
  * 
@@ -41,7 +41,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Pro
  */
 public interface SemanticRule {
 	
-	void apply( AttributesMap ... attributesMaps);
+	void apply( AttributesMap ... attributesMaps) throws Exception;
 	
 
 }

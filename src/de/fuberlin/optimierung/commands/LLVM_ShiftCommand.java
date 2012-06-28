@@ -3,6 +3,7 @@ package de.fuberlin.optimierung.commands;
 import de.fuberlin.optimierung.ILLVM_Block;
 import de.fuberlin.optimierung.ILLVM_Command;
 import de.fuberlin.optimierung.LLVM_Operation;
+import de.fuberlin.optimierung.LLVM_Optimization;
 import de.fuberlin.optimierung.LLVM_Parameter;
 
 /*
@@ -23,9 +24,13 @@ public class LLVM_ShiftCommand extends LLVM_GenericCommand{
 	private boolean has_nuw = false;
 	private boolean has_nsw = false;
 	
-	public LLVM_ShiftCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment) {
-		super(operation, predecessor, block, comment);
+	public LLVM_ShiftCommand(String cmdLine, ILLVM_Command predecessor, ILLVM_Block block) {
+		super(predecessor, block, cmdLine);
+		setOperation(LLVM_Operation.SHL);
+		// Kommentar entfernen
+		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
 		
+		String[] cmd = command.split("[ \t]");
 		// Kommaposition ermitteln
 		int i = -1;
 		for (int j = 0; j < cmd.length; j++){
@@ -64,7 +69,7 @@ public class LLVM_ShiftCommand extends LLVM_GenericCommand{
 				break;
 		}
 		
-		System.out.println("Operation generiert: " + this.toString());
+		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());
 	}
 
 	public String toString() {

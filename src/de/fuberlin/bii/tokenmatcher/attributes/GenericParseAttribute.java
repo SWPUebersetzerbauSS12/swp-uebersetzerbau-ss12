@@ -32,6 +32,8 @@
 
 package de.fuberlin.bii.tokenmatcher.attributes;
 
+import de.fuberlin.bii.utils.Test;
+
 /**
  * Generische Basisklasse für Attribute, deren Wert 
  * nicht in Tokendefinitionsdatei angeben ist, 
@@ -65,6 +67,31 @@ public abstract class GenericParseAttribute<T> implements Attribute {
 	@Override
 	public String toString() {
 		return lexem;
+	}
+	
+	@Override
+	public boolean equals( Object obj) {
+		if ( Test.isUnassigned( obj))
+			return false;
+		
+		if ( !( obj instanceof GenericParseAttribute))
+			return false;
+		
+		GenericParseAttribute<T> theOtherGenericParseAttribute = (GenericParseAttribute<T>) obj;
+		
+		boolean isEqual = theOtherGenericParseAttribute.valueType.equals( this.valueType) 
+				&& theOtherGenericParseAttribute.lexem.equals( this.lexem);
+		
+		return isEqual;
+	}
+	
+	@Override
+	public int hashCode() {
+		int hashCode = 5;
+		hashCode = 31 * hashCode + this.valueType.hashCode();
+		hashCode = 31 * hashCode + (Test.isAssigned( this.lexem) ? this.lexem.hashCode() : 0);
+		
+		return hashCode;
 	}
 	
 }

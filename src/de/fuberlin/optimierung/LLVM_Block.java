@@ -530,12 +530,13 @@ public class LLVM_Block{
 			return new LLVM_FloatArithmeticCommand(cmdLine, LLVM_Operation.FREM, predecessor, this);
 		}else if(cmdLine.contains(" = alloca ")){
 			return new LLVM_AllocaCommand(cmdLine, predecessor, this);
-		}else if(cmdLine.contains(" = and ")){
-			return new LLVM_LogicCommand(cmdLine, LLVM_Operation.AND, predecessor, this);
-		}else if(cmdLine.contains(" = or ")){
-			return new LLVM_LogicCommand(cmdLine, LLVM_Operation.OR, predecessor, this);
-		}else if(cmdLine.contains(" = xor ")){
-			return new LLVM_LogicCommand(cmdLine, LLVM_Operation.XOR, predecessor, this);
+		}else if(cmdLine.contains(" = and ") ||
+				cmdLine.contains(" = or ") ||
+				cmdLine.contains(" = xor ") ||
+				cmdLine.contains(" = shl ") ||
+				cmdLine.contains(" = lshr ") ||
+				cmdLine.contains(" = ashr ")){
+			return new LLVM_BitwiseBinaryCommand(cmdLine, predecessor, this);
 		}else if(cmdLine.contains(" = load ")){
 			return new LLVM_LoadCommand(cmdLine, predecessor, this);
 		}else if(cmdLine.contains(" = getelementptr ")){

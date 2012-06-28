@@ -467,7 +467,7 @@ public class LLVM_Function {
 			}catch(NumberFormatException e){
 				// no numbers
 			}
-		}else if(cmd.getClass().equals(LLVM_LogicCommand.class)){
+		}else if(cmd.getClass().equals(LLVM_BitwiseBinaryCommand.class)){
 			LinkedList<LLVM_Parameter> operands = cmd.getOperands();
 			LLVM_Parameter op1 = operands.get(0);
 			LLVM_Parameter op2 = operands.get(1);

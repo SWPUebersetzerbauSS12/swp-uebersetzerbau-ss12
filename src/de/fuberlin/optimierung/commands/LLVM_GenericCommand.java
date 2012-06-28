@@ -251,7 +251,7 @@ public abstract class LLVM_GenericCommand{
 		return opt_found;
 	}
 	
-	protected static String parsePointer (StringBuilder cmd){
+	protected static String parseReadPointer (StringBuilder cmd){
 		String cmdLine = cmd.toString();
 		String pointer = "";
 		

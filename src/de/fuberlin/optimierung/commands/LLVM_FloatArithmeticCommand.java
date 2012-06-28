@@ -13,17 +13,22 @@ public class LLVM_FloatArithmeticCommand extends LLVM_GenericCommand{
 	public LLVM_FloatArithmeticCommand(String cmdLine, LLVM_Operation operation, LLVM_GenericCommand predecessor, LLVM_Block block) {
 		super(predecessor, block, cmdLine);
 		setOperation(operation);
-		// Kommentar entfernen
-		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
 		
-		String[] cmd = command.split("[ \t]");
-		// <result> <ty>
-		target = new LLVM_Parameter(cmd[0], cmd[3]);
-		// <op1> <ty>
-		operands.add(new LLVM_Parameter(cmd[4], cmd[3]));
-		// <op2> <ty>
-		operands.add(new LLVM_Parameter(cmd[5], cmd[3]));
+		StringBuilder cmd = new StringBuilder(cmdLine);
+		parseEraseComment(cmd);
+		String result = parseReadResult(cmd);
+		parseReadValue(cmd); // Operation löschen
+
+		String ty = parseReadType(cmd);
 		
+		String op1 = parseReadValue(cmd);
+		parseEraseString(cmd, ",");
+		String op2 = parseReadValue(cmd);
+		
+		target = new LLVM_Parameter(result, ty);
+		operands.add(new LLVM_Parameter(op1, ty));
+		operands.add(new LLVM_Parameter(op2, ty));
+	
 		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());
 	}
 	

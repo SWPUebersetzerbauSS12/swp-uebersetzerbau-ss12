@@ -16,7 +16,8 @@ public class Symbol implements ISymbol {
 		EPSILON("ε"), // epsilon production
 		SP("_SP"); // stack pointer
 		
-		private static Map<String,Reserved> terminalSymbol2Reserved=new HashMap<String, Reserved>();
+		private static Map<String,Reserved> terminalSymbol2Reserved
+			= new HashMap<String, Reserved>();
 		
 		static{
 			for(Reserved t : EnumSet.allOf(Reserved.class)){
@@ -56,11 +57,14 @@ public class Symbol implements ISymbol {
 	public Symbol(String string) {
 		// parse by definitions (for the generic parser groups)
 		this.symbol=Reserved.byTerminalSymbol(string);
-		if (symbol!=null) return;
+		if (symbol!=null)
+			return;
 		this.symbol = NonTerminal.byNonTerminalSymbol(string);
-		if (symbol!=null) return;
+		if (symbol!=null)
+			return;
 		this.symbol = TokenType.byTerminalSymbol(string);
-		if (symbol!=null) return;
+		if (symbol!=null)
+			return;
 
 		// parse by enum value (for projecta)
 		try {

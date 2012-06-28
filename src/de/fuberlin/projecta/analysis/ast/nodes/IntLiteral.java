@@ -22,4 +22,9 @@ public class IntLiteral extends Type {
 	public int getValue(){
 		return this.value;
 	}
+	
+	@Override
+	public String toTypeString(){
+		return TYPE_INT_STRING;
+	}
 }

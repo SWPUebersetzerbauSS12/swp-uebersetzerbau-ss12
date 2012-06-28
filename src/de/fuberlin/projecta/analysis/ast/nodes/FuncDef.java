@@ -161,4 +161,9 @@ public class FuncDef extends Type {
 		}
 		return true;
 	}
+	
+	@Override
+	public String toTypeString(){
+		return ((Type)getChild(0)).toTypeString();
+	}
 }

@@ -26,4 +26,9 @@ public class StringLiteral extends Type {
 	public String getValue() {
 		return this.value;
 	}
+	
+	@Override
+	public String toTypeString(){
+		return TYPE_STRING_STRING;
+	}
 }

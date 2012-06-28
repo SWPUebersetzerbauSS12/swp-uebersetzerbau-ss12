@@ -22,4 +22,8 @@ public class BoolLiteral extends Type {
 	public boolean getValue(){
 		return this.value;
 	}
+	
+	public String toTypeString(){
+		return TYPE_BOOL_STRING;
+	}
 }

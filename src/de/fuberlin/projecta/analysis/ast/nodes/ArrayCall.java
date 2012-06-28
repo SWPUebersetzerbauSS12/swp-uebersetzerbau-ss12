@@ -1,5 +1,9 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
+import de.fuberlin.commons.parser.ISyntaxTree;
+import de.fuberlin.projecta.analysis.SemanticException;
+import de.fuberlin.projecta.analysis.SymbolTableHelper;
+
 
 /**
  * first child num
@@ -10,6 +14,36 @@ public class ArrayCall extends Type {
 
 	@Override
 	public boolean checkSemantics() {
+		ISyntaxTree child = this;
+		do {
+			child = child.getChild(1);
+		} while (!(child instanceof Id));
+		Id id = (Id) child;
+		Type type = SymbolTableHelper.lookup(id.getValue(), this).getType();
+		// we now have a the type node and the call node
+		// we have to look if there both have the same depth
+		// if so, the array call is complete
+		// if not, the array call is obviously incomplete and therefore the
+		// array call is semantically wrong!
+		ISyntaxTree self = this;
+		ISyntaxTree def = type;
+		do{
+			self = self.getChild(1);
+			def = def.getChild(1);
+		} while(!(self instanceof Id || !(def instanceof Array)));
+		
+		// if both have the same depth self will be an instance of Id and def
+		// won't be an instance of array. Otherwise there must be something
+		// wrong woth the call
+		if (!(self instanceof Id)) {
+			if(!(def instanceof Array)){
+				throw new SemanticException("More dimensions in array call, than in definition!");
+			}
+		} else {
+			if (def instanceof Array){
+				throw new SemanticException("Only full array calls are allowed!");
+			}
+		}
 		return true;
 	}
 
@@ -17,5 +51,22 @@ public class ArrayCall extends Type {
 	public String genCode() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Override
+	public String toTypeString(){
+		
+		ISyntaxTree child = this;
+		do{
+			child = child.getChild(1);
+		} while(!(child instanceof Id));
+		Id id = (Id) child;
+		Type type = SymbolTableHelper.lookup(id.getValue(), this).getType();
+		// we already know that the array call is calling a non array type
+		// because of semantic check
+		do{
+			type = (Type) type.getChild(1);
+		} while(!(type instanceof BasicType));
+		return type.toTypeString();
 	}
 }

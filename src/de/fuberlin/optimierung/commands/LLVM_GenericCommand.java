@@ -2,6 +2,9 @@ package de.fuberlin.optimierung.commands;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+
+import javax.activation.CommandInfo;
+
 import de.fuberlin.optimierung.ILLVM_Block;
 import de.fuberlin.optimierung.ILLVM_Command;
 import de.fuberlin.optimierung.LLVM_Operation;
@@ -133,6 +136,262 @@ public abstract class LLVM_GenericCommand implements ILLVM_Command{
 			}
 		}
 		return count;
+	}
+	
+	protected static String parseReadType (StringBuilder cmd){
+		int count = 0;
+		String cmdLine = cmd.toString();
+		if (cmdLine.startsWith("[")){
+			// Arrayende finden
+			for (int i = 0; i < cmdLine.length(); i++){
+				String str = cmdLine.substring(i, i+1);
+				if (str.contains("[")) count++;
+				if (str.contains("]")) count--;
+				if (count == 0){
+					// Arrayende bei count
+					count = i;
+					break;
+				}
+			}
+		}
+		
+		if (cmdLine.startsWith("{")){
+			// Structende finden
+			for (int i = 0; i < cmdLine.length(); i++){
+				String str = cmdLine.substring(i, i+1);
+				if (str.contains("{")) count++;
+				if (str.contains("}")) count--;
+				if (count == 0){
+					// Structende bei count
+					count = i;
+					break;
+				}
+			}
+		}
+		
+		if (cmdLine.startsWith("(")){
+			// Structende finden
+			for (int i = 0; i < cmdLine.length(); i++){
+				String str = cmdLine.substring(i, i+1);
+				if (str.contains("(")) count++;
+				if (str.contains(")")) count--;
+				if (count == 0){
+					// Structende bei count
+					count = i;
+					break;
+				}
+			}
+		}
+		
+		// ty einlesen
+		int index = cmdLine.indexOf(" ", count);
+		String type = "";
+		if (index >= 0){
+			type = cmdLine.substring(0, index).trim();
+		}else{
+			index = cmdLine.length();
+			type = cmdLine.substring(0, index).trim();
+		}
+		cmdLine = cmdLine.substring(type.length()).trim();
+		
+		cmd.delete(0, cmd.length());
+		cmd.append(cmdLine);
+		return type;
+	}
+	
+	protected static String parseReadResult (StringBuilder cmd){
+		String cmdLine = cmd.toString();
+		// result einlesen
+		String result = cmdLine.substring(0, cmdLine.indexOf("=")).trim();
+		cmdLine = cmdLine.substring(cmdLine.indexOf("=")+1).trim();
+		cmd.delete(0, cmd.length());
+		cmd.append(cmdLine);
+		return result;
+	}
+	
+	protected static boolean parseEraseString (StringBuilder cmd, String erase){
+		boolean erased = false;
+		String cmdLine = cmd.toString();
+		
+		if (cmdLine.indexOf(erase) != -1){
+			cmdLine = cmdLine.substring(cmdLine.indexOf(erase)+erase.length()).trim();
+			erased = true;
+		}
+		cmd.delete(0, cmd.length());
+		cmd.append(cmdLine);
+		return erased;
+	}
+	
+	protected static boolean parseOptionalString (StringBuilder cmd, String opt){
+		boolean opt_found = false;
+		String cmdLine = cmd.toString();
+		
+		// opt einlesen
+		if (cmdLine.startsWith(opt)){
+			opt_found = true;
+			cmdLine = cmdLine.substring(cmdLine.indexOf(opt) + opt.length()).trim();
+		}
+		
+		cmd.delete(0, cmd.length());
+		cmd.append(cmdLine);
+		return opt_found;
+	}
+	
+	protected static String parsePointer (StringBuilder cmd){
+		String cmdLine = cmd.toString();
+		String pointer = "";
+		
+		// opt pointer einlesen
+		if (cmdLine.contains("* ")){
+			pointer = cmdLine.substring(0, cmdLine.indexOf("* ")+2).trim();
+			cmdLine = cmdLine.substring(pointer.length()).trim();
+		}
+		
+		cmd.delete(0, cmd.length());
+		cmd.append(cmdLine);
+		return pointer;
+	}
+	
+	protected static String parseOptionalListSingle (StringBuilder cmd, String[] opt){
+		String cmdLine = cmd.toString();
+		String foundOptString = "";
+
+		// noch opt vorhanden?
+		for (String optional : opt){
+			if (cmdLine.startsWith(optional)){
+				foundOptString = optional;
+			}
+		}
+		// opt einlesen
+		if (foundOptString != ""){
+			int index = cmdLine.indexOf(" ", foundOptString.length());
+			if (index >= 0){
+				foundOptString = cmdLine.substring(0, index).trim();
+			}else{
+				index = cmdLine.length();
+				foundOptString = cmdLine.substring(0, index).trim();
+			}
+			cmdLine = cmdLine.substring(foundOptString.length()).trim();
+		}
+	
+		cmd.delete(0, cmd.length());
+		cmd.append(cmdLine);
+		return foundOptString.trim();
+	}
+	
+	protected static String parseOptionalList (StringBuilder cmd, String[] opt){
+		String cmdLine = cmd.toString();
+		String finalOptString = "";
+		String foundOptString;
+		
+		do{
+			foundOptString = "";
+			// noch opt vorhanden?
+			for (String optional : opt){
+				if (cmdLine.startsWith(optional)){
+					foundOptString = optional;
+				}
+			}
+//			// opt einlesen
+//			if (foundOptString != ""){
+//				finalOptString += cmdLine.substring(0, cmdLine.indexOf(" ", foundOptString.length())).trim() + " ";
+//				cmdLine = cmdLine.substring(cmdLine.indexOf(cmdLine.indexOf(" ", foundOptString.length()))).trim();
+//			}
+			
+			// opt einlesen
+			if (foundOptString != ""){
+				int index = cmdLine.indexOf(" ", foundOptString.length());
+				if (index >= 0){
+					finalOptString += cmdLine.substring(0, index).trim() + " ";
+				}else{
+					index = cmdLine.length();
+					finalOptString += cmdLine.substring(0, index).trim();
+				}
+				cmdLine = cmdLine.substring(index).trim();
+			}
+			
+		}while(foundOptString != "");
+		
+		cmd.delete(0, cmd.length());
+		cmd.append(cmdLine);
+		return finalOptString.trim();
+	}
+	
+	protected static void parseEraseComment (StringBuilder cmd){
+		String cmdLine = cmd.toString();
+		// Kommentar entfernen
+		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
+
+		cmd = new StringBuilder(cmdLine);
+	}
+	
+	protected static String parseStringUntil (StringBuilder cmd, String until){
+		String cmdLine = cmd.toString();
+		String value = "";
+		
+		int index = cmdLine.indexOf(until);
+		if (index >= 0) {
+			value = cmdLine.substring(0, index).trim();
+			cmdLine = cmdLine.substring(value.length()).trim();
+		}
+		
+		cmd.delete(0, cmd.length());
+		cmd.append(cmdLine);
+		return value;
+	}
+	
+	protected static String parseReadValue (StringBuilder cmd){
+		String cmdLine = cmd.toString();
+		String value = "";
+		int count = 0;
+		
+		// falls value ein String 
+		if (cmdLine.startsWith("c\"")){
+			// Stringende finden
+			for (int i = 0; i < cmdLine.length(); i++){
+				if (cmdLine.charAt(i) == '{') count++;
+				if (cmdLine.charAt(i) == '}') count--;
+				if (count == 0){
+					// Stringende bei count
+					count = i;
+					break;
+				}
+			}
+		}
+		// finde Komma, Space, ( nach Value
+		int commaindex = cmdLine.indexOf(',', count);
+		int spaceindex = cmdLine.indexOf(' ', count);
+		int bracketindex = cmdLine.indexOf('(', count);
+		int end = 0;
+		
+		// nehme Minimum
+		if (commaindex >= 0 && spaceindex >= 0 && bracketindex >=0){
+			if (commaindex < spaceindex && commaindex < bracketindex) end = commaindex;
+			if (spaceindex < commaindex && spaceindex < bracketindex) end = spaceindex;
+			if (bracketindex < spaceindex && bracketindex < commaindex) end = bracketindex;
+		}else if (commaindex >= 0 && spaceindex >= 0){
+			end = (commaindex < spaceindex)?commaindex:spaceindex;
+		}else if (commaindex >= 0 && bracketindex >= 0){
+			end = (commaindex < bracketindex)?commaindex:bracketindex;
+		}else if (spaceindex >= 0 && bracketindex >= 0){
+			end = (bracketindex < spaceindex)?bracketindex:spaceindex;
+		}else if (commaindex >= 0){
+			end = commaindex;
+		}else if (spaceindex >= 0){
+			end = spaceindex;
+		}else if (bracketindex >= 0){
+			end = bracketindex;
+		}
+		
+		if (end == 0){
+			end = cmdLine.length();
+		}
+		value = cmdLine.substring(0, end).trim();
+		cmdLine = cmdLine.substring(end).trim();
+
+		cmd.delete(0, cmd.length());
+		cmd.append(cmdLine);
+		return value;
 	}
 	
 	public static LLVM_Parameter readArrayListToLLVM_Parameter(ArrayList<String> input, parseTypes type, boolean opt){

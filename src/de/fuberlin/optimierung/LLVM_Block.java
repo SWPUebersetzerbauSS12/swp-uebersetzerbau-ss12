@@ -443,9 +443,9 @@ class LLVM_Block implements ILLVM_Block {
 			//this.label = "%"+splitedLabel[2].trim();
 			//this.label_line = label;
 			//return true;
-			if (label.contains("label") || label.contains(":")) return true;
 			return false;
 		}else{
+			if (label.contains(":") && label.contains(";") && label.indexOf(';') < label.indexOf(':')) return false;
 			String[] splitedLabel = label.split(":");
 			
 			if(splitedLabel.length >= 2){
@@ -493,6 +493,7 @@ class LLVM_Block implements ILLVM_Block {
 		
 		// comment handling
 		if (cmdLine.startsWith(";")){
+			if (cmdLine.contains("<label>:")) return null;
 			return new LLVM_Comment(cmdLine, predecessor, this);
 		}
 		
@@ -539,7 +540,7 @@ class LLVM_Block implements ILLVM_Block {
 			return new LLVM_LoadCommand(cmdLine, predecessor, this);
 		}else if(cmdLine.contains(" = getelementptr ")){
 			return new LLVM_GetElementPtrCommand(cmdLine, predecessor, this);
-		}else if(cmdLine.contains(" = call ") || cmdLine.contains(" = tail call ")){
+		}else if(cmdLine.contains(" = call ") || cmdLine.contains(" = tail call ") || cmdLine.startsWith("call ")){
 			return new LLVM_CallCommand(cmdLine, predecessor, this);
 		}else if(cmdLine.contains(" = icmp ")){
 			return new LLVM_IcmpCommand(cmdLine, predecessor, this);

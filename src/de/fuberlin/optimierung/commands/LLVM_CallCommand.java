@@ -14,6 +14,7 @@ import de.fuberlin.optimierung.LLVM_Parameter;
 
 public class LLVM_CallCommand extends LLVM_GenericCommand{
 	private boolean tail = false;
+	private boolean startsnotwithcall = false;
 	private String cconv = "";
 	private String reta = "";
 	private String fnty = "";
@@ -23,80 +24,52 @@ public class LLVM_CallCommand extends LLVM_GenericCommand{
 	public LLVM_CallCommand(String cmdLine, ILLVM_Command predecessor, ILLVM_Block block){
 		super(predecessor, block, cmdLine);
 		setOperation(LLVM_Operation.CALL);
-		// Kommentar entfernen
-		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));		
+		StringBuilder cmd = new StringBuilder(cmdLine);
+		parseEraseComment(cmd);
 		
-		String result = cmdLine.substring(0, cmdLine.indexOf("=")).trim();
-		cmdLine = cmdLine.substring(cmdLine.indexOf("=") + 1).trim();
-		if (cmdLine.startsWith("tail ")) tail = true;
-		
-		// tail und call entfernen
-		cmdLine = cmdLine.substring(cmdLine.indexOf("call ") + 4).trim();
-		
-		// cconv einlesen
-		if (cmdLine.startsWith("ccc") ||
-			cmdLine.startsWith("fastcc") || 
-			cmdLine.startsWith("coldcc") ||
-			cmdLine.startsWith("cc")){
-			this.cconv = cmdLine.substring(0, cmdLine.indexOf(" ", 3)).trim();
-			cmdLine = cmdLine.substring(cmdLine.indexOf(" ", 3)).trim();
+		String result = "";
+		if (!cmdLine.startsWith("call ")){
+			startsnotwithcall = true;
+			result = parseReadResult(cmd);
+			tail = parseOptionalString(cmd, "tail");
 		}
-		
-		// ret attrs einlesen
-		while (cmdLine.startsWith("zeroext") ||
-				cmdLine.startsWith("signext") ||
-				cmdLine.startsWith("inreg")){
-			this.reta += cmdLine.substring(0, cmdLine.indexOf(" ", 4)) + " ";
-			cmdLine = cmdLine.substring(cmdLine.indexOf(" ", 4)).trim();
+		parseEraseString(cmd, "call");
+		cconv = parseOptionalListSingle(cmd, new String[]{"ccc", "fastcc", "coldcc", "cc "});
+		reta = parseOptionalList(cmd, new String[]{"zeroext", "signext", "inreg"});
+		String ty = parseReadType(cmd);
+		if (cmd.toString().indexOf('@') > 0){
+			// optionaler Pointer nur vorhanden, wenn @ nicht am Anfang steht
+			fnty = parseReadType(cmd);
 		}
-
-		// ty einlesen
-		String ty = cmdLine.substring(0, cmdLine.indexOf("("));
-		ty = (cmdLine.indexOf("@") > ty.length())?ty:cmdLine.substring(0, cmdLine.indexOf("@"));
-		ty = ty.trim();
-		cmdLine = cmdLine.substring(ty.length()).trim();
+		fnptrval = parseReadValue(cmd);
+		parseEraseString(cmd, "(");
+		String funcargs = parseStringUntil(cmd, ")");
+		parseEraseString(cmd, ")");
+		fnattrs = parseOptionalList(cmd, new String[]{"noreturn", "nounwind", "readnone", "readonly"});
 		
-		// fnty einlesen
-		if (!cmdLine.startsWith("@")){
-			this.fnty = cmdLine.substring(0, cmdLine.indexOf("@")).trim();
-			cmdLine = cmdLine.substring(this.fnty.length()).trim();
-		}
-		
-		// fnptrval einlesen
-		this.fnptrval = cmdLine.substring(0, cmdLine.indexOf("(")).trim();
-		cmdLine = cmdLine.substring(this.fnptrval.length()).trim();
-		
-		// function args einlesen
-		String funcargs = cmdLine.substring(1, cmdLine.indexOf(")"));
-		cmdLine = cmdLine.substring(funcargs.length()+2).trim() + " ";
-		
+		//func args verarbeiten
 		if (funcargs.length() > 0){
-			String[] funcsplits = funcargs.split(",");
-			for(String pair : funcsplits){
-				operands.add(new LLVM_Parameter(pair.substring(pair.lastIndexOf(" ")).trim(), pair.substring(0, pair.lastIndexOf(" ")).trim()));
-			}
-		}
-		
-		// fn attrs einlesen
-		while (cmdLine.startsWith("noreturn") ||
-				cmdLine.startsWith("nounwind") ||
-				cmdLine.startsWith("readnone") ||
-				cmdLine.startsWith("readonly")){
-			this.fnattrs += cmdLine.substring(0, cmdLine.indexOf(" ", 7)) + " ";
-			cmdLine = cmdLine.substring(cmdLine.indexOf(" ", 7)).trim() + " ";
+			StringBuilder tmp = new StringBuilder(funcargs);
+			do{
+				String typ = parseReadType(tmp);
+				String name = parseReadValue(tmp);
+				operands.add(new LLVM_Parameter(name, typ));
+			}while(parseEraseString(tmp, ","));
 		}
 		
 		// <result> <ty>
-		this.target = new LLVM_Parameter(result, ty);
-		this.fnattrs = this.fnattrs.trim();
+		target = new LLVM_Parameter(result, ty);
 		
 		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());
 	}
 	
 	public String toString() {
-		String cmd_out = target.getName() + " = ";
+		String cmd_out = "";
 		
-		if (tail) cmd_out += "tail ";
+		if (startsnotwithcall){
+			cmd_out += target.getName() + " = ";
+			if (tail) cmd_out += "tail ";
+		}
 		cmd_out += "call ";
 		if (cconv != "") cmd_out += cconv + " ";
 		if (reta != "") cmd_out += reta + " ";

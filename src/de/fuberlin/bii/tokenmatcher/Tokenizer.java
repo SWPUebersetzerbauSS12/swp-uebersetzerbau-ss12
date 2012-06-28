@@ -119,6 +119,7 @@ public class Tokenizer implements LexerToParserInterface {
 			if ( dfa.canChangeStateByElement( currentChar)) {
 				currentLexem += currentChar;
 				dfa.changeStateByElement( currentChar);
+				// TODO if ( dfa.getCurrentState().isFiniteState()) then remember in this possible match  (error handling aspect)
 			} else if ( !currentLexem.isEmpty() 
 					&& dfa.getCurrentState().isFiniteState()) {
 				
@@ -133,7 +134,7 @@ public class Tokenizer implements LexerToParserInterface {
 				String tokenType = payload.getTokenType();
 				Attribute attribute = payload.getAttribute();
 				Object attributeValue = attribute.lexemToValue( currentLexem);
-				// TODO: convert lexem to corresponding value
+
 				Token recognisedToken = new Token( tokenType, attributeValue, currentLine, currentPositionInLine);
 
 				// gelesenenes Lexem akzeptieren
@@ -144,8 +145,6 @@ public class Tokenizer implements LexerToParserInterface {
 				
         // Fehlerbehandler rücksetzen
 				errorCorrector.reset();
-				
-			//	System.out.println( recognisedToken.getType());
 				
 				// filter comments
 				if ( ( readMode == ReadMode.READ_NORMAL) &&

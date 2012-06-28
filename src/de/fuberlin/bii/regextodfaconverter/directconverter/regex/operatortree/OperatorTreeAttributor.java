@@ -38,8 +38,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
-import de.fuberlin.bii.regextodfaconverter.directconverter.regex.RegexSpecialChars;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symbol;
+import de.fuberlin.bii.regextodfaconverter.directconverter.regex.RegexCharSet;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.SyntaxTreeException;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeNode;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeNode;
@@ -68,7 +68,7 @@ public class OperatorTreeAttributor<StatePayloadType extends Serializable>  {
 		if ( node instanceof TerminalNode) {
 		  // \epsilon-Knoten sind per definition true
 			RegularExpressionElement<StatePayloadType> regexElement = (RegularExpressionElement<StatePayloadType>)((TerminalNode)node).getValue();
-			if ( regexElement.getValue() == RegexSpecialChars.EMPTY_STRING)
+			if ( regexElement.getValue() == RegexCharSet.EMPTY_STRING)
 				return true;
 			else
 				// Terminale != \epsilon sind nicht nullable
@@ -93,7 +93,7 @@ public class OperatorTreeAttributor<StatePayloadType extends Serializable>  {
 		// \epsilon-Knoten liefern per definition die leere Menge
 		if ( node instanceof TerminalNode) {
 			RegularExpressionElement<StatePayloadType>  regexElement = (RegularExpressionElement<StatePayloadType>)((TerminalNode)node).getValue();
-			if ( regexElement.getValue() == RegexSpecialChars.EMPTY_STRING)
+			if ( regexElement.getValue() == RegexCharSet.EMPTY_STRING)
 				return new TreeNodeSet();
 			else { // Terminale != \epsilon liefern das aktuelle Element
 				TreeNodeCollection result = new TreeNodeSet();
@@ -128,7 +128,7 @@ public class OperatorTreeAttributor<StatePayloadType extends Serializable>  {
 		// \epsilon-Knoten liefern per definition die leere Menge
 		if ( node instanceof TerminalNode) {
 			RegularExpressionElement<StatePayloadType> regexElement = (RegularExpressionElement<StatePayloadType>)((TerminalNode)node).getValue();
-			if ( regexElement.getValue() == RegexSpecialChars.EMPTY_STRING)
+			if ( regexElement.getValue() == RegexCharSet.EMPTY_STRING)
 				return new TreeNodeSet();
 			else { // Terminale != \epsilon liefern das aktuelle Element
 				TreeNodeCollection result = new TreeNodeSet();

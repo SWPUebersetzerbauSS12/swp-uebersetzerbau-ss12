@@ -1,9 +1,9 @@
 package de.fuberlin.optimierung.commands;
 
-import java.util.LinkedList;
 import de.fuberlin.optimierung.ILLVM_Block;
 import de.fuberlin.optimierung.ILLVM_Command;
 import de.fuberlin.optimierung.LLVM_Operation;
+import de.fuberlin.optimierung.LLVM_Optimization;
 import de.fuberlin.optimierung.LLVM_Parameter;
 
 /*
@@ -20,9 +20,17 @@ public class LLVM_ArithmeticCommand extends LLVM_GenericCommand{
 	private boolean has_nuw = false;
 	private boolean has_nsw = false;
 	
-	public LLVM_ArithmeticCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
-		super(operation, predecessor, block, comment);
+	public LLVM_ArithmeticCommand(){
+		super();
+	}
+	
+	public LLVM_ArithmeticCommand(String cmdLine, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block){
+		super(predecessor, block, cmdLine);
+		setOperation(operation);
+		// Kommentar entfernen
+		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
 		
+		String[] cmd = command.split("[ \t]");
 		// Kommaposition ermitteln
 		int i = -1;
 		for (int j = 0; j < cmd.length; j++){
@@ -58,7 +66,7 @@ public class LLVM_ArithmeticCommand extends LLVM_GenericCommand{
 				break;
 		}
 		
-		System.out.println("Operation generiert: " + this.toString());
+		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());
 	}
 	
 	public String toString() {
@@ -87,7 +95,7 @@ public class LLVM_ArithmeticCommand extends LLVM_GenericCommand{
 				return "";
 		}
 		
-		cmd_output += has_nuw==true?"unw ":"";
+		cmd_output += has_nuw==true?"nuw ":"";
 		cmd_output += has_nsw==true?"nsw ":"";
 		cmd_output += operands.get(0).getTypeString()+" ";
 		cmd_output += operands.get(0).getName()+", ";

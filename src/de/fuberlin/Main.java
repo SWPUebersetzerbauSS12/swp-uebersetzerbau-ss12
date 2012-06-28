@@ -11,7 +11,9 @@ import de.fuberlin.commons.lexer.ILexer;
 import de.fuberlin.commons.parser.IParser;
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.optimierung.LLVM_Optimization;
+import de.fuberlin.projectF.CodeGenerator.CodeGenerator;
 import de.fuberlin.projectci.lrparser.LRParser;
+import de.fuberlin.projectcii.ParserGenerator.src.LL1Parser;
 
 
 
@@ -35,7 +37,7 @@ class Main {
 	/*
 	 * Standard Parameter
 	 */
-	static final String DEFAULT_GRAMMAR_FILE = "/input/parserci/quellsprache_bnf.txt";
+	static final String DEFAULT_GRAMMAR_FILE = "input/de/fuberlin/projectci/quellsprache_bnf.txt";
 	
 	/*
 	 * Ideen für Konsolenparameter:
@@ -47,7 +49,6 @@ class Main {
 	 * 
 	 * Standardkonfiguration: -f "irgendeinBeispielprogramm" -bi -lr
 	 */
-	
 	public static void main(String args[]) {
 		System.out.println("Hier die Code-Schnipsel einfuegen!");
 		
@@ -85,7 +86,8 @@ class Main {
 			}			
 		}
 		//--------------------------
-
+		
+		
 		//--------------------------
 		/*
 		 *	Parser
@@ -97,9 +99,9 @@ class Main {
 			IParser parser = new LRParser();
 			parseTree = parser.parse(lexer, arguments.get(PARAM_LR_PARSER));
 			
-		} else if( arguments.containsKey(PARAM_LL_PARSER) ) {	// -ll ["/path/to/bnfGrammar"]
-			
-			// Codeschnipsel von cii
+		} else if( arguments.containsKey(PARAM_LL_PARSER) ) {	// -ll ["/path/to/bnfGrammar"]			
+			IParser parser = new LL1Parser();
+			parseTree = parser.parse(lexer,arguments.get(PARAM_LL_PARSER));
 			
 		} else {									// -lr or no explicit parameter for parser
 			//FIXME Dieser Fall wird niemals eintreten!
@@ -107,9 +109,10 @@ class Main {
 			parseTree = parser.parse(lexer, DEFAULT_GRAMMAR_FILE);
 		}
 
+
 		//--------------------------
 
-
+		
 
 		String llvm_code = "";	// Hier der generierte LLVM-Code
 
@@ -124,7 +127,20 @@ class Main {
 
 		String optimized_llvm_code = llvm_optimizer.optimizeCodeFromString(llvm_code);	// Muss angepasst werden
 		//--------------------------
+		
+		
+		//--------------------------
+		/*
+		 * Codegenerierung
+		 * input : String llvm_code
+		 * output: String machineCode 
+		 */
+		boolean debug = false;
+    	boolean guiFlag = false;
+       String machineCode = CodeGenerator.generateCode(optimized_llvm_code, debug, guiFlag);
+        //--------------------------
 	}
+	
 	
 	// alle Parameter, die mit "-" beginnen als Key benutzen und eventueller 
 	// Folgeparameter(vielleicht nur mit Anführungszeichen akzeptieren) als Value
@@ -145,6 +161,18 @@ class Main {
 					System.out.println("Keine Quelldatei angegeben!");
 					arguments.put(PARAM_SOURCE_FILE, null);
 				}
+			} else if(args[i].equalsIgnoreCase(PARAM_DEF_FILE)) {
+				// Es wurde ein -d gelesen, erwarte nun Quelldatei
+				System.out.println("Para: -d");
+				if(i+1 < args.length && !args[i+1].trim().startsWith("-")) { // Eine Quelldatei wurde angegeben
+					System.out.println("-f Option: "+args[i+1].trim());
+					arguments.put(PARAM_DEF_FILE, args[i+1].trim());
+					i++;
+				} else {
+					// Keine Quelldatei angeben
+					System.out.println("Keine Definitionsdatei angegeben!");
+					arguments.put(PARAM_DEF_FILE, null);
+				}			
 			} else if(args[i].equalsIgnoreCase(PARAM_BI_LEXER) || args[i].equalsIgnoreCase(PARAM_BII_LEXER)) {
 				String lexerType = args[i];
 				System.out.println("Benutze "+lexerType+" Lexer");
@@ -153,7 +181,12 @@ class Main {
 				arguments.remove(PARAM_BII_LEXER);
 				
 				arguments.put(lexerType, null);
-				
+			} else if(args[i].equalsIgnoreCase(PARAM_REBUILD_DFA)) {
+				String rebuild = args[i];
+				// Mehrfacheinträge vermeiden
+				arguments.remove(PARAM_REBUILD_DFA);
+								
+				arguments.put(rebuild, null);				
 			}  else if(args[i].equalsIgnoreCase(PARAM_LL_PARSER) || args[i].equalsIgnoreCase(PARAM_LR_PARSER)) {
 				// Der Parser wird festgelegt  Prüfe, ob eine Grammatik Datei eingelesen werden soll.
 				String parserType = args[i];

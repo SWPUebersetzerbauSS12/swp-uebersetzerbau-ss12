@@ -1,9 +1,9 @@
 package de.fuberlin.optimierung.commands;
 
-import java.util.LinkedList;
 import de.fuberlin.optimierung.ILLVM_Block;
 import de.fuberlin.optimierung.ILLVM_Command;
 import de.fuberlin.optimierung.LLVM_Operation;
+import de.fuberlin.optimierung.LLVM_Optimization;
 import de.fuberlin.optimierung.LLVM_Parameter;
 
 /*
@@ -15,17 +15,55 @@ import de.fuberlin.optimierung.LLVM_Parameter;
 
 public class LLVM_IcmpCommand extends LLVM_GenericCommand{
 	
-	public LLVM_IcmpCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
-		super(operation, predecessor, block, comment);
+	public LLVM_IcmpCommand(String cmdLine, ILLVM_Command predecessor, ILLVM_Block block){
+		super(predecessor, block, cmdLine);
+		// Kommentar entfernen
+		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
 		
-		// <result> i1
-		target = new LLVM_Parameter(cmd[0], "i1");
-		// <op1> <ty>
-		operands.add(new LLVM_Parameter(cmd[5], cmd[4]));
-		// <op2> <ty>
-		operands.add(new LLVM_Parameter(cmd[6], cmd[4]));
+		// result einlesen
+		String result = cmdLine.substring(0, cmdLine.indexOf("=")).trim();
+		cmdLine = cmdLine.substring(cmdLine.indexOf("icmp ") + 4).trim();
 		
-		System.out.println("Operation generiert: " +  this.toString());
+		target = new LLVM_Parameter(result, "i1");
+		
+		// cond festlegen
+		if (cmdLine.startsWith("eq")){
+			setOperation(LLVM_Operation.ICMP_EQ);
+		}else if (cmdLine.startsWith("ne")){
+			setOperation(LLVM_Operation.ICMP_NE);
+		}else if (cmdLine.startsWith("ugt")){
+			setOperation(LLVM_Operation.ICMP_UGT);
+		}else if (cmdLine.startsWith("uge")){
+			setOperation(LLVM_Operation.ICMP_UGE);
+		}else if (cmdLine.startsWith("ult")){
+			setOperation(LLVM_Operation.ICMP_ULT);
+		}else if (cmdLine.startsWith("ule")){
+			setOperation(LLVM_Operation.ICMP_ULE);
+		}else if (cmdLine.startsWith("sgt")){
+			setOperation(LLVM_Operation.ICMP_SGT);
+		}else if (cmdLine.startsWith("sge")){
+			setOperation(LLVM_Operation.ICMP_SGE);
+		}else if (cmdLine.startsWith("slt")){
+			setOperation(LLVM_Operation.ICMP_SLT);
+		}else if (cmdLine.startsWith("sle")){
+			setOperation(LLVM_Operation.ICMP_SLE);
+		}
+		// cond entfernen
+		cmdLine = cmdLine.substring(cmdLine.indexOf(" ")).trim();
+		
+		// ty einlesen
+		int count = getComplexStructEnd(cmdLine);
+		String ty = cmdLine.substring(0, cmdLine.indexOf(" ", count));
+		cmdLine = cmdLine.substring(cmdLine.indexOf(" ", count)).trim();
+		
+		// ops einlesen
+		String op1 = cmdLine.substring(0, cmdLine.indexOf(",")).trim();
+		String op2 = cmdLine.substring(cmdLine.indexOf(",")+1).trim();
+		
+		operands.add(new LLVM_Parameter(op1, ty));
+		operands.add(new LLVM_Parameter(op2, ty));
+		
+		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " +  this.toString());
 	}
 	
 	public String toString() {

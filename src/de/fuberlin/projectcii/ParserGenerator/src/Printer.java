@@ -15,6 +15,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -25,7 +26,6 @@ import de.fuberlin.commons.parser.ISyntaxTree;
 /**
  * Debugging Class to visualize the current status of the used Datastructures
  * 
- * @author Patrick Schlott
  */
 public class Printer {
 
@@ -33,7 +33,6 @@ public class Printer {
 	/**
 	 * Use this Function to view the global Grammar inside the grammarReader.
 	 * 
-	 * @author Patrick Schlott
 	 */
 	static public void printGrammar(Vector<Productions> grammar){	
 		
@@ -59,7 +58,6 @@ public class Printer {
 	/**
 	 * Use this Function to view the global Grammar inside the ParserGenerator.
 	 * 
-	 * @author Patrick Schlott
 	 */
 	
 	static public void printGrammar(Map<String, Vector<Vector<String>>> grammar){	
@@ -81,7 +79,6 @@ public class Printer {
 	/**
 	 * Use this Function to view the global Grammar inside the ParserGenerator.
 	 * 
-	 * @author Patrick Schlott
 	 */
 	
 	static public void printProduction(Map<String, Vector<Vector<String>>> grammar,String key, int productionNr){	
@@ -98,7 +95,6 @@ public class Printer {
 	/**
 	 * Use this Function to view the Parsetable inside the ParserGenerator.
 	 * 
-	 * @author Patrick Schlott
 	 */
 	
 	static public void printParserTable(Vector<String> Terminals,
@@ -144,7 +140,6 @@ public class Printer {
 	/**
 	 * Use this Function to view the Parsetable inside the ParserGenerator.
 	 * 
-	 * @author Patrick Schlott
 	 */
 	
 	static public void printParserTable(Vector<String> Terminals,
@@ -199,7 +194,6 @@ public class Printer {
 	/**
 	 * Use this Function to view the FirstSet inside the ParserGenerator.
 	 * 
-	 * @author Ying Wei, Patrick Schlott
 	 */
 	static public void printFirstSets(Map<String, Set<String>> firstSets) {
 		for (Entry<String, Set<String>> fs : firstSets.entrySet()) {
@@ -211,7 +205,6 @@ public class Printer {
 	/**
 	 * Use this Function to view the FirstSet inside the ParserGenerator.
 	 * 
-	 * @author Ying Wei, Patrick Schlott
 	 */
 	static public void printFollowSets(Map<String, Set<String>> followSets) {
 		for (Entry<String, Set<String>> fs : followSets.entrySet()) {
@@ -223,10 +216,9 @@ public class Printer {
 	/**
 	 * Use this Function to view the FirstSetProductions inside the ParserGenerator.
 	 * 
-	 * @author Christoph Schr�der, Patrick Schlott
 	 */
-	static public void printFirstSetsProductions(Map<String, HashMap<String,Integer>> firstSetsProductions) {
-		for (Entry<String, HashMap<String,Integer>> fs : firstSetsProductions.entrySet()) {
+	static public void printFirstSetsProductions(Map<String, HashMap<String,Vector<Integer>>> firstSetsProductions) {
+		for (Entry<String, HashMap<String,Vector<Integer>>> fs : firstSetsProductions.entrySet()) {
 			System.out.println("First(" + fs.getKey() + ") = " + fs.getValue().keySet());
 		}
 		System.out.println("-----------");
@@ -244,8 +236,13 @@ public class Printer {
 			if (tagName.startsWith("<")){
 				tagName = tagName.substring(1, tagName.length()-1);
 			}
-			Element root = doc.createElement(tagName);
+			Element root = doc.createElement("Root");
+			Attr typeAttr = doc.createAttribute("symbol");
+            typeAttr.setValue(tagName);
+            root.setAttributeNode(typeAttr);
 			doc.appendChild(root);
+			
+			doc = childrenToXML(node, root, doc);
 			
 			for (ISyntaxTree child:node.getChildren()){
 				tagName = currNode.getSymbol().getName();
@@ -289,17 +286,58 @@ public class Printer {
 		
 		for (ISyntaxTree child:node.getChildren()){
 			SyntaxTree currNode = (SyntaxTree)child;
+
 			String tagName = currNode.getSymbol().getName();
+			boolean nonterminal=false;
+			
 			if (tagName.startsWith("<")){
 				tagName = tagName.substring(1, tagName.length()-1);
+				nonterminal = true;
 			}
 			Element childNode;
 			if (child.getChildrenCount() == 0){
-				childNode = doc.createElement("LEAF");
+			    if (!nonterminal){
+			        childNode = doc.createElement("TOKEN");
+			        Attr symbolAttr = doc.createAttribute("symbol");
+			        if (tagName.equals("@")){
+			            tagName="EPSILON";
+			        }
+			        symbolAttr.setValue(tagName);
+			        childNode.setAttributeNode(symbolAttr);
+			        if (child.getToken() != null){
+			            Attr typeAttr = doc.createAttribute("type");
+			            typeAttr.setValue(child.getToken().getType());
+			            childNode.setAttributeNode(typeAttr);
+                
+			            Attr attributeAttr = doc.createAttribute("attribute");
+			            attributeAttr.setValue("not Implemented");
+			            childNode.setAttributeNode(attributeAttr);
+                    
+			            Attr lNAttr = doc.createAttribute("LineNumber");
+			            lNAttr.setValue(String.valueOf(child.getToken().getLineNumber()));
+			            childNode.setAttributeNode(lNAttr);
+                    
+			            Attr offAttr = doc.createAttribute("Offset");
+			            offAttr.setValue(String.valueOf(child.getToken().getOffset()));
+			            childNode.setAttributeNode(offAttr);
+			        }
+			    
 				parentNode.appendChild(childNode);
+			    }
+			    else{
+			        childNode = doc.createElement("Node");
+	                Attr typeAttr = doc.createAttribute("symbol");
+	                typeAttr.setValue(tagName);
+	                childNode.setAttributeNode(typeAttr);
+	                parentNode.appendChild(childNode);
+			    }
 			}
 			else{
-				childNode = doc.createElement(tagName);
+	            
+				childNode = doc.createElement("Node");
+				Attr typeAttr = doc.createAttribute("symbol");
+                typeAttr.setValue(tagName);
+                childNode.setAttributeNode(typeAttr);
 				doc = childrenToXML(child, childNode, doc);
 				parentNode.appendChild(childNode);
 			}

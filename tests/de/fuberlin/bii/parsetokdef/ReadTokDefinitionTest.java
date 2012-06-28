@@ -20,14 +20,14 @@ public class ReadTokDefinitionTest {
 	 */
 	@Test
 	public void testReadFile() throws Exception {
-		File rdFile = new File("src/test/resources/def/parsetokdef/test.rd");
+		File rdFile = new File("tests/resources/de/fuberlin/bii/def/parsetokdef/test.rd");
 		ReadTokDefinition instance = new ReadTokDefinition(rdFile);
 		instance.readFile(rdFile);
 	}
 
 	@Test
 	public void testRegex() throws Exception {
-		File rdFile = new File("src/test/resources/def/parsetokdef/test.rd");
+		File rdFile = new File("tests/resources/de/fuberlin/bii/def/parsetokdef/test.rd");
 		List<IRule> rules = new ReadTokDefinition(rdFile).getRules();
 		
 		String tokenType = rules.get(0).getTokenType();

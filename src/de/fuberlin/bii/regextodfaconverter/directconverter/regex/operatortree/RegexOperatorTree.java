@@ -40,15 +40,24 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Queue;
+import java.util.Stack;
+import java.util.concurrent.ArrayBlockingQueue;
 
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.ContextFreeGrammar;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Grammar;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Nonterminal;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.ProductionRule;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.ProductionSet;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Symbol;
-import de.fuberlin.bii.regextodfaconverter.directconverter.lr0parser.grammar.Terminal;
-import de.fuberlin.bii.regextodfaconverter.directconverter.regex.RegexSpecialChars;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.ItemAutomat;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.Lr1ItemAutomat;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.Slr1ItemAutomat;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ContextFreeGrammar;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.EmptyString;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Grammar;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Nonterminal;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionRule;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionSet;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symbol;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Terminal;
+import de.fuberlin.bii.regextodfaconverter.directconverter.regex.RegexCharSet;
+import de.fuberlin.bii.regextodfaconverter.directconverter.regex.RegexSection;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.AbstractSyntaxTree;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.AttributesMap;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.SemanticRule;
@@ -56,9 +65,11 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.SemanticRu
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.SyntaxDirectedDefinition;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.Tree;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.TreeIterator;
+import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.InnerNode;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.Leaf;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeNode;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeNodeCollection;
+import de.fuberlin.bii.regextodfaconverter.fsm.StatePayload;
 import de.fuberlin.bii.utils.Test;
 
 /**
@@ -74,29 +85,98 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 	private static final Nonterminal NONTERMINAL_T = new Nonterminal( "T");
 	private static final Nonterminal NONTERMINAL_U = new Nonterminal( "U");
 	private static final Nonterminal NONTERMINAL_V = new Nonterminal( "V");
+	private static final Nonterminal NONTERMINAL_Z = new Nonterminal( "Z");
+	
+	private static final Nonterminal NONTERMINAL_REPETITION_COUNT = new Nonterminal( "RZ");
+	
+	private static final Nonterminal NONTERMINAL_CLASS_SIGNUM = new Nonterminal( "CS");
+	private static final Nonterminal NONTERMINAL_CLASS_FIRST_ELEMENT = new Nonterminal( "CF");
+	private static final Nonterminal NONTERMINAL_CLASS_ELEMENTS = new Nonterminal( "CE");
+	private static final Nonterminal NONTERMINAL_CLASS_RANGE = new Nonterminal( "CR");
+	private static final Nonterminal NONTERMINAL_CLASS_FIRST_RANGE_BYPASS = new Nonterminal( "CFP");
+	private static final Nonterminal NONTERMINAL_CLASS_ELEMENTS_BYPASS = new Nonterminal( "CEP");
+	private static final Nonterminal NONTERMINAL_CV = new Nonterminal( "CV");
+	private static final Nonterminal NONTERMINAL_FIRST_CV = new Nonterminal( "CFV");
+
 	private static final Nonterminal START_SYMBOL = NONTERMINAL_R;
 	
-		
-	// definition of terminals
-	private static final Terminal<RegularExpressionElement> TERMINAL_TERMINATOR = new Terminal<RegularExpressionElement>( new RegularExpressionElement( RegexSpecialChars.TERMINATOR));
-	private static final Terminal<RegularExpressionElement> TERMINAL_LEFT_BRACKET = new Terminal<RegularExpressionElement>(  new RegularExpressionElement( '('));
-	private static final Terminal<RegularExpressionElement> TERMINAL_RIGHT_BRACKET_TERMINAL = new Terminal<RegularExpressionElement>(  new RegularExpressionElement( ')'));
-	private static final Terminal<RegularExpressionElement> OPERATOR_KLEENE_CLOSURE = new Terminal<RegularExpressionElement>(  new RegularExpressionElement( '*'));
-	private static final Terminal<RegularExpressionElement> OPERATOR_ALTERNATIVE = new Terminal<RegularExpressionElement>(  new RegularExpressionElement( '|'));
-	//private static final Terminal<RegularExpressionElement> EMPTY_STRING = new EmptyString();
-	//private static final Terminal<RegularExpressionElement> OPERATOR_CONCATENATION = new Terminal<RegularExpressionElement>(  new RegularExpressionElement( '.'));
 
+	// definition of terminals
+	private static final Terminal<RegularExpressionElement> TERMINAL_TERMINATOR = new Terminal<RegularExpressionElement>( new RegularExpressionElement(
+			RegexCharSet.TERMINATOR));
+	private static final Terminal<RegularExpressionElement> BRACKET_LEFT_GROUP = new Terminal<RegularExpressionElement>( new RegularExpressionElement( RegexCharSet.REGEX_GROUP_BEGIN));
+	private static final Terminal<RegularExpressionElement> BRACKET_RIGHT_GROUP = new Terminal<RegularExpressionElement>(
+			new RegularExpressionElement( RegexCharSet.REGEX_GROUP_END));
+	private static final Terminal<RegularExpressionElement> BRACKET_LEFT_CLASS = new Terminal<RegularExpressionElement>( new RegularExpressionElement( RegexCharSet.REGEX_CLASS_BEGIN));
+	private static final Terminal<RegularExpressionElement> BRACKET_RIGHT_CLASS = new Terminal<RegularExpressionElement>(
+			new RegularExpressionElement( RegexCharSet.REGEX_CLASS_END));
+	private static final Terminal<RegularExpressionElement> TERMINAL_MASK = new Terminal<RegularExpressionElement>( new RegularExpressionElement( RegexCharSet.REGEX_MASK));
+	private static final Terminal<RegularExpressionElement> QUANTIFIER_KLEENE_CLOSURE = new Terminal<RegularExpressionElement>( new RegularExpressionElement( RegexCharSet.REGEX_KLEENE_CLOSURE));
+	private static final Terminal<RegularExpressionElement> QUANTIFIER_POSITIVE_CLOSURE = new Terminal<RegularExpressionElement>(
+			new RegularExpressionElement( RegexCharSet.REGEX_POSITIVE_CLOSURE));
+	private static final Terminal<RegularExpressionElement> QUANTIFIER_OPTION = new Terminal<RegularExpressionElement>( new RegularExpressionElement( RegexCharSet.REGEX_OPTION));
+	private static final Terminal<RegularExpressionElement> BRACKET_LEFT_QUANTIFIER = new Terminal<RegularExpressionElement>( new RegularExpressionElement( RegexCharSet.REGEX_REPETITION_BEGIN));
+	private static final Terminal<RegularExpressionElement> BRACKET_RIGHT_QUANTIFIER = new Terminal<RegularExpressionElement>(
+			new RegularExpressionElement( RegexCharSet.REGEX_REPETITION_END));
+	
+	private static final Terminal<RegularExpressionElement> OPERATOR_ALTERNATIVE = new Terminal<RegularExpressionElement>( new RegularExpressionElement( RegexCharSet.REGEX_ALTERNATIVE));
+	private static final Terminal<RegularExpressionElement> EMPTY_STRING = new EmptyString();
+	//private static final Terminal<RegularExpressionElement> OPERATOR_CONCATENATION = new Terminal<RegularExpressionElement>( new RegularExpressionElement( '.'));
+	private static final Terminal<RegularExpressionElement> CLASSIFIER_JOKER = new Terminal<RegularExpressionElement>( new RegularExpressionElement( RegexCharSet.REGEX_JOKER));
+	private static final Terminal<RegularExpressionElement> CLASSIFIER_CLASS_SIGNUM = new Terminal<RegularExpressionElement>( new RegularExpressionElement( RegexCharSet.REGEX_CLASS_SIGNUM));
+	private static final Terminal<RegularExpressionElement> OPERATOR_RANGE = new Terminal<RegularExpressionElement>( new RegularExpressionElement( RegexCharSet.REGEX_RANGE));
+	private static final Terminal<RegularExpressionElement> SEPARATOR_QUANTIFIER = new Terminal<RegularExpressionElement>( new RegularExpressionElement( RegexCharSet.REGEX_QUANTIFIER_SEPARATOR));
+	
+	
+	
+	
 	// definitions of productions
+	
+	// Priority level 0 (Alternative = highest)
 	private static final ProductionRule PRODUCTION_REGEX_ALTERNATIVE = new ProductionRule(NONTERMINAL_R, NONTERMINAL_R, OPERATOR_ALTERNATIVE, NONTERMINAL_S);
 	private static final ProductionRule PRODUCTION_REGEX_ALTERNATIVE_BYPASS = new ProductionRule(NONTERMINAL_R, NONTERMINAL_S);
-	//private static final ProductionRule PRODUCTION_REGEX_CONCATENATION = new ProductionRule(NONTERMINAL_S, NONTERMINAL_S, OPERATOR_CONCATENATION, NONTERMINAL_T);
+	
+  //Priority level 1 (Concatenation)
 	private static final ProductionRule PRODUCTION_REGEX_CONCATENATION = new ProductionRule(NONTERMINAL_S, NONTERMINAL_S, NONTERMINAL_T);
 	private static final ProductionRule PRODUCTION_REGEX_CONCATENATION_BYPASS = new ProductionRule(NONTERMINAL_S, NONTERMINAL_T);
-	private static final ProductionRule PRODUCTION_REGEX_KLEENE_CLOSURE = new ProductionRule(NONTERMINAL_T, NONTERMINAL_U, OPERATOR_KLEENE_CLOSURE);
-	private static final ProductionRule PRODUCTION_REGEX_KLEENE_CLOSURE_BYPASS = new ProductionRule(NONTERMINAL_T, NONTERMINAL_U);
-	private static final ProductionRule PRODUCTION_REGEX_BRACKET = new ProductionRule(NONTERMINAL_U, TERMINAL_LEFT_BRACKET, NONTERMINAL_R, TERMINAL_RIGHT_BRACKET_TERMINAL);
+	private static final ProductionRule PRODUCTION_REGEX_EMPTY_STRING = new ProductionRule(NONTERMINAL_S, EMPTY_STRING);
+  //Priority level 2 (Repetition)
+	private static final ProductionRule PRODUCTION_REGEX_KLEENE_CLOSURE = new ProductionRule(NONTERMINAL_T, NONTERMINAL_U, QUANTIFIER_KLEENE_CLOSURE);
+	private static final ProductionRule PRODUCTION_REGEX_POSITIVE_CLOSURE = new ProductionRule(NONTERMINAL_T, NONTERMINAL_U, QUANTIFIER_POSITIVE_CLOSURE);
+	private static final ProductionRule PRODUCTION_REGEX_OPTION = new ProductionRule(NONTERMINAL_T, NONTERMINAL_U, QUANTIFIER_OPTION);
+	private static final ProductionRule PRODUCTION_REGEX_REPETITION_RANGE = new ProductionRule(NONTERMINAL_T, NONTERMINAL_U, BRACKET_LEFT_QUANTIFIER, NONTERMINAL_REPETITION_COUNT, SEPARATOR_QUANTIFIER, NONTERMINAL_REPETITION_COUNT, BRACKET_RIGHT_QUANTIFIER);
+	private static final ProductionRule PRODUCTION_REGEX_REPETITION_RANGE_TO_INFTY = new ProductionRule(NONTERMINAL_T, NONTERMINAL_U, BRACKET_LEFT_QUANTIFIER, NONTERMINAL_REPETITION_COUNT, SEPARATOR_QUANTIFIER, BRACKET_RIGHT_QUANTIFIER);
+	private static final ProductionRule PRODUCTION_REGEX_REPETITION = new ProductionRule(NONTERMINAL_T, NONTERMINAL_U, BRACKET_LEFT_QUANTIFIER, NONTERMINAL_REPETITION_COUNT, BRACKET_RIGHT_QUANTIFIER);
+	private static final ProductionRule PRODUCTION_REGEX_REPETITION_COUNT = new ProductionRule( NONTERMINAL_REPETITION_COUNT, NONTERMINAL_REPETITION_COUNT, NONTERMINAL_Z);
+	private static final ProductionRule PRODUCTION_REGEX_REPETITION_COUNT_BYPASS = new ProductionRule( NONTERMINAL_REPETITION_COUNT, NONTERMINAL_Z);
+	
+	private static final ProductionRule PRODUCTION_REGEX_REPETITION_BYPASS = new ProductionRule(NONTERMINAL_T, NONTERMINAL_U);
+
+  //Priority level 3 (Enclosure)
+	// 3.1: Grouping
+	private static final ProductionRule PRODUCTION_REGEX_GROUP = new ProductionRule(NONTERMINAL_U, BRACKET_LEFT_GROUP, NONTERMINAL_R, BRACKET_RIGHT_GROUP);
+	// 3.1 Character class definition
+	private static final ProductionRule PRODUCTION_REGEX_CLASS = new ProductionRule(NONTERMINAL_U, BRACKET_LEFT_CLASS, NONTERMINAL_CLASS_SIGNUM, NONTERMINAL_CLASS_FIRST_ELEMENT, NONTERMINAL_CLASS_ELEMENTS, BRACKET_RIGHT_CLASS);
+	private static final ProductionRule PRODUCTION_REGEX_CLASS_SINGLE = new ProductionRule(NONTERMINAL_U, BRACKET_LEFT_CLASS, NONTERMINAL_CLASS_SIGNUM, NONTERMINAL_CLASS_FIRST_ELEMENT, BRACKET_RIGHT_CLASS);
+	// 3.1.1 Invert class definition or not
+	private static final ProductionRule PRODUCTION_REGEX_CLASS_SIGNUM_INVERT = new ProductionRule(NONTERMINAL_CLASS_SIGNUM, CLASSIFIER_CLASS_SIGNUM);
+	private static final ProductionRule PRODUCTION_REGEX_CLASS_SIGNUM_RIGHT = new ProductionRule(NONTERMINAL_CLASS_SIGNUM, EMPTY_STRING);
+	// 3.1.2 at least one character is expected to define a class 
+	private static final ProductionRule PRODUCTION_REGEX_CLASS_FIRST_RANGE_ELEMENT = new ProductionRule(NONTERMINAL_CLASS_FIRST_ELEMENT, NONTERMINAL_FIRST_CV, OPERATOR_RANGE, NONTERMINAL_CV);
+	private static final ProductionRule PRODUCTION_REGEX_CLASS_FIRST_RANGE_BYPASS = new ProductionRule(NONTERMINAL_CLASS_FIRST_ELEMENT, NONTERMINAL_CLASS_FIRST_RANGE_BYPASS);
+	private static final ProductionRule PRODUCTION_REGEX_CLASS_FIRST_SINGLE_ELEMENT = new ProductionRule( NONTERMINAL_CLASS_FIRST_RANGE_BYPASS, NONTERMINAL_FIRST_CV);
+	
+	private static final ProductionRule PRODUCTION_REGEX_CLASS_RANGE_ELEMENTS = new ProductionRule(NONTERMINAL_CLASS_ELEMENTS, NONTERMINAL_CLASS_ELEMENTS, NONTERMINAL_CLASS_RANGE);
+	private static final ProductionRule PRODUCTION_REGEX_CLASS_RANGE_ELEMENTS_FINAL = new ProductionRule(NONTERMINAL_CLASS_ELEMENTS, NONTERMINAL_CLASS_RANGE);
+	private static final ProductionRule PRODUCTION_REGEX_CLASS_RANGE_ELEMENTS_BYPASS = new ProductionRule(NONTERMINAL_CLASS_ELEMENTS, NONTERMINAL_CLASS_ELEMENTS_BYPASS);
+	private static final ProductionRule PRODUCTION_REGEX_CLASS_BYPASS_ELEMENTS = new ProductionRule(NONTERMINAL_CLASS_ELEMENTS, NONTERMINAL_CLASS_ELEMENTS, NONTERMINAL_CLASS_ELEMENTS_BYPASS);
+	private static final ProductionRule PRODUCTION_REGEX_CLASS_RANGE = new ProductionRule(NONTERMINAL_CLASS_RANGE, NONTERMINAL_CV, OPERATOR_RANGE, NONTERMINAL_CV);
+	private static final ProductionRule PRODUCTION_REGEX_CLASS_SINGLE_ELEMENT = new ProductionRule(NONTERMINAL_CLASS_ELEMENTS_BYPASS, NONTERMINAL_CV);
+
+	private static final ProductionRule PRODUCTION_REGEX_JOKER_ELEMENT = new ProductionRule(NONTERMINAL_U, CLASSIFIER_JOKER);
+
+	// 3.n bypass enclosure
 	private static final ProductionRule PRODUCTION_REGEX_BRACKET_BYPASS = new ProductionRule(NONTERMINAL_U, NONTERMINAL_V);
-	//private static final ProductionRule PRODUCTION_REGEX_EMPTY_STRING = new ProductionRule(NONTERMINAL_U, EMPTY_STRING);
 	
 	
 	
@@ -106,6 +186,8 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 	
 	private TreeNode terminatorNode;
 	
+	
+	
 	public RegexOperatorTree( RegularExpressionElement<StatePayloadType>[] regularExpression) throws Exception {
 		super();
 		ContextFreeGrammar regexGrammar = getRegexGrammar();
@@ -113,8 +195,13 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 		extendGrammarAndSddWithTerminator( regexGrammar, regexSdd);
 	  // extends regex string
 		regularExpression = Arrays.copyOf( regularExpression, regularExpression.length +1);
-		regularExpression[regularExpression.length -1] = new RegularExpressionElement( RegexSpecialChars.TERMINATOR, null);
-		ast = new AbstractSyntaxTree( regexGrammar, regexSdd, regularExpression);
+		regularExpression[regularExpression.length -1] = new RegularExpressionElement( RegexCharSet.TERMINATOR, null);
+		ast = new AbstractSyntaxTree( regexGrammar, regexSdd, regularExpression) {
+			@Override
+			protected ItemAutomat getNewItemAutomat( Grammar grammar) {
+				return new Slr1ItemAutomat<Symbol>( (ContextFreeGrammar) grammar);
+			}
+		};
 		operatorTreeAttributor.attributizeOperatorTree( this);
 	}
 	
@@ -123,40 +210,84 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 	public static ContextFreeGrammar getRegexGrammar() {
 		ContextFreeGrammar grammar = new ContextFreeGrammar();
 
-		// we define valid chars 
-		ArrayList<Terminal<RegularExpressionElement>>  terminals = new ArrayList<Terminal<RegularExpressionElement>>(); 
-    // a..z
-		for ( int c = 'a'; c <= 'z'; c++) {
-			terminals.add(new Terminal<RegularExpressionElement>( new RegularExpressionElement( (char) c)));
-		}
-		// A..Z
-		for ( int c = 'A'; c <= 'Z'; c++) {
-			terminals.add(new Terminal<RegularExpressionElement>( new RegularExpressionElement( (char) c)));
-		}
-	  // 0..9
-		for ( int c = '0'; c <= '9'; c++) {
-			terminals.add(new Terminal<RegularExpressionElement>( new RegularExpressionElement( (char) c)));
-		}
-		// add further chars
-		char[] furtherChars = { '!', '"', '#', '$' , '%', '&', '\'', '`', '´', '-', '_', ',', ';', '.', ':', '/', '\\', '?', '=', ']', '[', '{', '}', '^', '°', '<', '>', '~', '+'};
-		for ( char c : furtherChars) {
-			terminals.add(new Terminal<RegularExpressionElement>( new RegularExpressionElement( c)));	
-		}	
-
+		
 		
 		ProductionSet productions = new ProductionSet();
+	  // Priority level 0 (Alternative = highest)
 		productions.add( PRODUCTION_REGEX_ALTERNATIVE);
 		productions.add( PRODUCTION_REGEX_ALTERNATIVE_BYPASS);
+	  // Priority level 1 (Concatenation)
 		productions.add( PRODUCTION_REGEX_CONCATENATION);
 		productions.add( PRODUCTION_REGEX_CONCATENATION_BYPASS);
+		productions.add( PRODUCTION_REGEX_EMPTY_STRING);
+	  // Priority level 2 (Repetition)
 		productions.add( PRODUCTION_REGEX_KLEENE_CLOSURE);
-		productions.add( PRODUCTION_REGEX_KLEENE_CLOSURE_BYPASS);
-		productions.add( PRODUCTION_REGEX_BRACKET);
+		productions.add( PRODUCTION_REGEX_POSITIVE_CLOSURE);
+		productions.add( PRODUCTION_REGEX_OPTION);
+		productions.add( PRODUCTION_REGEX_REPETITION_BYPASS);
+	  // Priority level 2.1 (custom repetition)
+		productions.add( PRODUCTION_REGEX_REPETITION_RANGE);
+		productions.add( PRODUCTION_REGEX_REPETITION_RANGE_TO_INFTY);
+		productions.add( PRODUCTION_REGEX_REPETITION);
+		productions.add( PRODUCTION_REGEX_REPETITION_COUNT);
+		productions.add( PRODUCTION_REGEX_REPETITION_COUNT_BYPASS);
+	  // Priority level 3 (Enclosure)
+		productions.add( PRODUCTION_REGEX_GROUP);
+		// 3.1 Character class definition
+		productions.add( PRODUCTION_REGEX_CLASS);
+		productions.add( PRODUCTION_REGEX_CLASS_SINGLE);
+		// 3.1.1 Invert class definition or not
+		productions.add( PRODUCTION_REGEX_CLASS_SIGNUM_INVERT);
+		productions.add( PRODUCTION_REGEX_CLASS_SIGNUM_RIGHT);
+		// 3.1.2 at least one character is expected to define a class 
+	  productions.add( PRODUCTION_REGEX_CLASS_FIRST_RANGE_ELEMENT);
+	  productions.add( PRODUCTION_REGEX_CLASS_FIRST_RANGE_BYPASS);
+		productions.add( PRODUCTION_REGEX_CLASS_FIRST_SINGLE_ELEMENT);
+		
+		productions.add( PRODUCTION_REGEX_CLASS_RANGE_ELEMENTS);
+		productions.add( PRODUCTION_REGEX_CLASS_RANGE_ELEMENTS_FINAL);
+		productions.add( PRODUCTION_REGEX_CLASS_RANGE_ELEMENTS_BYPASS);
+		productions.add( PRODUCTION_REGEX_CLASS_RANGE);
+		productions.add( PRODUCTION_REGEX_CLASS_BYPASS_ELEMENTS);
+		productions.add( PRODUCTION_REGEX_CLASS_SINGLE_ELEMENT);
+		
+		productions.add( PRODUCTION_REGEX_JOKER_ELEMENT);
+				
 		productions.add( PRODUCTION_REGEX_BRACKET_BYPASS);
-		//productions.add( PRODUCTION_REGEX_EMPTY_STRING);
-		for ( Terminal<RegularExpressionElement> terminal : terminals) {
-			productions.add( new ProductionRule(NONTERMINAL_V, terminal));	
+
+		// MAIN Terminals
+	  for ( char c : RegexCharSet.getUnguardedCharsOfContext( RegexSection.MAIN)) {
+			Terminal<RegularExpressionElement> terminal = new Terminal<RegularExpressionElement>( new RegularExpressionElement( (char) c));
+			productions.add( new ProductionRule(NONTERMINAL_V, terminal));				
+	  }
+		
+	  for ( char c : RegexCharSet.getMetaCharsOfContext( RegexSection.MAIN)) {
+			Terminal<RegularExpressionElement> metaTerminal = new Terminal<RegularExpressionElement>( new RegularExpressionElement( (char) c));
+			productions.add( new ProductionRule(NONTERMINAL_V, TERMINAL_MASK, metaTerminal));	
 		}
+	   
+	  //REPETITION Terminals
+	  for ( int i = 0x30; i <= 0x39; i++) {
+	  	Terminal<RegularExpressionElement> terminal = new Terminal<RegularExpressionElement>( new RegularExpressionElement( (char) i));
+			productions.add( new ProductionRule(NONTERMINAL_Z, terminal));
+		}
+	  
+		
+	  // CLASS Terminals
+	  for ( char c : RegexCharSet.getUnguardedCharsOfContext( RegexSection.CHARACTER_CLASS)) {
+			Terminal<RegularExpressionElement> terminal = new Terminal<RegularExpressionElement>( new RegularExpressionElement( (char) c));
+			productions.add( new ProductionRule(NONTERMINAL_CV, terminal));
+			productions.add( new ProductionRule(NONTERMINAL_FIRST_CV, terminal));
+	  }
+	  productions.add( new ProductionRule(NONTERMINAL_CV, TERMINAL_MASK, new Terminal<RegularExpressionElement>( new RegularExpressionElement( RegexCharSet.REGEX_RANGE))));
+	  productions.add( new ProductionRule(NONTERMINAL_CV, new Terminal<RegularExpressionElement>( new RegularExpressionElement( RegexCharSet.REGEX_CLASS_SIGNUM))));
+	  productions.add( new ProductionRule(NONTERMINAL_CV, TERMINAL_MASK, new Terminal<RegularExpressionElement>( new RegularExpressionElement( RegexCharSet.REGEX_CLASS_END))));
+	  productions.add( new ProductionRule(NONTERMINAL_CV, TERMINAL_MASK, TERMINAL_MASK));
+	  productions.add( new ProductionRule(NONTERMINAL_FIRST_CV, TERMINAL_MASK, new Terminal<RegularExpressionElement>( new RegularExpressionElement( RegexCharSet.REGEX_RANGE))));
+	  productions.add( new ProductionRule(NONTERMINAL_FIRST_CV, TERMINAL_MASK, new Terminal<RegularExpressionElement>( new RegularExpressionElement( RegexCharSet.REGEX_CLASS_SIGNUM))));
+	  productions.add( new ProductionRule(NONTERMINAL_FIRST_CV, TERMINAL_MASK, new Terminal<RegularExpressionElement>( new RegularExpressionElement( RegexCharSet.REGEX_CLASS_END))));
+	  productions.add( new ProductionRule(NONTERMINAL_FIRST_CV, TERMINAL_MASK, TERMINAL_MASK));			  
+	  
 		// TODO: Regex Grammatik noch unvollständig
 		
 		grammar.addAll( productions);
@@ -168,6 +299,10 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 	
 	public static SyntaxDirectedDefinition getRegexSdd() {
 		SyntaxDirectedDefinition result = new SyntaxDirectedDefinition();
+		
+		// ++++++++++++++++++++++++++++++
+		// Priority level 0 (Alternative)
+		// ++++++++++++++++++++++++++++++
 		
 		// R -> R1 | S
 		SemanticRules semanticRules = new SemanticRules();
@@ -181,6 +316,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 				nodeR.setLeftChildNode( nodeR1);
 				nodeR.setRightChildNode( nodeS);
 	      attributesMaps[0].put( "node", nodeR);
+	    //  cNodeR++;
 			}
 		});
 		result.put( PRODUCTION_REGEX_ALTERNATIVE, semanticRules);
@@ -191,10 +327,16 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 			public void apply( AttributesMap... attributesMaps) {
 				TreeNode nodeS = (TreeNode) attributesMaps[1].get( "node");
 				attributesMaps[0].put( "node", nodeS);
+			//	cNodeR++;
 			}
 		});
 		result.put( PRODUCTION_REGEX_ALTERNATIVE_BYPASS, semanticRules);
 
+		
+		// ++++++++++++++++++++++++++++++++
+		// Priority level 1 (Concatenation)
+		// ++++++++++++++++++++++++++++++++
+		
 	  // S -> S1 T
 		semanticRules = new SemanticRules();
 		semanticRules.add( new SemanticRule() {	
@@ -202,15 +344,14 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 				OperatorNode nodeS = new OperatorNode( OperatorType.CONCATENATION);		
 				TreeNode nodeS1 = (TreeNode) attributesMaps[1].get( "node");
 				TreeNode nodeT = (TreeNode) attributesMaps[2].get( "node");
-				//Object payload = ((Symbol) attributesMaps[2].get( "value")).getPayload();
-				//tryPassPayloadDownwards( payload, nodeT);
 				nodeS.setLeftChildNode( nodeS1);
 				nodeS.setRightChildNode( nodeT);
 				attributesMaps[0].put( "node", nodeS);
 			}
 		});
 		result.put( PRODUCTION_REGEX_CONCATENATION, semanticRules);
-
+		
+		
 		// S -> T
 		semanticRules = new SemanticRules();
 		semanticRules.add( new SemanticRule() {	
@@ -220,7 +361,27 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 			}
 		});
 		result.put( PRODUCTION_REGEX_CONCATENATION_BYPASS, semanticRules);
+		
+		// -----------------------------
+		// Empty string
+		// -----------------------------
+		
+	  // S -> \epsilon
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+		  public void apply( AttributesMap... attributesMaps) {
+				TreeNode<Symbol> nodeTerminal = new TerminalNode( new RegularExpressionElement( RegexCharSet.EMPTY_STRING));
+				attributesMaps[0].put( "node", nodeTerminal);
+		  }
+		});
+		result.put( PRODUCTION_REGEX_EMPTY_STRING, semanticRules);
 
+		
+
+		// +++++++++++++++++++++++++++++
+		// Priority level 2 (Repetition)
+		// +++++++++++++++++++++++++++++
+		
 		// T -> U*
 		semanticRules = new SemanticRules();
 		semanticRules.add( new SemanticRule() {	
@@ -236,7 +397,48 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 		});
 		result.put( PRODUCTION_REGEX_KLEENE_CLOSURE, semanticRules);
 
-		// T -> U
+	  // T -> U+  (positive closure)
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) {
+				OperatorNode nodeT = new OperatorNode( OperatorType.CONCATENATION);
+				TreeNode nodeU = (TreeNode) attributesMaps[1].get( "node");
+				Object payload = ((Symbol) attributesMaps[2].get( "value")).getPayload();
+				tryPassPayloadDownwards( payload, nodeU);
+				// The first fix repetition 
+				nodeT.setLeftChildNode( nodeU);
+				// All following optional repetitions
+				RepetitionRange repetitionRange = new RepetitionRange( 0, Integer.MAX_VALUE);
+				OperatorNode nodeKleeneClosure = new OperatorNode( OperatorType.REPETITION, repetitionRange);
+				nodeKleeneClosure.setLeftChildNode( nodeU);
+				nodeT.setRightChildNode( nodeKleeneClosure);
+				// return new positive closure node
+				attributesMaps[0].put( "node", nodeT);
+			}
+		});
+		result.put( PRODUCTION_REGEX_POSITIVE_CLOSURE, semanticRules);		
+		
+		// T -> U?  (option)
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) {
+				OperatorNode nodeT = new OperatorNode( OperatorType.ALTERNATIVE);
+			//	cNodeR++;
+				TreeNode nodeU = (TreeNode) attributesMaps[1].get( "node");
+				Object payload = ((Symbol) attributesMaps[2].get( "value")).getPayload();
+				tryPassPayloadDownwards( payload, nodeU);
+				// The possibility to accept the empty string
+				nodeT.setLeftChildNode( new TerminalNode( new RegularExpressionElement( RegexCharSet.EMPTY_STRING)));
+				// or to accept the expression in U
+				nodeT.setRightChildNode( nodeU);
+				// return new option node
+				attributesMaps[0].put( "node", nodeT);
+			}
+		});
+		result.put( PRODUCTION_REGEX_OPTION, semanticRules);		
+
+			
+		// T -> U   (bypass)
 		semanticRules = new SemanticRules();
 		semanticRules.add( new SemanticRule() {	
 			public void apply( AttributesMap... attributesMaps) {
@@ -244,9 +446,103 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 				attributesMaps[0].put( "node", nodeU);
 			}
 		});
-		result.put( PRODUCTION_REGEX_KLEENE_CLOSURE_BYPASS, semanticRules);
+		result.put( PRODUCTION_REGEX_REPETITION_BYPASS, semanticRules);
+		
+		
+		// +++++++++++++++++++++++++++++
+		// Priority level 2.1 (Custom Repetition)
+		// +++++++++++++++++++++++++++++
 
-		// U -> V
+	  // T -> U { RZ , RZ1 }  
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) throws OperatorTreeException {
+				try {
+					TreeNode nodeU = (TreeNode) attributesMaps[1].get( "node");
+					int valueRZ = (Integer) attributesMaps[3].get( "value");
+					int valueRZ1 = (Integer) attributesMaps[5].get( "value");
+					List<TreeNode> repetitionNodes = new ArrayList<TreeNode>(); 
+					for ( int i = valueRZ; i <= valueRZ1; i++) {
+						repetitionNodes.add( getRepeatitionOfNode( nodeU, i));
+					}	
+					TreeNode relRootNode = getNodesAsAlternatives( repetitionNodes);  
+					attributesMaps[0].put( "node", relRootNode);
+				} catch (Exception e) {
+					throw new OperatorTreeException( "Invalid regular expression. Cannot resolv custom repetition statement.");
+				}
+			}
+		});
+		result.put( PRODUCTION_REGEX_REPETITION_RANGE, semanticRules);
+
+		// T -> U { RZ , }  
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) throws OperatorTreeException {
+				try {
+				  // like T -> U { RZ } 
+					TreeNode nodeU = (TreeNode) attributesMaps[1].get( "node");
+					int valueRZ = (Integer) attributesMaps[3].get( "value");
+					TreeNode relRootNode = getRepeatitionOfNode( nodeU, valueRZ);
+					// add RZ *
+					RepetitionRange repetitionRange = new RepetitionRange( 0, Integer.MAX_VALUE);
+					OperatorNode nodeInfty = new OperatorNode( OperatorType.REPETITION, repetitionRange);
+					nodeInfty.setLeftChildNode( (TreeNode) nodeU.clone());
+					TreeNode leftChild = relRootNode;
+					TreeNode rightChild = nodeInfty;
+					relRootNode = new OperatorNode( OperatorType.CONCATENATION);
+					((OperatorNode) relRootNode).setLeftChildNode( leftChild);
+					((OperatorNode) relRootNode).setRightChildNode( rightChild);
+					attributesMaps[0].put( "node", relRootNode);
+				} catch (Exception e) {
+					throw new OperatorTreeException( "Invalid regular expression. Cannot resolv custom repetition statement.");
+				}
+			}
+		});
+		result.put( PRODUCTION_REGEX_REPETITION_RANGE_TO_INFTY, semanticRules);
+	
+		// T -> U { RZ }  
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) throws OperatorTreeException {
+				try {
+					TreeNode nodeU = (TreeNode) attributesMaps[1].get( "node");
+					int valueRZ = (Integer) attributesMaps[3].get( "value");
+					TreeNode relRootNode = getRepeatitionOfNode( nodeU, valueRZ);
+					attributesMaps[0].put( "node", relRootNode);
+				} catch (Exception e) {
+					throw new OperatorTreeException( "Invalid regular expression. Cannot resolv custom repetition statement.");
+				}
+			}
+		});
+		result.put( PRODUCTION_REGEX_REPETITION, semanticRules);
+
+		// RZ -> RZ1 Z  
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) {
+				int valueRZ1 = (Integer) attributesMaps[1].get( "value");
+				int valueZ = (Integer) attributesMaps[2].get( "value");
+				int valueRZ = valueRZ1 *10 + valueZ;
+				attributesMaps[0].put( "value", valueRZ);
+			}
+		});
+		result.put( PRODUCTION_REGEX_REPETITION_COUNT, semanticRules);
+
+		// RZ -> Z  (bypass)  
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) {
+				attributesMaps[0].put( "value", attributesMaps[1].get( "value"));
+			}
+		});
+		result.put( PRODUCTION_REGEX_REPETITION_COUNT_BYPASS, semanticRules);
+		
+		
+		// +++++++++++++++++++++++++++++
+		// Priority level 3 (Enclosure)
+		// +++++++++++++++++++++++++++++
+		
+		// U -> V  (bypass)     
 		semanticRules = new SemanticRules();
 		semanticRules.add( new SemanticRule() {	
 			public void apply( AttributesMap... attributesMaps) {
@@ -255,6 +551,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 			}
 		});
 		result.put( PRODUCTION_REGEX_BRACKET_BYPASS, semanticRules);
+	  
 
 		// U -> ( R )
 		semanticRules = new SemanticRules();
@@ -266,19 +563,298 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 				attributesMaps[0].put( "node", nodeR);
 			}
 		});
-		result.put( PRODUCTION_REGEX_BRACKET, semanticRules);
+		result.put( PRODUCTION_REGEX_GROUP, semanticRules);
+	  
 
-		// V -> a
+		// -----------------------------
+		// 3.1  Character class definition
+		// -----------------------------
+
+		
+	  // U -> [ CS CF CE ] and U -> [ CS CF ]
 		semanticRules = new SemanticRules();
 		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) {
+				OperatorNode nodeU = new OperatorNode( OperatorType.ALTERNATIVE);
+				Boolean buildComplementClass = (Boolean) attributesMaps[2].get( "complement");
+				
+				// determin the common payload
+				Object commonPayload = ((Symbol) attributesMaps[1].get( "value")).getPayload();
+				if ( Test.isUnassigned( commonPayload))
+					commonPayload = (Object) attributesMaps[2].get( "payload");
+				
+				
+				
+				List<Symbol> values = (List<Symbol>) attributesMaps[3].get( "values");
+
+				// in case of U -> [ CS CF CE ]
+				if ( attributesMaps.length > 5 &&  Test.isAssigned( attributesMaps[4])) {
+					values.addAll( (List<Symbol>) attributesMaps[4].get( "values"));
+					if ( Test.isUnassigned( commonPayload))
+						commonPayload = ((Symbol) attributesMaps[5].get( "value")).getPayload();
+				} else { // in case of U -> [ CS CF ]
+					if ( Test.isUnassigned( commonPayload))
+						commonPayload = ((Symbol) attributesMaps[4].get( "value")).getPayload();
+				}
+				
+				
+				if ( buildComplementClass) {
+					// build the complement class by exclusion of all chars mentioned in list values
+					// and add the determine common payload to each of them
+					List<Symbol> complementValues = new ArrayList<Symbol>();
+					for ( char c = RegexCharSet.getFirstAsciiChar(); c <= RegexCharSet.getLastAsciiChar(); c++) {
+						RegularExpressionElement complementCharacterCandidate = new RegularExpressionElement( c, commonPayload);
+						if ( !values.contains( complementCharacterCandidate))
+							complementValues.add( complementCharacterCandidate);
+					} 
+					values = complementValues;
+				} else {
+					// otherwise, we use the given values. Finally we add the common payload to all that unassigned 
+					for ( Symbol value : values) {
+						if ( Test.isUnassigned( value.getPayload()))
+							value.setPayload( commonPayload);
+					}
+				}
+				
+				// convert values to nodes
+				List<TreeNode> nodes = new ArrayList<TreeNode>();
+				for ( Symbol value : values) {
+				  nodes.add( new TerminalNode( value));
+				}
+					
+				TreeNode relRootNode = getNodesAsAlternatives( nodes);
+				attributesMaps[0].put( "node", relRootNode);
+		 	}
+		});
+		result.put( PRODUCTION_REGEX_CLASS, semanticRules);
+		result.put( PRODUCTION_REGEX_CLASS_SINGLE, semanticRules);
+		
+		// CS -> ^
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) {
+				Object payload = ((Symbol) attributesMaps[1].get( "value")).getPayload();
+				attributesMaps[0].put( "complement", true);
+				attributesMaps[0].put( "payload", payload);
+			}
+		});
+		result.put( PRODUCTION_REGEX_CLASS_SIGNUM_INVERT, semanticRules);
+
+		// CS -> \epsilon
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) {
+				attributesMaps[0].put( "complement", false);
+			}
+		});
+		result.put( PRODUCTION_REGEX_CLASS_SIGNUM_RIGHT, semanticRules);
+
+		
+		
+
+		// CE -> CE CEP
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) {
+				List<Symbol> valuesCE = (List<Symbol>) attributesMaps[1].get( "values");
+				List<Symbol> valuesCEP = (List<Symbol>) attributesMaps[2].get( "values");
+				valuesCE.addAll( valuesCEP);
+				attributesMaps[0].put( "values", valuesCE);
+			}
+		});
+		result.put( PRODUCTION_REGEX_CLASS_BYPASS_ELEMENTS, semanticRules);
+  	// alike CE -> CE CR
+		result.put( PRODUCTION_REGEX_CLASS_RANGE_ELEMENTS, semanticRules);
+		
+		// CE -> CEP
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) {
+				attributesMaps[0].put( "values", attributesMaps[1].get( "values"));
+			}
+		});
+		result.put( PRODUCTION_REGEX_CLASS_RANGE_ELEMENTS_BYPASS, semanticRules);
+		// alike  CE -> CR
+		result.put( PRODUCTION_REGEX_CLASS_RANGE_ELEMENTS_FINAL, semanticRules);	
+	  // CF -> CFP
+		result.put( PRODUCTION_REGEX_CLASS_FIRST_RANGE_BYPASS, semanticRules);	
+		
+		
+		
+		// CEP -> CV
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) {
+				List<Symbol> values = new ArrayList<Symbol>();
+				values.add( (Symbol) attributesMaps[1].get( "value"));
+				attributesMaps[0].put( "values", values);
+			}
+		});
+		result.put( PRODUCTION_REGEX_CLASS_SINGLE_ELEMENT, semanticRules);
+		// alike CFP -> CFV  
+		result.put( PRODUCTION_REGEX_CLASS_FIRST_SINGLE_ELEMENT, semanticRules);
+		
+		
+		
+		
+
+		
+		// CF -> CFV - CFV   whereas holds Ord(V) <= Ord(V1) 
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) throws OperatorTreeException {
+				List<Symbol> values = new ArrayList<Symbol>();
+				RegularExpressionElement valueV = (RegularExpressionElement) attributesMaps[1].get( "value");
+				Object commonPayload = ((Symbol) attributesMaps[2].get( "value")).getPayload();
+				RegularExpressionElement valueV1 = (RegularExpressionElement) attributesMaps[3].get( "value");
+				char valueVChar = (Character) valueV.getValue();
+				char valueV1Char = (Character) valueV1.getValue();
+				
+				for ( char c = valueVChar; c <= valueV1Char; c++) {
+					if ( c == valueVChar 
+							&& Test.isAssigned( valueV.getPayload()))
+						values.add( new RegularExpressionElement( c, valueV.getPayload()));
+					else if ( c == valueV1Char 
+							&& Test.isAssigned( valueV1.getPayload()))
+						values.add( new RegularExpressionElement( c, valueV1.getPayload()));
+					else
+					  values.add( new RegularExpressionElement( c, commonPayload));
+				}
+				
+				if ( values.isEmpty())
+				  throw new OperatorTreeException( "Invalid regular expression. Empty range in character class.");
+					
+				attributesMaps[0].put( "values", values);
+			}
+		});
+		result.put( PRODUCTION_REGEX_CLASS_FIRST_RANGE_ELEMENT, semanticRules);
+		// CR -> CV - CV
+		result.put( PRODUCTION_REGEX_CLASS_RANGE, semanticRules);		
+		
+	
+
+
+		// -----------------------------
+		// 3.2  JOKER
+		// -----------------------------
+		
+		
+		// U -> . 
+		semanticRules = new SemanticRules();
+		semanticRules.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) {
+				Object payload = ((Symbol) attributesMaps[1].get( "value")).getPayload();
+				int firstChar = RegexCharSet.getFirstAsciiChar();
+				int lastChar = RegexCharSet.getLastAsciiChar();
+				RegularExpressionElement currentCharElement;
+				List<TreeNode> nodes = new ArrayList<TreeNode>();
+				for ( int c = firstChar; c <= lastChar; c++) {
+					currentCharElement = new RegularExpressionElement( (char) c, payload);
+					nodes.add( new TerminalNode( currentCharElement));
+				}
+				TreeNode jokerNode = getNodesAsAlternatives( nodes);
+				attributesMaps[0].put( "node", jokerNode);
+			}
+		});
+		result.put( PRODUCTION_REGEX_JOKER_ELEMENT, semanticRules);
+
+		
+		
+		
+		
+		
+		// +++++++++++++++++++++++++++++
+		// Level 4 (Characters)
+		// +++++++++++++++++++++++++++++
+		
+	
+		// Main Terminals
+		
+		// V -> a
+		SemanticRules semanticRulesOfUnguardedTerminals = new SemanticRules();
+		semanticRulesOfUnguardedTerminals.add( new SemanticRule() {	
 			public void apply( AttributesMap... attributesMaps) {
 				TreeNode<Symbol> nodeTerminal = new TerminalNode( (Symbol) attributesMaps[1].get( "value"));
 				attributesMaps[0].put( "node", nodeTerminal);
 			}
 		});
+
+		// V -> \ a
+		SemanticRules semanticRulesOfMetaTerminals = new SemanticRules();
+		semanticRulesOfMetaTerminals.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) {
+				TreeNode<Symbol> nodeTerminal = new TerminalNode( (Symbol) attributesMaps[2].get( "value"));
+				attributesMaps[0].put( "node", nodeTerminal);
+			}
+		});
+
+    List<Character> unguardedChars = RegexCharSet.getUnguardedCharsOfContext( RegexSection.MAIN);
 		for ( Terminal terminal : getRegexGrammar().getTerminals()) {
-			result.put( new ProductionRule(NONTERMINAL_V, terminal), semanticRules);
-		}  
+			if ( unguardedChars.contains( terminal.getSymbol().getValue())) 
+				result.put( new ProductionRule(NONTERMINAL_V, terminal), semanticRulesOfUnguardedTerminals);
+			else
+				result.put( new ProductionRule(NONTERMINAL_V, TERMINAL_MASK, terminal), semanticRulesOfMetaTerminals);
+		} 
+		
+		
+		// QUANTIFIER values
+		// Z -> 0..9
+		SemanticRules semanticRulesOfRepetitionValues = new SemanticRules();
+		semanticRulesOfRepetitionValues.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) {
+				Character nodeValue = ((RegularExpressionElement<StatePayload>) attributesMaps[1].get( "value")).getValue();
+				int intValue = Integer.valueOf( nodeValue + "");
+				attributesMaps[0].put( "value", intValue);
+			}
+		});
+		for ( int i = 0x30; i <= 0x39; i++) {
+	  	Terminal<RegularExpressionElement> terminal = new Terminal<RegularExpressionElement>( new RegularExpressionElement( (char) i));
+	  	result.put( new ProductionRule(NONTERMINAL_Z, terminal), semanticRulesOfRepetitionValues);
+		}
+	  
+		
+		
+		// CLASS Values
+		
+		// CV -> a
+		SemanticRules semanticRulesOfUnguardedClassValues = new SemanticRules();
+		semanticRulesOfUnguardedClassValues.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) {
+				attributesMaps[0].put( "value", attributesMaps[1].get( "value"));
+			}
+		});
+
+		// CV -> \ a
+		SemanticRules semanticRulesOfMetaClassValues = new SemanticRules();
+		semanticRulesOfMetaClassValues.add( new SemanticRule() {	
+			public void apply( AttributesMap... attributesMaps) {
+				attributesMaps[0].put( "value", attributesMaps[2].get( "value"));
+			}
+		});
+		
+    List<Character> charset = RegexCharSet.getCompleteDomain();
+		for ( Terminal terminal : getRegexGrammar().getTerminals()) {
+			Character currentChar = (Character) terminal.getSymbol().getValue();
+			if ( charset.contains( currentChar)) {
+				if ( currentChar == RegexCharSet.REGEX_RANGE) {
+					result.put( new ProductionRule(NONTERMINAL_FIRST_CV, TERMINAL_MASK, terminal), semanticRulesOfMetaClassValues);						
+					result.put( new ProductionRule(NONTERMINAL_FIRST_CV, TERMINAL_MASK, terminal), semanticRulesOfMetaClassValues);			
+				} else if ( currentChar == RegexCharSet.REGEX_CLASS_SIGNUM) {
+					result.put( new ProductionRule(NONTERMINAL_CV, terminal), semanticRulesOfUnguardedClassValues);
+					result.put( new ProductionRule(NONTERMINAL_FIRST_CV, TERMINAL_MASK, terminal), semanticRulesOfMetaClassValues);
+				} else if ( currentChar == RegexCharSet.REGEX_CLASS_END) {
+					result.put( new ProductionRule(NONTERMINAL_CV, TERMINAL_MASK, terminal), semanticRulesOfMetaClassValues);
+					result.put( new ProductionRule(NONTERMINAL_FIRST_CV, TERMINAL_MASK, terminal), semanticRulesOfMetaClassValues);		
+				} else if ( currentChar == RegexCharSet.REGEX_MASK) {
+					result.put( new ProductionRule(NONTERMINAL_CV, TERMINAL_MASK, TERMINAL_MASK), semanticRulesOfMetaClassValues);
+					result.put( new ProductionRule(NONTERMINAL_FIRST_CV, TERMINAL_MASK, TERMINAL_MASK), semanticRulesOfMetaClassValues);		
+				} else {
+					result.put( new ProductionRule(NONTERMINAL_CV, terminal), semanticRulesOfUnguardedClassValues);
+					result.put( new ProductionRule(NONTERMINAL_FIRST_CV, terminal), semanticRulesOfUnguardedClassValues);
+				}
+			}
+		}
+
 		return result;
 	}
 	
@@ -309,6 +885,35 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 		}
 	}
 
+	
+	
+	private static TreeNode getRepeatitionOfNode( TreeNode theNode, int times) throws CloneNotSupportedException {
+		TreeNode<Symbol> nodeZero = new TerminalNode( new RegularExpressionElement( RegexCharSet.EMPTY_STRING));
+		TreeNode relRootNode = times > 0 ? (TreeNode) theNode.clone() : nodeZero;
+		for ( int i = 1; i < times; i++) {
+			TreeNode leftChild = relRootNode;
+			TreeNode rightChild = (TreeNode) theNode.clone();
+			relRootNode = new OperatorNode( OperatorType.CONCATENATION);
+			((OperatorNode) relRootNode).setLeftChildNode( leftChild);
+			((OperatorNode) relRootNode).setRightChildNode( rightChild);
+		}
+		return relRootNode;
+	}
+	
+	
+	private static TreeNode getNodesAsAlternatives( Collection<TreeNode> theNodes) {
+		Queue<TreeNode> nodesQueue = new ArrayBlockingQueue<TreeNode>( theNodes.size());
+		nodesQueue.addAll( theNodes);
+		TreeNode relRootNode = nodesQueue.poll();
+		while ( !nodesQueue.isEmpty()) {
+			TreeNode leftChild = relRootNode;
+			TreeNode rightChild = nodesQueue.poll();
+			relRootNode = new OperatorNode( OperatorType.ALTERNATIVE);
+			((OperatorNode) relRootNode).setLeftChildNode( leftChild);
+			((OperatorNode) relRootNode).setRightChildNode( rightChild);
+		}
+		return relRootNode;
+	}
 
 
 	/**

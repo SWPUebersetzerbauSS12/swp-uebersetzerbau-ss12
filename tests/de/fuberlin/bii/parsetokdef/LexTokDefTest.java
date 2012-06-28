@@ -21,16 +21,14 @@ public class LexTokDefTest {
 	 */
 	@Test
 	public void testReadFile() throws Exception {
-		File rdFile = new File(
-				"tests/resources/de/fuberlin/bii/def/parsetokdef/test.rd");
+		File rdFile = new File("input/de/fuberlin/bii/def/tokendefinition.rd");
 		ReadTokDefAbstract instance = new LexTokDef(rdFile);
 		instance.readFile(rdFile);
 	}
 
 	@Test
 	public void testRegex() throws Exception {
-		File rdFile = new File(
-				"tests/resources/de/fuberlin/bii/def/parsetokdef/test.rd");
+		File rdFile = new File("input/de/fuberlin/bii/def/tokendefinition.rd");
 		List<IRule> rules = new LexTokDef(rdFile).getRules();
 
 		String tokenType = rules.get(0).getTokenType();

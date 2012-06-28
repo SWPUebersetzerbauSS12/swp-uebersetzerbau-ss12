@@ -1,9 +1,9 @@
 package de.fuberlin.optimierung.commands;
 
-import java.util.LinkedList;
 import de.fuberlin.optimierung.ILLVM_Block;
 import de.fuberlin.optimierung.ILLVM_Command;
 import de.fuberlin.optimierung.LLVM_Operation;
+import de.fuberlin.optimierung.LLVM_Optimization;
 import de.fuberlin.optimierung.LLVM_Parameter;
 
 /*
@@ -15,8 +15,13 @@ import de.fuberlin.optimierung.LLVM_Parameter;
 
 public class LLVM_LogicCommand extends LLVM_GenericCommand{
 	
-	public LLVM_LogicCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
-		super(operation, predecessor, block, comment);
+	public LLVM_LogicCommand(String cmdLine, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block){
+		super(predecessor, block, cmdLine);
+		setOperation(operation);
+		// Kommentar entfernen
+		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
+		
+		String[] cmd = command.split("[ \t]");
 		
 		// <result> <ty>
 		target = new LLVM_Parameter(cmd[0], cmd[3]);
@@ -25,7 +30,7 @@ public class LLVM_LogicCommand extends LLVM_GenericCommand{
 		// <op2> <ty>
 		operands.add(new LLVM_Parameter(cmd[5], cmd[3]));
 		
-		System.out.println("Operation generiert: " + this.toString());
+		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());
 	}
 	
 	public String toString() {

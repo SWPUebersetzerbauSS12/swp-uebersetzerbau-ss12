@@ -190,7 +190,4 @@ public class LLVM_RegisterMap {
 			return false;
 		return !(uses.isEmpty());
 	}
-	
-	
-	
 }

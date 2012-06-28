@@ -11,13 +11,15 @@ public class LLVM_Parameter {
 		if (name.length() > 0){
 			if (name.charAt(0) == '%')
 				type = LLVM_ParameterType.REGISTER;
+			else if(name.charAt(0) == '[')
+				type = LLVM_ParameterType.ARRAY;
 			else
 				type = LLVM_ParameterType.INTEGER;
 		}
 		this.typeString = typeString;
 		
 		// Kommas entfernen
-		this.typeString = typeString.replace(',', ' ').trim();
+		this.typeString = typeString.trim();
 		this.name = name.replace(',', ' ').trim();
 	}
 	

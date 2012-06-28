@@ -1,5 +1,9 @@
 package de.fuberlin.projecta.parser;
 
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+
 import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.commons.parser.ISymbol;
 
@@ -9,8 +13,31 @@ public class Symbol implements ISymbol {
 	 * Internal symbols, for building up the parse tree
 	 */
 	public enum Reserved {
-		EPSILON, // epsilon production
-		SP, // stack pointer
+		EPSILON("ε"), // epsilon production
+		SP("_SP"); // stack pointer
+		
+		private static Map<String,Reserved> terminalSymbol2Reserved
+			= new HashMap<String, Reserved>();
+		
+		static{
+			for(Reserved t : EnumSet.allOf(Reserved.class)){
+				terminalSymbol2Reserved.put(t.getTerminalSymbol(), t);
+			}
+		}
+		
+		private final String terminalSymbol;
+		
+		private Reserved(String terminalSymbol) {
+			this.terminalSymbol=terminalSymbol;			
+		}
+		
+		public String getTerminalSymbol(){
+			return this.terminalSymbol;
+		}
+
+		public static Reserved byTerminalSymbol(String s){
+			return terminalSymbol2Reserved.get(s);
+		}
 	}
 
 	private Object symbol;
@@ -28,6 +55,18 @@ public class Symbol implements ISymbol {
 	 * @param string A string describing a terminal or non-terminal or reserved symbol 
 	 */
 	public Symbol(String string) {
+		// parse by definitions (for the generic parser groups)
+		this.symbol=Reserved.byTerminalSymbol(string);
+		if (symbol!=null)
+			return;
+		this.symbol = NonTerminal.byNonTerminalSymbol(string);
+		if (symbol!=null)
+			return;
+		this.symbol = TokenType.byTerminalSymbol(string);
+		if (symbol!=null)
+			return;
+
+		// parse by enum value (for projecta)
 		try {
 			this.symbol = Reserved.valueOf(string);
 			return;
@@ -38,10 +77,14 @@ public class Symbol implements ISymbol {
 			return;
 		} catch (IllegalArgumentException e) {
 		}
-
-		if (this.symbol == null) {
+		try {
 			this.symbol = TokenType.valueOf(string);
+			return;
+		} catch (IllegalArgumentException e) {
 		}
+		
+		if (symbol == null)
+			throw new RuntimeException("Failed to resolve symbol: " + string);
 	}
 
 	public Symbol(TokenType terminal) {

@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import de.fuberlin.projectF.CodeGenerator.model.Token.Parameter;
 
 import de.fuberlin.projectF.CodeGenerator.model.MMXRegisterAddress;
+import de.fuberlin.projectF.CodeGenerator.model.Record;
 import de.fuberlin.projectF.CodeGenerator.model.RegisterAddress;
 import de.fuberlin.projectF.CodeGenerator.model.Token;
 import de.fuberlin.projectF.CodeGenerator.model.TokenType;
@@ -167,7 +168,24 @@ public class Translator {
 					asm.sub(String.valueOf(newArr.getSize()), "esp",
 							"Allocation " + tok.getTarget());
 				}
-				// Kein Arryay
+				//Record
+				else if(mem.inHeap(tT)) {
+					System.out.println("Allocation of a record");
+					Record tmp = null;
+					System.out.println("Clone " + mem.getHeapVar(tT).name);
+					try {
+						tmp = (Record) ((Record)mem.getHeapVar(tT)).clone();
+					} catch (CloneNotSupportedException e) {
+						e.printStackTrace();
+					}
+					tmp.name = tok.getTarget();
+					System.out.println(tmp.name);
+					mem.newStackVar(tmp);
+					asm.sub(String.valueOf(tmp.getSize()), "esp",
+							"Allocation " + tok.getTarget());
+					
+				}
+				// Kein Array kein Record
 				else{
 				// Neue Variable anlegen
 				Variable newVar = mem.newStackVar(tok.getTarget(),
@@ -434,8 +452,38 @@ public class Translator {
 				break;
 				
 			case Getelementptr:
-				mem.newArrayPtr(tok.getTarget(), tok.getOp1(), tok.getOp2());
+				if(tok.getTypeTarget().charAt(0) == '%')
+					//TODO :-)
+					System.out.println("new record pointer");
+				else
+					mem.newArrayPtr(tok.getTarget(), tok.getOp1(), tok.getOp2());
 				break;
+				
+			case TypeDefinition:
+				System.out.println("Definition of a record:");
+				
+				System.out.println("create new record type: " + tok.getTarget());
+				Record record = new Record(tok.getTarget());
+
+				for( int i = 0 ; i < tok.getParameterCount() ; i++) {
+					System.out.println("add Variable " + i + " of type " + tok.getParameter(i).getType());
+					record.add(new Variable(tok.getParameter(i).getType(),String.valueOf(i)));
+				}
+				System.out.println();
+				System.out.println("add type to heap");
+				mem.addHeapVar(record);
+				
+				System.out.println("get " + tok.getTarget() + " from heap");
+				Variable tmp = mem.getHeapVar(tok.getTarget());
+				
+				if(tmp instanceof Record) {
+					System.out.println();
+					System.out.println("read new record type: " + tmp.name);
+					Record rec = (Record)tmp;
+					for( int i = 0 ; i < rec.getVariableCount() ; i++) {
+						System.out.println("Variable " + rec.get(String.valueOf(i)).name + " with type " + rec.get(String.valueOf(i)).type);
+					}
+				}
 
 			default:
 				break;

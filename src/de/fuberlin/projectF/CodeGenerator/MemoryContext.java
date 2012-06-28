@@ -52,6 +52,15 @@ public class MemoryContext {
 		return newVar;
 	}
 	
+	public Variable newStackVar(Variable var) {
+		int size = var.getSize();
+
+		stackVars++;
+		stackPointer -= size;
+		variables.put(var.name, var);
+		return var;
+	}
+	
 	public Array newArrayVar(String name, String type, int length) {
 		int typeSize = getSize(type);
 		int size = typeSize * length;

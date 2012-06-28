@@ -13,8 +13,8 @@ define i32 @main() nounwind {
   %op2 = alloca double, align 8
   %erg = alloca double, align 8
   store i32 0, i32* %1
-  store double 1.000000e+01, double* %op1, align 8
-  store double 5.000000e+00, double* %op2, align 8
+  store double 1.900000e+00, double* %op1, align 8
+  store double 5.200000e+00, double* %op2, align 8
   %2 = load double* %op1, align 8
   %3 = load double* %op2, align 8
   %4 = call double @addition(double %2, double %3)

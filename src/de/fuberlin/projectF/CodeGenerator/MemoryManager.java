@@ -30,12 +30,25 @@ public class MemoryManager {
 		heap.put(name, tmp);
 	}
 	
+	public void addHeapVar(Variable var) {
+		heap.put(var.name, var);
+	}
+	
+	public boolean inHeap(String name) {
+		if(!heap.containsKey(name)) return false;
+		return true;
+	}
+	
 	public Variable getHeapVar(String name) {
 		return heap.get(name);
 	}
 	
 	public Variable newStackVar(String name, String type) {
 		return current.newStackVar(name, type);
+	}
+	
+	public Variable newStackVar(Variable var) {
+		return current.newStackVar(var);
 	}
 	
 	public Variable newArrayVar(String name, String type, int length) {

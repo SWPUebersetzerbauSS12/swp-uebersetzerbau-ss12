@@ -9,8 +9,8 @@ void sinnlos();
 
 int main(void) {
 	
-	double op1 = 10;
-	double op2 = 5;
+	double op1 = 1.9;
+	double op2 = 5.2;
 	
 	double erg;
 	

@@ -3,7 +3,7 @@ package de.fuberlin.projectF.CodeGenerator.model;
 import java.util.ArrayList;
 
 public class Variable {
-	String type;
+	public String type;
 	public String name;
 	ArrayList<RegisterAddress> regAddresses;
 	ArrayList<MMXRegisterAddress> mmxAddresses;
@@ -20,6 +20,11 @@ public class Variable {
 		regAddresses = new ArrayList<RegisterAddress>();
 		mmxAddresses = new ArrayList<MMXRegisterAddress>();
 		stackAddresses = new ArrayList<StackAddress>();
+		
+		if (this.type.equals("i32"))
+			this.size = 4;
+		else if(this.type.equals("double"))
+			this.size = 8;
 	}
 
 	public Variable(String type, int size, String name) {
@@ -39,21 +44,11 @@ public class Variable {
 	// Konstruktor für neue Variable mit Registeradresse
 	public Variable(String type, RegisterAddress reg, String name) {
 		this(type, name);
-
-		if (this.type.equals("i32"))
-			this.size = 4;
-		else if(this.type.equals("double"))
-			this.size = 8;
 		regAddresses.add(reg);
 	}
 	
 	public Variable(String type, MMXRegisterAddress reg, String name) {
 		this(type, name);
-
-		if (this.type.equals("i32"))
-			this.size = 4;
-		else if(this.type.equals("double"))
-			this.size = 8;
 		mmxAddresses.add(reg);
 	}
 

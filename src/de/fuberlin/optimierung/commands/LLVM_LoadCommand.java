@@ -3,6 +3,7 @@ package de.fuberlin.optimierung.commands;
 import de.fuberlin.optimierung.ILLVM_Block;
 import de.fuberlin.optimierung.ILLVM_Command;
 import de.fuberlin.optimierung.LLVM_Operation;
+import de.fuberlin.optimierung.LLVM_Optimization;
 import de.fuberlin.optimierung.LLVM_Parameter;
 
 /*
@@ -17,30 +18,42 @@ public class LLVM_LoadCommand extends LLVM_GenericCommand{
 	private boolean vol = false;
 	private boolean atom = false;
 	
-	public LLVM_LoadCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
-		super(operation, predecessor, block, comment);
+	public LLVM_LoadCommand(String cmdLine, ILLVM_Command predecessor, ILLVM_Block block){
+		super(predecessor, block, cmdLine);
 		
-		if (cmd[3].trim().equals("atomic")){
+		setOperation(LLVM_Operation.LOAD);
+		// Kommentar entfernen
+		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
+		
+		// result einlesen
+		String result = cmdLine.substring(0, cmdLine.indexOf("=")).trim();
+		cmdLine = cmdLine.substring(cmdLine.indexOf("load ") + 4).trim();
+		
+		// atomic einlesen
+		if (cmdLine.startsWith("atomic ")){
 			atom = true;
-			if (cmd[4].trim().equals("volatile")) vol = true;
-		}else{
-			if (cmd[3].trim().equals("volatile")) vol = true;
+			cmdLine = cmdLine.substring(cmdLine.indexOf("atomic ") + 6).trim();
 		}
 		
-		int start = 3;
-		start = (atom) ? start + 1 : start;
-		start = (vol) ? start + 1 : start;
-		
-		// <result> <ty>*
-		target = new LLVM_Parameter(cmd[0], cmd[start]);
-
-		// optionale Parameter
-		for (int j = start; (j + 1 < cmd.length); j = j + 2){
-			// <ty> <pointer>
-			operands.add(new LLVM_Parameter(cmd[j+1], cmd[j]));
+		// volatile einlesen
+		if (cmdLine.startsWith("volatile ")){
+			vol = true;
+			cmdLine = cmdLine.substring(cmdLine.indexOf("volatile ") + 8).trim();
 		}
 		
-		System.out.println("Operation generiert: " + this.toString());
+		// ty einlesen
+		String ty = "";
+		if (cmdLine.contains(",")) ty = cmdLine.substring(0, cmdLine.lastIndexOf(" ", cmdLine.indexOf(","))).trim();
+		else ty = cmdLine.substring(0, cmdLine.lastIndexOf(" ")).trim();
+		target = new LLVM_Parameter(result, ty);
+		
+		String[] comma = cmdLine.split(",");
+		for (int i = 0; i < comma.length; i++){
+			int cutAt = comma[i].lastIndexOf(" ");
+			operands.add(new LLVM_Parameter(comma[i].substring(cutAt).trim(), comma[i].substring(0, cutAt).trim()));
+		}
+		
+		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());
 	}
 	
 	public String toString() {

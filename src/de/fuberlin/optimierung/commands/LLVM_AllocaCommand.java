@@ -1,9 +1,9 @@
 package de.fuberlin.optimierung.commands;
 
-import java.util.LinkedList;
 import de.fuberlin.optimierung.ILLVM_Block;
 import de.fuberlin.optimierung.ILLVM_Command;
 import de.fuberlin.optimierung.LLVM_Operation;
+import de.fuberlin.optimierung.LLVM_Optimization;
 import de.fuberlin.optimierung.LLVM_Parameter;
 
 /*
@@ -14,19 +14,26 @@ import de.fuberlin.optimierung.LLVM_Parameter;
 
 public class LLVM_AllocaCommand extends LLVM_GenericCommand{
 	
-	public LLVM_AllocaCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
-		super(operation, predecessor, block, comment);
+	public LLVM_AllocaCommand(String cmdLine, ILLVM_Command predecessor, ILLVM_Block block){
+		super(predecessor, block, cmdLine);
+		setOperation(LLVM_Operation.ALLOCA);
+		// Kommentar entfernen
+		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));		
+		
+		String result = cmdLine.substring(0, cmdLine.indexOf("=")).trim();
+		cmdLine = cmdLine.substring(cmdLine.indexOf("alloca ") + 6);
+		String[] comma = cmdLine.split(",");
 
 		// <result> <type>
-		target = new LLVM_Parameter(cmd[0], cmd[3]);
+		target = new LLVM_Parameter(result, comma[0].trim());
 		
-		// optionale Parameter
-		for (int j = 4; (j + 1 < cmd.length); j = j + 2){
+		for (int i = 1; i < comma.length; i++){
+			int cutAt = comma[i].lastIndexOf(" ");
 			// <ty> <num>
-			operands.add(new LLVM_Parameter(cmd[j+1], cmd[j]));
+			operands.add(new LLVM_Parameter(comma[i].substring(cutAt).trim(), comma[i].substring(0, cutAt).trim()));
 		}
 		
-		System.out.println("Operation generiert: " + this.toString());
+		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());
 	}
 	
 	public String toString() {

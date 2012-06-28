@@ -23,44 +23,23 @@ public class LLVM_ArithmeticCommand extends LLVM_GenericCommand{
 	public LLVM_ArithmeticCommand(String cmdLine, LLVM_Operation operation, LLVM_GenericCommand predecessor, LLVM_Block block){
 		super(predecessor, block, cmdLine);
 		setOperation(operation);
-		// Kommentar entfernen
-		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
 		
-		String[] cmd = command.split("[ \t]");
-		// Kommaposition ermitteln
-		int i = -1;
-		for (int j = 0; j < cmd.length; j++){
-			if (cmd[j].contains(",")){
-				i = j;
-			}		
-		}
+		StringBuilder cmd = new StringBuilder(cmdLine);
+		parseEraseComment(cmd);
+		String result = parseReadResult(cmd);
+		parseReadValue(cmd); // Operation löschen
+
+		has_nuw = parseOptionalString(cmd, "nuw");
+		has_nsw = parseOptionalString(cmd, "nsw");
+		String ty = parseReadType(cmd);
 		
-		switch(i){
-			case 5 :
-				// Fall 2 oder Fall 3
-				if(cmd[3].equals("nuw"))
-					has_nuw = true;
-				else
-					has_nsw = true;
-				target = new LLVM_Parameter(cmd[0], cmd[4]);
-				operands.add(new LLVM_Parameter(cmd[5], cmd[4]));
-				operands.add(new LLVM_Parameter(cmd[6], cmd[4]));
-				break;
-			case 6 :
-				// Fall 4
-				has_nuw = true;
-				has_nsw = true;
-				target = new LLVM_Parameter(cmd[0], cmd[5]);
-				operands.add(new LLVM_Parameter(cmd[6], cmd[5]));
-				operands.add(new LLVM_Parameter(cmd[7], cmd[5]));
-				break;
-			default:
-				// Fall 1
-				target = new LLVM_Parameter(cmd[0], cmd[3]);
-				operands.add(new LLVM_Parameter(cmd[4], cmd[3]));
-				operands.add(new LLVM_Parameter(cmd[5], cmd[3]));
-				break;
-		}
+		String op1 = parseReadValue(cmd);
+		parseEraseString(cmd, ",");
+		String op2 = parseReadValue(cmd);
+		
+		target = new LLVM_Parameter(result, ty);
+		operands.add(new LLVM_Parameter(op1, ty));
+		operands.add(new LLVM_Parameter(op2, ty));
 		
 		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());
 	}

@@ -942,7 +942,7 @@ public class LLVM_Function {
 					previousBlock.removeFromNextBlocks(actualBlock);
 				}
 				toDelete.add(actualBlock);
-			}else if (!actualBlock.isEmpty() && (actualBlock.getFirstCommand().
+			}else if (!actualBlock.isEmpty() && actualBlock.getPreviousBlocks().size() > 0 && (actualBlock.getFirstCommand().
 					getOperation()==LLVM_Operation.RET || actualBlock.getFirstCommand().
 					getOperation()==LLVM_Operation.RET_CODE)){
 				
@@ -1090,7 +1090,7 @@ public class LLVM_Function {
 	}
 	
 	public String toString() {
-		String output = func_define + "{\n";
+		String output = func_define + "\n";
 		
 		for (int i = 0; i < this.numberBlocks; i++) {
 			output += blocks.get(i).toString();

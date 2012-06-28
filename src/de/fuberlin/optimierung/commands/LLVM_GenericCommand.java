@@ -336,7 +336,8 @@ public abstract class LLVM_GenericCommand{
 		// Kommentar entfernen
 		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
 
-		cmd = new StringBuilder(cmdLine);
+		cmd.delete(0, cmd.length());
+		cmd.append(cmdLine);
 	}
 	
 	protected static String parseStringUntil (StringBuilder cmd, String until){

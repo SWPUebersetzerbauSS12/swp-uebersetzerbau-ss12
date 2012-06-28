@@ -15,28 +15,27 @@ public class LLVM_BranchCommand extends LLVM_GenericCommand{
 	public LLVM_BranchCommand(String cmdLine, LLVM_GenericCommand predecessor, LLVM_Block block){
 		super(predecessor, block, cmdLine);
 		
-		if (cmdLine.contains("i1")){
+		StringBuilder cmd = new StringBuilder(cmdLine);
+		parseEraseComment(cmd);
+		parseEraseString(cmd, "br");
+		
+		if (parseEraseString(cmd, "i1")){
 			setOperation(LLVM_Operation.BR_CON);
+			String cond = parseReadValue(cmd);
+			parseEraseString(cmd, ",");
+			parseEraseString(cmd, "label");
+			String iftrue = parseReadValue(cmd);
+			parseEraseString(cmd, ",");
+			parseEraseString(cmd, "label");
+			String iffalse = parseReadValue(cmd);
+			operands.add(new LLVM_Parameter(cond, "i1"));
+			operands.add(new LLVM_Parameter(iftrue, "label"));
+			operands.add(new LLVM_Parameter(iffalse, "label"));
 		}else{
 			setOperation(LLVM_Operation.BR);
-		}
-		
-		// Kommentar entfernen
-		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
-		
-		String[] cmd = command.split("[ \t]");
-		if (this.operation == LLVM_Operation.BR){
-			// unconditional Branch
-			// <dest> label
-			operands.add(new LLVM_Parameter(cmd[2], cmd[1]));
-		}else{
-			// conditional Branch
-			// <cond> i1
-			operands.add(new LLVM_Parameter(cmd[2], cmd[1]));
-			// <iftrue> label
-			operands.add(new LLVM_Parameter(cmd[4], cmd[3]));
-			// <iffalse> label
-			operands.add(new LLVM_Parameter(cmd[6], cmd[5]));
+			parseEraseString(cmd, "label");
+			String dest = parseReadValue(cmd);
+			operands.add(new LLVM_Parameter(dest, "label"));
 		}
 		
 		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());

@@ -48,6 +48,8 @@ public class BasicType extends Type {
 			return TYPE_INT_STRING;
 		case STRING:
 			return TYPE_STRING_STRING;
+		case VOID:
+			return TYPE_VOID_STRING;
 		default:
 			return null;
 		}

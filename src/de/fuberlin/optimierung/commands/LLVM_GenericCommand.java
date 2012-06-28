@@ -175,15 +175,37 @@ public abstract class LLVM_GenericCommand{
 			}
 		}
 		
-		// ty einlesen
-		int index = cmdLine.indexOf(" ", count);
-		String type = "";
-		if (index >= 0){
-			type = cmdLine.substring(0, index).trim();
-		}else{
-			index = cmdLine.length();
-			type = cmdLine.substring(0, index).trim();
+		// finde Komma, Space, ( nach Type
+		int commaindex = cmdLine.indexOf(',', count);
+		int spaceindex = cmdLine.indexOf(' ', count);
+		int bracketindex = cmdLine.indexOf('(', count);
+		int end = 0;
+		
+		// nehme Minimum
+		if (commaindex >= 0 && spaceindex >= 0 && bracketindex >=0){
+			if (commaindex < spaceindex && commaindex < bracketindex) end = commaindex;
+			if (spaceindex < commaindex && spaceindex < bracketindex) end = spaceindex;
+			if (bracketindex < spaceindex && bracketindex < commaindex) end = bracketindex;
+		}else if (commaindex >= 0 && spaceindex >= 0){
+			end = (commaindex < spaceindex)?commaindex:spaceindex;
+		}else if (commaindex >= 0 && bracketindex >= 0){
+			end = (commaindex < bracketindex)?commaindex:bracketindex;
+		}else if (spaceindex >= 0 && bracketindex >= 0){
+			end = (bracketindex < spaceindex)?bracketindex:spaceindex;
+		}else if (commaindex >= 0){
+			end = commaindex;
+		}else if (spaceindex >= 0){
+			end = spaceindex;
+		}else if (bracketindex >= 0){
+			end = bracketindex;
 		}
+		
+		if (end == 0){
+			end = cmdLine.length();
+		}
+		
+		// ty einlesen
+		String type = cmdLine.substring(0, end).trim();
 		cmdLine = cmdLine.substring(type.length()).trim();
 		
 		cmd.delete(0, cmd.length());

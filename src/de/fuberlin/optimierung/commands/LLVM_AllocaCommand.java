@@ -13,20 +13,20 @@ public class LLVM_AllocaCommand extends LLVM_GenericCommand{
 	public LLVM_AllocaCommand(String cmdLine, LLVM_GenericCommand predecessor, LLVM_Block block){
 		super(predecessor, block, cmdLine);
 		setOperation(LLVM_Operation.ALLOCA);
-		// Kommentar entfernen
-		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));		
 		
-		String result = cmdLine.substring(0, cmdLine.indexOf("=")).trim();
-		cmdLine = cmdLine.substring(cmdLine.indexOf("alloca ") + 6);
-		String[] comma = cmdLine.split(",");
-
-		// <result> <type>
-		target = new LLVM_Parameter(result, comma[0].trim());
+		StringBuilder cmd = new StringBuilder(cmdLine);
+		parseEraseComment(cmd);
+		String result = parseReadResult(cmd);
+		parseEraseString(cmd, "alloca");
+		String ty = parseReadType(cmd);
 		
-		for (int i = 1; i < comma.length; i++){
-			int cutAt = comma[i].lastIndexOf(" ");
-			// <ty> <num>
-			operands.add(new LLVM_Parameter(comma[i].substring(cutAt).trim(), comma[i].substring(0, cutAt).trim()));
+		// <result> <ty>
+		target = new LLVM_Parameter(result, ty);
+		
+		while (parseEraseString(cmd, ",")){
+			String typ = parseReadType(cmd);
+			String name = parseReadValue(cmd);
+			operands.add(new LLVM_Parameter(name, typ));
 		}
 		
 		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());

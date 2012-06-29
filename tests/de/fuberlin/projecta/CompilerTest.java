@@ -37,7 +37,7 @@ public class CompilerTest {
 	}
 	
 	@Test
-	public void test(){
+	public void testFuncReturnInt(){
 		final String code = "def int foo(){return 0;} def int main(){int i; i = foo(); print i; return 0;}";
 		String output = executeCode(code);
 		assertEquals(output, "0");

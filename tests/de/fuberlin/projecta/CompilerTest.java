@@ -35,5 +35,19 @@ public class CompilerTest {
 		String output = executeCode(code);
 		assertEquals(output, "2");
 	}
+	
+	@Test
+	public void testUnimplicitVarIncrementingInFuncAssign(){
+		final String code = "def int foo(){return 0;} def int main(){int i; i = foo(); print i; return 0;}";
+		String output = executeCode(code);
+		assertEquals(output, "0");
+	}
+	
+	@Test
+	public void testImplicitVarIncrementingInFuncAssign(){
+		final String code = "def int foo(){return 0;} def int main(){foo(); return 0;}";
+		String output = executeCode(code);
+		assertEquals(output, "");
+	}
 
 }

@@ -1,6 +1,9 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
+import de.fuberlin.commons.lexer.TokenType;
+import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.EntryType;
+import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
 
 /**
@@ -30,14 +33,14 @@ public class FuncCall extends Type {
 		}
 		if (func != null) {
 			ret = "call " + func.getType().genCode();
-//			ret += " (";
-//			for (EntryType param : func.getParams()) {
-//				tmp = true;
-//				ret += param.getType().genCode() + "*, ";
-//			}
-//			if (tmp)
-//				ret = ret.substring(0, ret.length() - 2);
-//			ret += ")*" 
+			// ret += " (";
+			// for (EntryType param : func.getParams()) {
+			// tmp = true;
+			// ret += param.getType().genCode() + "*, ";
+			// }
+			// if (tmp)
+			// ret = ret.substring(0, ret.length() - 2);
+			// ret += ")*"
 			ret += " @" + func.getId() + "(";
 			boolean tmp = false;
 			for (EntryType param : func.getParams()) {
@@ -45,9 +48,33 @@ public class FuncCall extends Type {
 				ret += param.getType().genCode() + "* %" + param.getId() + ", ";
 			}
 			if (tmp)
-			ret = ret.substring(0, ret.length() - 2);
+				ret = ret.substring(0, ret.length() - 2);
 			ret += ")";
+
+			// implicit var incrementation
+			if (!searchUpAssign()
+					&& !func.getType().toTypeString().equals("void")) {
+				getHighestBlock().getNewRegister();
+			}
 		}
 		return ret;
+	}
+
+	public boolean searchUpAssign() {
+
+		BinaryOp bOp = null;
+		if (getParent() != null) {
+			ISyntaxTree parent = getParent();
+			while (parent != null) {
+				if (parent instanceof BinaryOp) {
+					bOp = (BinaryOp) parent;
+					if (bOp.getOp() == TokenType.OP_ASSIGN)
+						return true;
+				}
+				parent = parent.getParent();
+			}
+		}
+
+		return false;
 	}
 }

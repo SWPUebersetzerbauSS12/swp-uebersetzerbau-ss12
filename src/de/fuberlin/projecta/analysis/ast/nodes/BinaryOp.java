@@ -282,27 +282,15 @@ public class BinaryOp extends Type {
 	public boolean checkTypes() {
 		Type leftChild = (Type) this.getChild(0);
 		Type rightChild = (Type) this.getChild(1);
-		switch (this.getOp()) {
-		case OP_ADD:
-		case OP_MINUS:
-		case OP_MUL:
-		case OP_DIV:
-			if (leftChild.toTypeString().equals(rightChild.toTypeString())) {
-				return true;
-			}
-			throw new TypeErrorException();
-		case OP_LT:
-		case OP_LE:
-		case OP_EQ:
-		case OP_GE:
-		case OP_GT:
-		case OP_NE:
-			throw new TypeErrorException();
-		case OP_AND:
-		case OP_OR:
-
-		default:
-			throw new TypeErrorException();
+		if (leftChild.toTypeString().equals(rightChild.toTypeString())) {
+			return true;
 		}
+		throw new TypeErrorException("Operands have to be of same type!");
+	}
+	
+	@Override
+	public String toTypeString() {
+		// if both operands are not equal, checkTypes will catch this
+		return ((Type) this.getChild(0)).toTypeString();
 	}
 }

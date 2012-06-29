@@ -1,7 +1,10 @@
 package de.fuberlin.optimierung;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
+
+import de.fuberlin.optimierung.commands.LLVM_GenericCommand;
 
 public class LLVM_Optimization implements ILLVM_Optimization {
 	
@@ -33,6 +36,8 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 		
 		String outputLLVM = this.beforeFunc;
 		LLVM_Function tmp;
+		
+		if(DEBUG)System.out.println(getStatistic());
 		
 		for (int i = 0; i < functions.size(); i++) {
 			// aktuelle Funktion fuer Optimierung
@@ -70,6 +75,8 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 			
 			//createGraph("func"+i, tmp);
 		}
+		
+		if(DEBUG)System.out.println(getStatistic());
 		
 		return outputLLVM;
 	}
@@ -145,12 +152,43 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 		return this.code;
 	}
 	
+	private int getBlockCount(){
+		int count = 0;
+		for (LLVM_Function f : functions) {
+			count += f.getBlocks().size();
+		}
+		return count;
+	}
+	
+	private int getCommandsCount(){
+		int count = 0;
+		for (LLVM_Function f : functions) {
+			
+			for(LLVM_Block c : f.getBlocks()) {
+				count += c.countCommands();
+			}
+			
+		}
+		return count;
+	}
+	
+	public String getStatistic(){
+		
+		String out = "";
+		out += "############################\n";
+		out += "Count Functions: "+functions.size()+"\n";
+		out += "Count Blocks: "+getBlockCount()+"\n";
+		out += "Count Commands: "+getCommandsCount()+"\n";
+		out += "############################\n";
+		return out;
+	}
+	
 	public static void main(String args[]) {
 
 		ILLVM_Optimization optimization = new LLVM_Optimization();
 		//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_test.llvm");
 		//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_constant_folding1");
-		//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_cf_prop_deadb");
+		String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_cf_prop_deadb");
 		//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_lebendigkeit_global1");
 		//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_dag");
 		//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_dead_block");
@@ -158,7 +196,7 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 		//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_array");
 		//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_parsertest1");
 		//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/test.ll");
-		String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/test_new.ll");
+		//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/test_new.ll");
 
 		System.out.println("###########################################################");
 		System.out.println("################## Optimization Input #####################");

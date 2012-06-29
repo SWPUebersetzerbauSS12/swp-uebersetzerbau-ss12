@@ -1,10 +1,6 @@
 package de.fuberlin.optimierung.commands;
 
-import de.fuberlin.optimierung.ILLVM_Block;
-import de.fuberlin.optimierung.ILLVM_Command;
-import de.fuberlin.optimierung.LLVM_Operation;
-import de.fuberlin.optimierung.LLVM_Optimization;
-import de.fuberlin.optimierung.LLVM_Parameter;
+import de.fuberlin.optimierung.*;
 
 /*
 * Syntax;
@@ -18,39 +14,28 @@ public class LLVM_LoadCommand extends LLVM_GenericCommand{
 	private boolean vol = false;
 	private boolean atom = false;
 	
-	public LLVM_LoadCommand(String cmdLine, ILLVM_Command predecessor, ILLVM_Block block){
+	public LLVM_LoadCommand(String cmdLine, LLVM_GenericCommand predecessor, LLVM_Block block){
 		super(predecessor, block, cmdLine);
-		
 		setOperation(LLVM_Operation.LOAD);
-		// Kommentar entfernen
-		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
 		
-		// result einlesen
-		String result = cmdLine.substring(0, cmdLine.indexOf("=")).trim();
-		cmdLine = cmdLine.substring(cmdLine.indexOf("load ") + 4).trim();
+		StringBuilder cmd = new StringBuilder(cmdLine);
+		parseEraseComment(cmd);
+		String result = parseReadResult(cmd);
+		parseOptionalString(cmd, "load");
 		
-		// atomic einlesen
-		if (cmdLine.startsWith("atomic ")){
-			atom = true;
-			cmdLine = cmdLine.substring(cmdLine.indexOf("atomic ") + 6).trim();
-		}
+		atom = parseOptionalString(cmd, "atomic");
+		vol = parseOptionalString(cmd, "volatile");
 		
-		// volatile einlesen
-		if (cmdLine.startsWith("volatile ")){
-			vol = true;
-			cmdLine = cmdLine.substring(cmdLine.indexOf("volatile ") + 8).trim();
-		}
-		
-		// ty einlesen
-		String ty = "";
-		if (cmdLine.contains(",")) ty = cmdLine.substring(0, cmdLine.lastIndexOf(" ", cmdLine.indexOf(","))).trim();
-		else ty = cmdLine.substring(0, cmdLine.lastIndexOf(" ")).trim();
+		String ty = parseReadType(cmd);
 		target = new LLVM_Parameter(result, ty);
 		
-		String[] comma = cmdLine.split(",");
-		for (int i = 0; i < comma.length; i++){
-			int cutAt = comma[i].lastIndexOf(" ");
-			operands.add(new LLVM_Parameter(comma[i].substring(cutAt).trim(), comma[i].substring(0, cutAt).trim()));
+		String pointer = parseReadValue(cmd);
+		operands.add(new LLVM_Parameter(pointer, ty));
+		
+		while (parseEraseString(cmd, ",")){
+			String typ = parseReadType(cmd);
+			String name = parseReadValue(cmd);
+			operands.add(new LLVM_Parameter(name, typ));
 		}
 		
 		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());

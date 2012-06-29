@@ -53,7 +53,7 @@ public class FuncCall extends Type {
 			// implicit var incrementation
 			if (!searchUpAssign()
 					&& !func.getType().toTypeString().equals("void")) {
-				getHighestBlock().getNewRegister();
+				getHighestBlock().getNewMemory();
 			}
 		}
 		return ret;

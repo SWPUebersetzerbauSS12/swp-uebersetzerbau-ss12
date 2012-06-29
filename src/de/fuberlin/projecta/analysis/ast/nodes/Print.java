@@ -24,10 +24,10 @@ public class Print extends Statement {
 				this);
 		if (id.getType() instanceof BasicType) {
 			if (((BasicType) id.getType()).getTokenType() == BasicTokenType.STRING) {
-				int reg = block.getNewRegister();
+				int reg = block.getNewMemory();
 				out += "%" + reg + " = load i8** %"
 						+ ((Id) getChild(0)).getValue() + "\n";
-				out += "%" + getHighestBlock().getNewRegister() + " = "
+				out += "%" + getHighestBlock().getNewMemory() + " = "
 						+ "tail call i32 (i8*)* @puts(i8* %" + reg + ")";
 			} else {
 				String format = "";
@@ -39,9 +39,9 @@ public class Print extends Statement {
 				} else if (((BasicType) id.getType()).getTokenType() == BasicTokenType.BOOL) {
 					format = "%d";
 				}
-				int tempReg = block.getNewRegister();
-				int tempReg2 = block.getNewRegister();
-				int valReg = block.getNewRegister();
+				int tempReg = block.getNewMemory();
+				int tempReg2 = block.getNewMemory();
+				int valReg = block.getNewMemory();
 				//format string
 				out += "%" + tempReg + " = alloca [4 x i8]\n";
 				out += "store [4 x i8] c\"" + format
@@ -52,7 +52,7 @@ public class Print extends Statement {
 				out += "%"+valReg+ " = load "+id.getType().genCode() +"* %"+ ((Id)getChild(0)).getValue()+"\n";
 				out += "call i32 (i8*, ...)* @printf(i8* %"+tempReg2+", "+ id.getType().genCode() + " %" +valReg+")";
 				// implicit return of printf increments var counter!
-				block.getNewRegister();
+				block.getNewMemory();
 			}
 		}
 		return out;

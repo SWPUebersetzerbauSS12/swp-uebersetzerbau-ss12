@@ -33,8 +33,8 @@ public class While extends Statement {
 				}
 				uOp = (AbstractSyntaxTree) uOp.getChild(0);
 			}
-			int label = block.getNewRegister();
-			this.setLabel(label);
+			int label = block.getNewMemory();
+			this.setBeginLabel(label);
 			ret += "br label %" + label + "\n\n";
 			ret += "; <label> %" + label + "\n";
 			ret += ((AbstractSyntaxTree) getChild(0)).genCode();

@@ -11,20 +11,24 @@ public class LLVM {
 	 */
 
 	public static String genBranch(Statement current,
-			AbstractSyntaxTree block1, AbstractSyntaxTree block2, boolean not, boolean loop) {
+			AbstractSyntaxTree block1, AbstractSyntaxTree block2, boolean not,
+			boolean loop) {
 		String ret = "";
 		Block block = current.getHighestBlock();
 		if (block != null) {
 			String s1 = "", s2 = "";
 			int varDecision, labelTrue, labelFalse, labelBehind;
+
 			varDecision = block.getCurrentRegister();
-			labelTrue = block.getNewRegister();
+			labelTrue = block.getNewMemory();
 			if (block1 != null)
 				s1 = block1.genCode();
-			labelFalse = block.getNewRegister();
+			labelFalse = block.getNewMemory();
 			if (block2 != null)
 				s2 = block2.genCode();
-			labelBehind = block.getNewRegister();
+			labelBehind = block.getNewMemory();
+			current.setEndLabel(labelBehind);
+
 			if (!not) {
 				ret += "br i1 %" + varDecision + ", label %" + labelTrue
 						+ ", label %" + labelFalse + "\n\n";
@@ -35,10 +39,10 @@ public class LLVM {
 
 			ret += "; <label> %" + labelTrue + "\n";
 			ret += s1 + "\n";
-			if(!loop)
-			ret += "br label %" + labelBehind + "\n\n";
+			if (!loop)
+				ret += "br label %" + labelBehind + "\n\n";
 			else
-				ret += "br label %" + current.getLabel() + "\n\n";
+				ret += "br label %" + current.getBeginLabel() + "\n\n";
 			ret += "; <label> %" + labelFalse + "\n";
 			ret += s2 + "\n";
 			ret += "br label %" + labelBehind + "\n\n";

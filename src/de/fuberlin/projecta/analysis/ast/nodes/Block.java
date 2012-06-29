@@ -9,7 +9,7 @@ public class Block extends Statement {
 	/**
 	 * Used for naming conventions in declarations
 	 */
-	private int registerCounter;
+	private int memoryCounter;
 	
 	@Override
 	public void buildSymbolTable(SymbolTableStack stack){
@@ -33,12 +33,12 @@ public class Block extends Statement {
 
 	// using super implementation for genCode
 	
-	public int getNewRegister(){
-		return ++registerCounter;
+	public int getNewMemory(){
+		return ++memoryCounter;
 	}
 	
 	public int getCurrentRegister(){
-		return registerCounter;
+		return memoryCounter;
 	}
 
 	protected boolean hasReturnStatement(){

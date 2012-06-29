@@ -24,7 +24,7 @@ public class BasicType extends Type {
 			ret += "i8*";
 			break;
 		case BOOL:
-			ret += "i8";
+			ret += "i1";
 			break;
 		case VOID:
 			ret += "void";
@@ -35,6 +35,11 @@ public class BasicType extends Type {
 
 	public BasicTokenType getTokenType() {
 		return type;
+	}
+	
+	@Override
+	public String toTypeString(){
+		return genCode();
 	}
 
 }

@@ -20,6 +20,9 @@ public class LexergenTest {
 	 */
 	@Test
 	public void testGetNextToken() throws Exception {
+    Notification.enableDebugInfoPrinting();
+    Notification.enableDebugPrinting();
+		
 		File rdFile = new File("tests/resources/de/fuberlin/bii/def/lexergen/test.rd");
 		File sourceFile = new File("tests/resources/de/fuberlin/bii/source/lexergen/test.fun");
 		

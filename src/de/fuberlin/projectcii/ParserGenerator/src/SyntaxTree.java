@@ -23,7 +23,7 @@ public class SyntaxTree implements ISyntaxTree {
 	//The parent of the current Node (NULL if root)
 	private SyntaxTree parent;
 	//Token for the current Node
-	private IToken token;
+	private IToken token = null;
 	//Symbol of the current Node
 	private ISymbol symbol;
 	
@@ -52,6 +52,7 @@ public class SyntaxTree implements ISyntaxTree {
 	public void setParent(ISyntaxTree tree) {
 		this.parent = (SyntaxTree)tree;
 	}
+
 
 	/**
 	 * Getter for parent Node
@@ -98,7 +99,7 @@ public class SyntaxTree implements ISyntaxTree {
 			
 			for (ISyntaxTree child: children){
 				SyntaxTree currNode = (SyntaxTree)child;
-				if (currNode.getSymbol().equals(name)){
+				if (currNode.getSymbol().getName().equals(name)){
 					childrenByName.add(child);
 				}
 			}
@@ -170,7 +171,7 @@ public class SyntaxTree implements ISyntaxTree {
 				System.out.print("\t");
 			}
 		}
-		System.out.print(currNode.getSymbol()+"\t");
+		System.out.print(currNode.getSymbol().getName()+"\t");
 		first = true;
 		for (ISyntaxTree child: node.getChildren()){
 			if (child.getChildren().size() > 0){
@@ -183,7 +184,7 @@ public class SyntaxTree implements ISyntaxTree {
 						System.out.print("\t");
 					}
 				}
-				System.out.print(currNode.getSymbol());
+				System.out.print(currNode.getSymbol().getName());
 				System.out.println("");
 				first = false;
 			}
@@ -220,5 +221,10 @@ public class SyntaxTree implements ISyntaxTree {
 			((SyntaxTree) child).CompressSyntaxTree();
 		}
 	}
+	
+	   
+    public void setToken(IToken token){
+        this.token = token;
+    }
 	
 }

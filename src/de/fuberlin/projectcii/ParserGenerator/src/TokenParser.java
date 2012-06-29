@@ -13,13 +13,11 @@ import de.fuberlin.commons.parser.StringSymbol;
  * A Table-navigated LL(1)-Parser. The Parser parses a TokenStream represented
  * by calls of the methode "getNextToken" based on a given grammar, Startsymbol
  * and Parsetable
- * 
- * @author Patrick Schlott
  *
  */
 public class TokenParser {
-	//ToDo: entfernen wenn IToken angepasst
-	private HashMap<String,String> Terminals = new HashMap<String,String>();
+	//TODO: entfernen wenn IToken angepasst
+	//private HashMap<String,String> Terminals = new HashMap<String,String>();
 	
 	private ILexer lexer;
 	private Map<String, HashMap<String,Vector<Integer>>> parserTable;
@@ -31,7 +29,6 @@ public class TokenParser {
 	/**
 	 * The Constructor initialising the Variables needed to parse a Tokenstream
 	 * 
-	 * @author Patrick Schlott
 	 * @param parserTable The parsertable that is used to parse the Tokenstream
 	 * @param grammar The LL(1) grammar that is used for this specific language
 	 * @param StartSymbol The Starting symbol of the grammar
@@ -43,6 +40,8 @@ public class TokenParser {
 		this.grammar = grammar;
 		this.StartSymbol = StartSymbol;
 		
+		//TODO entfernen
+		/*
 		Terminals.put("OP_LE","<");
 		Terminals.put("OP_LE","<=");
 		Terminals.put("OP_EQ","==");
@@ -81,12 +80,10 @@ public class TokenParser {
 		Terminals.put("RBRACKET","]");
 		Terminals.put("LBRACE","{");
 		Terminals.put("RBRACE","}");
-		Terminals.put("EOF","eof");
+		Terminals.put("EOF","eof");*/
 	}
 
 	/**
-	 * 
-	 * @author Patrick Schlott, Ying Wei
 	 *
 	 * @return SyntaxTree The Parsetree created by parsing the Tokenstream
 	 * @throws RuntimeException No 'EOF' too much symbols
@@ -108,8 +105,6 @@ public class TokenParser {
 	/**
 	 * 
 	 * Parses the actual Tokenstream and creates a SyntaxTree from it
-	 * 
-	 * @author Patrick Schlott, Ying Wei
 	 *
 	 * @param symbol The terminal or nonterminal that is next on the imaginary stack
 	 * @param parent The Node that was reduced to the given symbol
@@ -125,6 +120,7 @@ public class TokenParser {
 		
 		// Leaf(Terminal) reached. Get next Token to continue parsing with
 		if (symbol.equals(TokenTerminal)){
+		    tree.setToken(Token);
 			getNextToken();
 		}
 		// Check Parsertable for next Step (specifically check if symbol - Token field exists
@@ -142,7 +138,7 @@ public class TokenParser {
 				if (!Production.elementAt(i).equals(Settings.getEPSILON())){
 					tree.addChild(parseToken(Production.elementAt(i),tree));
 				}
-				// add a epsilon childNode to the tree
+				// add an epsilon childNode to the tree
 //				else{
 //					SyntaxTree epsilonTree = new SyntaxTree();
 //					epsilonTree.setSymbol(Settings.getEPSILON());
@@ -161,10 +157,12 @@ public class TokenParser {
 	/**
 	 * Helping method while IToken has not the value of Symbols as they are defined in grammar
 	 * 
-	 * @author Christoph Schr�der
 	 */
 	private void getNextToken() {
 		Token = lexer.getNextToken();
+		TokenTerminal = Token.getText();
+		//TODO entfernen
+		/*
 		if(Token.getType().equals("BOOL_LITERAL"))
 		{			
 			if((Boolean)Token.getAttribute())
@@ -175,6 +173,6 @@ public class TokenParser {
 		else
 		{
 			TokenTerminal = Terminals.get(Token.getType());			
-		}		
+		}*/
 	}
 }

@@ -222,7 +222,7 @@ public class BinaryOp extends Type {
 			}
 
 			int val = block.getNewMemory();
-			this.setValRegister(val); // save currents computation in this node
+			this.setValMemory(val); // save currents computation in this node
 			ret += "%" + val + " = " + mathOp + " " + type + " %" + val1
 					+ ", %" + val2 + "\n";
 
@@ -279,7 +279,7 @@ public class BinaryOp extends Type {
 				// ret += "%" + block.getNewMemory() + " = load "
 				// + eA.getType().genCode() + "* %" + result + "\n";
 				ret += "store " + eA.getType().genCode() + " %"
-						+ ((BinaryOp) getChild(1)).getValRegister() + ", "
+						+ ((BinaryOp) getChild(1)).getValMemory() + ", "
 						+ eA.getType().genCode() + "* %" + a.getValue();
 			} else {
 				ret = "store " + ((AbstractSyntaxTree) getChild(1)).genCode()

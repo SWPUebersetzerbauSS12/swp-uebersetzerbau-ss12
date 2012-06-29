@@ -49,5 +49,33 @@ public class CompilerTest {
 		String output = executeCode(code);
 		assertEquals(output, "");
 	}
+	
+	@Test
+	public void testIfOnTrueWithIntegerComparison(){
+		final String code = "def int main(){int i; int j; i = 1; j = 2; if(i <= j) { print i; print j;} return 0;}";
+		String output = executeCode(code);
+		assertEquals(output, "12");
+	}
+	
+	@Test
+	public void testIfElseOnTrueWithIntegerComparison(){
+		final String code = "def int main(){int i; int j; i = 1; j = 2; if(i <= j) { print i; print j;} else {print j; print i;} return 0;}";
+		String output = executeCode(code);
+		assertEquals(output, "12");
+	}
+	
+	@Test
+	public void testIfOnFalseWithIntegerComparison(){
+		final String code = "def int main(){int i; int j; i = 1; j = 2; if(i >= j) { print i; print j;} return 0;}";
+		String output = executeCode(code);
+		assertEquals(output, "");
+	}
+	
+	@Test
+	public void testIfElseOnFalseWithIntegerComparison(){
+		final String code = "def int main(){int i; int j; i = 1; j = 2; if(i >= j) { print i; print j;} else {print j; print i;} return 0;}";
+		String output = executeCode(code);
+		assertEquals(output, "21");
+	}
 
 }

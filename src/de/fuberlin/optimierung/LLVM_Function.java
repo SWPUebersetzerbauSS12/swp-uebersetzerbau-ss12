@@ -300,11 +300,7 @@ public class LLVM_Function {
 	 */
 	
 	private boolean fold(LLVM_GenericCommand cmd) {
-		if(cmd.getClass().equals(LLVM_BinaryCommand.class) &&
-				(cmd.getOperation() == LLVM_Operation.ADD ||
-				cmd.getOperation() == LLVM_Operation.SUB ||
-				cmd.getOperation() == LLVM_Operation.MUL ||
-				cmd.getOperation() == LLVM_Operation.DIV)){
+		if(cmd.getClass().equals(LLVM_BinaryCommand.class)){
 			LinkedList<LLVM_Parameter> operands = cmd.getOperands();
 			LLVM_Parameter op1 = operands.get(0);
 			LLVM_Parameter op2 = operands.get(1);
@@ -340,43 +336,39 @@ public class LLVM_Function {
 					if(iOP2 == 0){
 						return true;
 					}
+				}else if(op1.getType() == LLVM_ParameterType.DOUBLE && op2.getType() == LLVM_ParameterType.DOUBLE){
+					double iOP1 = Double.parseDouble(op1.getName());
+					double iOP2 = Double.parseDouble(op2.getName());
+					double result = 0;
+					
+					switch(cmd.getOperation()){
+					case FADD :
+						result = iOP1 + iOP2;
+						break;
+					case FSUB :
+						result = iOP1 - iOP2;
+						break;
+					case FMUL :
+						result = iOP1 * iOP2;
+						break;
+					case FDIV :
+						result = iOP1 / iOP2;
+						break;
+					}
+					
+					op1.setName(""+result);
+					op2.setName("0");
+						
+					return true;
+				}else if(op1.getType() == LLVM_ParameterType.REGISTER && op2.getType() == LLVM_ParameterType.DOUBLE){
+				
+					double iOP2 = Double.parseDouble(op2.getName());
+					if(iOP2 == 0){
+						return true;
+					}
 				}
 			}catch(NumberFormatException e){
 				// no numbers
-			}
-		}else if(cmd.getClass().equals(LLVM_BinaryCommand.class) &&
-				(cmd.getOperation() == LLVM_Operation.FADD ||
-				cmd.getOperation() == LLVM_Operation.FSUB ||
-				cmd.getOperation() == LLVM_Operation.FMUL ||
-				cmd.getOperation() == LLVM_Operation.FDIV)){
-			LinkedList<LLVM_Parameter> operands = cmd.getOperands();
-			LLVM_Parameter op1 = operands.get(0);
-			LLVM_Parameter op2 = operands.get(1);
-			
-			if(op1.getType() == LLVM_ParameterType.DOUBLE && op2.getType() == LLVM_ParameterType.DOUBLE){
-				double iOP1 = Double.parseDouble(op1.getName());
-				double iOP2 = Double.parseDouble(op2.getName());
-				double result = 0;
-				
-				switch(cmd.getOperation()){
-				case FADD :
-					result = iOP1 + iOP2;
-					break;
-				case FSUB :
-					result = iOP1 - iOP2;
-					break;
-				case FMUL :
-					result = iOP1 * iOP2;
-					break;
-				case FDIV :
-					result = iOP1 / iOP2;
-					break;
-				}
-				
-				op1.setName(""+result);
-				op2.setName("0");
-					
-				return true;
 			}
 		}else if(cmd.getClass().equals(LLVM_IcmpCommand.class)){
 		

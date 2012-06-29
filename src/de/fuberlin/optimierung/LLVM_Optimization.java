@@ -37,7 +37,7 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 		String outputLLVM = this.beforeFunc;
 		LLVM_Function tmp;
 		
-		System.out.println(getStatistic());
+		if(DEBUG)System.out.println(getStatistic());
 		
 		for (int i = 0; i < functions.size(); i++) {
 			// aktuelle Funktion fuer Optimierung
@@ -76,7 +76,7 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 			//createGraph("func"+i, tmp);
 		}
 		
-		System.out.println(getStatistic());
+		if(DEBUG)System.out.println(getStatistic());
 		
 		return outputLLVM;
 	}

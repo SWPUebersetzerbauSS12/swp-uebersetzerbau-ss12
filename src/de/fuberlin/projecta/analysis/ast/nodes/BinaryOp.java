@@ -146,9 +146,13 @@ public class BinaryOp extends Type {
 				int tmp = block.getNewMemory();
 				ret += "%" + tmp + " = " + int_or_real + " " + cmp_op + " ";
 				if (a != null) {
-					ret += a.toTypeString() + " %";
+					ret += SymbolTableHelper.lookup(a.getValue(), this)
+							.getType().genCode()
+							+ " %";
 				} else if (b != null) {
-					ret += b.toTypeString() + " %";
+					ret += SymbolTableHelper.lookup(a.getValue(), this)
+							.getType().genCode()
+							+ " %";
 				}
 				if (regs[3] == 0)
 					ret += a.getValue() + ", %";

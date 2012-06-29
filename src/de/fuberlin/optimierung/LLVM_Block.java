@@ -685,7 +685,6 @@ public class LLVM_Block{
 			code += "\t"+tmp.toString();
 			tmp = tmp.getSuccessor();
 		}
-		code += "\n";
 		
 		return code;
 	}

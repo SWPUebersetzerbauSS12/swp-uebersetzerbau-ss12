@@ -1098,10 +1098,11 @@ public class LLVM_Function {
 	
 	public String toString() {
 		String output = func_define + "\n";
-		
-		for (int i = 0; i < this.numberBlocks; i++) {
-			output += blocks.get(i).toString();
+		int i = 0;
+		for (i = 0; i < this.numberBlocks-1; i++) {
+			output += blocks.get(i).toString()+"\n";
 		}
+		output += blocks.get(i).toString();
 		output += "}\n";
 		output += this.afterFunc;
 		return output;

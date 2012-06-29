@@ -28,7 +28,7 @@ public class Return extends Statement {
 		} else {
 			ret += "ret " + ((AbstractSyntaxTree) getChild(0)).genCode();
 		}
-		if(ret != ""){
+		if(!ret.equals("")){
 			ret += "\n; <label>:" + block.getNewRegister();
 		}
 		return ret;

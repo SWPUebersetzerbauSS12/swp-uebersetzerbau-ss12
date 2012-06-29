@@ -1,5 +1,7 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
+import de.fuberlin.commons.lexer.TokenType;
+import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
 
@@ -45,16 +47,33 @@ public class FuncCall extends Type {
 				ret += param.getType().genCode() + "* %" + param.getId() + ", ";
 			}
 			if (tmp)
-			ret = ret.substring(0, ret.length() - 2);
+				ret = ret.substring(0, ret.length() - 2);
 			ret += ")";
+
+			// implicit var incrementation
+			if (!searchUpAssign()
+					&& !func.getType().toTypeString().equals("void")) {
+				getHighestBlock().getNewRegister();
+			}
 		}
 		return ret;
 	}
-	
-	@Override
-	public String toTypeString() {
-		return SymbolTableHelper.lookup(((Id) getChild(0)).getValue(), this)
-				.getType().toTypeString();
+
+	public boolean searchUpAssign() {
+
+		BinaryOp bOp = null;
+		if (getParent() != null) {
+			ISyntaxTree parent = getParent();
+			while (parent != null) {
+				if (parent instanceof BinaryOp) {
+					bOp = (BinaryOp) parent;
+					if (bOp.getOp() == TokenType.OP_ASSIGN)
+						return true;
+				}
+				parent = parent.getParent();
+			}
+		}
+
+		return false;
 	}
-		
 }

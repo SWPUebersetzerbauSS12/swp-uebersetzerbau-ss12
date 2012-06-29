@@ -2,6 +2,7 @@ package de.fuberlin.projecta.analysis.ast.nodes;
 
 import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.commons.parser.ISyntaxTree;
+import de.fuberlin.projecta.codegen.LLVM;
 
 public class If extends Statement {
 	private Block block;
@@ -23,39 +24,18 @@ public class If extends Statement {
 		String ret = "";
 		block = getHighestBlock();
 		if (block != null) {
-			int[] regs = new int[3];
-			int nots = 0;
-			AbstractSyntaxTree newTree = (AbstractSyntaxTree) getChild(0);
-			while (newTree instanceof UnaryOp) {
-				if (((UnaryOp) newTree).getOp() == TokenType.OP_NOT) {
-					nots++;
+			AbstractSyntaxTree uOp = (AbstractSyntaxTree) getChild(0);
+			boolean not = false;
+			while (uOp instanceof UnaryOp) {
+				if (((UnaryOp) uOp).getOp() == TokenType.OP_NOT) {
+					not = !not;
 				}
-				newTree = (AbstractSyntaxTree) newTree.getChild(0);
+				uOp = (AbstractSyntaxTree) uOp.getChild(0);
 			}
-			
-			ret += ((AbstractSyntaxTree)getChild(0)).genCode();
-			String block1 = "";
-			// count !'s (nots)
-			regs[0] = block.getCurrentRegister();
-			if (nots % 2 == 0) {
-				regs[1] = block.getNewRegister();
-				ret += "br i1 %" + regs[0] + ", label %" + regs[1];
-				block1 = ((Statement) getChild(1)).genCode();
-				regs[2] = block.getNewRegister();
-				ret += ", label %" + regs[2] + "\n";
-			} else {
-				regs[1] = block.getNewRegister();
-				ret += "br i1 %" + regs[0] + ", label %" + regs[2];
-				block1 = ((Statement) getChild(1)).genCode();
-				regs[2] = block.getNewRegister();
-				ret += ", label %" + regs[1] + "\n";
-			}
-			ret += "; <label>:" + regs[1]+ "\n";
-			ret += block1 + "\n";
-			ret += "br label %" + regs[2];
-			ret += "; <label>:" + regs[2];
-		}
+			ret += ((AbstractSyntaxTree) getChild(0)).genCode();
 
+			ret += LLVM.genBranch(this, ((AbstractSyntaxTree) getChild(1)),null, not);
+		}
 		return ret;
 	}
 

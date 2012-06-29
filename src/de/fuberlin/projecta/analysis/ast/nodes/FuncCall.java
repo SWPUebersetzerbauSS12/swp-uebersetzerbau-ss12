@@ -76,4 +76,11 @@ public class FuncCall extends Type {
 
 		return false;
 	}
+
+@Override
+        public String toTypeString() {
+                return SymbolTableHelper.lookup(((Id) getChild(0)).getValue(), this)
+                                .getType().toTypeString();
+        }
+
 }

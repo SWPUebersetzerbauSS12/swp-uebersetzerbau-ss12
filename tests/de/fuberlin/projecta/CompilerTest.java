@@ -77,5 +77,12 @@ public class CompilerTest {
 		String output = executeCode(code);
 		assertEquals(output, "21");
 	}
+	
+	@Test
+	public void testWhile() {
+		final String code = mainC("int i; int j; i = 0; j = 10; while(i < j) {print i; i = j;}");
+		String output = executeCode(code);
+		assertEquals(output, "0");
+	}
 
 }

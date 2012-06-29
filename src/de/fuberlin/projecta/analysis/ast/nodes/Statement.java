@@ -1,17 +1,22 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
-
-
-
 public abstract class Statement extends AbstractSyntaxTree {
-	private int label;
+	private int beginLabel, endLabel;
 
-	public int getLabel() {
-		return label;
+	public int getBeginLabel() {
+		return beginLabel;
 	}
 
-	public void setLabel(int label) {
-		this.label = label;
+	public void setBeginLabel(int label) {
+		this.beginLabel = label;
+	}
+	
+	public int getEndLabel() {
+		return endLabel;
+	}
+
+	public void setEndLabel(int label) {
+		this.endLabel = label;
 	}
 	
 }

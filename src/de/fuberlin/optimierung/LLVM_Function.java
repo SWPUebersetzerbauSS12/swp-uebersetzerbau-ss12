@@ -1092,6 +1092,10 @@ public class LLVM_Function {
 		return registerMap;
 	}
 	
+	public ArrayList<LLVM_Block> getBlocks() {
+		return blocks;
+	}
+	
 	public String toString() {
 		String output = func_define + "\n";
 		

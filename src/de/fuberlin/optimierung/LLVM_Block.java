@@ -597,6 +597,19 @@ public class LLVM_Block{
 		return !(this.previousBlocks.isEmpty());
 	}
 	
+	public int countCommands() {
+		int count = 0;
+		
+		LLVM_GenericCommand tmp = getFirstCommand();
+		
+		while(tmp != null){
+			count++;
+			tmp = tmp.getSuccessor();
+		}
+		
+		return count;
+	}
+	
 	/*
 	 * *********************************************************
 	 * *********** Setter / Getter / toString ******************

@@ -1,7 +1,10 @@
 package de.fuberlin.optimierung;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
+
+import de.fuberlin.optimierung.commands.LLVM_GenericCommand;
 
 public class LLVM_Optimization implements ILLVM_Optimization {
 	
@@ -33,6 +36,8 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 		
 		String outputLLVM = this.beforeFunc;
 		LLVM_Function tmp;
+		
+		System.out.println(getStatistic());
 		
 		for (int i = 0; i < functions.size(); i++) {
 			// aktuelle Funktion fuer Optimierung
@@ -70,6 +75,8 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 			
 			//createGraph("func"+i, tmp);
 		}
+		
+		System.out.println(getStatistic());
 		
 		return outputLLVM;
 	}
@@ -143,6 +150,37 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 	
 	public String getCode(){
 		return this.code;
+	}
+	
+	private int getBlockCount(){
+		int count = 0;
+		for (LLVM_Function f : functions) {
+			count += f.getBlocks().size();
+		}
+		return count;
+	}
+	
+	private int getCommandsCount(){
+		int count = 0;
+		for (LLVM_Function f : functions) {
+			
+			for(LLVM_Block c : f.getBlocks()) {
+				count += c.countCommands();
+			}
+			
+		}
+		return count;
+	}
+	
+	public String getStatistic(){
+		
+		String out = "";
+		out += "############################\n";
+		out += "Count Functions: "+functions.size()+"\n";
+		out += "Count Blocks: "+getBlockCount()+"\n";
+		out += "Count Commands: "+getCommandsCount()+"\n";
+		out += "############################\n";
+		return out;
 	}
 	
 	public static void main(String args[]) {

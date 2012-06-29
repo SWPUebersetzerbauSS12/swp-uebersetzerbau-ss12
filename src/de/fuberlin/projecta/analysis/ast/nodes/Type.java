@@ -8,7 +8,7 @@ public abstract class Type extends AbstractSyntaxTree {
 	public static final String TYPE_INT_STRING = "int";
 	public static final String TYPE_STRING_STRING = "string";
 	public static final String TYPE_VOID_STRING = "void";
-
+	
 	@Override
 	public boolean checkSemantics() {
 		return true;

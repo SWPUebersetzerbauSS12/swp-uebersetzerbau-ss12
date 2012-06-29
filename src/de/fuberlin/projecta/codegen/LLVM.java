@@ -2,6 +2,7 @@ package de.fuberlin.projecta.codegen;
 
 import de.fuberlin.projecta.analysis.ast.nodes.AbstractSyntaxTree;
 import de.fuberlin.projecta.analysis.ast.nodes.Block;
+import de.fuberlin.projecta.analysis.ast.nodes.Statement;
 
 public class LLVM {
 
@@ -9,8 +10,8 @@ public class LLVM {
 	 * This class should hold all the methods to generate LLVM code
 	 */
 
-	public static String genBranch(AbstractSyntaxTree current,
-			AbstractSyntaxTree block1, AbstractSyntaxTree block2, boolean not) {
+	public static String genBranch(Statement current,
+			AbstractSyntaxTree block1, AbstractSyntaxTree block2, boolean not, boolean loop) {
 		String ret = "";
 		Block block = current.getHighestBlock();
 		if (block != null) {
@@ -34,7 +35,10 @@ public class LLVM {
 
 			ret += "; <label> %" + labelTrue + "\n";
 			ret += s1 + "\n";
+			if(!loop)
 			ret += "br label %" + labelBehind + "\n\n";
+			else
+				ret += "br label %" + current.getLabel() + "\n\n";
 			ret += "; <label> %" + labelFalse + "\n";
 			ret += s2 + "\n";
 			ret += "br label %" + labelBehind + "\n\n";

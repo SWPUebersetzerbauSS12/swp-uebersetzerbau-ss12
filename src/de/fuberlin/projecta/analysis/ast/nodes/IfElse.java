@@ -33,10 +33,14 @@ public class IfElse extends Statement {
 				}
 				uOp = (AbstractSyntaxTree) uOp.getChild(0);
 			}
+			int label = block.getNewRegister();
+			this.setLabel(label);
+			ret += "br label %" + label + "\n\n";
+			ret += "; <label> %" + label + "\n";
 			ret += ((AbstractSyntaxTree) getChild(0)).genCode();
 
 			ret += LLVM.genBranch(this, ((AbstractSyntaxTree) getChild(1)),
-					((AbstractSyntaxTree) getChild(2)), not);
+					((AbstractSyntaxTree) getChild(2)), not, false);
 		}
 
 		return ret;

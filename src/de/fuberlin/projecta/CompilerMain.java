@@ -13,7 +13,7 @@ import de.fuberlin.projecta.utils.StringUtils;
 
 public class CompilerMain {
 
-	static final String LLC_EXE = "llc";
+	static final String LLC_EXE = "llc-3.0";
 	static final String GCC_EXE = "gcc";
 	
 	public static void main(String[] args) {

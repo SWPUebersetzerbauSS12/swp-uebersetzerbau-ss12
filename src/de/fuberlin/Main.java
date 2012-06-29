@@ -1,6 +1,8 @@
 package de.fuberlin;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.util.HashMap;
 
 import de.fuberlin.bii.lexergen.BuilderType;
@@ -33,6 +35,8 @@ class Main {
 	static final String PARAM_REBUILD_DFA = "-rb"; //Gibt an, dass der DFA neu erstellt werden soll
 	// Allgemein
 	static final String PARAM_SOURCE_FILE = "-f"; // Gibt den Pfad zum Quellprogramm an
+	static final String PARAM_OUTPUT_FILE = "-o"; // Gigt den Pfad zur Ausgabedatei an
+	static final String PARAM_LLVM_INPUT_FILE = "-llvm"; // Gigt den Pfad zur LLVM Quelldatei an
 	
 	/*
 	 * Standard Parameter
@@ -53,7 +57,7 @@ class Main {
 		System.out.println("Hier die Code-Schnipsel einfuegen!");
 		
 		HashMap<String,String> arguments = readParams(args);
-		boolean rebuildDFA = arguments.containsKey(PARAM_REBUILD_DFA);
+		/*boolean rebuildDFA = arguments.containsKey(PARAM_REBUILD_DFA);
 		
 		// path of input-program
 		String defFile = arguments.get(PARAM_DEF_FILE); 			// -d "/path/to/definitionFile"
@@ -70,7 +74,7 @@ class Main {
 		 *	input: Pfad zu der Datei mit den regulären Definitionen und Pfad zu der Programmdatei
 		 *	output: IToken-Objekt beim aufruf von getNextToken
 		 */
-		ILexer lexer = null;
+		/*ILexer lexer = null;
 		
 		if( arguments.containsKey(PARAM_BII_LEXER) ){		// -bii			
 			try {
@@ -94,7 +98,7 @@ class Main {
 		 *	input:	ILexer lexerObject, String grammarFilePath
 		 *	output:	ISyntaxTreee parseTree
 		 */
-		ISyntaxTree parseTree = null;
+		/*ISyntaxTree parseTree = null;
 		if( arguments.get(PARAM_LR_PARSER) != null ){			// -lr "/path/to/bnfGrammar"
 			IParser parser = new LRParser();
 			parseTree = parser.parse(lexer, arguments.get(PARAM_LR_PARSER));
@@ -113,6 +117,7 @@ class Main {
 		//--------------------------
 
 		
+		
 
 		String llvm_code = "";	// Hier der generierte LLVM-Code
 
@@ -123,9 +128,16 @@ class Main {
 		 *	input:	String llvm_code
 		 *	output:	String optimized_llvm_code
 		 */
+		
+		String optimized_llvm_code;
+		
 		LLVM_Optimization llvm_optimizer = new LLVM_Optimization();
-
-		String optimized_llvm_code = llvm_optimizer.optimizeCodeFromString(llvm_code);	// Muss angepasst werden
+		if(arguments.containsKey(PARAM_LLVM_INPUT_FILE)) {
+			optimized_llvm_code = llvm_optimizer.optimizeCodeFromFile(arguments.get(PARAM_LLVM_INPUT_FILE));
+		}else{
+			optimized_llvm_code = llvm_optimizer.optimizeCodeFromString("");	// Muss angepasst werden
+		}
+		
 		//--------------------------
 		
 		
@@ -136,8 +148,21 @@ class Main {
 		 * output: String machineCode 
 		 */
 		boolean debug = false;
-    	boolean guiFlag = false;
-       String machineCode = CodeGenerator.generateCode(optimized_llvm_code, debug, guiFlag);
+		boolean guiFlag = false;
+    	String machineCode = CodeGenerator.generateCode(optimized_llvm_code, debug, guiFlag);
+    	
+    	if(arguments.containsKey(PARAM_OUTPUT_FILE)) {
+    		try{
+    			FileWriter fstream = new FileWriter(arguments.get(PARAM_OUTPUT_FILE));
+        		BufferedWriter out = new BufferedWriter(fstream);
+        		out.write(machineCode);
+    		}catch(Exception e){
+    			System.err.println(e.getMessage());
+    		}
+    	}else{
+    		System.out.println(machineCode);
+    	}
+    	
         //--------------------------
 	}
 	
@@ -205,6 +230,12 @@ class Main {
 					System.out.println("Benutze Default Grammatik: "+DEFAULT_GRAMMAR_FILE);
 					arguments.put(parserType, DEFAULT_GRAMMAR_FILE);
 				}
+			} else if(args[i].equalsIgnoreCase(PARAM_LLVM_INPUT_FILE)) {
+				System.out.println("Benutze LLVM Code Datei: "+args[++i]);
+				arguments.put(PARAM_LLVM_INPUT_FILE, args[i]);				
+			} else if(args[i].equalsIgnoreCase(PARAM_OUTPUT_FILE)) {
+				System.out.println("Schreibe Maschinen Code in Datei: "+args[++i]);
+				arguments.put(PARAM_OUTPUT_FILE, args[i]);
 			} else {
 				System.err.println("Unbekannte Option: "+args[i]);
 			}

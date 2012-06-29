@@ -1,10 +1,6 @@
 package de.fuberlin.optimierung.commands;
 
-import de.fuberlin.optimierung.ILLVM_Block;
-import de.fuberlin.optimierung.ILLVM_Command;
-import de.fuberlin.optimierung.LLVM_Operation;
-import de.fuberlin.optimierung.LLVM_Optimization;
-import de.fuberlin.optimierung.LLVM_Parameter;
+import de.fuberlin.optimierung.*;
 
 /*
  * Syntax:
@@ -15,50 +11,44 @@ import de.fuberlin.optimierung.LLVM_Parameter;
 
 public class LLVM_IcmpCommand extends LLVM_GenericCommand{
 	
-	public LLVM_IcmpCommand(String cmdLine, ILLVM_Command predecessor, ILLVM_Block block){
+	public LLVM_IcmpCommand(String cmdLine, LLVM_GenericCommand predecessor, LLVM_Block block){
 		super(predecessor, block, cmdLine);
-		// Kommentar entfernen
-		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
 		
-		// result einlesen
-		String result = cmdLine.substring(0, cmdLine.indexOf("=")).trim();
-		cmdLine = cmdLine.substring(cmdLine.indexOf("icmp ") + 4).trim();
-		
+		StringBuilder cmd = new StringBuilder(cmdLine);
+		parseEraseComment(cmd);
+		String result = parseReadResult(cmd);
+		parseReadValue(cmd); // ICMP löschen
 		target = new LLVM_Parameter(result, "i1");
 		
+		String cond = parseReadValue(cmd);
+		
 		// cond festlegen
-		if (cmdLine.startsWith("eq")){
+		if (cond.startsWith("eq")){
 			setOperation(LLVM_Operation.ICMP_EQ);
-		}else if (cmdLine.startsWith("ne")){
+		}else if (cond.startsWith("ne")){
 			setOperation(LLVM_Operation.ICMP_NE);
-		}else if (cmdLine.startsWith("ugt")){
+		}else if (cond.startsWith("ugt")){
 			setOperation(LLVM_Operation.ICMP_UGT);
-		}else if (cmdLine.startsWith("uge")){
+		}else if (cond.startsWith("uge")){
 			setOperation(LLVM_Operation.ICMP_UGE);
-		}else if (cmdLine.startsWith("ult")){
+		}else if (cond.startsWith("ult")){
 			setOperation(LLVM_Operation.ICMP_ULT);
-		}else if (cmdLine.startsWith("ule")){
+		}else if (cond.startsWith("ule")){
 			setOperation(LLVM_Operation.ICMP_ULE);
-		}else if (cmdLine.startsWith("sgt")){
+		}else if (cond.startsWith("sgt")){
 			setOperation(LLVM_Operation.ICMP_SGT);
-		}else if (cmdLine.startsWith("sge")){
+		}else if (cond.startsWith("sge")){
 			setOperation(LLVM_Operation.ICMP_SGE);
-		}else if (cmdLine.startsWith("slt")){
+		}else if (cond.startsWith("slt")){
 			setOperation(LLVM_Operation.ICMP_SLT);
-		}else if (cmdLine.startsWith("sle")){
+		}else if (cond.startsWith("sle")){
 			setOperation(LLVM_Operation.ICMP_SLE);
 		}
-		// cond entfernen
-		cmdLine = cmdLine.substring(cmdLine.indexOf(" ")).trim();
 		
-		// ty einlesen
-		int count = getComplexStructEnd(cmdLine);
-		String ty = cmdLine.substring(0, cmdLine.indexOf(" ", count));
-		cmdLine = cmdLine.substring(cmdLine.indexOf(" ", count)).trim();
-		
-		// ops einlesen
-		String op1 = cmdLine.substring(0, cmdLine.indexOf(",")).trim();
-		String op2 = cmdLine.substring(cmdLine.indexOf(",")+1).trim();
+		String ty = parseReadType(cmd);
+		String op1 = parseReadValue(cmd);
+		parseEraseString(cmd, ",");
+		String op2 = parseReadValue(cmd);
 		
 		operands.add(new LLVM_Parameter(op1, ty));
 		operands.add(new LLVM_Parameter(op2, ty));

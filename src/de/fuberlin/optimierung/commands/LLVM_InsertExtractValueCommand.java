@@ -1,10 +1,6 @@
 package de.fuberlin.optimierung.commands;
 
-import de.fuberlin.optimierung.ILLVM_Block;
-import de.fuberlin.optimierung.ILLVM_Command;
-import de.fuberlin.optimierung.LLVM_Operation;
-import de.fuberlin.optimierung.LLVM_Optimization;
-import de.fuberlin.optimierung.LLVM_Parameter;
+import de.fuberlin.optimierung.*;
 
 /*
  *  Syntax:
@@ -14,50 +10,37 @@ import de.fuberlin.optimierung.LLVM_Parameter;
 
 public class LLVM_InsertExtractValueCommand extends LLVM_GenericCommand {
 	
-	public LLVM_InsertExtractValueCommand(String cmdLine, ILLVM_Command predecessor, ILLVM_Block block){
+	public LLVM_InsertExtractValueCommand(String cmdLine, LLVM_GenericCommand predecessor, LLVM_Block block){
 		super(predecessor, block, cmdLine);
-		// Kommentar entfernen
-		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
 		
-		if (cmdLine.contains("insertvalue ")) setOperation(LLVM_Operation.INSERTVALUE);
-		if (cmdLine.contains("extractvalue ")) setOperation(LLVM_Operation.EXTRACTVALUE);
+		StringBuilder cmd = new StringBuilder(cmdLine);
+		parseEraseComment(cmd);
+		String result = parseReadResult(cmd);
+		String cond = parseReadValue(cmd);
 		
-		// result einlesen
-		String result = cmdLine.substring(0, cmdLine.indexOf("=")).trim();
-		if (this.getOperation() == LLVM_Operation.INSERTVALUE){
-			cmdLine = cmdLine.substring(cmdLine.indexOf("insertvalue ") + 11).trim();
-		}else{
-			cmdLine = cmdLine.substring(cmdLine.indexOf("extractvalue ") + 12).trim();
-		}
+		if (cond.startsWith("insertvalue")) setOperation(LLVM_Operation.INSERTVALUE);
+		if (cond.startsWith("extractvalue")) setOperation(LLVM_Operation.EXTRACTVALUE);
 		
-		int count = getComplexStructEnd(cmdLine);
 		
-		// aggr einlesen
-		String aggr = cmdLine.substring(0, count+1).trim();
-		cmdLine = cmdLine.substring(count+1).trim();
-		
-		// val einlesen
-		String val = cmdLine.substring(0, cmdLine.indexOf(",")).trim();
-		cmdLine = cmdLine.substring(cmdLine.indexOf(",")+1).trim();
+		String aggr = parseReadType(cmd);
+		String val = parseReadValue(cmd);
+		parseEraseString(cmd, ",");
 		
 		target = new LLVM_Parameter(result, aggr);
 		operands.add(new LLVM_Parameter(val, aggr));
 		
 		if (this.getOperation() == LLVM_Operation.INSERTVALUE){
-			// ty einlesen
-			String ty = cmdLine.substring(0, cmdLine.lastIndexOf(" ", cmdLine.indexOf(","))).trim();
-			cmdLine = cmdLine.substring(cmdLine.lastIndexOf(" ", cmdLine.indexOf(","))).trim();
-			
-			// elt einlesen
-			String elt = cmdLine.substring(0, cmdLine.indexOf(",")).trim();
-			cmdLine = cmdLine.substring(cmdLine.indexOf(",")+1).trim();
+			String ty = parseReadType(cmd);
+			String elt = parseReadValue(cmd);
+			parseEraseString(cmd, ",");
 			operands.add(new LLVM_Parameter(elt, ty));
 		}
 		
 		// alle idx einlesen
-		String[] comma = cmdLine.split(",");
-		for (int i = 0; i < comma.length; i++){
-			operands.add(new LLVM_Parameter(comma[i].trim(), "i32"));
+		while(cmd.toString().length() > 0){
+			String idx = parseReadValue(cmd);
+			parseEraseString(cmd, ",");
+			operands.add(new LLVM_Parameter(idx, "i32"));
 		}
 		
 		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());

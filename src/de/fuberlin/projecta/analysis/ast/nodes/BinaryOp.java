@@ -172,6 +172,36 @@ public class BinaryOp extends Type {
 
 			if (getChild(0) instanceof Id) {
 				id1 = (Id) getChild(0);
+				if (SymbolTableHelper.lookup(id1.getValue(), this).getType()
+						.toTypeString().equals("double")) {
+					mathOp = "f"; // append f in front of math_op
+				}
+			} else if (getChild(0) instanceof Type) {
+				if (((Type) getChild(0)).toTypeString().equals("double")) {
+					mathOp = "f"; // append f in front of math_op
+				}
+			} else {
+				throw new SemanticException("type couldn't be figured out in: "
+						+ getChild(0));
+			}
+
+			switch (op) {
+			case OP_ADD:
+				mathOp += "add";
+				break;
+			case OP_MINUS:
+				mathOp += "sub";
+				break;
+			case OP_MUL:
+				mathOp += "mul";
+				break;
+			case OP_DIV:
+				mathOp += "div";
+				break;
+			}
+
+			if (getChild(0) instanceof Id) {
+				id1 = (Id) getChild(0);
 				if (!isInParams(id1)) {
 					ret += LLVM.loadVar(id1);
 				}
@@ -181,22 +211,7 @@ public class BinaryOp extends Type {
 					type = "i32";
 				} else if (SymbolTableHelper.lookup(id1.getValue(), this)
 						.getType().toTypeString().equals("double")) {
-					mathOp = "f"; // append f in front of math_op
 					type = "double";
-				}
-				switch (op) {
-				case OP_ADD:
-					mathOp += "add";
-					break;
-				case OP_MINUS:
-					mathOp += "sub";
-					break;
-				case OP_MUL:
-					mathOp += "mul";
-					break;
-				case OP_DIV:
-					mathOp += "div";
-					break;
 				}
 
 			} else if (getChild(0) instanceof Type) {
@@ -233,12 +248,34 @@ public class BinaryOp extends Type {
 						+ ", %" + v2 + "\n";
 			} else if (id1 == null && id2 == null) { // TODO!
 				// both are types?
-
+				Type t1 = (Type) getChild(0), t2 = (Type) getChild(1);
+				String s1 = t1.genCode(), s2 = t2.genCode();
+				String[] tmp1 = s1.split(" ");
+				String[] tmp2 = s2.split(" ");
+				type = tmp1[0];
+				ret += "%" + val + " = " + mathOp + " " + type + " " + tmp1[1]
+						+ ", " + tmp2[1] + "\n";
 			} else if (id1 == null) {
-
+				String v2 = val2 + "";
+				if (isInParams(id2))
+					v2 = id2.getValue();
+				Type t1 = (Type) getChild(0);
+				String s1 = t1.genCode();
+				String[] tmp1 = s1.split(" ");
+				type = tmp1[0];
+				ret += "%" + val + " = " + mathOp + " " + type + " " + tmp1[1]
+						+ ", %" + v2 + "\n";
 			} else {
 				// id2 === null
-
+				String v1 = val1 + "";
+				if (isInParams(id1))
+					v1 = id1.getValue();
+				Type t2 = (Type) getChild(1);
+				String s2 = t2.genCode();
+				String[] tmp2 = s2.split(" ");
+				type = tmp2[0];
+				ret += "%" + val + " = " + mathOp + " " + type + " %" + v1
+						+ ", " + tmp2[1] + "\n";
 			}
 
 		} else if (op == TokenType.OP_ASSIGN) {

@@ -11,14 +11,12 @@
 <type> ::= "basic" <type'> | "record" "{" <decls> "}" <type'>
 <type'> ::= "[" "num" "]" <type'> | "@"
 <stmts> ::= <stmt> <stmts> | "@"
-
 <stmt> ::= <assign> ";" | "if" "(" <assign> ")" <stmt> <stmt'> | "while" "(" <assign> ")" <stmt> | "do" <stmt> "while" "(" <assign> ")" ";" | "break" ";" | "return" <stmt''> | "print" <loc> ";" | <block>
 <stmt'> ::= "else" <stmt> | "@"
-<stmt''> ::= <loc> ";" | ";"
+<stmt''> ::= <bool> ";" | ";"
 <loc> ::= "id" <loc''>
-<loc'> ::= "." "id" | "[" <assign> "]"
+<loc'> ::= ".""id" | "[" <assign> "]"
 <loc''> ::= <loc'> <loc''> | "@"
-
 <assign> ::= <bool> <assign'>
 <assign'> ::= "=" <assign> <assign'> | "@"
 <bool> ::= <join> <bool'>
@@ -33,9 +31,9 @@
 <expr'> ::= "+" <term> <expr'> | "-" <term> <expr'> | "@"
 <term> ::= <unary> <term'>
 <term'> ::= "*" <unary> <term'> | "/" <unary> <term'> | "@"
-<unary> ::= "!" <unary> | "-" <unary> | <factor>
+<unary> ::= "!" <unary> | "−" <unary> | <factor>
 <factor> ::= "(" <assign> ")" | <loc> <factor'> | "num" | "real" | "true" | "false" | "string"
 <factor'> ::= "(" <optargs> ")" | "@"
 <optargs> ::= <args> | "@"
 <args> ::= <assign> <args'>
-<args'> ::= "," <args> | "@"
+<args'> ::= "," <args> | "@" 

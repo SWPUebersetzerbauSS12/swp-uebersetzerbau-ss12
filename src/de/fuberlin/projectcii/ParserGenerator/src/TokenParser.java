@@ -148,6 +148,7 @@ public class TokenParser {
 		}
 		// Token doesn't fit the given grammar
 		else{
+			System.out.println(symbol);
 			throw new RuntimeException("Token doesen't fit the given grammar! Terminal: "+TokenTerminal+" At line: "+Token.getLineNumber());			
 		}
 	return tree;

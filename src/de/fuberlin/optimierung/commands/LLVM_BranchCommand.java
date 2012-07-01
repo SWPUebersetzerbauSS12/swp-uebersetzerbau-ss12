@@ -1,10 +1,6 @@
 package de.fuberlin.optimierung.commands;
 
-import java.util.LinkedList;
-import de.fuberlin.optimierung.ILLVM_Block;
-import de.fuberlin.optimierung.ILLVM_Command;
-import de.fuberlin.optimierung.LLVM_Operation;
-import de.fuberlin.optimierung.LLVM_Parameter;
+import de.fuberlin.optimierung.*;
 
 /*
  * Syntax:
@@ -16,24 +12,33 @@ import de.fuberlin.optimierung.LLVM_Parameter;
 
 public class LLVM_BranchCommand extends LLVM_GenericCommand{
 	
-	public LLVM_BranchCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
-		super(operation, predecessor, block, comment);
+	public LLVM_BranchCommand(String cmdLine, LLVM_GenericCommand predecessor, LLVM_Block block){
+		super(predecessor, block, cmdLine);
 		
-		if (cmd.length == 3){
-			// unconditional Branch
-			// <dest> label
-			operands.add(new LLVM_Parameter(cmd[2], cmd[1]));
-		}else if (cmd.length > 3){
-			// conditional Branch
-			// <cond> i1
-			operands.add(new LLVM_Parameter(cmd[2], cmd[1]));
-			// <iftrue> label
-			operands.add(new LLVM_Parameter(cmd[4], cmd[3]));
-			// <iffalse> label
-			operands.add(new LLVM_Parameter(cmd[6], cmd[5]));
+		StringBuilder cmd = new StringBuilder(cmdLine);
+		parseEraseComment(cmd);
+		parseEraseString(cmd, "br");
+		
+		if (parseEraseString(cmd, "i1")){
+			setOperation(LLVM_Operation.BR_CON);
+			String cond = parseReadValue(cmd);
+			parseEraseString(cmd, ",");
+			parseEraseString(cmd, "label");
+			String iftrue = parseReadValue(cmd);
+			parseEraseString(cmd, ",");
+			parseEraseString(cmd, "label");
+			String iffalse = parseReadValue(cmd);
+			operands.add(new LLVM_Parameter(cond, "i1"));
+			operands.add(new LLVM_Parameter(iftrue, "label"));
+			operands.add(new LLVM_Parameter(iffalse, "label"));
+		}else{
+			setOperation(LLVM_Operation.BR);
+			parseEraseString(cmd, "label");
+			String dest = parseReadValue(cmd);
+			operands.add(new LLVM_Parameter(dest, "label"));
 		}
 		
-		System.out.println("Operation generiert: " + this.toString());
+		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());
 	}
 	
 	public String toString() {

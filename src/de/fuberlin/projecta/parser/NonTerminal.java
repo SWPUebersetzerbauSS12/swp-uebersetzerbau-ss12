@@ -45,7 +45,8 @@ public enum NonTerminal {
 	args ("args"),
 	args_ ("args'");
 	
-	private static Map<String,NonTerminal> nonTerminalSymbol2NonTerminal=new HashMap<String, NonTerminal>();
+	private static Map<String,NonTerminal> nonTerminalSymbol2NonTerminal
+		= new HashMap<String, NonTerminal>();
 	
 	static{
 		for(NonTerminal t : EnumSet.allOf(NonTerminal.class)){
@@ -56,14 +57,14 @@ public enum NonTerminal {
 	private final String nonTerminalSymbol;
 	
 	private NonTerminal(String nonTerminalSymbol) {
-		this.nonTerminalSymbol=nonTerminalSymbol;			
+		this.nonTerminalSymbol=nonTerminalSymbol;
 	}
 	
-	public String getNonTerminalSymbol(){
+	public String getNonTerminalSymbol() {
 		return this.nonTerminalSymbol;
 	}
 
-	public static NonTerminal byNonTerminalSymbol(String s){
+	public static NonTerminal byNonTerminalSymbol(String s) {
 		return nonTerminalSymbol2NonTerminal.get(s);
 	}
 }

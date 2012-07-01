@@ -1,9 +1,6 @@
 package de.fuberlin.optimierung.commands;
 
-import de.fuberlin.optimierung.ILLVM_Block;
-import de.fuberlin.optimierung.ILLVM_Command;
-import de.fuberlin.optimierung.LLVM_Operation;
-import de.fuberlin.optimierung.LLVM_Parameter;
+import de.fuberlin.optimierung.*;
 
 /*
 * Syntax:
@@ -13,79 +10,81 @@ import de.fuberlin.optimierung.LLVM_Parameter;
 
 public class LLVM_CallCommand extends LLVM_GenericCommand{
 	private boolean tail = false;
+	private boolean startsnotwithcall = false;
 	private String cconv = "";
 	private String reta = "";
-	private String rest = "";
+	private String fnty = "";
+	private String fnptrval = "";
+	private String fnattrs = "";
 	
-	public LLVM_CallCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
-		super(operation, predecessor, block, comment);
+	public LLVM_CallCommand(String cmdLine, LLVM_GenericCommand predecessor, LLVM_Block block){
+		super(predecessor, block, cmdLine);
+		setOperation(LLVM_Operation.CALL);
+		StringBuilder cmd = new StringBuilder(cmdLine);
+		parseEraseComment(cmd);
 		
-		// tail?
-		if (cmd[2].trim().equals("tail")){
-			tail = true;
+		String result = "";
+		if (!cmdLine.startsWith("call ")){
+			startsnotwithcall = true;
+			result = parseReadResult(cmd);
+			tail = parseOptionalString(cmd, "tail");
 		}
-		
-		int start = 3;
-		int end = 0;
-		start = (tail) ? start + 1 : start;
-		
-		//cconv angegeben?
-		if (cmd.length >= start && (cmd[start].trim().equals("ccc") ||
-			cmd[start].trim().equals("fastcc") ||
-			cmd[start].trim().equals("coldcc")	||
-			cmd[start].trim().equals("cc"))){
-			if (cmd[start].trim().equals("cc")){
-				cconv = cmd[start] + " " + cmd[start+1];
-				start = start + 2;
-			}else{
-				cconv = cmd[start];
-				start = start + 1;
-			}
+		parseEraseString(cmd, "call");
+		cconv = parseOptionalListSingle(cmd, new String[]{"ccc", "fastcc", "coldcc", "cc "});
+		reta = parseOptionalList(cmd, new String[]{"zeroext", "signext", "inreg"});
+		String ty = parseReadType(cmd);
+		if (cmd.toString().indexOf('@') > 0){
+			// optionaler Pointer nur vorhanden, wenn @ nicht am Anfang steht
+			fnty = parseReadType(cmd);
 		}
+		fnptrval = parseReadValue(cmd);
+		parseEraseString(cmd, "(");
+		String funcargs = parseStringUntil(cmd, ")");
+		parseEraseString(cmd, ")");
+		fnattrs = parseOptionalList(cmd, new String[]{"noreturn", "nounwind", "readnone", "readonly"});
 		
-		//ret attrs angegeben?
-		if (cmd.length >= start && (cmd[start].trim().equals("zeroext") ||
-			cmd[start].trim().equals("signext") ||
-			cmd[start].trim().equals("inreg"))){
-			reta = cmd[start];
-			start = start + 1;
+		//func args verarbeiten
+		if (funcargs.length() > 0){
+			StringBuilder tmp = new StringBuilder(funcargs);
+			do{
+				String typ = parseReadType(tmp);
+				String name = parseReadValue(tmp);
+				operands.add(new LLVM_Parameter(name, typ));
+			}while(parseEraseString(tmp, ","));
 		}
 		
 		// <result> <ty>
-		target = new LLVM_Parameter(cmd[0], cmd[start]);
-		start = start + 1;
-		/*end = start;
+		target = new LLVM_Parameter(result, ty);
 		
-		while(cmd.length >= end && (!cmd[end].trim().startsWith("@"))){
-			end = end + 1; 
-		}
-		
-		if (start != end){
-			for (int i = start; i <= end; i++){
-				fnty += cmd[i].trim() + " ";
-			}
-		}
-		start = end;
-		*/
-		
-		for (int i = start; i < cmd.length; i++){
-			rest += cmd[i] + " ";
-		}
-		rest.trim();
-		
-		System.out.println("Operation generiert: " + this.toString());
+		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());
 	}
 	
 	public String toString() {
-		String cmd_out = target.getName() + " = ";
+		String cmd_out = "";
 		
-		if (tail) cmd_out += "tail ";
+		if (startsnotwithcall){
+			cmd_out += target.getName() + " = ";
+			if (tail) cmd_out += "tail ";
+		}
 		cmd_out += "call ";
 		if (cconv != "") cmd_out += cconv + " ";
 		if (reta != "") cmd_out += reta + " ";
 		
 		cmd_out += target.getTypeString() + " ";
-		cmd_out += rest;
+		
+		if (fnty != "") cmd_out += fnty + " ";
+		if (fnptrval != "") cmd_out += fnptrval;
+
+		cmd_out += "(";
+		if (operands.size() > 0){
+			for (int i = 0; i < operands.size(); i++){
+				cmd_out += operands.get(i).getTypeString() + " " + operands.get(i).getName();
+				if (i+1 < operands.size()) cmd_out += ", "; 
+			}
+		}
+		cmd_out += ") ";
+		
+		if (fnattrs != "") cmd_out += fnattrs + " ";
 		
 		cmd_out += " " + getComment();
 		

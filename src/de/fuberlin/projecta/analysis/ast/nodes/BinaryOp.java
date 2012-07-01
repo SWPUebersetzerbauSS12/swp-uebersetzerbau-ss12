@@ -1,6 +1,7 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 import de.fuberlin.commons.lexer.TokenType;
+import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
@@ -97,9 +98,8 @@ public class BinaryOp extends Type {
 
 				String int_or_real = "";
 				String cmp_op = "";
-				if ((a != null || b != null)
-						&& (a.getType().toTypeString().equals("double") || b
-								.getType().toTypeString().equals("double"))) {
+				if ((a.getType().toTypeString().equals("double") || b.getType()
+						.toTypeString().equals("double"))) {
 					int_or_real = "fcmp";
 					switch (op) {
 					case OP_LT:
@@ -146,15 +146,10 @@ public class BinaryOp extends Type {
 				}
 				int tmp = block.getNewMemory();
 				ret += "%" + tmp + " = " + int_or_real + " " + cmp_op + " ";
-				if (a != null) {
-					ret += SymbolTableHelper.lookup(a.getValue(), this)
-							.getType().genCode()
-							+ " %";
-				} else if (b != null) {
-					ret += SymbolTableHelper.lookup(b.getValue(), this)
-							.getType().genCode()
-							+ " %";
-				}
+				ret += SymbolTableHelper.lookup(a.getValue(), this).getType()
+						.genCode()
+						+ " %";
+
 				if (regs[3] == 0)
 					ret += a.getValue() + ", %";
 				else
@@ -170,22 +165,21 @@ public class BinaryOp extends Type {
 			String type = "";
 			String mathOp = "";
 			int val1 = 0, val2 = 0; // used to store both values
+			Id id1 = null, id2 = null;
 
-			// load value of id1 if it is an id!!!
+			// the value must only be loaded if it is instanceof Id and if it is
+			// not parameter!
+
 			if (getChild(0) instanceof Id) {
-				Id id = (Id) getChild(0);
-				val1 = block.getNewMemory();
-				ret += "%"
-						+ val1
-						+ " = load "
-						+ (SymbolTableHelper.lookup(id.getValue(), this))
-								.getType().genCode() + "* %" + id.getValue()
-						+ "\n";
+				id1 = (Id) getChild(0);
+				if (!isInParams(id1)) {
+					ret += LLVM.loadVar(id1);
+				}
 
-				if (SymbolTableHelper.lookup(id.getValue(), this).getType()
+				if (SymbolTableHelper.lookup(id1.getValue(), this).getType()
 						.toTypeString().equals("int")) {
 					type = "i32";
-				} else if (SymbolTableHelper.lookup(id.getValue(), this)
+				} else if (SymbolTableHelper.lookup(id1.getValue(), this)
 						.getType().toTypeString().equals("double")) {
 					mathOp = "f"; // append f in front of math_op
 					type = "double";
@@ -214,22 +208,38 @@ public class BinaryOp extends Type {
 				throw new SemanticException("No type could be made in: "
 						+ this.getClass());
 			}
-			// load value of id2 if it is an id!!!
+			// load value of id2 if it is an id and not in params
 			if (getChild(1) instanceof Id) {
-				Id id = (Id) getChild(1);
-				val2 = block.getNewMemory();
-				ret += "%"
-						+ val2
-						+ " = load "
-						+ (SymbolTableHelper.lookup(id.getValue(), this))
-								.getType().genCode() + "* %" + id.getValue()
-						+ "\n";
+				id2 = (Id) getChild(1);
+				if (!isInParams(id2)) {
+					ret += LLVM.loadVar(id2);
+				}
 			}
 
 			int val = block.getNewMemory();
 			this.setValMemory(val); // save currents computation in this node
-			ret += "%" + val + " = " + mathOp + " " + type + " %" + val1
-					+ ", %" + val2 + "\n";
+			if (id1 != null)
+				val1 = id1.getValMemory();
+			if (id2 != null)
+				val2 = id2.getValMemory();
+			if (id1 != null && id2 != null) {
+				String v1 = val1 + "";
+				String v2 = val2 + "";
+				if (isInParams(id1))
+					v1 = id1.getValue();
+				if (isInParams(id2))
+					v2 = id2.getValue();
+				ret += "%" + val + " = " + mathOp + " " + type + " %" + v1
+						+ ", %" + v2 + "\n";
+			} else if (id1 == null && id2 == null) { // TODO!
+				// both are types?
+
+			} else if (id1 == null) {
+
+			} else {
+				// id2 === null
+
+			}
 
 		} else if (op == TokenType.OP_ASSIGN) {
 			EntryType eA = null;
@@ -256,7 +266,7 @@ public class BinaryOp extends Type {
 				ret += "store i8* %" + tempReg2 + ", i8** %" + a.getValue();
 			} else if (getChild(1) instanceof FuncCall) {
 				// load parameters of this function first
-				if(getChild(1).getChild(1).getChildrenCount() != 0){
+				if (getChild(1).getChild(1).getChildrenCount() != 0) {
 					ret += LLVM.loadParams((Args) getChild(1).getChild(1));
 				}
 				int reg = block.getNewMemory();
@@ -316,5 +326,36 @@ public class BinaryOp extends Type {
 	public String toTypeString() {
 		// if both operands are not equal, checkTypes will catch this
 		return ((Type) this.getChild(0)).toTypeString();
+	}
+
+	private boolean isInParams(Id id) {
+		FuncDef fDef = searchUpFuncDef(id);
+
+		if (fDef != null) {
+			if (fDef.getChild(2).getChildrenCount() > 0) {
+				for (int i = 0; i < fDef.getChild(2).getChildrenCount(); i += 2) {
+					Type typeO = (Type) fDef.getChild(2).getChild(i);
+					Id idO = (Id) fDef.getChild(2).getChild(i + 1);
+					if (idO.getValue().equals(id.getValue())
+							&& typeO.equals(id.getType()))
+						return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	private FuncDef searchUpFuncDef(AbstractSyntaxTree node) {
+		if (node.getParent() != null) {
+			ISyntaxTree parent = node.getParent();
+			while (parent != null) {
+				if (parent instanceof FuncDef) {
+					return (FuncDef) parent;
+				}
+				parent = parent.getParent();
+			}
+		}
+		return null;
 	}
 }

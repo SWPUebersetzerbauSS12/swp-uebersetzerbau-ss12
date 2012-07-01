@@ -1,7 +1,11 @@
 package de.fuberlin.projecta.codegen;
 
+import de.fuberlin.commons.parser.ISyntaxTree;
+import de.fuberlin.projecta.analysis.SymbolTableHelper;
 import de.fuberlin.projecta.analysis.ast.nodes.AbstractSyntaxTree;
+import de.fuberlin.projecta.analysis.ast.nodes.Args;
 import de.fuberlin.projecta.analysis.ast.nodes.Block;
+import de.fuberlin.projecta.analysis.ast.nodes.Id;
 import de.fuberlin.projecta.analysis.ast.nodes.Statement;
 
 public class LLVM {
@@ -47,6 +51,29 @@ public class LLVM {
 			ret += s2 + "\n";
 			ret += "br label %" + labelBehind + "\n\n";
 			ret += "; <label> %" + labelBehind + "\n";
+		}
+		return ret;
+	}
+
+	public static String loadVar(Id id) {
+		String ret = "";
+		if (id.getValMemory() == 0) {
+			int memory = id.getHighestBlock().getNewMemory();
+			id.setValMemory(memory);
+			ret += "%"
+					+ memory
+					+ " = load "
+					+ SymbolTableHelper.lookup(id.getValue(), id).getType()
+							.genCode() + "* %" + id.getValue() + "\n";
+		}
+		return ret;
+	}
+
+	public static String loadParams(Args args) {
+		String ret = "";
+		for (ISyntaxTree child : args.getChildren()) {
+			if (child instanceof Id)
+				ret += loadVar((Id) child);
 		}
 		return ret;
 	}

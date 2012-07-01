@@ -167,19 +167,14 @@ public class BinaryOp extends Type {
 			int val1 = 0, val2 = 0; // used to store both values
 			Id id1 = null, id2 = null;
 
-			// the value must only be loaded if it is instanceof Id and if it is
-			// not parameter!
-
 			if (getChild(0) instanceof Id) {
 				id1 = (Id) getChild(0);
 				if (SymbolTableHelper.lookup(id1.getValue(), this).getType()
-						.toTypeString().equals("double")) {
+						.toTypeString().equals("double"))
 					mathOp = "f"; // append f in front of math_op
-				}
 			} else if (getChild(0) instanceof Type) {
-				if (((Type) getChild(0)).toTypeString().equals("double")) {
+				if (((Type) getChild(0)).toTypeString().equals("double"))
 					mathOp = "f"; // append f in front of math_op
-				}
 			} else {
 				throw new SemanticException("type couldn't be figured out in: "
 						+ getChild(0));
@@ -201,6 +196,9 @@ public class BinaryOp extends Type {
 			}
 
 			if (getChild(0) instanceof Id) {
+				// the value must only be loaded if it is instanceof Id and if
+				// it is
+				// not parameter!
 				id1 = (Id) getChild(0);
 				if (!isInParams(id1)) {
 					ret += LLVM.loadVar(id1);

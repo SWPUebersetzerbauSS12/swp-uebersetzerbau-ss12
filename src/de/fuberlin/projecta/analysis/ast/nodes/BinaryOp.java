@@ -5,6 +5,7 @@ import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
 import de.fuberlin.projecta.analysis.TypeErrorException;
+import de.fuberlin.projecta.codegen.LLVM;
 
 public class BinaryOp extends Type {
 
@@ -150,7 +151,7 @@ public class BinaryOp extends Type {
 							.getType().genCode()
 							+ " %";
 				} else if (b != null) {
-					ret += SymbolTableHelper.lookup(a.getValue(), this)
+					ret += SymbolTableHelper.lookup(b.getValue(), this)
 							.getType().genCode()
 							+ " %";
 				}
@@ -254,12 +255,16 @@ public class BinaryOp extends Type {
 						+ " x i8]* %" + tempReg + ", i8 0, i8 0 \n";
 				ret += "store i8* %" + tempReg2 + ", i8** %" + a.getValue();
 			} else if (getChild(1) instanceof FuncCall) {
+				// load parameters of this function first
+				if(getChild(1).getChild(1).getChildrenCount() != 0){
+					ret += LLVM.loadParams((Args) getChild(1).getChild(1));
+				}
 				int reg = block.getNewMemory();
 				String id = ((Id) getChild(0)).getValue();
 				String type = SymbolTableHelper
 						.lookup(((Id) getChild(0)).getValue(), this).getType()
 						.genCode();
-				ret = "%" + reg + " = " + ((FuncCall) getChild(1)).genCode()
+				ret += "%" + reg + " = " + ((FuncCall) getChild(1)).genCode()
 						+ "\n";
 
 				ret += "store " + type + " %" + reg + ", " + type + "* %" + id;
@@ -296,44 +301,6 @@ public class BinaryOp extends Type {
 
 		return ret;
 	}
-
-	// /**
-	// * Searches the symbolTables up to the point where both id's are found and
-	// * gives the highest type possible. E.g. for int and real it is double,
-	// for
-	// * int and int it is i32, for int and string it is i8*. If at least one
-	// * parameter is not found in any symbolTable an SemanticException is
-	// raised.
-	// *
-	// * @param a
-	// * the first id
-	// * @param b
-	// * the second id
-	// * @return the highest possible basicTokenType of both id's
-	// */
-	// private String checkTypeOnEqual(Id a, Id b) {
-	// String ret = "";
-	//
-	// EntryType eA = null, eB = null;
-	// eA = SymbolTableHelper.lookup(a.getValue(), this);
-	// eB = SymbolTableHelper.lookup(b.getValue(), this);
-	//
-	// if (eA != null && eB != null) {
-	// Type tA = eA.getType();
-	// Type tB = eB.getType();
-	// if (tA.equals(tB)) {
-	// ret = tA.genCode();
-	// } else {
-	// throw new SemanticException("Error! " + eA + " and " + eB
-	// + " must be of the same type!");
-	// }
-	// } else {
-	// throw new SemanticException("Error! Id's:" + a.getValue() + ", "
-	// + b.getValue() + " not found in symbolTables:");
-	// }
-	//
-	// return ret;
-	// }
 
 	@Override
 	public boolean checkTypes() {

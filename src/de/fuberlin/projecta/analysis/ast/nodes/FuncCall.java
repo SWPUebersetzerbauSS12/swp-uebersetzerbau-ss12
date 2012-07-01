@@ -63,20 +63,21 @@ public class FuncCall extends Type {
 
 			ret += " @" + func.getId() + "(";
 			boolean tmp = false;
-			for (ISyntaxTree child : getChild(1).getChildren()) {
-				tmp = true;
-				Type node = null;
+			if (getChildrenCount() > 1)
+				for (ISyntaxTree child : getChild(1).getChildren()) {
+					tmp = true;
+					Type node = null;
 
-				if (child instanceof Id)
-					ret += ((Id) child).getType().genCode() + " %"
-							+ ((Id) child).getValMemory() + ", ";
-				else if (child instanceof Type) {
-					node = (Type) child;
-					ret += node.genCode() + ", ";
-				} else {
-					// WTF?!
+					if (child instanceof Id)
+						ret += ((Id) child).getType().genCode() + " %"
+								+ ((Id) child).getValMemory() + ", ";
+					else if (child instanceof Type) {
+						node = (Type) child;
+						ret += node.genCode() + ", ";
+					} else {
+						// WTF?!
+					}
 				}
-			}
 			if (tmp)
 				ret = ret.substring(0, ret.length() - 2);
 			ret += ")";

@@ -266,7 +266,8 @@ public class BinaryOp extends Type {
 				ret += "store i8* %" + tempReg2 + ", i8** %" + a.getValue();
 			} else if (getChild(1) instanceof FuncCall) {
 				// load parameters of this function first
-				if (getChild(1).getChild(1).getChildrenCount() != 0) {
+				if (getChild(1).getChildrenCount() > 1
+						&& getChild(1).getChild(1).getChildrenCount() != 0) {
 					ret += LLVM.loadParams((Args) getChild(1).getChild(1));
 				}
 				int reg = block.getNewMemory();

@@ -32,6 +32,7 @@
 
 package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar;
 
+import de.fuberlin.bii.regextodfaconverter.directconverter.regex.RegexCharSet;
 import de.fuberlin.bii.utils.Test;
 
 /**
@@ -43,7 +44,7 @@ public class EmptyString extends Terminal  {
 	
 	
 	public EmptyString() {
-		super( new Symbol('ɛ'));
+		super( new Symbol(RegexCharSet.EMPTY_STRING));
 	}
 	
 	@Override

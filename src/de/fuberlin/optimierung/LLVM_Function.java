@@ -667,11 +667,20 @@ public class LLVM_Function {
 
 		}
 		// Wenn einzige Verwendung ein Store, dann löschen
-		if (this.registerMap.existsUses(registerName) && this.registerMap.getUses(registerName).size() == 1 && this.registerMap.getUses(registerName).get(0).getOperation() == LLVM_Operation.STORE ){
-			LLVM_GenericCommand store = this.registerMap.getUses(registerName).get(0);
-			this.registerMap.deleteCommand(store);
-			store.deleteCommand("eliminateDeadRegister - store");
-			return store;
+		if (this.registerMap.existsUses(registerName) &&
+				this.registerMap.existsDefintion(registerName)) {
+			
+			LinkedList<LLVM_GenericCommand> uses = this.registerMap.getUses(registerName);
+			LLVM_GenericCommand def = this.registerMap.getDefinition(registerName);
+			
+			if(uses.size() == 1 && uses.get(0).getOperation() == LLVM_Operation.STORE 
+					&& def.getOperation() == LLVM_Operation.ALLOCA){	
+				
+				LLVM_GenericCommand store = uses.get(0);
+				this.registerMap.deleteCommand(store);
+				store.deleteCommand("eliminateDeadRegister - store");
+				return store;
+			}
 		}
 		return null;
 	}

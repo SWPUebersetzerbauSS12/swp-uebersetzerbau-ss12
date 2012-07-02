@@ -42,6 +42,7 @@ public class GrammarReader {
 	 *            defines the Max. no. of the iterations, if more than NItr,the
 	 *            whole grammar will be cleared
 	 * @param file 
+	 * @param printSelected 
 	 * @return The grammar as HashMap where the keys are the heads of the
 	 *         production and the values are vectors containing the productions
 	 *         itself. Each production is represented as a vector of terminal
@@ -53,12 +54,12 @@ public class GrammarReader {
 	 * then there is too much iterations (endless iteration)
 	 * 
 	 */
-	public Map<String, Vector<Vector<String>>> createGrammar(int NItr, boolean changeToLL1, String file)
+	public Map<String, Vector<Vector<String>>> createGrammar(int NItr, boolean changeToLL1, String file, boolean printSelected)
 			throws IOException {
 		// Read the file
 	    this.file=file;
 		Vector<Productions> grammar = ReadFile();
-		if (Settings.getGRAMMAR_READ()){
+		if (Settings.getGRAMMAR_READ() && printSelected){
 		    System.out.println("Ausgangsgrammatik:");
 		    Printer.printGrammar(grammar);
 		}
@@ -97,7 +98,7 @@ public class GrammarReader {
 		        // System.out.println("Too Many Iterations, it's unparsable with LL(1), please input a right file!!");
 		        // grammar.clear();
 		    }   
-		    if (Settings.getGRAMMAR_MOD()){
+		    if (Settings.getGRAMMAR_MOD() && printSelected){
 		        System.out.println("Umgewandelte Grammatik:");
 	            Printer.printGrammar(grammar);
 		    }

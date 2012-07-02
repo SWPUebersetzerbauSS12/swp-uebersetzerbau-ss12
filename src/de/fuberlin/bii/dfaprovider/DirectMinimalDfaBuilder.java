@@ -21,7 +21,8 @@
  * 
  * Projectgroup: bi, bii
  * 
- * Authors: 
+ * 
+ * Authors: Daniel Rotar, Benjamin Weißenfels, Alexander Niemeier, Johannes Dahlke
  * 
  * Module:  Softwareprojekt Übersetzerbau 2012 
  * 
@@ -33,14 +34,11 @@
 package de.fuberlin.bii.dfaprovider;
 
 import java.io.File;
-import java.util.ArrayList;
 
 import de.fuberlin.bii.parsetokdef.LexTokDef;
 import de.fuberlin.bii.parsetokdef.ReadTokDefAbstract;
-
 import de.fuberlin.bii.regextodfaconverter.ConvertExecption;
 import de.fuberlin.bii.regextodfaconverter.MinimalDfa;
-import de.fuberlin.bii.regextodfaconverter.RegexToNfaConverter;
 import de.fuberlin.bii.regextodfaconverter.directconverter.DirectConverterException;
 import de.fuberlin.bii.regextodfaconverter.directconverter.regex.RegexToDfaConverter;
 import de.fuberlin.bii.regextodfaconverter.directconverter.regex.RegexToPayloadMap;
@@ -53,7 +51,10 @@ import de.fuberlin.bii.utils.Notification;
  * Stellt einen MinimalDFA-Builder dar, der den DFA über den direkten Weg von
  * Regex zu DFA erstellt.
  * 
- * @author ?
+ * @author Daniel Rotar
+ * @author Benjamin Weißenfels
+ * @author Alexander Niemeier
+ * @author Johannes Dahlke
  * 
  */
 public class DirectMinimalDfaBuilder implements MinimalDfaBuilder {
@@ -84,7 +85,7 @@ public class DirectMinimalDfaBuilder implements MinimalDfaBuilder {
 
 	  RegexToDfaConverter converter = new RegexToDfaConverter();
 		
-	  RegexToPayloadMap<StatePayload> regexToPayloadMap = new RegexToPayloadMap<StatePayload>();
+	  RegexToPayloadMap<de.fuberlin.bii.regextodfaconverter.fsm.StatePayload> regexToPayloadMap = new RegexToPayloadMap<de.fuberlin.bii.regextodfaconverter.fsm.StatePayload>();
 	  
 		StatePayload payload = null;
 		String regex = "";
@@ -107,12 +108,12 @@ public class DirectMinimalDfaBuilder implements MinimalDfaBuilder {
 			payload = new de.fuberlin.bii.regextodfaconverter.fsm.StatePayload(
 					irule.getTokenType(), irule.getTokenValue(), counter * (-1));
 			regex = irule.getRegexp();
-			regexToPayloadMap.put( regex, payload);
+			regexToPayloadMap.put( regex, (de.fuberlin.bii.regextodfaconverter.fsm.StatePayload)payload);
 		}
 
 		// Aus allen regex einen vereinigten Dfa erstellen
 		try {
-			fsm = RegexToDfaConverter.convert( regexToPayloadMap);
+			fsm = (FiniteStateMachine<Character, StatePayload>) RegexToDfaConverter.convert( regexToPayloadMap);
 		} catch (DirectConverterException e) {
 			Notification.printDebugException( e);
 			throw new MinimalDfaBuilderException(
@@ -124,11 +125,12 @@ public class DirectMinimalDfaBuilder implements MinimalDfaBuilder {
 		try {
 			mDfa = new MinimalDfa<Character, StatePayload>(fsm);
 		} catch (ConvertExecption e) {
+			Notification.printDebugException( e);
 			throw new MinimalDfaBuilderException(
 					"Fehler beim Erstellen des minimalen DFA's: "
 							+ e.getMessage());
 		}
-
+		
 		return mDfa;
 	}
 

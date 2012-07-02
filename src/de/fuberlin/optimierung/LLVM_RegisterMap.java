@@ -1,8 +1,7 @@
 package de.fuberlin.optimierung;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Set;
+import java.util.*;
+import de.fuberlin.optimierung.commands.*;;
 
 /**
  * Ermöglicht die Zuordnung von Definition und Verwendungen (als ILLVMCommands) zu einem Register
@@ -15,10 +14,10 @@ import java.util.Set;
 public class LLVM_RegisterMap {
 
 	// Hashmap, die dem Namen eines Registers den Befehl zuordnet, in dem das Register definiert wird
-	private HashMap<String,ILLVM_Command> definitionMap = new HashMap<String,ILLVM_Command>();
+	private HashMap<String,LLVM_GenericCommand> definitionMap = new HashMap<String,LLVM_GenericCommand>();
 	
 	// Hashmap, die dem Namen eines Registers die Befehle zuordnet, in dem das Register genutzt wird
-	private HashMap<String,LinkedList<ILLVM_Command>> useMap = new HashMap<String,LinkedList<ILLVM_Command>>();
+	private HashMap<String,LinkedList<LLVM_GenericCommand>> useMap = new HashMap<String,LinkedList<LLVM_GenericCommand>>();
 	
 	/**
 	 * Gibt alle Registernamen aus, die laut Definitionsmap definiert sind
@@ -41,7 +40,7 @@ public class LLVM_RegisterMap {
 	 * @param registerName Name des Registers
 	 * @return Befehl, das Register definiert, null, falls nicht vorhanden
 	 */
-	public ILLVM_Command getDefinition(String registerName) {
+	public LLVM_GenericCommand getDefinition(String registerName) {
 		return this.definitionMap.get(registerName);
 	}
 	
@@ -50,7 +49,7 @@ public class LLVM_RegisterMap {
 	 * @param registerName Name des Registers
 	 * @return  Befehle, die Register nutzen, null, falls nicht vorhanden
 	 */
-	public LinkedList<ILLVM_Command> getUses(String registerName) {
+	public LinkedList<LLVM_GenericCommand> getUses(String registerName) {
 		return this.useMap.get(registerName);
 	}
 	
@@ -58,7 +57,7 @@ public class LLVM_RegisterMap {
 	 * Fuege Register des gegebenen Befehls in Hashmaps ein
 	 * @param c Einzufuegender Befehl
 	 */
-	public void addCommand(ILLVM_Command c) {
+	public void addCommand(LLVM_GenericCommand c) {
 		
 		// Fuege Definition ein
 		LLVM_Parameter target = c.getTarget();
@@ -70,7 +69,7 @@ public class LLVM_RegisterMap {
 		
 		if(operands!=null) {	// Gibt es Verwendungen zum Einfuegen?
 			
-			LinkedList<ILLVM_Command> uses;
+			LinkedList<LLVM_GenericCommand> uses;
 			for(LLVM_Parameter op : operands) {	// Gehe Operanden durch
 				
 				if(op.getType()==LLVM_ParameterType.REGISTER) {	// Ist Operand ein Register?
@@ -78,7 +77,7 @@ public class LLVM_RegisterMap {
 					// Fuege Befehl in useMap ein
 					uses = this.getUses(op.getName());
 					if(uses==null) {
-						uses = new LinkedList<ILLVM_Command>();
+						uses = new LinkedList<LLVM_GenericCommand>();
 					}
 					// Fuege ein, falls der Befehl noch nicht enthalten ist
 					if(!uses.contains(c)) {
@@ -96,7 +95,7 @@ public class LLVM_RegisterMap {
 	 * Loesche Register des gegebenen Befehls aus Hashmap
 	 * @param c Zu loeschender Befehl
 	 */
-	public void deleteCommand(ILLVM_Command c) {
+	public void deleteCommand(LLVM_GenericCommand c) {
 		
 		// Loesche Definition
 		LLVM_Parameter target = c.getTarget();
@@ -109,7 +108,7 @@ public class LLVM_RegisterMap {
 		
 		if(operands!=null) {	// Gibt es Verwendungen zum Loeschen?
 			
-			LinkedList<ILLVM_Command> uses;
+			LinkedList<LLVM_GenericCommand> uses;
 			for(LLVM_Parameter op : operands) {	// Gehe Operanden durch
 				
 				if(op.getType()==LLVM_ParameterType.REGISTER) {	// Ist Operand ein Register?
@@ -136,7 +135,7 @@ public class LLVM_RegisterMap {
 	 * @param c Befehl, aus dem geloescht werden soll
 	 * @param _target Operand, der geloescht werden soll
 	 */
-	public void deleteCommand(ILLVM_Command c, LLVM_Parameter _target) {
+	public void deleteCommand(LLVM_GenericCommand c, LLVM_Parameter _target) {
 
 		// Loesche Definition
 		/*LLVM_Parameter target = c.getTarget();
@@ -149,7 +148,7 @@ public class LLVM_RegisterMap {
 		
 		if(operands!=null) {	// Gibt es Verwendungen zum Loeschen?
 			
-			LinkedList<ILLVM_Command> uses;
+			LinkedList<LLVM_GenericCommand> uses;
 			
 			for(LLVM_Parameter op : operands){
 				
@@ -185,12 +184,9 @@ public class LLVM_RegisterMap {
 	 * @return true, falls eine Verwendung existiert, sonst false
 	 */
 	public boolean existsUses(String registerName) {
-		LinkedList<ILLVM_Command> uses = this.getUses(registerName);
+		LinkedList<LLVM_GenericCommand> uses = this.getUses(registerName);
 		if(uses==null)
 			return false;
 		return !(uses.isEmpty());
 	}
-	
-	
-	
 }

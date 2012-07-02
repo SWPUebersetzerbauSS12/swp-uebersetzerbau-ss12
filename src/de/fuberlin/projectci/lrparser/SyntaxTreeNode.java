@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import de.fuberlin.commons.util.LogFactory;
-import de.fuberlin.projectci.extern.IAttribute;
+import de.fuberlin.commons.lexer.IToken;
 import de.fuberlin.commons.parser.ISymbol;
 import de.fuberlin.commons.parser.ISyntaxTree;
-import de.fuberlin.commons.lexer.IToken;
+import de.fuberlin.commons.util.LogFactory;
+import de.fuberlin.projecta.parser.Parser;
 import de.fuberlin.projectci.grammar.Grammar;
 import de.fuberlin.projectci.grammar.Symbol;
 import de.fuberlin.projectci.grammar.TerminalSymbol;
@@ -28,6 +28,8 @@ public class SyntaxTreeNode implements ISyntaxTree{
 	private IToken token;
 	// Attribute 
 	private Map<String, Object> attributeName2Value = new HashMap<String, Object>();
+	
+	private ISyntaxTree parent=null;
 	// cildren als LinkedList, um insertTree effizient zu implementieren zu können
 	private List<ISyntaxTree> children=new LinkedList<ISyntaxTree>();
 	
@@ -40,6 +42,10 @@ public class SyntaxTreeNode implements ISyntaxTree{
 	public SyntaxTreeNode(IToken token, TerminalSymbol symbol) {
 		this.symbol = symbol;
 		this.token=token;
+		if (token.getAttribute()!=null){
+			// TDOO Abhängigkeit zu Project A entfernen
+			setAttribute(Parser.TOKEN_VALUE, token.getAttribute());
+		}
 	}
 	// **************************************************************************** 
 	// * Implementierung von ISyntaxTree
@@ -47,7 +53,15 @@ public class SyntaxTreeNode implements ISyntaxTree{
 	
 	@Override
 	public void addChild(ISyntaxTree tree) {
+		if (tree.getParent()!=null && ! this.equals(tree.getParent())){
+			throw new IllegalStateException("You don't have to add a child with another parent node");
+		}
+		if (children.contains(tree)){
+			logger.warning("Refused to re-add an existing child node.");
+			return;
+		}
 		children.add(tree);		
+		tree.setParent(this);
 	}
 	
 
@@ -72,26 +86,66 @@ public class SyntaxTreeNode implements ISyntaxTree{
 		return result;
 	}
 	
-	// TODO Attribut-Handling implementieren --> Fehler in ISyntaxTree (IAttribute fehlt/ addAttribute macht keinen Sinn)
+	
+	@Override
+	public boolean setAttribute(String name, Object value) {
+		attributeName2Value.put(name, value);
+		return true;
+	}
+
 	
 	@Override
 	public Object getAttribute(String name) {
-		// TODO Auto-generated method stub
 		return attributeName2Value.get(name);
 	}
 
 	@Override
 	public boolean addAttribute(String name) {
-		// TODO Auto-generated method stub
 		attributeName2Value.put(name, null);
 		return true;
 	}
+	
+	
+	@Override
+	public void setParent(ISyntaxTree tree) {
+		if (this.getParent()!=null && !this.getParent().equals(tree)){
+			throw new IllegalStateException("You don't have to set another parent node!");
+		}
+		tree.addChild(this);
+		
+	}
+
+	@Override
+	public ISyntaxTree getParent() {
+		return parent;
+	}
+
+	@Override
+	public ISyntaxTree removeChild(int i) {
+		return children.remove(i);
+	}
 
 	
-	public static class Attribute implements IAttribute{
-		private String name;
-		private String value;
+	@Override
+	public IToken getToken() {
+		return token;
 	}
+
+	@Override
+	public List<ISyntaxTree> getChildren() {
+		return children;
+	}
+
+	@Override
+	public void printTree() {
+		System.out.println(toString());
+	}
+
+	@Override
+	public ISymbol getSymbol() {
+		return this.symbol;
+	}
+	
 	
 	// **************************************************************************** 
 	// * Erweiterungen
@@ -108,15 +162,20 @@ public class SyntaxTreeNode implements ISyntaxTree{
 	void removeChildNode(ISyntaxTree childNode){
 		children.remove(childNode);
 	}
-	/**
-	 * Gibt eine (einfache um 90 Grad gedrehte) menschenlesbare Konsolenausgabe des Teilbaums zurück.
-	 * TODO Zum Debuggen wäre eine Ausgabe als HTML, XML oder Bilddatei wünschenswert
-	 */
+//	/**
+//	 * Gibt eine (einfache um 90 Grad gedrehte) menschenlesbare Konsolenausgabe des Teilbaums zurück.
+//	 * TODO Zum Debuggen wäre eine Ausgabe als HTML, XML oder Bilddatei wünschenswert
+//	 */
+//	@Override
+//	public String toString() {
+//		StringBuffer strBuf= new StringBuffer();
+//		toString(strBuf, 0);
+//		return strBuf.toString();
+//	}
+	
 	@Override
 	public String toString() {
-		StringBuffer strBuf= new StringBuffer();
-		toString(strBuf, 0);
-		return strBuf.toString();
+		return toXML();
 	}
 	
 	/**
@@ -193,46 +252,45 @@ public class SyntaxTreeNode implements ISyntaxTree{
 		}				
 	}
 
-	@Override
-	public void setParent(ISyntaxTree tree) {
-		// TODO Auto-generated method stub
-		
+	
+	
+	public String toXML(){
+		StringBuffer strBuf= new StringBuffer();
+		strBuf.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+		toXML(strBuf, 0);
+		return strBuf.toString();
 	}
-
-	@Override
-	public ISyntaxTree getParent() {
-		// TODO Auto-generated method stub
-		return null;
+	
+	private void toXML(StringBuffer strBuf,  int level){
+		for (int i = 0; i < level; i++) {
+			strBuf.append("  ");
+		}
+		strBuf.append("<node symbol=\"");
+		strBuf.append(symbol.getName());
+		strBuf.append("\"");
+		if (token!=null){
+			strBuf.append(" type=\"");
+			strBuf.append(token.getType());
+			strBuf.append("\"");
+			if (token.getAttribute()!=null){
+				strBuf.append(" value=\"");
+				strBuf.append(token.getAttribute());
+				strBuf.append("\"");
+			}
+		}
+		if (children.size()>0){
+			strBuf.append(">\n");
+			for (ISyntaxTree aChildNode : children) {
+				((SyntaxTreeNode)aChildNode).toXML(strBuf, level+1);
+			}
+			for (int i = 0; i < level; i++) {
+				strBuf.append("  ");
+			}
+			strBuf.append("</node>\n");
+		}
+		else{
+			strBuf.append("/>\n");
+		}				
 	}
-
-	@Override
-	public ISyntaxTree removeChild(int i) {
-		return children.remove(i);
-	}
-
-	@Override
-	public boolean setAttribute(String name, Object value) {
-		attributeName2Value.put(name, value);
-		return true;
-	}
-
-	@Override
-	public IToken getToken() {
-		return token;
-	}
-
-	@Override
-	public List<ISyntaxTree> getChildren() {
-		return children;
-	}
-
-	@Override
-	public void printTree() {
-		System.out.println(toString());
-	}
-
-	@Override
-	public ISymbol getSymbol() {
-		return this.symbol;
-	}
+	
 }

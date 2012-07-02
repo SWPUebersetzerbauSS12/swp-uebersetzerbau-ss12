@@ -22,4 +22,9 @@ public class RealLiteral extends Type {
 	public double getValue(){
 		return this.value;
 	}
+	
+	@Override
+	public String toTypeString(){
+		return TYPE_REAL_STRING;
+	}
 }

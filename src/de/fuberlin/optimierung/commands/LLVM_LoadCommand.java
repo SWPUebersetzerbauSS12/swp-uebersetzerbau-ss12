@@ -1,9 +1,6 @@
 package de.fuberlin.optimierung.commands;
 
-import de.fuberlin.optimierung.ILLVM_Block;
-import de.fuberlin.optimierung.ILLVM_Command;
-import de.fuberlin.optimierung.LLVM_Operation;
-import de.fuberlin.optimierung.LLVM_Parameter;
+import de.fuberlin.optimierung.*;
 
 /*
 * Syntax;
@@ -17,30 +14,31 @@ public class LLVM_LoadCommand extends LLVM_GenericCommand{
 	private boolean vol = false;
 	private boolean atom = false;
 	
-	public LLVM_LoadCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
-		super(operation, predecessor, block, comment);
+	public LLVM_LoadCommand(String cmdLine, LLVM_GenericCommand predecessor, LLVM_Block block){
+		super(predecessor, block, cmdLine);
+		setOperation(LLVM_Operation.LOAD);
 		
-		if (cmd[3].trim().equals("atomic")){
-			atom = true;
-			if (cmd[4].trim().equals("volatile")) vol = true;
-		}else{
-			if (cmd[3].trim().equals("volatile")) vol = true;
+		StringBuilder cmd = new StringBuilder(cmdLine);
+		parseEraseComment(cmd);
+		String result = parseReadResult(cmd);
+		parseOptionalString(cmd, "load");
+		
+		atom = parseOptionalString(cmd, "atomic");
+		vol = parseOptionalString(cmd, "volatile");
+		
+		String ty = parseReadType(cmd);
+		target = new LLVM_Parameter(result, ty);
+		
+		String pointer = parseReadValue(cmd);
+		operands.add(new LLVM_Parameter(pointer, ty));
+		
+		while (parseEraseString(cmd, ",")){
+			String typ = parseReadType(cmd);
+			String name = parseReadValue(cmd);
+			operands.add(new LLVM_Parameter(name, typ));
 		}
 		
-		int start = 3;
-		start = (atom) ? start + 1 : start;
-		start = (vol) ? start + 1 : start;
-		
-		// <result> <ty>*
-		target = new LLVM_Parameter(cmd[0], cmd[start]);
-
-		// optionale Parameter
-		for (int j = start; (j + 1 < cmd.length); j = j + 2){
-			// <ty> <pointer>
-			operands.add(new LLVM_Parameter(cmd[j+1], cmd[j]));
-		}
-		
-		System.out.println("Operation generiert: " + this.toString());
+		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());
 	}
 	
 	public String toString() {

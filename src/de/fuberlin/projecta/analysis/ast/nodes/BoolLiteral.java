@@ -1,7 +1,7 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 
-public class BoolLiteral extends Statement {
+public class BoolLiteral extends Type {
 	
 	private boolean value;
 	
@@ -21,5 +21,9 @@ public class BoolLiteral extends Statement {
 	
 	public boolean getValue(){
 		return this.value;
+	}
+	
+	public String toTypeString(){
+		return TYPE_BOOL_STRING;
 	}
 }

@@ -32,6 +32,11 @@
 
 package de.fuberlin.bii.utils;
 
+/**
+ * 
+ * @author Johannes Dahlke
+ *
+ */
 public class Test {
 
 	public static boolean isAssigned( Object o) {

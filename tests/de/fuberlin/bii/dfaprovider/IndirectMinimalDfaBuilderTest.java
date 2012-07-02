@@ -26,16 +26,15 @@ public class IndirectMinimalDfaBuilderTest {
 	@Test
 	public void testBuildMinimalDfa() throws Exception {
 		File rdFile = new File("tests/resources/de/fuberlin/bii/def/dfaprovider/test.rd");
-		String sourceFileName = "tests/resources/de/fuberlin/bii/source/dfaprovider/test.fun";
+		String sourceFilename = "tests/resources/de/fuberlin/bii/source/dfaprovider/test.fun";
+
 
 		MinimalDfa<Character, StatePayload> mDfa = null;
 		MinimalDfaBuilder builder = new IndirectMinimalDfaBuilder();
 
-//		mDfa = MinimalDfaProvider.getMinimalDfa(rdFile, builder);
 		mDfa = builder.buildMinimalDfa(rdFile);
 		
-		LexemeReader lexemeReader = new BufferedLexemeReader(sourceFileName);
-//		LexemeReader lexemeReader = new SimpleLexemeReader("src/test/resources/source/dfaprovider/test.fun");
+		LexemeReader lexemeReader = new BufferedLexemeReader(sourceFilename);
 		Tokenizer tokenizer = new Tokenizer(lexemeReader, mDfa);
 
 		Token currentToken;

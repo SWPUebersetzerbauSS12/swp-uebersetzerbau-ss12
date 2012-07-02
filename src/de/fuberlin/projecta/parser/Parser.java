@@ -93,6 +93,7 @@ public class Parser implements IParser {
 			} else /** stack symbol is non-terminal */
 			{
 				NonTerminal nonT = peek.asNonTerminal();
+				assert(nonT != null);
 				String prod = table.getEntry(nonT, TokenType.valueOf(token.getType()));
 
 				ISyntaxTree node = new Tree(new Symbol(nonT));

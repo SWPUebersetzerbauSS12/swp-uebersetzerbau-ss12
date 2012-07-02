@@ -14,9 +14,10 @@ public class Symbol implements ISymbol {
 	 */
 	public enum Reserved {
 		EPSILON("ε"), // epsilon production
-		SP(""); // stack pointer
+		SP("_SP"); // stack pointer
 		
-		private static Map<String,Reserved> terminalSymbol2Reserved=new HashMap<String, Reserved>();
+		private static Map<String,Reserved> terminalSymbol2Reserved
+			= new HashMap<String, Reserved>();
 		
 		static{
 			for(Reserved t : EnumSet.allOf(Reserved.class)){
@@ -54,29 +55,36 @@ public class Symbol implements ISymbol {
 	 * @param string A string describing a terminal or non-terminal or reserved symbol 
 	 */
 	public Symbol(String string) {
-		
-		// TODO Der (generische) LRParser kennt die verwendeten Enum-Typen nicht
-		// Daher haben wir einfach mal spezielle Lookup-Methoden für das Mapping von Symbolwert auf Enum-Typ verwendet
+		// parse by definitions (for the generic parser groups)
 		this.symbol=Reserved.byTerminalSymbol(string);
-		if (symbol!=null) return;
+		if (symbol!=null)
+			return;
 		this.symbol = NonTerminal.byNonTerminalSymbol(string);
-		if (symbol!=null) return;
+		if (symbol!=null)
+			return;
 		this.symbol = TokenType.byTerminalSymbol(string);
+		if (symbol!=null)
+			return;
+
+		// parse by enum value (for projecta)
+		try {
+			this.symbol = Reserved.valueOf(string);
+			return;
+		} catch (IllegalArgumentException e) {
+		}
+		try {
+			this.symbol = NonTerminal.valueOf(string);
+			return;
+		} catch (IllegalArgumentException e) {
+		}
+		try {
+			this.symbol = TokenType.valueOf(string);
+			return;
+		} catch (IllegalArgumentException e) {
+		}
 		
-//		try {
-//			this.symbol = Reserved.byTerminalSymbol(string);
-//			return;
-//		} catch (IllegalArgumentException e) {
-//		}
-//		try {
-//			this.symbol = NonTerminal.byNonTerminalSymbol(string);
-//			return;
-//		} catch (IllegalArgumentException e) {
-//		}
-//
-//		if (this.symbol == null) {
-//			this.symbol = TokenType.valueOf(string);
-//		}
+		if (symbol == null)
+			throw new RuntimeException("Failed to resolve symbol: " + string);
 	}
 
 	public Symbol(TokenType terminal) {

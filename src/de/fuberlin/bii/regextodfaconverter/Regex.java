@@ -57,13 +57,18 @@ public class Regex {
 	 * Das erste Zeichen aus dem ASCII Zeichensatz, das im Alphabet enthalten
 	 * sein soll.
 	 */
-	private static int FIRST_ASCII_CHAR = 0;
+	private static int FIRST_ASCII_CHAR = 4; 
+	// Die ersten vier Zeichen werden von dem direkten DFA-Übersetzter als Hilfzeichen benötigt und können daher nicht verwendet werden.
+	// Der indirekte Weg unterstützt theoretisch das vollständige Alphabet.
 	/**
 	 * Das letzte Zeichen aus dem ASCII Zeichensatz, das im Alphabet enthalten
 	 * sein soll.
 	 */
 	private static int LAST_ASCII_CHAR = 255;
 
+	
+	
+	
 	/**
 	 * Reduziert den angebenen regulären Ausdruck auf die Grundoperationen und
 	 * klammert diesen anschließend korrekt und vollständig.
@@ -257,7 +262,7 @@ public class Regex {
 			} else if (c == '\\') {
 				regexTasks.add("(" + c + "" + regex.charAt(i + 1) + ")");
 				i++;
-			} else if (isAlphaChar(c)) {
+			} else if (isAlphaChar(c) || c=='-') {
 				regexTasks.add("(" + c + ")");
 			} else {
 				throw new RegexInvalidException(
@@ -725,11 +730,10 @@ public class Regex {
 	 * @param c
 	 *            Das zu überprüfende Zeichen
 	 * @return true, wenn es sich um eins der nachfolgenden Metazeichen handelt
-	 *         '[', ']', '{', '}', '?', '+', '-', '^', '$', '.', sonst false.
+	 *         '[', ']', '{', '}', '?', '+', '^', '$', '.', sonst false.
 	 */
 	private static boolean isExtendedMetaCharacter(char c) {
-		char[] extendedMetaChars = { '[', ']', '{', '}', '?', '+', '-', '^',
-				'$', '.' };
+		char[] extendedMetaChars = { '[', ']', '{', '}', '?', '+', '^', '$', '.' };
 		for (char rc : extendedMetaChars) {
 			if (rc == c) {
 				return true;

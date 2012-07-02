@@ -1,0 +1,122 @@
+\documentclass[a4paper]{article}
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc} 
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+\usepackage{listings}
+\usepackage{listingsutf8}
+\usepackage{geometry}
+\geometry{a4paper,left=40mm,right=30mm, top=1cm, bottom=2cm} 
+\lstset{
+basicstyle=\ttfamily,
+keywordstyle=\bfseries,
+language=Java,
+frame=single,
+aboveskip=11pt,
+belowskip=11pt,
+breaklines=true,
+breakatwhitespace=false,
+showspaces=false,
+showstringspaces=false
+}
+\lstset{literate=%
+{Ö}{{\"O}}1
+{Ä}{{\"A}}1
+{Ü}{{\"U}}1
+{ß}{{\ss}}2
+{ü}{{\"u}}1
+{ä}{{\"a}}1
+{ö}{{\"o}}1
+}
+\title{Dokumentation: Optimierung}
+\author{Daniel Marzin \and David Knötel \and Björn Karger \and Martin Görick}
+\date{}
+\begin{document}
+\maketitle
+\section{Einleitung}
+
+
+\section{Ablauf}
+Für die Optimierung steht der Code in einem String, wobei die Befehle je eine Zeile einnimmt.
+Dieser Code wird zuerst in die einzelnen Befehle geparst, jedoch vorher in die einzelnen Funktionen unterteilt.
+Nach dem parsen wird mit der Optimierung begonnen. \newline
+Die Optimierung wird für jede Funktion durchgeführt.
+Wenn die Funktion gewählt ist, wird der Flussgraph für diese erstellt.
+Dafür werden die \textit{next} und \textit{previous} Blöcke der enthaltenen Blöcke gesetzt und die Label angepasst.
+Nach dem erstellen des Flussgraphen wird die Registermap erstellt.
+In dieser stehen die Definitionen und Verwendungen der Register.
+Nachdem der Flussgraph und die Registermap erstellt wurde, wird mit der Optimierung begonnen.
+Die jeweiligen Funktionen werden im Abschnitt \ref{ab:funk} beschrieben.
+Als erstes wird mit der Dead Register Elimination angefangen.
+Danach findet das Constant Folding und Propagation statt.
+Im Anschluss wird die Lebendigkeitsanalyse über die Befehle \textit{load} und \textit{store} durchgeführt.
+Dann werden doppelte Befehle mittels Common Expression entfernt.
+Am Schluss werden die Blöcke, welche nur unbedingte Sprünge enthalten entfernt.
+Nun wird vor der Ausgabe des optimierten Codes die Labels angepasst.
+
+\section{Programm Aufbau}
+
+\section{Funktionen}
+\label{ab:funk}
+\subsection{Dead Register Elimination}
+Die Tote Register Elimination wird in der Funktion \ref{lst:eDR} durchgeführt.
+\begin{lstlisting}[caption={Dead Register Elimination Funktion}
+\label{lst:eDR}]
+public void eliminateDeadRegisters()
+\end{lstlisting}
+
+Dafür wird am Anfang die Definition von toten Register aus dem Register entfernt.
+Da es Operanden in den gelöschten Befehlen geben kann, welche nun keine Verwendung mehr haben, können diese ebenfalls gelöscht werden.
+Deswegen werden alle gelöschten Befehle im Register durchgegangen und die Operanden untersucht ob diese weiterhin verwendet werden.
+Werden diese nicht weiter benutzt, dann werden diese auch entfernt.
+
+\subsection{Constant Folding}
+Constant Folding wird in der Funktion \ref{lst:cF} durchgeführt.
+
+\begin{lstlisting}[caption={Constant Folding Funktion}
+\label{lst:cF}]
+public void constantFolding()
+\end{lstlisting}
+Es werden zuerst alle Befehle des Blockes durchlaufen und Constant Folding durchgeführt, wenn dies möglich ist.
+Danach wird über den veränderten Befehlen eine Constant Propagation abgearbeitet. 
+Sollten dabei weitere Änderungen entstehen wird erneut Constant Folding durchgeführt.
+
+
+\subsection{Globale Lebendigkeitsanalyse für load und store}
+Die globale Lebendigkeitsanalyse wird in der Funktion \ref{lst:gLVA} abgehandelt.
+\begin{lstlisting}[caption={Funktion zur Globale Lebendigkeitsanalyse}
+\label{lst:gLVA}]
+public void globalLiveVariableAnalysis()
+\end{lstlisting}
+Es wird zuerst die def- und use-Mengen der Blöcke erstellt.
+Dies entsteht anhand der \textit{store} und \textit{load} Befehle im jeweiligen Block.
+Sind die Mengen in den Blöcken ermittelt, können die überflüssigen \textit{store}-Befehle entfernt werden.
+Dafür werden die Befehle eines Blockes von hinten durchgegangen und es wird überprüft ob die Operanden lebendig sind.
+Wenn ein Befehl Operanden hatte, welche nun keine Verwendung mehr haben, werden diese aus dem Register gelöscht.
+
+\subsection{Common Expressions}
+In der Funktion \ref{lst:rCE} erfolgt das abarbeiten der Common Expression.
+\begin{lstlisting}[caption={Funktion zur Entfernung doppelter Befehle}
+\label{lst:rCE}]
+public void removeCommonExpressions()
+\end{lstlisting}
+Die Common Expression wird für jeden Block durchgeführt, dabei wird überprüft ob diese doppelte Befehle enthalten. 
+Dabei werden nur die Befehle einer vorher festlegten Liste beachtet (Derzeit: ADD, SUB, MUL, DIV und LOAD).
+Sollten doppelte Befehle gefunden werden, wird das aktuelle mit dem bestehenden Kommando ersetzt.
+Am Ende wird für den Block Constant Propagation durchgeführt.
+
+
+\subsection{Entfernung leerer Blöcke}
+Das entfernen von Blöcken die nur unbedingte Sprünge enthalten findet in der Funktion \ref{lst:dEB} statt.
+\begin{lstlisting}[caption={Funktion zur Entfernung leerer Blöcke}
+\label{lst:dEB}]
+public void deleteEmptyBlocks()
+\end{lstlisting}
+Zuerst wird geprüft, ob ein Block nur unbedingte Sprünge aufweist.
+Wenn dies ermittelt ist, wird der Block entfernt und alle Vorgängerblöcke untersucht ob diese auf den gelöschtes Block verweisen.
+Dafür wird der Verweis auf den aktuellen Block mit dem des Zielblocks getauscht und das Register angepasst.
+Danach wird noch der Flussgraph angepasst, damit dieser weiterhin verwendet werden kann.
+Am Ende werden die gelöschten Blöcke entfernt.
+
+\end{document}

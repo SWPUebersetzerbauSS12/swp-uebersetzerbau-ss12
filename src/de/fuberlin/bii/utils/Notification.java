@@ -35,7 +35,7 @@ package de.fuberlin.bii.utils;
 /**
  * Die Klasse stellt vorgefertigte Meldungen zur Verfügung.
  * 
- * @author Johannes
+ * @author Johannes Dahlke
  */
 public class Notification {
 

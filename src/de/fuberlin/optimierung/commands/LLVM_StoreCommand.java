@@ -1,9 +1,6 @@
 package de.fuberlin.optimierung.commands;
 
-import de.fuberlin.optimierung.ILLVM_Block;
-import de.fuberlin.optimierung.ILLVM_Command;
-import de.fuberlin.optimierung.LLVM_Operation;
-import de.fuberlin.optimierung.LLVM_Parameter;
+import de.fuberlin.optimierung.*;
 
 /*
 * Syntax:
@@ -16,28 +13,33 @@ public class LLVM_StoreCommand extends LLVM_GenericCommand{
 	private boolean vol = false;
 	private boolean atom = false;
 	
-	public LLVM_StoreCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
-		super(operation, predecessor, block, comment);
+	public LLVM_StoreCommand(String cmdLine, LLVM_GenericCommand predecessor, LLVM_Block block){
+		super(predecessor, block, cmdLine);
+		setOperation(LLVM_Operation.STORE);
+
+		StringBuilder cmd = new StringBuilder(cmdLine);
+		parseEraseComment(cmd);
+		parseOptionalString(cmd, "store");
 		
-		if (cmd[1].trim().equals("atomic")){
-			atom = true;
-			if (cmd[2].trim().equals("volatile")) vol = true;
-		}else{
-			if (cmd[1].trim().equals("volatile")) vol = true;
+		atom = parseOptionalString(cmd, "atomic");
+		vol = parseOptionalString(cmd, "volatile");
+		
+		String ty = parseReadType(cmd);
+		String value = parseReadValue(cmd);
+		parseEraseString(cmd, ",");
+		String typ = parseReadType(cmd);
+		String pointer = parseReadValue(cmd);
+		
+		operands.add(new LLVM_Parameter(value, ty));
+		operands.add(new LLVM_Parameter(pointer, typ));
+		
+		while (parseEraseString(cmd, ",")){
+			String type = parseReadType(cmd);
+			String name = parseReadValue(cmd);
+			operands.add(new LLVM_Parameter(name, type));
 		}
 		
-		int start = 1;
-		start = (atom) ? start + 1 : start;
-		start = (vol) ? start + 1 : start;
-		
-		// <value> <ty>
-		operands.add(new LLVM_Parameter(cmd[start+1], cmd[start]));
-		for (int j = start + 2; (j + 1 < cmd.length); j = j + 2){
-			// <ty> <pointer>
-			operands.add(new LLVM_Parameter(cmd[j+1], cmd[j]));
-		}
-		
-		System.out.println("Operation generiert: " + this.toString());
+		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());
 	}
 	
 	public String toString() {

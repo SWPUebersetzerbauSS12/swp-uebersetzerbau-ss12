@@ -16,7 +16,7 @@ public class BoolLiteral extends Statement {
 
 	@Override
 	public String genCode() {
-		return "i8 " + ((this.value)?"1":"0");
+		return "i1 " + ((this.value)?"1":"0");
 	}
 	
 	public boolean getValue(){

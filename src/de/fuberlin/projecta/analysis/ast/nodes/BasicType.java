@@ -24,7 +24,7 @@ public class BasicType extends Type {
 			ret += "i8*";
 			break;
 		case BOOL:
-			ret += "i8";
+			ret += "i1";
 			break;
 		case VOID:
 			ret += "void";

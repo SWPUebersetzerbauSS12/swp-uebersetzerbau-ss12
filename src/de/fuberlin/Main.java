@@ -14,12 +14,16 @@ import de.fuberlin.commons.parser.IParser;
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.optimierung.LLVM_Optimization;
 import de.fuberlin.projectF.CodeGenerator.CodeGenerator;
+import de.fuberlin.projecta.analysis.SemanticAnalyzer;
+import de.fuberlin.projecta.analysis.SemanticException;
+import de.fuberlin.projecta.lexer.Lexer;
+import de.fuberlin.projecta.lexer.io.FileCharStream;
+import de.fuberlin.projecta.lexer.io.ICharStream;
+import de.fuberlin.projecta.parser.Parser;
 import de.fuberlin.projectci.lrparser.LRParser;
 import de.fuberlin.projectcii.ParserGenerator.src.LL1Parser;
 
-
-
-class Main {
+public class Main {
 
 	
 	/*
@@ -76,18 +80,25 @@ class Main {
 		 */
 		ILexer lexer = null;
 		
-		if( arguments.containsKey(PARAM_BII_LEXER) ){		// -bii			
+		// Lexer from bii
+		if( arguments.containsKey(PARAM_BII_LEXER) ) {
 			try {
 				lexer = new Lexergen(new File(defFile), new File(inputFile), BuilderType.directBuilder, CorrectionMode.PANIC_MODE, rebuildDFA);
 			} catch (LexergeneratorException e) {
 				e.printStackTrace();
-			}			
-		} else {									// [-bi]			
+			}
+		// Lexer from bi
+		} else if (arguments.containsKey(PARAM_BI_LEXER)) {
 			try {
 				lexer = new Lexergen(new File(defFile), new File(inputFile), BuilderType.indirectBuilder, CorrectionMode.PANIC_MODE, rebuildDFA);
 			} catch (LexergeneratorException e) {
 				e.printStackTrace();
 			}			
+		}
+		// Lexer from projecta, default
+		else {
+			ICharStream stream = new FileCharStream(inputFile);
+			lexer = new Lexer(stream);
 		}
 		//--------------------------
 		
@@ -98,29 +109,48 @@ class Main {
 		 *	input:	ILexer lexerObject, String grammarFilePath
 		 *	output:	ISyntaxTreee parseTree
 		 */
-		ISyntaxTree parseTree = null;
-		if( arguments.get(PARAM_LR_PARSER) != null ){			// -lr "/path/to/bnfGrammar"
-			IParser parser = new LRParser();
-			parseTree = parser.parse(lexer, arguments.get(PARAM_LR_PARSER));
-			
-		} else if( arguments.containsKey(PARAM_LL_PARSER) ) {	// -ll ["/path/to/bnfGrammar"]			
-			IParser parser = new LL1Parser();
-			parseTree = parser.parse(lexer,arguments.get(PARAM_LL_PARSER));
-			
-		} else {									// -lr or no explicit parameter for parser
-			//FIXME Dieser Fall wird niemals eintreten!
-			IParser parser = new LRParser();
-			parseTree = parser.parse(lexer, DEFAULT_GRAMMAR_FILE);
+		IParser parser = null;
+		String grammarFile = "";
+		// LR-Parser, -lr "/path/to/bnfGrammar"
+		if( arguments.get(PARAM_LR_PARSER) != null ){
+			parser = new LRParser();
+			grammarFile = arguments.get(PARAM_LR_PARSER);
+		// LL-Parser, -ll ["/path/to/bnfGrammar"]
+		} else if( arguments.containsKey(PARAM_LL_PARSER) ) {
+			parser = new LL1Parser();
+			grammarFile = arguments.get(PARAM_LL_PARSER);
+		// Parser from projecta, default
+		} else {
+			parser = new Parser();
 		}
 
-
+		ISyntaxTree parseTree = null;
+		if (parser != null)
+			parseTree = parser.parse(lexer, grammarFile);
 		//--------------------------
 
-		
-		
+		//--------------------------
+		/*
+		 * Semantic analysis
+		 * input:	Parse tree
+		 * inter:	Abstract Syntax Tree (AST)
+		 * output:	LLVM-Code
+		 */
+		SemanticAnalyzer analyzer = new SemanticAnalyzer(parseTree);
+		analyzer.analyze();
+		try {
+			analyzer.getAST().checkSemantics();
+			System.out.println("Semantics should be correct");
+		} catch (SemanticException e) {
+			System.out.println("Bad Semantics");
+			System.out.println(e.getMessage());
+		}
 
-		String llvm_code = "";	// Hier der generierte LLVM-Code
+		// debug
+		analyzer.getAST().printTree();
 
+		// Generate LLVM-Code
+		String llvm_code = analyzer.getAST().genCode();
 
 		//--------------------------
 		/*
@@ -135,7 +165,7 @@ class Main {
 		if(arguments.containsKey(PARAM_LLVM_INPUT_FILE)) {
 			optimized_llvm_code = llvm_optimizer.optimizeCodeFromFile(arguments.get(PARAM_LLVM_INPUT_FILE));
 		}else{
-			optimized_llvm_code = llvm_optimizer.optimizeCodeFromString("");	// Muss angepasst werden
+			optimized_llvm_code = llvm_optimizer.optimizeCodeFromString(llvm_code);
 		}
 		
 		//--------------------------
@@ -156,6 +186,7 @@ class Main {
     			FileWriter fstream = new FileWriter(arguments.get(PARAM_OUTPUT_FILE));
         		BufferedWriter out = new BufferedWriter(fstream);
         		out.write(machineCode);
+        		out.close();
     		}catch(Exception e){
     			System.err.println(e.getMessage());
     		}

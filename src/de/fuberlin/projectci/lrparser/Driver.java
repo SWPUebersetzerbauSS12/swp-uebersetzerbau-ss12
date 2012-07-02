@@ -85,10 +85,8 @@ public class Driver {
 			}
 			else if (currentAction instanceof AcceptAction){
 				logger.info("Done.");		
-				// Wurzel des Syntaxbaums vom Stack holen und zu Abstrakten Syntaxbaum reduzieren
-				// TODO Abstrakten Syntaxbaum direkt erzeugen
-				SyntaxTreeNode syntaxTree= nodeStack.pop();
-//				syntaxTree.reduceToAbstractSyntaxTree();
+				// Wurzel des Parsebaums vom Stack holen 
+				SyntaxTreeNode syntaxTree= nodeStack.pop();				
 				return syntaxTree;
 			}
 			else if (currentAction instanceof ErrorAction){

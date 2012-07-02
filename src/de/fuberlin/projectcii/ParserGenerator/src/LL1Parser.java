@@ -37,19 +37,20 @@ public class LL1Parser implements IParser {
 	 * */
 	@Override
 	public ISyntaxTree parse(ILexer lexer, String grammar) {
+		boolean printSelected = true;
 		ISyntaxTree parsetree = new SyntaxTree();
 		
 		try{
-		    pG.initialize(false,grammar);		    
+		    pG.initialize(false,grammar,printSelected);		    
 			if(pG.parsable_LL1(pG.getParseTable())){
 				TokenParser tP = new TokenParser(lexer, pG.getParseTable(),pG.getGrammar(),pG.getStartSymbol());
-				parsetree = tP.parseTokenStream();
+				parsetree = tP.parseTokenStream(printSelected);
 			}
 			else{
-			    pG.initialize(true,grammar);
+			    pG.initialize(true,grammar,printSelected);
 			    if(pG.parsable_LL1(pG.getParseTable())){
 	                TokenParser tP = new TokenParser(lexer, pG.getParseTable(),pG.getGrammar(),pG.getStartSymbol());
-	                parsetree = tP.parseTokenStream();
+	                parsetree = tP.parseTokenStream(printSelected);
 	            }
 			}
 		}

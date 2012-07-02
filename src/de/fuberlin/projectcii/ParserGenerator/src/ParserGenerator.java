@@ -47,13 +47,14 @@ public class ParserGenerator {
 	 * Initializes the grammar so a parsetable can be created from it.
 	 * 
 	 * @param grammar
+	 * @param printSelected 
 	 * 
 	 * @param file
 	 *            Path to the grammar file
 	 * @return returns the created parsertable
 	 * @throws IOException
 	 */
-	public void initialize(boolean changeToLL1, String grammar)
+	public void initialize(boolean changeToLL1, String grammar, boolean printSelected)
 			throws IOException {
 		grammarMap = new HashMap<String, Vector<Vector<String>>>();
 		parserTable = new HashMap<String, HashMap<String, Vector<Integer>>>();
@@ -62,13 +63,13 @@ public class ParserGenerator {
 		firstSetsProductions = new HashMap<String, HashMap<String, Vector<Integer>>>();
 		Terminals = new Vector<String>();
 		Nonterminal = new Vector<String>();
-		readGrammar(changeToLL1, grammar);
+		readGrammar(changeToLL1, grammar,printSelected);
 		fillTerminalNonterminal();
 		/*
 		 * computeFirstSet
 		 */
 		firstSetsProductions = createFirstSet(grammarMap);
-		if (Settings.getFIRSTSET()){
+		if (Settings.getFIRSTSET() && printSelected){
 		    System.out.println("First-Set:");
 		    Printer.printFirstSetsProductions(firstSetsProductions);
 		}
@@ -76,7 +77,7 @@ public class ParserGenerator {
 		 * computeFollowSet
 		 */
 		followSets = createFollowSet(grammarMap);
-		if (Settings.getFOLLOWSET()){
+		if (Settings.getFOLLOWSET() && printSelected){
 		    System.out.println("Follow-Set:");
 		    Printer.printFollowSets(followSets);
 		}
@@ -84,7 +85,7 @@ public class ParserGenerator {
 		 * Create Parsetable
 		 */
 		parserTable = createParserTable();
-		if (Settings.getPARSERTABLE()){
+		if (Settings.getPARSERTABLE() && printSelected){
 		    System.out.println("Parsertabelle");
 		    Printer.printParserTable(Terminals, Nonterminal, parserTable);
 		}
@@ -108,12 +109,13 @@ public class ParserGenerator {
 	 * Reads the Grammar from a file specified in SETTINGS.
 	 * 
 	 * @param grammar
+	 * @param printSelected 
 	 * @throws IOException
 	 */
-	private void readGrammar(boolean changeToLL1, String grammar)
+	private void readGrammar(boolean changeToLL1, String grammar, boolean printSelected)
 			throws IOException {
 		GrammarReader gR = new GrammarReader();
-		grammarMap = gR.createGrammar(5, changeToLL1, grammar);
+		grammarMap = gR.createGrammar(5, changeToLL1, grammar, printSelected);
 
 		start = gR.getStartSymbol();
 	}

@@ -10,17 +10,16 @@ import java.io.IOException;
 
 public class Settings {
 	private static String SettingsFilePath = "settings.ini";
-	private static String EOF;
-	private static String EPSILON;
-	private static String GRAMMAR_PATH;
+	private static String EOF = "eof";
+	private static String EPSILON = "@";
 	
-	private static Boolean GRAMMAR_READ;
-	private static Boolean GRAMMAR_MOD;
-	private static Boolean FIRSTSET;
-	private static Boolean FOLLOWSET;
-	private static Boolean PARSERTABLE;
-	private static Boolean PARSING_STEPS;
-	private static Boolean XMLTREE;
+	private static Boolean GRAMMAR_READ = false;
+	private static Boolean GRAMMAR_MOD = false;
+	private static Boolean FIRSTSET = false;
+	private static Boolean FOLLOWSET = false;
+	private static Boolean PARSERTABLE = false;
+	private static Boolean PARSING_STEPS = false;
+	private static Boolean XMLTREE = false;
 	
 	/**
 	 * Initialises the Settings-Variables
@@ -44,9 +43,6 @@ public class Settings {
 		            }
 		            else if (key.equals("EPSILON")){
 		                EPSILON=value;
-		            }
-		            else if (key.equals("GRAMMAR_PATH")){
-		                GRAMMAR_PATH=value;
 		            }
 		            else if (key.equals("GRAMMAR_READ")){
 		                GRAMMAR_READ=Boolean.parseBoolean(value);
@@ -83,10 +79,6 @@ public class Settings {
 
 	public static String getEPSILON() {
 		return EPSILON;
-	}
-
-	public static String getGRAMMAR_PATH() {
-		return GRAMMAR_PATH;
 	}
 
     public static Boolean getGRAMMAR_READ() {

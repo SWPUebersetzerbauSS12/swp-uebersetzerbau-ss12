@@ -13,8 +13,6 @@ import de.fuberlin.commons.parser.ISyntaxTree;
  * 
  * Implementation of the SyntaxTree, composed of SyntaxTree-Nodes
  * 
- * @author Patrick Schlott
- *
  */
 public class SyntaxTree implements ISyntaxTree {
 	
@@ -194,11 +192,8 @@ public class SyntaxTree implements ISyntaxTree {
 	}
 	
 	/**
-	 * 
+
 	 * Compresses the SyntaxTree by eliminating all single-child-nodes
-	 * 
-	 * @author Patrick Schlott
-	 *
 	 */
 	public void CompressSyntaxTree(){
 		

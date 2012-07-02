@@ -53,6 +53,7 @@ public class Printer {
 			System.out.println();
 		}
 		System.out.println("-----------");
+		System.out.println("");
 	}
 	
 	/**
@@ -74,6 +75,7 @@ public class Printer {
 			System.out.println();
 		}
 		System.out.println("-----------");
+		System.out.println("");
 	}
 	
 	/**
@@ -135,6 +137,7 @@ public class Printer {
 		}
 		System.out.println();
 		System.out.println("-----------");
+		System.out.println("");
 	}
 	
 	/**
@@ -188,6 +191,7 @@ public class Printer {
 		}
 		System.out.println();
 		System.out.println("-----------");
+		System.out.println("");
 	}
 	
 	
@@ -200,6 +204,7 @@ public class Printer {
 			System.out.println("First(" + fs.getKey() + ") = " + fs.getValue());
 		}
 		System.out.println("-----------");
+		System.out.println("");
 	}
 	
 	/**
@@ -211,6 +216,7 @@ public class Printer {
 			System.out.println("Follow(" + fs.getKey() + ") = " + fs.getValue());
 		}
 		System.out.println("-----------");
+		System.out.println("");
 	}
 	
 	/**
@@ -222,6 +228,7 @@ public class Printer {
 			System.out.println("First(" + fs.getKey() + ") = " + fs.getValue().keySet());
 		}
 		System.out.println("-----------");
+		System.out.println("");
 	}
 	
 	static public void parsetreeToXML(ISyntaxTree node){

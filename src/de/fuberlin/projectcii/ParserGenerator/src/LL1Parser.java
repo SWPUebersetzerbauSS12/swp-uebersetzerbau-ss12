@@ -40,11 +40,7 @@ public class LL1Parser implements IParser {
 		ISyntaxTree parsetree = new SyntaxTree();
 		
 		try{
-		    pG.initialize(false,grammar);
-		    //TODO wenn Grammatik LL1 wieder Abfrage nach LL1 Parsebarkeit benutzen
-			TokenParser tP = new TokenParser(lexer, pG.getParseTable(),pG.getGrammar(),pG.getStartSymbol());
-			parsetree = tP.parseTokenStream();
-		    /*
+		    pG.initialize(false,grammar);		    
 			if(pG.parsable_LL1(pG.getParseTable())){
 				TokenParser tP = new TokenParser(lexer, pG.getParseTable(),pG.getGrammar(),pG.getStartSymbol());
 				parsetree = tP.parseTokenStream();
@@ -55,7 +51,7 @@ public class LL1Parser implements IParser {
 	                TokenParser tP = new TokenParser(lexer, pG.getParseTable(),pG.getGrammar(),pG.getStartSymbol());
 	                parsetree = tP.parseTokenStream();
 	            }
-			}*/
+			}
 		}
 		catch(Exception e)
 		{

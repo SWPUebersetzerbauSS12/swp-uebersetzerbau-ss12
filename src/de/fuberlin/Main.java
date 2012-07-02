@@ -59,8 +59,6 @@ public class Main {
 	 * Standardkonfiguration: -f "irgendeinBeispielprogramm" -bi -lr
 	 */
 	public static void main(String args[]) {
-		System.out.println("Hier die Code-Schnipsel einfuegen!");
-		
 		HashMap<String,String> arguments = readParams(args);
 		runFrontend(arguments);
 		runBackend(arguments);
@@ -119,8 +117,8 @@ public class Main {
 			lexer = new Lexer(stream);
 		}
 		//--------------------------
-		
-		
+
+
 		//--------------------------
 		/*
 		 *	Parser
@@ -206,22 +204,22 @@ public class Main {
 		 */
 		boolean debug = false;
 		boolean guiFlag = false;
-    	String machineCode = CodeGenerator.generateCode(optimized_llvm_code, debug, guiFlag);
-    	
-    	if(arguments.containsKey(PARAM_OUTPUT_FILE)) {
-    		try{
-    			FileWriter fstream = new FileWriter(arguments.get(PARAM_OUTPUT_FILE));
-        		BufferedWriter out = new BufferedWriter(fstream);
-        		out.write(machineCode);
-        		out.close();
-    		}catch(Exception e){
-    			System.err.println(e.getMessage());
-    		}
-    	}else{
-    		System.out.println(machineCode);
-    	}
-    	
-        //--------------------------
+		String machineCode = CodeGenerator.generateCode(optimized_llvm_code, debug, guiFlag);
+
+		if(arguments.containsKey(PARAM_OUTPUT_FILE)) {
+			try{
+				FileWriter fstream = new FileWriter(arguments.get(PARAM_OUTPUT_FILE));
+				BufferedWriter out = new BufferedWriter(fstream);
+				out.write(machineCode);
+				out.close();
+			}catch(Exception e){
+				System.err.println(e.getMessage());
+			}
+		}else{
+			System.out.println(machineCode);
+		}
+
+		//--------------------------
 	}
 	
 	

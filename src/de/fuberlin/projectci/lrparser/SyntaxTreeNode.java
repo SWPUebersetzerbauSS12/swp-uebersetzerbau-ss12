@@ -236,7 +236,7 @@ public class SyntaxTreeNode implements ISyntaxTree{
 	/**
 	 * Reduziert den Syntaxbaum auf einen Abstrakten Syntaxbaum durch rekursives Hochziehen aller Einzelkinder.
 	 */
-	void reduceToAbstractSyntaxTree(){
+	public void reduceToAbstractSyntaxTree(){
 		// Erstmal alle ε-Knoten entfernen
 		for (ISyntaxTree anEmptyChildNode : getChildrenByName(Grammar.EMPTY_STRING)) {
 			removeChildNode(anEmptyChildNode);

@@ -295,8 +295,7 @@ public class GrammarReader {
 							.elementAt(productionNr);
 					// Initiate new Nonterminals
 					String head = nonterminal.getHead();
-					String head1 = head.substring(0, head.length() - 1)
-							+ counter + ">";
+					String head1 = head	+ counter;
 					Productions nonTerminalOld = new Productions(head);
 					Productions nonTerminalNew = new Productions(head1);
 					// Add Factor + Head1 to Old Production
@@ -537,18 +536,17 @@ public class GrammarReader {
 				// initialise new nonterminal <"N">
 				Productions nonTerminalMod = new Productions(head);
 				// initialise new nonterminal <"N"1>
-				String head1 = head.substring(0, head.length() - 1) + "$";
+				String head1 = head + "$";
 
 				// prevent duplicate Productions
 				boolean alreadyExists = true;
 				while (alreadyExists) {
-					if (heads.contains(head1 + ">")) {
+					if (heads.contains(head1)) {
 						head1 += "$";
 					} else {
 						alreadyExists = false;
 					}
 				}
-				head1 += ">";
 				heads.add(head1);
 				Productions nonTerminalNew = new Productions(head1);
 				i = 0;

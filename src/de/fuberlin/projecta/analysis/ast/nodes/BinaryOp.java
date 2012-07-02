@@ -92,69 +92,14 @@ public class BinaryOp extends Type {
 				ret += LLVM.loadVar(id2);
 			}
 			if (id1 != null && id2 != null) {
-				String int_or_real = "";
-				String cmp_op = "";
-				if ((id1.getType().toTypeString().equals("double") || id2
-						.getType().toTypeString().equals("double"))) {
-					int_or_real = "fcmp";
-					switch (op) {
-					case OP_LT:
-						cmp_op = "olt";
-						break;
-					case OP_LE:
-						cmp_op = "ole";
-						break;
-					case OP_GT:
-						cmp_op = "ogt";
-						break;
-					case OP_GE:
-						cmp_op = "oge";
-						break;
-					case OP_EQ:
-						cmp_op = "eq";
-						break;
-					case OP_NE:
-						cmp_op = "ne";
-						break;
-					}
-				} else {
-					int_or_real = "icmp";
-					switch (op) {
-					case OP_LT:
-						cmp_op = "slt";
-						break;
-					case OP_LE:
-						cmp_op = "sle";
-						break;
-					case OP_GT:
-						cmp_op = "sgt";
-						break;
-					case OP_GE:
-						cmp_op = "sge";
-						break;
-					case OP_EQ:
-						cmp_op = "eq";
-						break;
-					case OP_NE:
-						cmp_op = "ne";
-						break;
-					}
-				}
-				int tmp = block.getNewMemory();
-				ret += "%" + tmp + " = " + int_or_real + " " + cmp_op + " ";
+				int tmp = block.getNewVar();
+				ret += "%" + tmp + " = " + getIntOrReal(id1, t1) + " "
+						+ getOpName(id1, t1) + " ";
 				ret += SymbolTableHelper.lookup(id1.getValue(), this).getType()
 						.genCode()
 						+ " %";
-
-				if (LLVM.isInParams(id1))
-					ret += id1.getValue() + ", %";
-				else
-					ret += id1.getVar() + ", %";
-
-				if (LLVM.isInParams(id2))
-					ret += id2.getValue() + "\n";
-				else
-					ret += id2.getVar() + "\n";
+				ret += LLVM.getMem(id1) + ", %";
+				ret += LLVM.getMem(id2) + "\n";
 			}
 		} else if (op == TokenType.OP_ADD || op == TokenType.OP_MINUS
 				|| op == TokenType.OP_DIV || op == TokenType.OP_MUL) {
@@ -188,7 +133,7 @@ public class BinaryOp extends Type {
 				break;
 			}
 
-			if (getChild(0) instanceof Id) {
+			if (id1 != null) {
 				// the value must only be loaded if it is instanceof Id and if
 				// it is not parameter!
 				ret += LLVM.loadVar(id1);
@@ -215,20 +160,16 @@ public class BinaryOp extends Type {
 				ret += LLVM.loadVar(id2);
 			}
 
-			int val = block.getNewMemory();
+			int val = block.getNewVar();
 			this.setValMemory(val); // save currents computation in this node
 			if (id1 != null)
 				val1 = id1.getVar();
 			if (id2 != null)
 				val2 = id2.getVar();
 			if (id1 != null && id2 != null) {
-				String v1 = val1 + "";
-				String v2 = val2 + "";
-				v1 = id1.getValue();
-				v2 = id2.getValue();
-				ret += "%" + val + " = " + mathOp + " " + type + " %" + v1
-						+ ", %" + v2 + "\n";
-			} else if (t1 != null && t2 != null) { // TODO!
+				ret += "%" + val + " = " + mathOp + " " + type + " %"
+						+ LLVM.getMem(id1) + ", %" + LLVM.getMem(id2) + "\n";
+			} else if (t1 != null && t2 != null) {
 				// both are types?
 				String s1 = t1.genCode(), s2 = t2.genCode();
 				String[] tmp1 = s1.split(" ");
@@ -237,22 +178,17 @@ public class BinaryOp extends Type {
 				ret += "%" + val + " = " + mathOp + " " + type + " " + tmp1[1]
 						+ ", " + tmp2[1] + "\n";
 			} else if (t1 != null) {
-				String v2 = val2 + "";
-				v2 = id2.getValue();
 				String s1 = t1.genCode();
 				String[] tmp1 = s1.split(" ");
 				type = tmp1[0];
 				ret += "%" + val + " = " + mathOp + " " + type + " " + tmp1[1]
-						+ ", %" + v2 + "\n";
+						+ ", %" + LLVM.getMem(id2) + "\n";
 			} else {
-				// id2 === null
-				String v1 = val1 + "";
-				v1 = id1.getValue();
 				String s2 = t2.genCode();
 				String[] tmp2 = s2.split(" ");
 				type = tmp2[0];
-				ret += "%" + val + " = " + mathOp + " " + type + " %" + v1
-						+ ", " + tmp2[1] + "\n";
+				ret += "%" + val + " = " + mathOp + " " + type + " %"
+						+ LLVM.getMem(id1) + ", " + tmp2[1] + "\n";
 			}
 
 		} else if (op == TokenType.OP_ASSIGN) {
@@ -267,8 +203,8 @@ public class BinaryOp extends Type {
 				 * x i8]* %r3 %firstEl = getelementptr [9 x i8]* %r3, i8 0, i8 0
 				 * store i8* %firstEl, i8** %str3
 				 */
-				int tempReg = block.getNewMemory();
-				int tempReg2 = block.getNewMemory();
+				int tempReg = block.getNewVar();
+				int tempReg2 = block.getNewVar();
 				int strLength = (str.getValue().length() + 1);
 				ret = "%" + tempReg + " = alloca [" + strLength + " x i8]\n";
 				ret += "store [" + strLength + " x i8] c\"" + str.getValue()
@@ -286,19 +222,19 @@ public class BinaryOp extends Type {
 						&& getChild(1).getChild(1).getChildrenCount() != 0) {
 					ret += LLVM.loadParams((Args) getChild(1).getChild(1));
 				}
-				int reg = block.getNewMemory();
-				String id = id1.getValue();
+				int reg = block.getNewVar();
 				String type = SymbolTableHelper.lookup(id1.getValue(), this)
 						.getType().genCode();
 				ret += "%" + reg + " = " + ((FuncCall) getChild(1)).genCode()
 						+ "\n";
 
-				ret += "store " + type + " %" + reg + ", " + type + "* %" + id;
+				ret += "store " + type + " %" + reg + ", " + type + "* %"
+						+ id1.getValue();
 			} else if (getChild(1) instanceof Id) {
 				String type = SymbolTableHelper.lookup(id1.getValue(), this)
 						.getType().genCode();
 				ret += LLVM.loadVar(id2);
-				ret += "store " + type + " %" + id2.getVar() + ", "
+				ret += "store " + type + " %" + LLVM.getMem(id2) + ", "
 						+ eA.getType().genCode() + "* %" + id1.getValue();
 			} else if (getChild(1) instanceof BinaryOp) {
 				// First execute operations, then save the result
@@ -317,6 +253,120 @@ public class BinaryOp extends Type {
 		} else {
 			System.out.println("Unknown Binary OP: " + op);
 		}
+		return ret;
+	}
+
+	private String getIntOrReal(Id id, Type type) {
+		String ret = "";
+		if (id != null) {
+			if ((id.getType().toTypeString().equals("double"))) {
+				ret = "fcmp";
+			} else {
+				ret = "icmp";
+			}
+		} else if (type != null) {
+			if ((type.toTypeString().equals("double"))) {
+				ret = "fcmp";
+			} else {
+				ret = "icmp";
+			}
+		}
+
+		return ret;
+	}
+
+	private String getOpName(Id id, Type type) {
+		String ret = "";
+		if (id != null) {
+			if ((id.getType().toTypeString().equals("double"))) {
+				switch (op) {
+				case OP_LT:
+					ret = "olt";
+					break;
+				case OP_LE:
+					ret = "ole";
+					break;
+				case OP_GT:
+					ret = "ogt";
+					break;
+				case OP_GE:
+					ret = "oge";
+					break;
+				case OP_EQ:
+					ret = "eq";
+					break;
+				case OP_NE:
+					ret = "ne";
+					break;
+				}
+			} else {
+				switch (op) {
+				case OP_LT:
+					ret = "slt";
+					break;
+				case OP_LE:
+					ret = "sle";
+					break;
+				case OP_GT:
+					ret = "sgt";
+					break;
+				case OP_GE:
+					ret = "sge";
+					break;
+				case OP_EQ:
+					ret = "eq";
+					break;
+				case OP_NE:
+					ret = "ne";
+					break;
+				}
+			}
+		} else if (type != null) {
+			if ((type.toTypeString().equals("double"))) {
+				switch (op) {
+				case OP_LT:
+					ret = "olt";
+					break;
+				case OP_LE:
+					ret = "ole";
+					break;
+				case OP_GT:
+					ret = "ogt";
+					break;
+				case OP_GE:
+					ret = "oge";
+					break;
+				case OP_EQ:
+					ret = "eq";
+					break;
+				case OP_NE:
+					ret = "ne";
+					break;
+				}
+			} else {
+				switch (op) {
+				case OP_LT:
+					ret = "slt";
+					break;
+				case OP_LE:
+					ret = "sle";
+					break;
+				case OP_GT:
+					ret = "sgt";
+					break;
+				case OP_GE:
+					ret = "sge";
+					break;
+				case OP_EQ:
+					ret = "eq";
+					break;
+				case OP_NE:
+					ret = "ne";
+					break;
+				}
+			}
+		}
+
 		return ret;
 	}
 

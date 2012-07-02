@@ -57,7 +57,7 @@ class Main {
 		System.out.println("Hier die Code-Schnipsel einfuegen!");
 		
 		HashMap<String,String> arguments = readParams(args);
-		/*boolean rebuildDFA = arguments.containsKey(PARAM_REBUILD_DFA);
+		boolean rebuildDFA = arguments.containsKey(PARAM_REBUILD_DFA);
 		
 		// path of input-program
 		String defFile = arguments.get(PARAM_DEF_FILE); 			// -d "/path/to/definitionFile"
@@ -74,7 +74,7 @@ class Main {
 		 *	input: Pfad zu der Datei mit den regulären Definitionen und Pfad zu der Programmdatei
 		 *	output: IToken-Objekt beim aufruf von getNextToken
 		 */
-		/*ILexer lexer = null;
+		ILexer lexer = null;
 		
 		if( arguments.containsKey(PARAM_BII_LEXER) ){		// -bii			
 			try {
@@ -98,7 +98,7 @@ class Main {
 		 *	input:	ILexer lexerObject, String grammarFilePath
 		 *	output:	ISyntaxTreee parseTree
 		 */
-		/*ISyntaxTree parseTree = null;
+		ISyntaxTree parseTree = null;
 		if( arguments.get(PARAM_LR_PARSER) != null ){			// -lr "/path/to/bnfGrammar"
 			IParser parser = new LRParser();
 			parseTree = parser.parse(lexer, arguments.get(PARAM_LR_PARSER));

@@ -7,6 +7,7 @@ import java.util.List;
 import de.fuberlin.projectF.CodeGenerator.model.Array;
 import de.fuberlin.projectF.CodeGenerator.model.ArrayPointer;
 import de.fuberlin.projectF.CodeGenerator.model.MMXRegisterAddress;
+import de.fuberlin.projectF.CodeGenerator.model.RecordPointer;
 import de.fuberlin.projectF.CodeGenerator.model.StackAddress;
 import de.fuberlin.projectF.CodeGenerator.model.Variable;
 import de.fuberlin.projectF.CodeGenerator.model.RegisterAddress;
@@ -57,7 +58,12 @@ public class MemoryContext {
 
 		stackVars++;
 		stackPointer -= size;
+		System.out.println("new Stack var " + var.name);
+		System.out.println("Stackpointer: " + stackPointer);
+		var.addStackAddress(new StackAddress(stackPointer));
+		System.out.println("Address " + var.getAddress());
 		variables.put(var.name, var);
+		System.out.println("Address " + variables.get(var.name).getAddress());
 		return var;
 	}
 	
@@ -232,6 +238,14 @@ public class MemoryContext {
 
 	public void newArrayPtr(String name, String arr, String offset) {
 		variables.put(name, new ArrayPointer(variables.get(arr), new Integer(offset)));
+	}
+
+	public void newRecordPtr(String name, String rec, String offset) {
+		System.out.println("Name: " + name);
+		System.out.println("Record: " + rec);
+		System.out.println("Address " + variables.get(rec).getAddress());
+		System.out.println("Offset: " + offset);
+		variables.put(name, new RecordPointer(variables.get(rec), new Integer(offset)));
 	}
 
 }

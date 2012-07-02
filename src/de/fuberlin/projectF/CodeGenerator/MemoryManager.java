@@ -158,4 +158,8 @@ public class MemoryManager {
 	public void newArrayPtr(String name, String arr, String offset) {
 		current.newArrayPtr(name, arr, offset);
 	}
+
+	public void newRecordPtr(String target, String op1, String op2) {
+		current.newRecordPtr(target, op1, op2);	
+	}
 }

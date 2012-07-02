@@ -1,0 +1,47 @@
+; ModuleID = 'mathStruct.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64"
+target triple = "x86_64-pc-linux-gnu"
+
+%struct.container_double = type { double, double, double }
+%struct.container_int = type { i32, i32, i32 }
+
+@.str = private unnamed_addr constant [11 x i8] c"Summe: %d\0A\00"
+@.str1 = private unnamed_addr constant [11 x i8] c"Summe: %f\0A\00"
+
+define i32 @main() nounwind {
+  %1 = alloca i32, align 4
+  %cont_int = alloca %struct.container_int, align 4
+  %cont_double = alloca %struct.container_double, align 8
+  store i32 0, i32* %1
+  %2 = getelementptr inbounds %struct.container_int* %cont_int, i32 0, i32 0
+  store i32 5, i32* %2, align 4
+  %3 = getelementptr inbounds %struct.container_int* %cont_int, i32 0, i32 1
+  store i32 7, i32* %3, align 4
+  %4 = getelementptr inbounds %struct.container_double* %cont_double, i32 0, i32 0
+  store double 1.060000e+01, double* %4, align 8
+  %5 = getelementptr inbounds %struct.container_double* %cont_double, i32 0, i32 1
+  store double 1.300000e+00, double* %5, align 8
+  %6 = getelementptr inbounds %struct.container_int* %cont_int, i32 0, i32 0
+  %7 = load i32* %6, align 4
+  %8 = getelementptr inbounds %struct.container_int* %cont_int, i32 0, i32 1
+  %9 = load i32* %8, align 4
+  %10 = add nsw i32 %7, %9
+  %11 = getelementptr inbounds %struct.container_int* %cont_int, i32 0, i32 2
+  store i32 %10, i32* %11, align 4
+  %12 = getelementptr inbounds %struct.container_double* %cont_double, i32 0, i32 0
+  %13 = load double* %12, align 8
+  %14 = getelementptr inbounds %struct.container_double* %cont_double, i32 0, i32 1
+  %15 = load double* %14, align 8
+  %16 = fadd double %13, %15
+  %17 = getelementptr inbounds %struct.container_double* %cont_double, i32 0, i32 2
+  store double %16, double* %17, align 8
+  %18 = getelementptr inbounds %struct.container_int* %cont_int, i32 0, i32 2
+  %19 = load i32* %18, align 4
+  %20 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([11 x i8]* @.str, i32 0, i32 0), i32 %19)
+  %21 = getelementptr inbounds %struct.container_double* %cont_double, i32 0, i32 2
+  %22 = load double* %21, align 8
+  %23 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([11 x i8]* @.str1, i32 0, i32 0), double %22)
+  ret i32 0
+}
+
+declare i32 @printf(i8*, ...)

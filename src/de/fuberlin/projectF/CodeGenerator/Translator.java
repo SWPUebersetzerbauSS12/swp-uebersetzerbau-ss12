@@ -169,8 +169,26 @@ public class Translator {
 							"Allocation " + tok.getTarget());
 				}
 				//Record
-				else if(mem.inHeap(tT)) {
+				else if(tT.startsWith("%")) {
 					System.out.println("Allocation of a record");
+					int result;
+					result = findToken(tokenNumber, true, TokenType.TypeDefinition, tok.getTypeTarget(), null, null);
+					System.out.println(result);
+					Record rec = new Record(tok.getTarget());
+					
+					for( int i = 0; i < code.get(result).getParameterCount(); i++) {
+						String type = code.get(result).getParameter(i).getType();
+						rec.add(new Variable(type,String.valueOf(i)));
+					}
+					
+					mem.newStackVar(rec);
+					asm.sub(String.valueOf(rec.getSize()), "esp",
+							"Allocation " + tok.getTarget());
+					
+				/*else if(mem.inHeap(tT)) {
+					System.out.println("Allocation of a record");
+					
+					
 					Record tmp = null;
 					System.out.println("Clone " + mem.getHeapVar(tT).name);
 					try {
@@ -179,10 +197,10 @@ public class Translator {
 						e.printStackTrace();
 					}
 					tmp.name = tok.getTarget();
-					System.out.println(tmp.name);
+					System.out.println("to " + tmp.name);
 					mem.newStackVar(tmp);
 					asm.sub(String.valueOf(tmp.getSize()), "esp",
-							"Allocation " + tok.getTarget());
+							"Allocation " + tok.getTarget());*/
 					
 				}
 				// Kein Array kein Record
@@ -452,11 +470,13 @@ public class Translator {
 				break;
 				
 			case Getelementptr:
-				if(tok.getTypeTarget().charAt(0) == '%')
+				if(tok.getTypeTarget().charAt(0) == '%') {
 					//TODO :-)
 					System.out.println("new record pointer");
-				else
+					mem.newRecordPtr(tok.getTarget(), tok.getOp1(), tok.getOp2());
+				} else {
 					mem.newArrayPtr(tok.getTarget(), tok.getOp1(), tok.getOp2());
+				}
 				break;
 				
 			case TypeDefinition:

@@ -53,6 +53,11 @@ public class Variable {
 	}
 
 	public void addStackAddress(StackAddress stackAddress) {
+		if(stackAddresses.isEmpty()) {
+			System.out.println("is empty");
+		} else {
+			System.out.println("already in: " + stackAddresses.get(0).getFullName());
+		}
 		stackAddresses.add(stackAddress);
 	}
 

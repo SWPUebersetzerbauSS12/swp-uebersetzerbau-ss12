@@ -148,18 +148,19 @@ public class GrammarReader {
 							"please input a correct grammar ");
 					
 				}
-				// Create Nonterminal and fill head and rump
-				Productions nonterminal = new Productions(
-						nonterminalLR[0].trim());
 				
 				/*using regular expression, check out the left side of the productions.
 				*they(all are non-terminal) must be <A>,e.g.<<A> or <> or <A>a or A>>. ect. are uncorrect format(Y.)
 				*if false format at the left side of the production, the line no. and the false nonterminal will be showed.
 				*
 				*/
-				if(!nonterminal.getHead().matches("<[\\w']+>")){
+				if(!nonterminalLR[0].trim().matches("<[\\w']+>")){
 					throw new RuntimeException("invalid input garmmar at line "+lineNo+".\n " +"the format for nonterminal is false!!"); 
 				}
+				
+				// Create Nonterminal and fill head and rump
+                Productions nonterminal = new Productions(
+                        nonterminalLR[0].trim().substring(1,nonterminalLR[0].trim().length()-1));
 
 			//	String rump = "";
 				//why "for"?? size of nonterminalLR is 2 fix!
@@ -184,7 +185,8 @@ public class GrammarReader {
 					String token = st.nextToken().trim();
 					if (token.matches("<[\\w']+>")) {
 						// non-terminal symbol
-						productionVector.add(token);
+						productionVector.add(token.substring(1,
+                                token.length() - 1));
 					} else if (token.matches("\"\\S+\"")) {
 						// terminal symbol
 						productionVector.add(token.substring(1,

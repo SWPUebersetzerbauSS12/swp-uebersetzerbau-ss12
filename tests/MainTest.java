@@ -75,4 +75,25 @@ public class MainTest {
 		System.out.println(output);
 	}
 
+	@Test
+	public void testLlvmToMachineCode() throws Exception {
+		final String inputFile = createFile(
+				"declare i32 @puts(i8*) nounwind\n" + 
+				"declare i32 @printf(i8*, ...) nounwind\n" +
+				"define i32 @main() nounwind {\n" +
+				"ret i32 0;\n" +
+				"<label>:1\n" +
+				"}\n"
+		);
+		final String outputFile = createEmptyFile();
+		String[] args = {"-llvm", inputFile, "-o", outputFile};
+		Main.main(args);
+
+		// check output file
+		String output = readFile(outputFile);
+		System.out.println(outputFile);
+		assertFalse(output.isEmpty());
+		System.out.println(output);
+	}
+
 }

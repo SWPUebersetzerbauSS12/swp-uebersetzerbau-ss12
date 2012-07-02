@@ -30,6 +30,11 @@ public class FrontendMain {
 		}
 
 		analyzer.getAST().printTree();
+		if(analyzer.getAST().checkTypes()){
+			System.out.println("Everything is fine for the types");
+		} else {
+			System.err.println("Type checking failed!");
+		}
 		return analyzer.getAST().genCode();
 	}
 

@@ -1,10 +1,6 @@
 package de.fuberlin.optimierung.commands;
 
-import java.util.LinkedList;
-import de.fuberlin.optimierung.ILLVM_Block;
-import de.fuberlin.optimierung.ILLVM_Command;
-import de.fuberlin.optimierung.LLVM_Operation;
-import de.fuberlin.optimierung.LLVM_Parameter;
+import de.fuberlin.optimierung.*;
 
 /*
  * Syntax:
@@ -14,19 +10,26 @@ import de.fuberlin.optimierung.LLVM_Parameter;
 
 public class LLVM_AllocaCommand extends LLVM_GenericCommand{
 	
-	public LLVM_AllocaCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
-		super(operation, predecessor, block, comment);
-
-		// <result> <type>
-		target = new LLVM_Parameter(cmd[0], cmd[3]);
+	public LLVM_AllocaCommand(String cmdLine, LLVM_GenericCommand predecessor, LLVM_Block block){
+		super(predecessor, block, cmdLine);
+		setOperation(LLVM_Operation.ALLOCA);
 		
-		// optionale Parameter
-		for (int j = 4; (j + 1 < cmd.length); j = j + 2){
-			// <ty> <num>
-			operands.add(new LLVM_Parameter(cmd[j+1], cmd[j]));
+		StringBuilder cmd = new StringBuilder(cmdLine);
+		parseEraseComment(cmd);
+		String result = parseReadResult(cmd);
+		parseEraseString(cmd, "alloca");
+		String ty = parseReadType(cmd);
+		
+		// <result> <ty>
+		target = new LLVM_Parameter(result, ty);
+		
+		while (parseEraseString(cmd, ",")){
+			String typ = parseReadType(cmd);
+			String name = parseReadValue(cmd);
+			operands.add(new LLVM_Parameter(name, typ));
 		}
 		
-		System.out.println("Operation generiert: " + this.toString());
+		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());
 	}
 	
 	public String toString() {

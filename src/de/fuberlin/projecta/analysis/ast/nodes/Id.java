@@ -33,4 +33,9 @@ public class Id extends Type {
 	public Type getType(){
 		return SymbolTableHelper.lookup(this.getValue(), this).getType();
 	}
+	
+	@Override
+	public String toTypeString(){
+		return getType().toTypeString();
+	}
 }

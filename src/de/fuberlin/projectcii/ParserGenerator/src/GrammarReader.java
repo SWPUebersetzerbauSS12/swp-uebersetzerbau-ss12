@@ -13,18 +13,19 @@ public class GrammarReader {
 
 	// the Startsymbol
 	private String startSymbol;
+	
+	private String file;
 
 	private Vector<String> heads;
 
-	private enum ReadingState {
-		TERMINAL, NONTERMINAL, NONE
-	}
+//	private enum ReadingState {
+//		TERMINAL, NONTERMINAL, NONE
+//	}
 
 	/**
 	 * Getter for the Startsymbol
 	 * 
 	 * @return The start symbol for the read Grammar
-	 * @author Patrick Schlott
 	 */
 	public String getStartSymbol() {
 		return startSymbol;
@@ -37,61 +38,68 @@ public class GrammarReader {
 	 * performed. elimination of left-rekursions is fixed at 4 runs after which
 	 * the Grammar is deemed not LL(1)-parsable.
 	 * 
-	 * @author Patrick Schlott,Ying Wei
-	 * @param NItr The maximum number of iterations for clearing Leftrekursions,
-	 *             if more iterations are needes, the whole grammar will be cleared
+	 * @param NItr
+	 *            defines the Max. no. of the iterations, if more than NItr,the
+	 *            whole grammar will be cleared
+	 * @param file 
 	 * @return The grammar as HashMap where the keys are the heads of the
 	 *         production and the values are vectors containing the productions
 	 *         itself. Each production is represented as a vector of terminal
 	 *         and nonterminal symbols
-	 * @throws IOException 
+	 * @throws IOException
 	 *            
-	 * @throws RuntimeException  if the No. of iterations more than NItr, 
-	 *                           then there is too much iterations (endless iteration)
+	 * @throws RuntimeException
+	 * if the No. of iterations more than NItr, 
+	 * then there is too much iterations (endless iteration)
 	 * 
 	 */
-	public Map<String, Vector<Vector<String>>> createGrammar(int NItr)
+	public Map<String, Vector<Vector<String>>> createGrammar(int NItr, boolean changeToLL1, String file)
 			throws IOException {
 		// Read the file
+	    this.file=file;
 		Vector<Productions> grammar = ReadFile();
 		Printer.printGrammar(grammar);
 		// Perform Leftfactorisation
-		grammar = combineLeftFactorization(grammar);
-		Printer.printGrammar(grammar); 
-		// Eliminate indirect and direct leftrekursions
+		if (changeToLL1){
+		    grammar = combineLeftFactorization(grammar);
+		    Printer.printGrammar(grammar); 
+		    // Eliminate indirect and direct leftrekursions
 
-		heads = new Vector<String>();
-		for (Productions nonterminal : grammar) {
-			heads.add(nonterminal.getHead());
+		    heads = new Vector<String>();
+		    for (Productions nonterminal : grammar) {
+		        heads.add(nonterminal.getHead());
+		    }
+		    Boolean[] rekursive = { true };
+		    int iteration = 0;
+		    grammar = eliminateDirectLeftRekursion(grammar);
+		    Printer.printGrammar(grammar);
+
+		    while (rekursive[0] && iteration < NItr) {
+		        rekursive[0] = false;
+		        grammar = eliminateIndirectLeftRekursion(grammar, rekursive);
+		        grammar = eliminateDirectLeftRekursion(grammar);
+		        iteration++;
+		    }
+		    if (iteration < NItr) {
+		        // definie first Element in Vector as startsymbol
+		        startSymbol = grammar.elementAt(0).getHead();
+		    } else {
+		        throw new RuntimeException(
+		                "the no. of the iterations:"
+		                + iteration
+		                + " >= Max No. of Iterations "
+		                + NItr
+		                + "\n"
+		                + "Too Many Iterations, it's unparsable with LL(1), please input a right file!!");
+		        
+		        // System.out.println("the no. of the iterations:"+iteration+" >= Max No. of Iterations "+NItr);
+		        // System.out.println("Too Many Iterations, it's unparsable with LL(1), please input a right file!!");
+		        // grammar.clear();
+		    }   
 		}
-		Boolean[] rekursive = { true };
-		int iteration = 0;
-		grammar = eliminateDirectLeftRekursion(grammar);
-		Printer.printGrammar(grammar);
-
-		while (rekursive[0] && iteration < NItr) {
-			rekursive[0] = false;
-			grammar = eliminateIndirectLeftRekursion(grammar, rekursive);
-			grammar = eliminateDirectLeftRekursion(grammar);
-			iteration++;
+		if (grammar.size() > 0){
+		    startSymbol = grammar.elementAt(0).getHead();
 		}
-		if (iteration < NItr) {
-			// definie first Element in Vector as startsymbol
-			startSymbol = grammar.elementAt(0).getHead();
-		} else {
-			throw new RuntimeException(
-					"the no. of the iterations:"
-							+ iteration
-							+ " >= Max No. of Iterations "
-							+ NItr
-							+ "\n"
-							+ "Too Many Iterations, it's unparsable with LL(1), please input a right file!!");
-
-			// System.out.println("the no. of the iterations:"+iteration+" >= Max No. of Iterations "+NItr);
-			// System.out.println("Too Many Iterations, it's unparsable with LL(1), please input a right file!!");
-			// grammar.clear();
-		}
-
 		return buildGrammarMap(grammar);
 
 	}
@@ -100,7 +108,6 @@ public class GrammarReader {
 	 * Reads a grammar from the given file in BNF and converts it to Vector of
 	 * Productions.
 	 * 
-	 * @author Patrick Schlott, Ying Wei
 	 * @param file
 	 *            The path to the file containing the grammar that shall be
 	 *            used.
@@ -108,8 +115,9 @@ public class GrammarReader {
 	 * @throws IOException
 	 * @throws RuntimeException check not correct format of grammar
 	 * if no "::=", or either the part of left side or right side is empty.(No BNF)
-	 * if the left side(it must be nonterminal symbol) of production is not in format <A>.(false Production/grammar)
-	 */        
+	 * if the left side(it must be nonterminal symbol) of production is not in format <A>.(false Production/grammar),
+	 * and the invalid no. of the line will be given back.invalid
+	 */      
 	private Vector<Productions> ReadFile() throws IOException {
 
 		// Vector the nonterminals are saved to
@@ -117,9 +125,9 @@ public class GrammarReader {
 
 		// Read File
 		BufferedReader in = new BufferedReader(new FileReader(
-				Settings.getGRAMMAR_PATH()));
+				this.file));
 
-		ReadingState state;
+//		ReadingState state;
 		String line;
 		int lineNo=0;
 		while ((line = in.readLine()) != null) {
@@ -137,21 +145,59 @@ public class GrammarReader {
 				// Create Nonterminal and fill head and rump
 				Productions nonterminal = new Productions(
 						nonterminalLR[0].trim());
-				//regulaere Ausdruck, check out the left side of the productions, 
-				//they(all are non-terminal) must be <A>,e.g.<<A> or <> or <A>a or A>>. ect. are uncorrect format(Y.)
-				if(!nonterminal.getHead().matches("<\\w+>")){
+				
+				/*using regular expression, check out the left side of the productions.
+				*they(all are non-terminal) must be <A>,e.g.<<A> or <> or <A>a or A>>. ect. are uncorrect format(Y.)
+				*if false format at the left side of the production, the line no. and the false nonterminal will be showed.
+				*
+				*/
+				if(!nonterminal.getHead().matches("<[\\w']+>")){
 					throw new RuntimeException("invalid input garmmar at line "+lineNo+".\n " +"the format for nonterminal is false!!"); 
 				}
 
-				String rump = "";
+			//	String rump = "";
 				//why "for"?? size of nonterminalLR is 2 fix!
 				// there is nonterminalLR[0] and nonterminalLR[1].. then no any more
-				for (int i = 1; i < nonterminalLR.length; i++) {
-					rump += nonterminalLR[i];
-				}
+		//		for (int i = 1; i < nonterminalLR.length; i++) {
+		//			rump += nonterminalLR[i];
+		//		}
+				
+				/*
+				 * Using regular expression is good to checking the right side formats of the production
+				 * As nonterminal <A>, the whole block with "<" and "<" will be added into ProductionVector.
+				 * As terminal "string", the both "" will not be added into productionVector, 
+				 * therefore get substring from position 1 to position (size-1).
+				 * Regular Expression: <\\w+> --> define nonterminal format is <A> or <String>
+				 *                     "\\S+" -->define terminal format is "string", but "" (no white space between "")is not allowed.
+				 * */
 
 				Vector<String> productionVector = new Vector<String>();
-				state = ReadingState.NONE;
+				
+				StringTokenizer st = new StringTokenizer(nonterminalLR[1]);
+				while (st.hasMoreTokens()) {
+					String token = st.nextToken().trim();
+					if (token.matches("<[\\w']+>")) {
+						// non-terminal symbol
+						productionVector.add(token);
+					} else if (token.matches("\"\\S+\"")) {
+						// terminal symbol
+						productionVector.add(token.substring(1,
+								token.length() - 1));
+					} else if (token.equals("|")) {
+						// next production
+						nonterminal.InsertProduction(productionVector);
+						productionVector = new Vector<String>();
+					} else {
+						throw new RuntimeException(
+								"invalid production definition : " + token
+										+ ", at line " + lineNo);
+					}
+				}
+				if (!productionVector.isEmpty()) {
+					nonterminal.InsertProduction(productionVector);
+				}
+				
+	/*			state = ReadingState.NONE;
 				String symbol = "";
 				for (char c : rump.toCharArray()) {
 					switch (state) {
@@ -193,6 +239,8 @@ public class GrammarReader {
 				}
 				nonterminal.InsertProduction(productionVector);
 				// Finaly add the Nonterminal to the Grammar
+				 * 
+				 */
 				grammar.add(nonterminal);
 			}
 		}
@@ -204,7 +252,6 @@ public class GrammarReader {
 	/**
 	 * Performs left-factorisation on a given grammar.
 	 * 
-	 * @author Patrick Schlott
 	 * @param grammar
 	 *            Grammar to be left-factorised
 	 * @return The Modified grammar as a Vector of Productions
@@ -330,7 +377,6 @@ public class GrammarReader {
 	/**
 	 * Calculates the longest Factor in the Production
 	 * 
-	 * @author Patrick Schlott
 	 * @param productions
 	 *            The Productions of the nonterminal
 	 * @return An array containing [0]: size of the longest factor [1]: first
@@ -373,7 +419,6 @@ public class GrammarReader {
 	/**
 	 * Eliminates indirect left-factorisation on a given grammar.
 	 * 
-	 * @author Patrick Schlott
 	 * @param grammar
 	 *            Grammar to be examined
 	 * @param rekursive
@@ -444,7 +489,6 @@ public class GrammarReader {
 	/**
 	 * Eliminates direct leftrekursions by introducing new Nonterminal <"N"$>
 	 * 
-	 * @author Patrick Schlott
 	 * @param grammar Grammar to be examined
 	 * @return The Modified grammar as a Vector of Productions
 	 */
@@ -485,13 +529,13 @@ public class GrammarReader {
 				// initialise new nonterminal <"N">
 				Productions nonTerminalMod = new Productions(head);
 				// initialise new nonterminal <"N"1>
-				String head1 = head.substring(0, head.length() - 1) + "_";
+				String head1 = head.substring(0, head.length() - 1) + "$";
 
 				// prevent duplicate Productions
 				boolean alreadyExists = true;
 				while (alreadyExists) {
 					if (heads.contains(head1 + ">")) {
-						head1 += "_";
+						head1 += "$";
 					} else {
 						alreadyExists = false;
 					}
@@ -550,7 +594,6 @@ public class GrammarReader {
 	 * the form: Map<String, Vector<Vector<String>>> with the head of the
 	 * productions as keys.
 	 * 
-	 * @author Ying Wei
 	 * @param grammar
 	 *            Grammar to be transformed
 	 * @return The transformed Grammar

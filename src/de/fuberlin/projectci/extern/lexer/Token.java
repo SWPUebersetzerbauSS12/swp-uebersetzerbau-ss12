@@ -2,6 +2,7 @@ package de.fuberlin.projectci.extern.lexer;
 
 import de.fuberlin.commons.lexer.IToken;
 import de.fuberlin.commons.lexer.TokenType;
+import de.fuberlin.projectci.grammar.Grammar;
 
 
 
@@ -39,7 +40,7 @@ class Token implements IToken {
 
 	@Override
 	public String getType() {
-		return type.toString();
+		return type!=null?type.toString():Grammar.EPSILON.toString();
 	}
 
 	@Override

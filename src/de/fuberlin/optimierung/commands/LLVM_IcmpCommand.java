@@ -1,10 +1,6 @@
 package de.fuberlin.optimierung.commands;
 
-import java.util.LinkedList;
-import de.fuberlin.optimierung.ILLVM_Block;
-import de.fuberlin.optimierung.ILLVM_Command;
-import de.fuberlin.optimierung.LLVM_Operation;
-import de.fuberlin.optimierung.LLVM_Parameter;
+import de.fuberlin.optimierung.*;
 
 /*
  * Syntax:
@@ -15,17 +11,49 @@ import de.fuberlin.optimierung.LLVM_Parameter;
 
 public class LLVM_IcmpCommand extends LLVM_GenericCommand{
 	
-	public LLVM_IcmpCommand(String[] cmd, LLVM_Operation operation, ILLVM_Command predecessor, ILLVM_Block block, String comment){
-		super(operation, predecessor, block, comment);
+	public LLVM_IcmpCommand(String cmdLine, LLVM_GenericCommand predecessor, LLVM_Block block){
+		super(predecessor, block, cmdLine);
 		
-		// <result> i1
-		target = new LLVM_Parameter(cmd[0], "i1");
-		// <op1> <ty>
-		operands.add(new LLVM_Parameter(cmd[5], cmd[4]));
-		// <op2> <ty>
-		operands.add(new LLVM_Parameter(cmd[6], cmd[4]));
+		StringBuilder cmd = new StringBuilder(cmdLine);
+		parseEraseComment(cmd);
+		String result = parseReadResult(cmd);
+		parseReadValue(cmd); // ICMP löschen
+		target = new LLVM_Parameter(result, "i1");
 		
-		System.out.println("Operation generiert: " +  this.toString());
+		String cond = parseReadValue(cmd);
+		
+		// cond festlegen
+		if (cond.startsWith("eq")){
+			setOperation(LLVM_Operation.ICMP_EQ);
+		}else if (cond.startsWith("ne")){
+			setOperation(LLVM_Operation.ICMP_NE);
+		}else if (cond.startsWith("ugt")){
+			setOperation(LLVM_Operation.ICMP_UGT);
+		}else if (cond.startsWith("uge")){
+			setOperation(LLVM_Operation.ICMP_UGE);
+		}else if (cond.startsWith("ult")){
+			setOperation(LLVM_Operation.ICMP_ULT);
+		}else if (cond.startsWith("ule")){
+			setOperation(LLVM_Operation.ICMP_ULE);
+		}else if (cond.startsWith("sgt")){
+			setOperation(LLVM_Operation.ICMP_SGT);
+		}else if (cond.startsWith("sge")){
+			setOperation(LLVM_Operation.ICMP_SGE);
+		}else if (cond.startsWith("slt")){
+			setOperation(LLVM_Operation.ICMP_SLT);
+		}else if (cond.startsWith("sle")){
+			setOperation(LLVM_Operation.ICMP_SLE);
+		}
+		
+		String ty = parseReadType(cmd);
+		String op1 = parseReadValue(cmd);
+		parseEraseString(cmd, ",");
+		String op2 = parseReadValue(cmd);
+		
+		operands.add(new LLVM_Parameter(op1, ty));
+		operands.add(new LLVM_Parameter(op2, ty));
+		
+		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " +  this.toString());
 	}
 	
 	public String toString() {

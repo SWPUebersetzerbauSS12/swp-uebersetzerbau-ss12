@@ -47,8 +47,7 @@ public class SLRParseTableBuilder extends ParseTableBuilder {
 		Map<Set<LR0Item>, State> itemSet2State=new HashMap<Set<LR0Item>, State>();
 		Set<NonTerminalSymbol> allNonTerminalSymbols = getGrammar().getAllNonTerminals();
 		
-		// TODO Grammar.getStartProduction 
-		Production startProduction=getGrammar().getProductionAtIndex(0); // S0 → S
+		Production startProduction=getGrammar().getStartProduction(); // S0 → S
 		LR0Item startItem=new LR0Item(startProduction, 0); // [S0 → .S] -- Zum Erkennen des Startzustands
 		LR0Item acceptanceItem=new LR0Item(startProduction, startProduction.getRhs().size()); // [S0 → S.] -- Zum Erkennen des akzeptierenden Zustands
 	

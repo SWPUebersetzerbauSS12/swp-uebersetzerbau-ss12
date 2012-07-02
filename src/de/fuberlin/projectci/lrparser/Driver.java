@@ -88,7 +88,7 @@ public class Driver {
 				// Wurzel des Syntaxbaums vom Stack holen und zu Abstrakten Syntaxbaum reduzieren
 				// TODO Abstrakten Syntaxbaum direkt erzeugen
 				SyntaxTreeNode syntaxTree= nodeStack.pop();
-				syntaxTree.reduceToAbstractSyntaxTree();
+//				syntaxTree.reduceToAbstractSyntaxTree();
 				return syntaxTree;
 			}
 			else if (currentAction instanceof ErrorAction){

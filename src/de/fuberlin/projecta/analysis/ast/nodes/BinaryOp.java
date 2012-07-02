@@ -1,14 +1,20 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 import de.fuberlin.commons.lexer.TokenType;
+import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
 import de.fuberlin.projecta.analysis.TypeErrorException;
+import de.fuberlin.projecta.codegen.LLVM;
 
 public class BinaryOp extends Type {
 
 	TokenType op;
+
+	public TokenType getOp() {
+		return op;
+	}
 
 	public BinaryOp(TokenType op) {
 		this.op = op;
@@ -67,7 +73,7 @@ public class BinaryOp extends Type {
 			// load value of id1 if it is an id!!!
 			if (getChild(0) instanceof Id) {
 				Id id = (Id) getChild(0);
-				regs[3] = block.getNewRegister();
+				regs[3] = block.getNewMemory();
 				ret += "%"
 						+ regs[3]
 						+ " = load "
@@ -78,7 +84,7 @@ public class BinaryOp extends Type {
 			// load value of id2 if it is an id!!!
 			if (getChild(1) instanceof Id) {
 				Id id = (Id) getChild(1);
-				regs[4] = block.getNewRegister();
+				regs[4] = block.getNewMemory();
 				ret += "%"
 						+ regs[4]
 						+ " = load "
@@ -92,7 +98,8 @@ public class BinaryOp extends Type {
 
 				String int_or_real = "";
 				String cmp_op = "";
-				if (checkTypeOnEqual(a, b).equals("double")) {
+				if ((a.getType().toTypeString().equals("double") || b.getType()
+						.toTypeString().equals("double"))) {
 					int_or_real = "fcmp";
 					switch (op) {
 					case OP_LT:
@@ -137,9 +144,12 @@ public class BinaryOp extends Type {
 						break;
 					}
 				}
-				int tmp = block.getNewRegister();
-				ret += "%" + tmp + " = " + int_or_real + " " + cmp_op + " "
-						+ checkTypeOnEqual(a, b) + " %";
+				int tmp = block.getNewMemory();
+				ret += "%" + tmp + " = " + int_or_real + " " + cmp_op + " ";
+				ret += SymbolTableHelper.lookup(a.getValue(), this).getType()
+						.genCode()
+						+ " %";
+
 				if (regs[3] == 0)
 					ret += a.getValue() + ", %";
 				else
@@ -150,34 +160,123 @@ public class BinaryOp extends Type {
 					ret += regs[4] + "\n";
 
 			}
-		}else if (op == TokenType.OP_ADD || op == TokenType.OP_MINUS
+		} else if (op == TokenType.OP_ADD || op == TokenType.OP_MINUS
 				|| op == TokenType.OP_DIV || op == TokenType.OP_MUL) {
-			// load value of id1 if it is an id!!!
+			String type = "";
+			String mathOp = "";
+			int val1 = 0, val2 = 0; // used to store both values
+			Id id1 = null, id2 = null;
+
 			if (getChild(0) instanceof Id) {
-				Id id = (Id) getChild(0);
-				ret += "%"
-						+ block.getNewRegister()
-						+ " = load "
-						+ (SymbolTableHelper.lookup(id.getValue(), this))
-								.getType().genCode() + "* %" + id.getValue()
-						+ "\n";
+				id1 = (Id) getChild(0);
+				if (SymbolTableHelper.lookup(id1.getValue(), this).getType()
+						.toTypeString().equals("double"))
+					mathOp = "f"; // append f in front of math_op
+			} else if (getChild(0) instanceof Type) {
+				if (((Type) getChild(0)).toTypeString().equals("double"))
+					mathOp = "f"; // append f in front of math_op
+			} else {
+				throw new SemanticException("type couldn't be figured out in: "
+						+ getChild(0));
 			}
-			// load value of id2 if it is an id!!!
+
+			switch (op) {
+			case OP_ADD:
+				mathOp += "add";
+				break;
+			case OP_MINUS:
+				mathOp += "sub";
+				break;
+			case OP_MUL:
+				mathOp += "mul";
+				break;
+			case OP_DIV:
+				mathOp += "div";
+				break;
+			}
+
+			if (getChild(0) instanceof Id) {
+				// the value must only be loaded if it is instanceof Id and if
+				// it is
+				// not parameter!
+				id1 = (Id) getChild(0);
+				if (!isInParams(id1)) {
+					ret += LLVM.loadVar(id1);
+				}
+
+				if (SymbolTableHelper.lookup(id1.getValue(), this).getType()
+						.toTypeString().equals("int")) {
+					type = "i32";
+				} else if (SymbolTableHelper.lookup(id1.getValue(), this)
+						.getType().toTypeString().equals("double")) {
+					type = "double";
+				}
+
+			} else if (getChild(0) instanceof Type) {
+				if (((Type) getChild(0)).toTypeString().equals("int"))
+					type = "i32";
+				else if (((Type) getChild(0)).toTypeString().equals("double"))
+					type = "double";
+			} else {
+				throw new SemanticException("No type could be made in: "
+						+ this.getClass());
+			}
+			// load value of id2 if it is an id and not in params
 			if (getChild(1) instanceof Id) {
-				Id id = (Id) getChild(1);
-				ret += "%"
-						+ block.getNewRegister()
-						+ " = load "
-						+ (SymbolTableHelper.lookup(id.getValue(), this))
-								.getType().genCode() + "* %" + id.getValue()
-						+ "\n";
+				id2 = (Id) getChild(1);
+				if (!isInParams(id2)) {
+					ret += LLVM.loadVar(id2);
+				}
 			}
-			
-		}else{
-			System.out.println("Unknown Binary OP: " + op);
-		}
-		/***********/
-		if (op == TokenType.OP_ASSIGN) {
+
+			int val = block.getNewMemory();
+			this.setValMemory(val); // save currents computation in this node
+			if (id1 != null)
+				val1 = id1.getValMemory();
+			if (id2 != null)
+				val2 = id2.getValMemory();
+			if (id1 != null && id2 != null) {
+				String v1 = val1 + "";
+				String v2 = val2 + "";
+				if (isInParams(id1))
+					v1 = id1.getValue();
+				if (isInParams(id2))
+					v2 = id2.getValue();
+				ret += "%" + val + " = " + mathOp + " " + type + " %" + v1
+						+ ", %" + v2 + "\n";
+			} else if (id1 == null && id2 == null) { // TODO!
+				// both are types?
+				Type t1 = (Type) getChild(0), t2 = (Type) getChild(1);
+				String s1 = t1.genCode(), s2 = t2.genCode();
+				String[] tmp1 = s1.split(" ");
+				String[] tmp2 = s2.split(" ");
+				type = tmp1[0];
+				ret += "%" + val + " = " + mathOp + " " + type + " " + tmp1[1]
+						+ ", " + tmp2[1] + "\n";
+			} else if (id1 == null) {
+				String v2 = val2 + "";
+				if (isInParams(id2))
+					v2 = id2.getValue();
+				Type t1 = (Type) getChild(0);
+				String s1 = t1.genCode();
+				String[] tmp1 = s1.split(" ");
+				type = tmp1[0];
+				ret += "%" + val + " = " + mathOp + " " + type + " " + tmp1[1]
+						+ ", %" + v2 + "\n";
+			} else {
+				// id2 === null
+				String v1 = val1 + "";
+				if (isInParams(id1))
+					v1 = id1.getValue();
+				Type t2 = (Type) getChild(1);
+				String s2 = t2.genCode();
+				String[] tmp2 = s2.split(" ");
+				type = tmp2[0];
+				ret += "%" + val + " = " + mathOp + " " + type + " %" + v1
+						+ ", " + tmp2[1] + "\n";
+			}
+
+		} else if (op == TokenType.OP_ASSIGN) {
 			EntryType eA = null;
 			a = ((Id) getChild(0));
 			eA = SymbolTableHelper.lookup(a.getValue(), this);
@@ -190,8 +289,8 @@ public class BinaryOp extends Type {
 				 * x i8]* %r3 %firstEl = getelementptr [9 x i8]* %r3, i8 0, i8 0
 				 * store i8* %firstEl, i8** %str3
 				 */
-				int tempReg = block.getNewRegister();
-				int tempReg2 = block.getNewRegister();
+				int tempReg = block.getNewMemory();
+				int tempReg2 = block.getNewMemory();
 				int strLength = (str.getValue().length() + 1);
 				ret = "%" + tempReg + " = alloca [" + strLength + " x i8]\n";
 				ret += "store [" + strLength + " x i8] c\"" + str.getValue()
@@ -201,108 +300,98 @@ public class BinaryOp extends Type {
 						+ " x i8]* %" + tempReg + ", i8 0, i8 0 \n";
 				ret += "store i8* %" + tempReg2 + ", i8** %" + a.getValue();
 			} else if (getChild(1) instanceof FuncCall) {
-				int reg = block.getNewRegister();
+				// load parameters of this function first
+				if (getChild(1).getChildrenCount() > 1
+						&& getChild(1).getChild(1).getChildrenCount() != 0) {
+					ret += LLVM.loadParams((Args) getChild(1).getChild(1));
+				}
+				int reg = block.getNewMemory();
 				String id = ((Id) getChild(0)).getValue();
-				String type = SymbolTableHelper.lookup(
-						((Id) getChild(0)).getValue(), this).getType()
+				String type = SymbolTableHelper
+						.lookup(((Id) getChild(0)).getValue(), this).getType()
 						.genCode();
-				ret = "%" + reg + " = " + ((FuncCall) getChild(1)).genCode()
+				ret += "%" + reg + " = " + ((FuncCall) getChild(1)).genCode()
 						+ "\n";
 
 				ret += "store " + type + " %" + reg + ", " + type + "* %" + id;
 			} else if (getChild(1) instanceof Id) {
-				String type1 = SymbolTableHelper.lookup(
-						((Id) getChild(1)).getValue(), this).getType()
+				String type1 = SymbolTableHelper
+						.lookup(((Id) getChild(1)).getValue(), this).getType()
 						.genCode();
-				int reg = block.getNewRegister();
+				int reg = block.getNewMemory();
 				ret = "%" + reg + " = load " + type1 + "* %"
 						+ ((Id) getChild(1)).getValue() + "\n";
 
-				String type0 = SymbolTableHelper.lookup(
-						((Id) getChild(0)).getValue(), this).getType()
+				String type0 = SymbolTableHelper
+						.lookup(((Id) getChild(0)).getValue(), this).getType()
 						.genCode();
 				ret += "store " + type0 + " %" + reg + ", "
 						+ eA.getType().genCode() + "* %" + a.getValue();
 			} else if (getChild(1) instanceof BinaryOp) {
-					//First execute operations, then save the result
-					ret += ((BinaryOp)getChild(1)).genCode();
-					int result = block.getCurrentRegister();
-					ret += "%" + block.getNewRegister() + " = load "+ eA.getType().genCode() + "* %" + result + "\n";
-					ret += "store "+ eA.getType().genCode() + " %" + block.getCurrentRegister() +", " + eA.getType().genCode() + "* %" + a.getValue();
+				// First execute operations, then save the result
+				ret += ((BinaryOp) getChild(1)).genCode();
+				// int result = block.getCurrentRegister();
+				// ret += "%" + block.getNewMemory() + " = load "
+				// + eA.getType().genCode() + "* %" + result + "\n";
+				ret += "store " + eA.getType().genCode() + " %"
+						+ ((BinaryOp) getChild(1)).getValMemory() + ", "
+						+ eA.getType().genCode() + "* %" + a.getValue();
 			} else {
 				ret = "store " + ((AbstractSyntaxTree) getChild(1)).genCode()
 						+ ", " + eA.getType().genCode() + "* %" + a.getValue();
 			}
-		}
-
-		return ret;
-	}
-
-	/**
-	 * Searches the symbolTables up to the point where both id's are found and
-	 * gives the highest type possible. E.g. for int and real it is double, for
-	 * int and int it is i32, for int and string it is i8*. If at least one
-	 * parameter is not found in any symbolTable an SemanticException is raised.
-	 * 
-	 * @param a
-	 *            the first id
-	 * @param b
-	 *            the second id
-	 * @return the highest possible basicTokenType of both id's
-	 */
-	private String checkTypeOnEqual(Id a, Id b) {
-		String ret = "";
-
-		EntryType eA = null, eB = null;
-		eA = SymbolTableHelper.lookup(a.getValue(), this);
-		eB = SymbolTableHelper.lookup(b.getValue(), this);
-
-		if (eA != null && eB != null) {
-			Type tA = eA.getType();
-			Type tB = eB.getType();
-			if (tA.equals(tB)) {
-				ret = tA.genCode();
-			} else {
-				throw new SemanticException("Error! " + eA + " and " + eB
-						+ " must be of the same type!");
-			}
 		} else {
-			throw new SemanticException("Error! Id's:" + a.getValue() + ", "
-					+ b.getValue() + " not found in symbolTables:");
+			System.out.println("Unknown Binary OP: " + op);
 		}
+		/***********/
 
 		return ret;
-	}
-
-	public TokenType getOp() {
-		return op;
 	}
 
 	@Override
 	public boolean checkTypes() {
 		Type leftChild = (Type) this.getChild(0);
 		Type rightChild = (Type) this.getChild(1);
-		switch (this.getOp()) {
-		case OP_ADD:
-		case OP_MINUS:
-		case OP_MUL:
-		case OP_DIV:
-			if (leftChild.toTypeString().equals(rightChild.toTypeString())) {
-				return true;
-			}
-			throw new TypeErrorException();
-		case OP_LT:
-		case OP_LE:
-		case OP_EQ:
-		case OP_GE:
-		case OP_GT:
-		case OP_NE:
-			throw new TypeErrorException();
-		case OP_AND:
-		case OP_OR:
-
-		default:
-			throw new TypeErrorException();
+		if (leftChild.toTypeString().equals(rightChild.toTypeString())) {
+			return true;
 		}
+		throw new TypeErrorException("Operands have to be of same type!");
+	}
+
+	@Override
+	public String toTypeString() {
+		// if both operands are not equal, checkTypes will catch this
+		return ((Type) this.getChild(0)).toTypeString();
+	}
+
+	private boolean isInParams(Id id) {
+		FuncDef fDef = searchUpFuncDef(id);
+
+		if (fDef != null) {
+			if (fDef.getChild(2).getChildrenCount() > 0) {
+				for (int i = 0; i < fDef.getChild(2).getChildrenCount(); i += 2) {
+					Type typeO = (Type) fDef.getChild(2).getChild(i);
+					Id idO = (Id) fDef.getChild(2).getChild(i + 1);
+					if (idO.getValue().equals(id.getValue())
+							&& typeO.equals(id.getType()))
+						return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	private FuncDef searchUpFuncDef(AbstractSyntaxTree node) {
+		if (node.getParent() != null) {
+			ISyntaxTree parent = node.getParent();
+			while (parent != null) {
+				if (parent instanceof FuncDef) {
+					return (FuncDef) parent;
+				}
+				parent = parent.getParent();
+			}
+		}
+		return null;
 	}
 }

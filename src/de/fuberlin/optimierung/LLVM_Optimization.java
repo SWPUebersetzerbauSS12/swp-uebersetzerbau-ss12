@@ -35,14 +35,12 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 		this.parseCode();
 		
 		String outputLLVM = this.beforeFunc;
-		LLVM_Function tmp;
 		
 		if(DEBUG)System.out.println(getStatistic());
 		
-		for (int i = 0; i < functions.size(); i++) {
-			// aktuelle Funktion fuer Optimierung
-			tmp = functions.get(i);
-			
+		// Gehe Funktionen durch
+		for(LLVM_Function tmp : this.functions) {
+	
 			// Erstelle Flussgraph
 			tmp.createFlowGraph();
 			

@@ -42,11 +42,12 @@ public class Main {
 	static final String PARAM_OUTPUT_FILE = "-o"; // Gigt den Pfad zur Ausgabedatei an
 	static final String PARAM_LLVM_INPUT_FILE = "-llvm"; // Gigt den Pfad zur LLVM Quelldatei an
 	
-	/*
-	 * Standard Parameter
-	 */
+	// Standard Parameter
 	static final String DEFAULT_GRAMMAR_FILE = "input/de/fuberlin/projectci/quellsprache_bnf.txt";
-	
+
+	// interne Daten
+	static String generatedLLVMCode = "";
+
 	/*
 	 * Ideen für Konsolenparameter:
 	 * Datei für Programm in Quellsprache: 	-f "/path/to/inputProgram"
@@ -61,17 +62,33 @@ public class Main {
 		System.out.println("Hier die Code-Schnipsel einfuegen!");
 		
 		HashMap<String,String> arguments = readParams(args);
-		boolean rebuildDFA = arguments.containsKey(PARAM_REBUILD_DFA);
+		runFrontend(arguments);
+		runBackend(arguments);
+	}
+
+	/**
+	 * Frontend-Phase
+	 * 
+	 * Eingabe: Input-File
+	 * Ausgabe: Generierter LLVM-Code
+	 * 
+	 * @see generatedLLVMCode
+	 */
+	public static void runFrontend(HashMap<String,String> arguments) {
+		System.out.println("Frontend Phase");
+
+		// -d "/path/to/definitionFile"
+		String defFile = arguments.get(PARAM_DEF_FILE);
+		if( defFile == null )
+			defFile = "input/de/fuberlin/bii/de/tokendefinition.rd"; // fall-back
 		
-		// path of input-program
-		String defFile = arguments.get(PARAM_DEF_FILE); 			// -d "/path/to/definitionFile"
-		if( defFile == null )						// no -d or -d without path
-			defFile = "input/de/fuberlin/bii/de/tokendefinition.rd";
-		String inputFile = arguments.get(PARAM_SOURCE_FILE);		// -f "/path/to/inputProgram"
-		if( inputFile == null )						// no -f or -f without path
-			inputFile = "/path/to/exampleInputProgram";
-		
-		
+		// -f "/path/to/inputProgram"
+		final String inputFile = arguments.get(PARAM_SOURCE_FILE);
+		if (inputFile == null || inputFile.isEmpty()) {
+			System.out.println("Warning: No input file!");
+			return;
+		}
+
 		//--------------------------
 		/*
 		 *	Lexer
@@ -79,6 +96,7 @@ public class Main {
 		 *	output: IToken-Objekt beim aufruf von getNextToken
 		 */
 		ILexer lexer = null;
+		final boolean rebuildDFA = arguments.containsKey(PARAM_REBUILD_DFA);
 		
 		// Lexer from bii
 		if( arguments.containsKey(PARAM_BII_LEXER) ) {
@@ -150,7 +168,17 @@ public class Main {
 		analyzer.getAST().printTree();
 
 		// Generate LLVM-Code
-		String llvm_code = analyzer.getAST().genCode();
+		generatedLLVMCode = analyzer.getAST().genCode();
+	}
+
+	/**
+	 * Backend-Phase
+	 * 
+	 * Eingabe: Generierte LLVM Code
+	 * Ausgabe: Maschinencode
+	 */
+	public static void runBackend(HashMap<String,String> arguments) {
+		System.out.println("Backend Phase");
 
 		//--------------------------
 		/*
@@ -160,12 +188,11 @@ public class Main {
 		 */
 		
 		String optimized_llvm_code;
-		
 		LLVM_Optimization llvm_optimizer = new LLVM_Optimization();
 		if(arguments.containsKey(PARAM_LLVM_INPUT_FILE)) {
 			optimized_llvm_code = llvm_optimizer.optimizeCodeFromFile(arguments.get(PARAM_LLVM_INPUT_FILE));
-		}else{
-			optimized_llvm_code = llvm_optimizer.optimizeCodeFromString(llvm_code);
+		} else{
+			optimized_llvm_code = llvm_optimizer.optimizeCodeFromString(generatedLLVMCode);
 		}
 		
 		//--------------------------

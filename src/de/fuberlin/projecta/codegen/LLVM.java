@@ -26,13 +26,13 @@ public class LLVM {
 			int varDecision, labelTrue, labelFalse, labelBehind;
 
 			varDecision = block.getCurrentRegister();
-			labelTrue = block.getNewMemory();
+			labelTrue = block.getNewVar();
 			if (block1 != null)
 				s1 = block1.genCode();
-			labelFalse = block.getNewMemory();
+			labelFalse = block.getNewVar();
 			if (block2 != null)
 				s2 = block2.genCode();
-			labelBehind = block.getNewMemory();
+			labelBehind = block.getNewVar();
 			current.setEndLabel(labelBehind);
 
 			if (!not) {
@@ -60,7 +60,7 @@ public class LLVM {
 	public static String loadVar(Id id) {
 		String ret = "";
 		if (id != null && !isInParams(id) && id.getVar() == 0) {
-			int memory = id.getHighestBlock().getNewMemory();
+			int memory = id.getHighestBlock().getNewVar();
 			id.setValMemory(memory);
 			ret += "%"
 					+ memory
@@ -118,5 +118,15 @@ public class LLVM {
 		String out = "";
 		
 		return out;
+	}
+	
+	public static String getMem(Id id) {
+		String ret = "";
+		if(LLVM.isInParams(id)){
+			ret = id.getValue();
+		} else {
+			ret = "" + id.getVar();
+		}
+		return ret;
 	}
 }

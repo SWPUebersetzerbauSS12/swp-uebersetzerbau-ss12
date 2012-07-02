@@ -14,12 +14,16 @@ import de.fuberlin.commons.parser.IParser;
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.optimierung.LLVM_Optimization;
 import de.fuberlin.projectF.CodeGenerator.CodeGenerator;
+import de.fuberlin.projecta.analysis.SemanticAnalyzer;
+import de.fuberlin.projecta.analysis.SemanticException;
+import de.fuberlin.projecta.lexer.Lexer;
+import de.fuberlin.projecta.lexer.io.FileCharStream;
+import de.fuberlin.projecta.lexer.io.ICharStream;
+import de.fuberlin.projecta.parser.Parser;
 import de.fuberlin.projectci.lrparser.LRParser;
 import de.fuberlin.projectcii.ParserGenerator.src.LL1Parser;
 
-
-
-class Main {
+public class Main {
 
 	
 	/*
@@ -38,11 +42,12 @@ class Main {
 	static final String PARAM_OUTPUT_FILE = "-o"; // Gigt den Pfad zur Ausgabedatei an
 	static final String PARAM_LLVM_INPUT_FILE = "-llvm"; // Gigt den Pfad zur LLVM Quelldatei an
 	
-	/*
-	 * Standard Parameter
-	 */
+	// Standard Parameter
 	static final String DEFAULT_GRAMMAR_FILE = "input/de/fuberlin/projectci/quellsprache_bnf.txt";
-	
+
+	// interne Daten
+	static String generatedLLVMCode = "";
+
 	/*
 	 * Ideen für Konsolenparameter:
 	 * Datei für Programm in Quellsprache: 	-f "/path/to/inputProgram"
@@ -54,73 +59,124 @@ class Main {
 	 * Standardkonfiguration: -f "irgendeinBeispielprogramm" -bi -lr
 	 */
 	public static void main(String args[]) {
-		System.out.println("Hier die Code-Schnipsel einfuegen!");
-		
 		HashMap<String,String> arguments = readParams(args);
-		/*boolean rebuildDFA = arguments.containsKey(PARAM_REBUILD_DFA);
+		runFrontend(arguments);
+		runBackend(arguments);
+	}
+
+	/**
+	 * Frontend-Phase
+	 * 
+	 * Eingabe: Input-File
+	 * Ausgabe: Generierter LLVM-Code
+	 * 
+	 * @see generatedLLVMCode
+	 */
+	public static void runFrontend(HashMap<String,String> arguments) {
+		System.out.println("Frontend Phase");
+
+		// -d "/path/to/definitionFile"
+		String defFile = arguments.get(PARAM_DEF_FILE);
+		if( defFile == null )
+			defFile = "input/de/fuberlin/bii/de/tokendefinition.rd"; // fall-back
 		
-		// path of input-program
-		String defFile = arguments.get(PARAM_DEF_FILE); 			// -d "/path/to/definitionFile"
-		if( defFile == null )						// no -d or -d without path
-			defFile = "input/de/fuberlin/bii/de/tokendefinition.rd";
-		String inputFile = arguments.get(PARAM_SOURCE_FILE);		// -f "/path/to/inputProgram"
-		if( inputFile == null )						// no -f or -f without path
-			inputFile = "/path/to/exampleInputProgram";
-		
-		
+		// -f "/path/to/inputProgram"
+		final String inputFile = arguments.get(PARAM_SOURCE_FILE);
+		if (inputFile == null || inputFile.isEmpty()) {
+			System.out.println("Warning: No input file!");
+			return;
+		}
+
 		//--------------------------
 		/*
 		 *	Lexer
 		 *	input: Pfad zu der Datei mit den regulären Definitionen und Pfad zu der Programmdatei
 		 *	output: IToken-Objekt beim aufruf von getNextToken
 		 */
-		/*ILexer lexer = null;
+		ILexer lexer = null;
+		final boolean rebuildDFA = arguments.containsKey(PARAM_REBUILD_DFA);
 		
-		if( arguments.containsKey(PARAM_BII_LEXER) ){		// -bii			
+		// Lexer from bii
+		if( arguments.containsKey(PARAM_BII_LEXER) ) {
 			try {
 				lexer = new Lexergen(new File(defFile), new File(inputFile), BuilderType.directBuilder, CorrectionMode.PANIC_MODE, rebuildDFA);
 			} catch (LexergeneratorException e) {
 				e.printStackTrace();
-			}			
-		} else {									// [-bi]			
+			}
+		// Lexer from bi
+		} else if (arguments.containsKey(PARAM_BI_LEXER)) {
 			try {
 				lexer = new Lexergen(new File(defFile), new File(inputFile), BuilderType.indirectBuilder, CorrectionMode.PANIC_MODE, rebuildDFA);
 			} catch (LexergeneratorException e) {
 				e.printStackTrace();
 			}			
 		}
+		// Lexer from projecta, default
+		else {
+			ICharStream stream = new FileCharStream(inputFile);
+			lexer = new Lexer(stream);
+		}
 		//--------------------------
-		
-		
+
+
 		//--------------------------
 		/*
 		 *	Parser
 		 *	input:	ILexer lexerObject, String grammarFilePath
 		 *	output:	ISyntaxTreee parseTree
 		 */
-		/*ISyntaxTree parseTree = null;
-		if( arguments.get(PARAM_LR_PARSER) != null ){			// -lr "/path/to/bnfGrammar"
-			IParser parser = new LRParser();
-			parseTree = parser.parse(lexer, arguments.get(PARAM_LR_PARSER));
-			
-		} else if( arguments.containsKey(PARAM_LL_PARSER) ) {	// -ll ["/path/to/bnfGrammar"]			
-			IParser parser = new LL1Parser();
-			parseTree = parser.parse(lexer,arguments.get(PARAM_LL_PARSER));
-			
-		} else {									// -lr or no explicit parameter for parser
-			//FIXME Dieser Fall wird niemals eintreten!
-			IParser parser = new LRParser();
-			parseTree = parser.parse(lexer, DEFAULT_GRAMMAR_FILE);
+		IParser parser = null;
+		String grammarFile = "";
+		// LR-Parser, -lr "/path/to/bnfGrammar"
+		if( arguments.get(PARAM_LR_PARSER) != null ){
+			parser = new LRParser();
+			grammarFile = arguments.get(PARAM_LR_PARSER);
+		// LL-Parser, -ll ["/path/to/bnfGrammar"]
+		} else if( arguments.containsKey(PARAM_LL_PARSER) ) {
+			parser = new LL1Parser();
+			grammarFile = arguments.get(PARAM_LL_PARSER);
+		// Parser from projecta, default
+		} else {
+			parser = new Parser();
 		}
 
-
+		ISyntaxTree parseTree = null;
+		if (parser != null)
+			parseTree = parser.parse(lexer, grammarFile);
 		//--------------------------
 
-		
-		
+		//--------------------------
+		/*
+		 * Semantic analysis
+		 * input:	Parse tree
+		 * inter:	Abstract Syntax Tree (AST)
+		 * output:	LLVM-Code
+		 */
+		SemanticAnalyzer analyzer = new SemanticAnalyzer(parseTree);
+		analyzer.analyze();
+		try {
+			analyzer.getAST().checkSemantics();
+			System.out.println("Semantics should be correct");
+		} catch (SemanticException e) {
+			System.out.println("Bad Semantics");
+			System.out.println(e.getMessage());
+		}
 
-		String llvm_code = "";	// Hier der generierte LLVM-Code
+		// debug
+		analyzer.getAST().printTree();
 
+		// Generate LLVM-Code
+		generatedLLVMCode = analyzer.getAST().genCode();
+	}
+
+	/**
+	 * Backend-Phase
+	 * 
+	 * Eingabe: Generierte LLVM Code
+	 * Ausgabe: Maschinencode
+	 */
+	public static void runBackend(HashMap<String,String> arguments) {
+		System.out.println("Backend Phase");
 
 		//--------------------------
 		/*
@@ -130,12 +186,11 @@ class Main {
 		 */
 		
 		String optimized_llvm_code;
-		
 		LLVM_Optimization llvm_optimizer = new LLVM_Optimization();
 		if(arguments.containsKey(PARAM_LLVM_INPUT_FILE)) {
 			optimized_llvm_code = llvm_optimizer.optimizeCodeFromFile(arguments.get(PARAM_LLVM_INPUT_FILE));
-		}else{
-			optimized_llvm_code = llvm_optimizer.optimizeCodeFromString("");	// Muss angepasst werden
+		} else{
+			optimized_llvm_code = llvm_optimizer.optimizeCodeFromString(generatedLLVMCode);
 		}
 		
 		//--------------------------
@@ -149,21 +204,22 @@ class Main {
 		 */
 		boolean debug = false;
 		boolean guiFlag = false;
-    	String machineCode = CodeGenerator.generateCode(optimized_llvm_code, debug, guiFlag);
-    	
-    	if(arguments.containsKey(PARAM_OUTPUT_FILE)) {
-    		try{
-    			FileWriter fstream = new FileWriter(arguments.get(PARAM_OUTPUT_FILE));
-        		BufferedWriter out = new BufferedWriter(fstream);
-        		out.write(machineCode);
-    		}catch(Exception e){
-    			System.err.println(e.getMessage());
-    		}
-    	}else{
-    		System.out.println(machineCode);
-    	}
-    	
-        //--------------------------
+		String machineCode = CodeGenerator.generateCode(optimized_llvm_code, debug, guiFlag);
+
+		if(arguments.containsKey(PARAM_OUTPUT_FILE)) {
+			try{
+				FileWriter fstream = new FileWriter(arguments.get(PARAM_OUTPUT_FILE));
+				BufferedWriter out = new BufferedWriter(fstream);
+				out.write(machineCode);
+				out.close();
+			}catch(Exception e){
+				System.err.println(e.getMessage());
+			}
+		}else{
+			System.out.println(machineCode);
+		}
+
+		//--------------------------
 	}
 	
 	

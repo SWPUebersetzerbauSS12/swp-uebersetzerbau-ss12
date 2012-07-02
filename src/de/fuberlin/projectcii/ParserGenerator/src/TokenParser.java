@@ -85,19 +85,25 @@ public class TokenParser {
 
 	/**
 	 *
+	 * @param printSelected 
 	 * @return SyntaxTree The Parsetree created by parsing the Tokenstream
 	 * @throws RuntimeException No 'EOF' too much symbols
 	 */
-	public SyntaxTree parseTokenStream(){
+	public SyntaxTree parseTokenStream(boolean printSelected){
 		getNextToken();
 		// creates the parsetree
-		SyntaxTree tree = parseToken(StartSymbol,new SyntaxTree());
+		if (Settings.getPARSING_STEPS() && printSelected){
+		    System.out.println("Parsingschritte:");
+		}
+		SyntaxTree tree = parseToken(StartSymbol,new SyntaxTree(),printSelected);
 		if (TokenTerminal.equals(Settings.getEOF())){
-			System.out.println("accepted");
+			System.out.println("Tokenstream accepted");
 		}else{
 			throw new RuntimeException("Too Much Symbols, No 'EOF'");
 		}
-		tree.printTree();
+		if (printSelected){
+		    tree.printTree();
+		}
 		//tree.CompressSyntaxTree();
 		return tree;
 	}
@@ -108,10 +114,11 @@ public class TokenParser {
 	 *
 	 * @param symbol The terminal or nonterminal that is next on the imaginary stack
 	 * @param parent The Node that was reduced to the given symbol
+	 * @param printSelected 
 	 * @return SyntaxTree The SyntaxTree created by paring the Tokenstream
 	 * @throws RuntimeException if it could not be found fixed productions 
 	 */
-	private SyntaxTree parseToken(String symbol,SyntaxTree parent){
+	private SyntaxTree parseToken(String symbol,SyntaxTree parent, boolean printSelected){
 		
 		// initalise Node
 		SyntaxTree tree = new SyntaxTree();
@@ -131,12 +138,14 @@ public class TokenParser {
 			int productionNr = parserTable.get(head).get(TokenTerminal).firstElement();
 			// get Production by Number
 			Vector<String> Production = grammar.get(head).elementAt(productionNr);
-			Printer.printProduction(grammar, head, productionNr);
+			if (Settings.getPARSING_STEPS() && printSelected){
+			    Printer.printProduction(grammar, head, productionNr);
+			}
 			// reduce symbol to children acording to the selected production
 			for (int i=0;i < Production.size() ;i++){
 				// Create Child-Nodes recursively for all childs
 				if (!Production.elementAt(i).equals(Settings.getEPSILON())){
-					tree.addChild(parseToken(Production.elementAt(i),tree));
+					tree.addChild(parseToken(Production.elementAt(i),tree,printSelected));
 				}
 				// add an epsilon childNode to the tree
 //				else{

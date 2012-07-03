@@ -32,18 +32,6 @@ public class SymbolTable {
 		}
 	}
 
-	public void insertEntry(Id id, Type type, List<EntryType> params)
-			throws SemanticException {
-
-		if (lookup(id.getValue(), params) == null) {
-			entries.add(new EntryType(id, type, params));
-		} else {
-			throw new SemanticException(id.getValue()
-					+ " is already registered in this symbolTable. "
-					+ "You may want to update instead.");
-		}
-	}
-
 	public void insertEntry(Id id, Type type) throws SemanticException {
 		if (lookup(id.getValue()) == null) {
 			entries.add(new EntryType(id, type));

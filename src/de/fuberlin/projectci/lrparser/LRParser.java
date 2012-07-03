@@ -140,6 +140,12 @@ public class LRParser implements IParser {
 		/////////////// copy&paste von alter parse Methode
 		Driver driver=new Driver();
 		ISyntaxTree syntaxTree= driver.parse(lexer, grammar, parseTable);
+		
+		if (syntaxTree==null){
+			logger.warning("LRParser failed.");
+			// TODO Besser den Driver eine Exception werfen lassen und als (LR)ParserException weiterreichen
+			throw new RuntimeException("LRParser failed.");
+		}
 		// Der SemanticAnalyzer erwartet einen Parsebaum ohne Epsilon-Knoten
 		((SyntaxTreeNode)syntaxTree).removeAllEpsilonNodes();
 		return syntaxTree;

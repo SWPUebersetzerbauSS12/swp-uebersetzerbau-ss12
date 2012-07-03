@@ -21,7 +21,7 @@ public class Return extends Statement {
 		if ((AbstractSyntaxTree) getChild(0) instanceof Id) {
 			EntryType eA = null;
 			eA = SymbolTableHelper.lookup(((Id) getChild(0)).getValue(), this);
-			int reg = block.getNewMemory();
+			int reg = block.getNewVar();
 			ret = "%" + reg + " = load " + eA.getType().genCode() + "* %"
 					+ ((AbstractSyntaxTree) getChild(0)).genCode() + "\n";
 			ret += "ret " + eA.getType().genCode() + " %" + reg;
@@ -29,7 +29,7 @@ public class Return extends Statement {
 			ret += "ret " + ((AbstractSyntaxTree) getChild(0)).genCode();
 		}
 		if(!ret.equals("")){
-			ret += "\n; <label>:" + block.getNewMemory();
+			ret += "\n; <label>:" + block.getNewVar();
 		}
 		return ret;
 	}

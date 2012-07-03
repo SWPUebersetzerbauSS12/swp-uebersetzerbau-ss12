@@ -70,7 +70,7 @@ public class FuncCall extends Type {
 
 					if (child instanceof Id)
 						ret += ((Id) child).getType().genCode() + " %"
-								+ ((Id) child).getValMemory() + ", ";
+								+ ((Id) child).getVar() + ", ";
 					else if (child instanceof Type) {
 						node = (Type) child;
 						ret += node.genCode() + ", ";
@@ -85,7 +85,7 @@ public class FuncCall extends Type {
 			// implicit var incrementation
 			if (!searchUpAssign()
 					&& !func.getType().toTypeString().equals("void")) {
-				getHighestBlock().getNewMemory();
+				getHighestBlock().getNewVar();
 			}
 		}
 		return ret;

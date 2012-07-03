@@ -13,8 +13,6 @@ import de.fuberlin.commons.parser.ISyntaxTree;
  * 
  * Implementation of the SyntaxTree, composed of SyntaxTree-Nodes
  * 
- * @author Patrick Schlott
- *
  */
 public class SyntaxTree implements ISyntaxTree {
 	
@@ -142,9 +140,11 @@ public class SyntaxTree implements ISyntaxTree {
 	 */
 	@Override
 	public void printTree() {
-		Printer.parsetreeToXML(this);
-		System.out.println("-------");
-		printChild(this,0,true);
+	    if (Settings.getXMLTREE()){
+	        Printer.parsetreeToXML(this);
+	    }
+//		System.out.println("-------");
+//		printChild(this,0,true);
 	}
 
 	@Override
@@ -192,11 +192,8 @@ public class SyntaxTree implements ISyntaxTree {
 	}
 	
 	/**
-	 * 
+
 	 * Compresses the SyntaxTree by eliminating all single-child-nodes
-	 * 
-	 * @author Patrick Schlott
-	 *
 	 */
 	public void CompressSyntaxTree(){
 		

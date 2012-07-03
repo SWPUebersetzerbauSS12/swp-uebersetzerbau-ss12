@@ -9,9 +9,24 @@ public class ArrayPointer extends Variable{
 		this.arr = (Array) variable;
 		this.offset = offset;
 	}
+	
+	public ArrayPointer(ArrayPointer ptr, int offset)
+	{
+		this.arr = ptr.getArray();
+		this.offset = (offset + 1) * (ptr.getOffset() + 1) - 1;
+	}
+	
 	@Override
 	public String getAddress() {
 		System.out.println("Xxx " + arr.stackAddresses.get(0).getAddress());
 		return arr.getAddress(-offset * arr.getTypeSize());
+	}
+	
+	public Array getArray(){
+		return this.arr;
+	}
+	
+	public int getOffset(){
+		return this.offset;
 	}
 }

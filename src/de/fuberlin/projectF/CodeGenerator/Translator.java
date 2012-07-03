@@ -475,7 +475,10 @@ public class Translator {
 					System.out.println("new record pointer");
 					mem.newRecordPtr(tok.getTarget(), tok.getOp1(), tok.getOp2());
 				} else {
-					mem.newArrayPtr(tok.getTarget(), tok.getOp1(), tok.getOp2());
+					if (tok.getOp1().matches("%\\d+")) {
+						mem.contArrayPtr(tok.getTarget(), tok.getOp1(), tok.getOp2());
+					}
+					else mem.newArrayPtr(tok.getTarget(), tok.getOp1(), tok.getOp2());
 				}
 				break;
 				

@@ -248,4 +248,8 @@ public class MemoryContext {
 		variables.put(name, new RecordPointer(variables.get(rec), new Integer(offset)));
 	}
 
+	public void contArrayPtr(String name, String lastPtr, String offset) {
+		variables.put(name,  new ArrayPointer((ArrayPointer) variables.get(lastPtr), new Integer(offset)));
+	}
+
 }

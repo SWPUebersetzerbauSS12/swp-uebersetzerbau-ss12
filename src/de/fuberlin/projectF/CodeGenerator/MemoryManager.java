@@ -162,4 +162,8 @@ public class MemoryManager {
 	public void newRecordPtr(String target, String op1, String op2) {
 		current.newRecordPtr(target, op1, op2);	
 	}
+
+	public void contArrayPtr(String name, String lastPtr, String offset) {
+		current.contArrayPtr(name, lastPtr, offset);
+	}
 }

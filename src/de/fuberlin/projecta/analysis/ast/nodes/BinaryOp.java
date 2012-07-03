@@ -355,7 +355,10 @@ public class BinaryOp extends Type {
 		if (leftChild.toTypeString().equals(rightChild.toTypeString())) {
 			return true;
 		}
-		throw new TypeErrorException("Operands have to be of same type!");
+		throw new TypeErrorException(
+				"Operands have to be of same type but are:\n left operand: "
+						+ leftChild.toTypeString() + "\nright operand: "
+						+ rightChild.toTypeString());
 	}
 
 	@Override

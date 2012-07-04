@@ -306,7 +306,15 @@ public class LLVM_Function {
 			LLVM_Parameter op2 = operands.get(1);
 			
 			try{
-				if(op1.getType() == LLVM_ParameterType.INTEGER && op2.getType() == LLVM_ParameterType.INTEGER){
+				if(op1.getType() == LLVM_ParameterType.INTEGER && op2.getType() == LLVM_ParameterType.INTEGER && 
+						(cmd.getOperation() == LLVM_Operation.ADD ||
+						cmd.getOperation() == LLVM_Operation.SUB ||
+						cmd.getOperation() == LLVM_Operation.MUL ||
+						cmd.getOperation() == LLVM_Operation.DIV ||
+						cmd.getOperation() == LLVM_Operation.AND ||
+						cmd.getOperation() == LLVM_Operation.OR ||
+						cmd.getOperation() == LLVM_Operation.XOR
+						)){
 					int iOP1 = Integer.parseInt(op1.getName());
 					int iOP2 = Integer.parseInt(op2.getName());
 					int result = 0;
@@ -345,7 +353,12 @@ public class LLVM_Function {
 					if(iOP2 == 0){
 						return true;
 					}
-				}else if(op1.getType() == LLVM_ParameterType.DOUBLE && op2.getType() == LLVM_ParameterType.DOUBLE){
+				}else if(op1.getType() == LLVM_ParameterType.DOUBLE && op2.getType() == LLVM_ParameterType.DOUBLE &&
+						(cmd.getOperation() == LLVM_Operation.FADD ||
+						cmd.getOperation() == LLVM_Operation.FSUB ||
+						cmd.getOperation() == LLVM_Operation.FMUL ||
+						cmd.getOperation() == LLVM_Operation.FDIV
+						)){
 					double iOP1 = Double.parseDouble(op1.getName());
 					double iOP2 = Double.parseDouble(op2.getName());
 					double result = 0;
@@ -386,7 +399,18 @@ public class LLVM_Function {
 			LLVM_Parameter op2 = operands.get(1);
 			
 			try{
-				if(op1.getType() == LLVM_ParameterType.INTEGER && op2.getType() == LLVM_ParameterType.INTEGER){
+				if(op1.getType() == LLVM_ParameterType.INTEGER && op2.getType() == LLVM_ParameterType.INTEGER &&
+						(cmd.getOperation() == LLVM_Operation.ICMP_EQ ||
+						cmd.getOperation() == LLVM_Operation.ICMP_NE ||
+						cmd.getOperation() == LLVM_Operation.ICMP_UGT ||
+						cmd.getOperation() == LLVM_Operation.ICMP_UGE ||
+						cmd.getOperation() == LLVM_Operation.ICMP_ULT ||
+						cmd.getOperation() == LLVM_Operation.ICMP_ULE ||
+						cmd.getOperation() == LLVM_Operation.ICMP_SGT ||
+						cmd.getOperation() == LLVM_Operation.ICMP_SGE ||
+						cmd.getOperation() == LLVM_Operation.ICMP_SLT ||
+						cmd.getOperation() == LLVM_Operation.ICMP_SLE
+						)){
 					int iOP1 = Integer.parseInt(op1.getName());
 					int iOP2 = Integer.parseInt(op2.getName());
 					boolean result = false;

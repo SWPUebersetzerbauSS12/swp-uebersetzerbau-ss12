@@ -14,6 +14,7 @@ import de.fuberlin.commons.lexer.ILexer;
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projectci.grammar.Grammar;
 import de.fuberlin.projectci.lrparser.Driver;
+import de.fuberlin.projectci.lrparser.SyntaxTreeNode;
 import de.fuberlin.projectci.parseTable.ParseTable;
 
 /**
@@ -44,6 +45,8 @@ public class DriverTest {
 		for (DriverTestDataProvider aTestDataProvider : testDataProviders()) {
 			ISyntaxTree expectedTree=aTestDataProvider.expectedResult();
 			ISyntaxTree tree=driver.parse(aTestDataProvider.getLexer(), aTestDataProvider.getGrammar(), aTestDataProvider.getParseTable());
+			// Driver.parse reduziert den Parsebaum nicht mehr automatisch zu einem AST
+			((SyntaxTreeNode)tree).reduceToAbstractSyntaxTree();
 			logger.info("Abstract Syntax Tree:\n"+tree);
 			if (expectedTree!=null){
 				// Leider ist es nicht so leicht möglich den erwarteten Parsebaum zu spezifizieren

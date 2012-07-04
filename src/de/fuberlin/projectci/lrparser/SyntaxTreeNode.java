@@ -79,8 +79,14 @@ public class SyntaxTreeNode implements ISyntaxTree{
 	public List<ISyntaxTree> getChildrenByName(String name) {
 		List<ISyntaxTree> result=new ArrayList<ISyntaxTree>();
 		for (ISyntaxTree aChildTree : children) {
-			if (aChildTree.getToken() != null && name.equals(aChildTree.getToken().getText())){
-				result.add(aChildTree);
+			if (aChildTree.getToken() != null){
+				if (name.equals(aChildTree.getToken().getText())){
+					result.add(aChildTree);
+				}
+				else if (aChildTree.getToken().getText()==null && Grammar.EMPTY_STRING.equals(name)){
+					// Hook für die neue Token-Implementtierung, bei der Token.text==null ist für den leeren String
+					result.add(aChildTree);
+				}
 			}
 		}
 		return result;
@@ -230,7 +236,7 @@ public class SyntaxTreeNode implements ISyntaxTree{
 	/**
 	 * Reduziert den Syntaxbaum auf einen Abstrakten Syntaxbaum durch rekursives Hochziehen aller Einzelkinder.
 	 */
-	void reduceToAbstractSyntaxTree(){
+	public void reduceToAbstractSyntaxTree(){
 		// Erstmal alle ε-Knoten entfernen
 		for (ISyntaxTree anEmptyChildNode : getChildrenByName(Grammar.EMPTY_STRING)) {
 			removeChildNode(anEmptyChildNode);
@@ -252,6 +258,20 @@ public class SyntaxTreeNode implements ISyntaxTree{
 		}				
 	}
 
+	/**
+	 * Entfernt alle Epsilon-Knoten aus dem Parsebaum.
+	 */
+	public void removeAllEpsilonNodes(){
+		// Erstmal alle ε-Knoten entfernen
+		for (ISyntaxTree anEmptyChildNode : getChildrenByName(Grammar.EMPTY_STRING)) {
+			removeChildNode(anEmptyChildNode);
+		}
+		for (int i = 0; i < getChildrenCount(); i++) {
+			SyntaxTreeNode aChildTree=(SyntaxTreeNode) getChild(i);
+			aChildTree.removeAllEpsilonNodes();
+		}				
+	}
+	
 	
 	
 	public String toXML(){

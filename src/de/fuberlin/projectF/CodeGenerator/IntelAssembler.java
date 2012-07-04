@@ -241,5 +241,11 @@ public class IntelAssembler extends Assembler{
 		
 		return string;
 	}
+
+	@Override
+	protected void lea(String source, String target, String comment) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

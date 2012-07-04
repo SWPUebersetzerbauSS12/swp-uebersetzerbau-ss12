@@ -55,6 +55,8 @@ public abstract class Assembler {
 	protected abstract void call(String name);
 
 	protected abstract void push(String operand, String comment);
+	
+	protected abstract void lea(String source, String target, String string);
 
 	protected abstract void mov(String source, String target, String comment);
 	

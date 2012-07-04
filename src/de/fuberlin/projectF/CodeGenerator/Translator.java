@@ -1,14 +1,17 @@
 package de.fuberlin.projectF.CodeGenerator;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import de.fuberlin.projectF.CodeGenerator.model.Token.Parameter;
 
+import de.fuberlin.projectF.CodeGenerator.model.Array;
+import de.fuberlin.projectF.CodeGenerator.model.ArrayPointer;
 import de.fuberlin.projectF.CodeGenerator.model.MMXRegisterAddress;
 import de.fuberlin.projectF.CodeGenerator.model.Record;
+import de.fuberlin.projectF.CodeGenerator.model.Reference;
 import de.fuberlin.projectF.CodeGenerator.model.RegisterAddress;
 import de.fuberlin.projectF.CodeGenerator.model.Token;
 import de.fuberlin.projectF.CodeGenerator.model.TokenType;
@@ -57,10 +60,12 @@ public class Translator {
 				
 				// Parameterbehandlung
 				if (tok.getParameterCount() > 0) {
-					for (int i = tok.getParameterCount() - 1; i >= 0; i--) {
+					int stack = 8;
+					for (int i = 0; i < tok.getParameterCount(); i++) {
 						Parameter p = tok.getParameter(i);
-						mem.addStackVar(p.getOperand(), p.getType(), 8 + i
-								* getSize(p.getType()));
+						int size = getSize(p.getType());
+						mem.addStackVar(p.getOperand(), p.getType(), stack + size);
+						stack += size;
 					}
 				}
 				
@@ -96,6 +101,7 @@ public class Translator {
 				String function = tok.getOp1().substring(1);
 				
 				// Variablen, die nur in Registern sind, auf dem Stack speichern
+				// TODO: MMX-Register sichern
 				List<Variable> regVars = mem.getRegVariables(true);
 				for (Variable var : regVars) {
 					mem.regToStack(var);
@@ -113,12 +119,12 @@ public class Translator {
 							operand = mem.getAddress(p.getOperand());
 						else
 							operand = p.getOperand();
-						
+						System.out.println("**" + operand);
 						
 						if (operand.charAt(0) == '@')
 							operand = operand.substring(2);
-						
 						if(p.getType().equals("double"))
+							// TODO: Funktioniert nur mir doubles in Variablen, direkt lassen sich keine doubles übergeben
 							asm.push(mem.getAddress(p.getOperand(), 4), "Parameter " + p.getOperand());
 						asm.push(operand, "Parameter " + p.getOperand());
 					}
@@ -154,7 +160,7 @@ public class Translator {
 					}
 					
 					// Extrahieren des Typs
-					p = Pattern.compile("(i)(\\d+)");
+					p = Pattern.compile("(i\\d+)|double");
 					m = p.matcher(tT);
 					m.find();
 					String type = m.group();
@@ -164,7 +170,7 @@ public class Translator {
 					for (Integer i : numbers) {
 						length *= i;
 					}
-					Variable newArr = mem.newArrayVar(tok.getTarget(), type, length);
+					Array newArr = mem.newArray(tok.getTarget(), type, length);
 					asm.sub(String.valueOf(newArr.getSize()), "esp",
 							"Allocation " + tok.getTarget());
 				}
@@ -218,7 +224,6 @@ public class Translator {
 				String target = mem.getAddress(tok.getTarget());
 				String source;
 				// Zuweisung Variable
-					
 					// Zuweisung Zahl
 					if (!tok.getOp1().startsWith("%")) {
 						if(tok.getTypeTarget().equals("i32*"))
@@ -255,7 +260,7 @@ public class Translator {
 				break;
 
 			case Load:
-				mem.newVirtualVar(tok.getTarget(), tok.getOp1());
+				mem.newReference(tok.getTarget(), tok.getOp1());
 				break;
 
 			case ExpressionInt:
@@ -475,10 +480,46 @@ public class Translator {
 					System.out.println("new record pointer");
 					mem.newRecordPtr(tok.getTarget(), tok.getOp1(), tok.getOp2());
 				} else {
+					// Continue array pointer
 					if (tok.getOp1().matches("%\\d+")) {
-						mem.contArrayPtr(tok.getTarget(), tok.getOp1(), tok.getOp2());
+						String offset = tok.getOp2();
+						ArrayPointer newPtr = mem.contArrayPtr(tok.getTarget(), tok.getOp1(), tok.getOp2(), tok.getTypeTarget());
+						RegisterAddress temp = mem.getFreeRegister();
+						
+						if (offset.startsWith("%")){
+							offset = mem.getAddress(offset);
+						}
+						
+						asm.mov("" + newPtr.getValue(), temp.getFullName(), "ArrayPointer " + tok.getTarget());
+						asm.imul("" + newPtr.getArray().getTypeSize(), temp.getFullName(), "Calculating offset");
+						asm.imul(offset, temp.getFullName(), "");
+						
+						asm.add(temp.getFullName(), newPtr.getPtrAddress(), "Adding to last pointer");
+						
+						mem.freeRegister(temp);
 					}
-					else mem.newArrayPtr(tok.getTarget(), tok.getOp1(), tok.getOp2());
+					// New array pointer
+					else{
+						RegisterAddress reg = mem.getFreeRegister();
+						String offset = tok.getOp2();
+						
+						ArrayPointer newPtr = mem.newArrayPtr(tok.getTarget(), tok.getOp1(), tok.getTypeTarget(), reg);
+						
+						if (offset.startsWith("%")){
+							offset = mem.getAddress(offset);
+						}
+						Array array = mem.getArray(tok.getOp1());
+						String ptrName = tok.getTarget();
+						
+						asm.mov("" + newPtr.getValue(), reg.getFullName(), "ArrayPointer " + ptrName);
+						asm.imul("" + array.getTypeSize(), reg.getFullName(), "Calculating offset");
+						asm.imul(offset, reg.getFullName(), "");
+						
+						RegisterAddress temp = mem.getFreeRegister();
+						asm.lea(array.getAddress(), temp.getFullName(), "Load array address");
+						asm.add(temp.getFullName(), reg.getFullName(), "Add array address");
+						mem.freeRegister(temp);						
+					}
 				}
 				break;
 				
@@ -501,10 +542,10 @@ public class Translator {
 				
 				if(tmp instanceof Record) {
 					System.out.println();
-					System.out.println("read new record type: " + tmp.name);
+					System.out.println("read new record type: " + tmp.getName());
 					Record rec = (Record)tmp;
 					for( int i = 0 ; i < rec.getVariableCount() ; i++) {
-						System.out.println("Variable " + rec.get(String.valueOf(i)).name + " with type " + rec.get(String.valueOf(i)).type);
+						System.out.println("Variable " + rec.get(String.valueOf(i)).getName() + " with type " + rec.get(String.valueOf(i)).getType());
 					}
 				}
 
@@ -522,10 +563,11 @@ public class Translator {
 
 	private boolean freeUnusedRegister(int tokenNumber) {
 		boolean result = false;
-		for (int i = 0; i < 6; i++) {
-			Variable tmp = mem.getVarFromReg(i);
-			if (findToken(tokenNumber, false, null, null, tmp.name, tmp.name) == 0) {
-				mem.freeRegister(new RegisterAddress(i));
+		HashMap<RegisterAddress, Reference> usedRegisters = mem.getUsedRegisters();
+		for (RegisterAddress k : usedRegisters.keySet()) {
+			Reference v = usedRegisters.get(k);
+			if (findToken(tokenNumber, false, null, null, v.getName(), v.getName()) == 0) {
+				mem.freeRegister(k);
 				result = true;
 			}
 		}
@@ -536,7 +578,7 @@ public class Translator {
 		boolean result = false;
 		for (int i = 0; i < 6; i++) {
 			Variable tmp = mem.getVarFromMMXReg(i);
-			if (findToken(tokenNumber, false, null, null, tmp.name, tmp.name) == 0) {
+			if (findToken(tokenNumber, false, null, null, tmp.getName(), tmp.getName()) == 0) {
 				mem.freeMMXRegister(new MMXRegisterAddress(i));
 				result = true;
 			}

@@ -6,6 +6,7 @@ public class RecordPointer extends Variable{
 	
 	public RecordPointer(Variable variable, int offset)
 	{
+		super("undefined", "recordPointer");
 		this.rec = (Record) variable;
 		this.offset = offset;
 	}

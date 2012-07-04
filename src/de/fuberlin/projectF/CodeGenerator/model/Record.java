@@ -7,7 +7,7 @@ public class Record extends Variable implements Cloneable{
 HashMap<String, Variable> variableList;
 
 	public Record(String name) {
-		this.name = name;
+		super(name, "record");
 		variableList = new HashMap<String,Variable>();
 	}
 	

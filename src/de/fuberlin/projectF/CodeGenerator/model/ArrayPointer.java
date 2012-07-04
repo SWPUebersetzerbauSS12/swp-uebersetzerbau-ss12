@@ -1,32 +1,47 @@
 package de.fuberlin.projectF.CodeGenerator.model;
 
-public class ArrayPointer extends Variable{
-	private Array arr;
-	private int offset;
+public class ArrayPointer extends Reference{
+	Array array;
+	int value;
+	RegisterAddress address;
 	
-	public ArrayPointer(Variable variable, int offset)
-	{
-		this.arr = (Array) variable;
-		this.offset = offset;
+	public ArrayPointer(String name, Array arr, int value, RegisterAddress address) {
+		super(name, arr.getType(), 4);
+		this.address = address;
+		this.array = arr;
+		this.value = value;
 	}
 	
-	public ArrayPointer(ArrayPointer ptr, int offset)
-	{
-		this.arr = ptr.getArray();
-		this.offset = (offset + 1) * (ptr.getOffset() + 1) - 1;
+	public ArrayPointer(String name, ArrayPointer lastPtr, int value) {
+		super(name, lastPtr.type, 4);
+		this.address = lastPtr.address;
+		this.array = lastPtr.array;
+		this.value = value;
 	}
-	
+
 	@Override
 	public String getAddress() {
-		System.out.println("Xxx " + arr.stackAddresses.get(0).getAddress());
-		return arr.getAddress(-offset * arr.getTypeSize());
+		return " " + address.getFullName();
+	}
+	
+	public String getPtrAddress() {
+		return address.getFullName();
 	}
 	
 	public Array getArray(){
-		return this.arr;
+		return this.array;
 	}
 	
-	public int getOffset(){
-		return this.offset;
+	public int getValue(){
+		return this.value;
+	}
+
+	@Override
+	public String getAddress(int offset) {
+		return " " + address.getFullName();
+	}
+	
+	public boolean onStack(){
+		return array.onStack();
 	}
 }

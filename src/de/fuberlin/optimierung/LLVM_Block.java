@@ -37,8 +37,6 @@ public class LLVM_Block{
 	
 	// Kompletter Code des Blocks als String
 	private String blockCode;
-	
-	HashMap<String, LinkedList<LLVM_GenericCommand>> commonex = new HashMap<String, LinkedList<LLVM_GenericCommand>>();
 
 	public LLVM_Block(String blockCode, LLVM_Function function) {
 		
@@ -59,6 +57,7 @@ public class LLVM_Block{
 	public void removeCommonExpressions() {
 		List<String> whitelist = new ArrayList<String>();
 		LinkedList<LLVM_GenericCommand> changed = new LinkedList<LLVM_GenericCommand>();
+		HashMap<String, LinkedList<LLVM_GenericCommand>> commonex = new HashMap<String, LinkedList<LLVM_GenericCommand>>();
 		whitelist.add(LLVM_Operation.ADD.toString());
 		whitelist.add(LLVM_Operation.MUL.toString());
 		whitelist.add(LLVM_Operation.DIV.toString());
@@ -81,15 +80,19 @@ public class LLVM_Block{
 						matched = true;
 						if (LLVM_Optimization.DEBUG) System.out.println("same command at " + command.getTarget().getName() + ", command replaced : " + i.toString());
 						this.function.getRegisterMap().deleteCommand(i);
-						LLVM_GenericCommand neu = new LLVM_BinaryCommand();
-						neu.setOperation(LLVM_Operation.ADD);
-						LinkedList<LLVM_Parameter> neu2 = new LinkedList<LLVM_Parameter>();
-						neu2.add(new LLVM_Parameter(command.getTarget().getName(), command.getTarget().getTypeString()));
-						neu2.add(new LLVM_Parameter("0", command.getTarget().getTypeString()));
-						neu.setOperands(neu2);
-						i.replaceCommand(neu);
-						this.function.getRegisterMap().addCommand(neu);
-						changed.add(neu);
+						// neues Kommando generieren mit Parametern
+						LLVM_GenericCommand replacement = new LLVM_BinaryCommand();
+						replacement.setOperation(LLVM_Operation.ADD);
+						replacement.setTarget(new LLVM_Parameter(i.getTarget().getName(), i.getTarget().getTypeString()));
+						LinkedList<LLVM_Parameter> params = new LinkedList<LLVM_Parameter>();
+						params.add(new LLVM_Parameter(command.getTarget().getName(), command.getTarget().getTypeString()));
+						params.add(new LLVM_Parameter("0", command.getTarget().getTypeString()));
+						replacement.setOperands(params);
+						// Kommando ersetzen
+						i.replaceCommand(replacement);
+						this.function.getRegisterMap().addCommand(replacement);
+						changed.add(replacement);
+						//changed.add(i);
 					}
 				}
 				if (!matched){
@@ -106,7 +109,10 @@ public class LLVM_Block{
 				commonex.put(i.getOperation().name(), tmp);
 			}
 		}
-		this.function.constantPropagation(changed);
+		if (changed.size() > 0){
+			this.function.constantPropagation(changed);
+			removeCommonExpressions();
+		}		
 	}
 	
 	private boolean matchCommands(LLVM_GenericCommand com1, LLVM_GenericCommand com2){

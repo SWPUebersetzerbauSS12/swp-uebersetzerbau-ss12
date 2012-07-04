@@ -1,10 +1,7 @@
 package de.fuberlin.optimierung;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.LinkedList;
-
-import de.fuberlin.optimierung.commands.LLVM_GenericCommand;
 
 public class LLVM_Optimization implements ILLVM_Optimization {
 	
@@ -13,7 +10,7 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 	
 	private LinkedList<LLVM_Function> functions;
 	
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 	
 	public LLVM_Optimization(){
 		functions = new LinkedList<LLVM_Function>();
@@ -36,7 +33,7 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 		
 		String outputLLVM = this.beforeFunc;
 		
-		if(DEBUG)System.out.println(getStatistic());
+		System.out.println("Before optimization\n"+getStatistic());
 		
 		// Gehe Funktionen durch
 		for(LLVM_Function tmp : this.functions) {
@@ -74,7 +71,7 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 			//createGraph("func"+i, tmp);
 		}
 		
-		if(DEBUG)System.out.println(getStatistic());
+		System.out.println("After optimization\n"+getStatistic());
 		
 		return outputLLVM;
 	}

@@ -68,6 +68,7 @@ public abstract class LLVM_GenericCommand{
 	public void replaceCommand(LLVM_GenericCommand c) {
 		c.setPredecessor(this.predecessor);
 		c.setSuccessor(this.successor);
+		c.setBlock(this.block);
 		if (this.isSingleCommand()){
 			
 		} else if(this.isFirstCommand()) {	// Loesche erstes Element

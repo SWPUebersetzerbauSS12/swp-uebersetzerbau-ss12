@@ -205,20 +205,23 @@ public class Main {
 		 */
 		boolean debug = false;
 		boolean guiFlag = false;
+		String outputFile = null;
+		if(arguments.containsKey(PARAM_OUTPUT_FILE)) {
+			outputFile = arguments.get(PARAM_OUTPUT_FILE);
+		}
+		boolean exec = false;
+		String asmType = "gnu";
+		
+		
 		// TODO Der Assemblertyp ('gnu' oder 'intel') (siehe de.fuberlin.projectF.CodeGenerator.Translator) sollte über die Kommandozeile definierbar sein können		
 		String machineCode = CodeGenerator.generateCode(optimized_llvm_code, "gnu", debug, guiFlag);
 
-		if(arguments.containsKey(PARAM_OUTPUT_FILE)) {
-			try{
-				FileWriter fstream = new FileWriter(arguments.get(PARAM_OUTPUT_FILE));
-				BufferedWriter out = new BufferedWriter(fstream);
-				out.write(machineCode);
-				out.close();
-			}catch(Exception e){
-				System.err.println(e.getMessage());
-			}
-		}else{
-			System.out.println(machineCode);
+		if (outputFile != null) {
+			CodeGenerator.writeFile(exec, outputFile, machineCode);
+		}
+		
+		if (exec) {
+			CodeGenerator.exec(outputFile);
 		}
 
 		//--------------------------

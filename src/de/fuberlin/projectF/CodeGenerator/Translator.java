@@ -13,6 +13,7 @@ import de.fuberlin.projectF.CodeGenerator.model.MMXRegisterAddress;
 import de.fuberlin.projectF.CodeGenerator.model.Record;
 import de.fuberlin.projectF.CodeGenerator.model.Reference;
 import de.fuberlin.projectF.CodeGenerator.model.RegisterAddress;
+import de.fuberlin.projectF.CodeGenerator.model.StackAddress;
 import de.fuberlin.projectF.CodeGenerator.model.Token;
 import de.fuberlin.projectF.CodeGenerator.model.TokenType;
 import de.fuberlin.projectF.CodeGenerator.model.Variable;
@@ -123,15 +124,27 @@ public class Translator {
 						
 						if (operand.charAt(0) == '@')
 							operand = operand.substring(2);
-						if(p.getType().equals("double"))
+						if(p.getType().equals("double")) {
 							// TODO: Funktioniert nur mir doubles in Variablen, direkt lassen sich keine doubles übergeben
-							asm.push(mem.getAddress(p.getOperand(), 4), "Parameter " + p.getOperand());
+							if(p.getOperand().startsWith("%")) {
+								asm.push(mem.getAddress(p.getOperand(), 4), "Parameter " + p.getOperand());
+							} else {
+								asm.push(p.getOperand().substring(0,10),"Parameter " + p.getOperand());
+								operand = "0x" + p.getOperand().substring(10);
+							}
+						}
 						asm.push(operand, "Parameter " + p.getOperand());
 					}
 				}
 				// Funktionsaufruf
 				asm.call(function);
 
+				// Parameter löschen
+				for (int i = 0; i < tok.getParameterCount(); i++) {
+					Parameter p = tok.getParameter(i);
+					asm.add(String.valueOf(getSize(p.getType())), "esp", "Dismiss Parameter");
+				}
+				
 				// Rückgabe speichern
 				if (tok.getTypeTarget().equals("i32")) {
 					mem.addRegVar(tok.getTarget(), tok.getTypeTarget(), mem.getFreeRegister(0));
@@ -139,12 +152,14 @@ public class Translator {
 				else if (tok.getTypeTarget().equals("double")) {
 					mmxRes = new MMXRegisterAddress(0);
 					mem.addMMXRegVar(tok.getTarget(), tok.getTypeTarget(), mmxRes);
+					Variable tmp = mem.newStackVar(tok.getTarget(), tok.getTypeTarget());
+					
+					String addr = mem.getAddress(tmp.getName());
+					asm.sub(String.valueOf(tmp.getSize()), "esp", "save return on stack");
+					asm.movsd(mmxRes.getFullName(), addr, "save a copy");
+					
 				}
-				// Parameter löschen
-				for (int i = 0; i < tok.getParameterCount(); i++) {
-					Parameter p = tok.getParameter(i);
-					asm.add(String.valueOf(getSize(p.getType())), "esp", "Dismiss Parameter");
-				}
+				
 				break;
 
 			case Allocation:
@@ -322,24 +337,39 @@ public class Translator {
 
 				if (tok.getOp1().startsWith("%"))
 					op1 = mem.getAddress(tok.getOp1());
-				else
+				else {
 					op1 = tok.getOp1();
+					Variable tmp = mem.newStackVar(tok.getTarget(), "double");
+					String addr = mem.getAddress(tmp.getName());
+					asm.sub(String.valueOf(tmp.getSize()), "esp", "");
+					asm.mov("0x" + op1.substring(10), addr, "save a copy");
+					addr = mem.getAddress(tmp.getName(),4);
+					asm.mov(op1.substring(0,10), addr, "save a copy");
+					op1 = mem.getAddress(tmp.getName());
+					
+				}
 				if (tok.getOp2().startsWith("%"))
 					op2 = mem.getAddress(tok.getOp2());
-				else
+				else {
 					op2 = tok.getOp2();
+					Variable tmp = mem.newStackVar(tok.getTarget(), "double");
+					String addr = mem.getAddress(tmp.getName());
+					asm.sub(String.valueOf(tmp.getSize()), "esp", "");
+					asm.mov("0x" + op2.substring(10), addr, "save a copy");
+					addr = mem.getAddress(tmp.getName(),4);
+					asm.mov(op2.substring(0,10), addr, "save a copy");
+					op2 = mem.getAddress(tmp.getName());
+				}
 
-				//if(!op1.startsWith("%xmm")) {
-					mmxRes = mem.getFreeMMXRegister();
-					if (mmxRes == null) {
-						if (!freeUnusedMMXRegister(tokenNumber)) {
-							System.out.println("Could'nt free register");
-						}
-						mmxRes = mem.getFreeMMXRegister();
+				mmxRes = mem.getFreeMMXRegister();
+				if (mmxRes == null) {
+					if (!freeUnusedMMXRegister(tokenNumber)) {
+						System.out.println("Could'nt free register");
 					}
-					mem.addMMXRegVar(tok.getOp1(), tok.getTypeOp1(), mmxRes);
-					asm.movsd(op1, mmxRes.getFullName(), "Expression");
-				//}
+					mmxRes = mem.getFreeMMXRegister();
+				}
+				mem.addMMXRegVar(tok.getOp1(), tok.getTypeOp1(), mmxRes);
+				asm.movsd(op1, mmxRes.getFullName(), "Expression");
 				
 				mmxRes2 = mem.getFreeMMXRegister();
 				if (mmxRes2 == null) {

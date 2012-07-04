@@ -60,7 +60,6 @@ public class MemoryManager {
 	}
 
 	public String getAddress(String name, int offset) {
-		System.out.println(name + " " + offset);
 		return current.get(name).getAddress(offset);
 	}
 

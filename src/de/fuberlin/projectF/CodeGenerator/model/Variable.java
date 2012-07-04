@@ -87,7 +87,7 @@ public class Variable extends Reference {
 		if (!regAddresses.isEmpty())
 			return getRegAddress().getFullName();
 		else if (!mmxAddresses.isEmpty())
-			return getRegAddress().getFullName();
+			return getMMXRegAddress().getFullName();
 		return stackAddresses.get(0).getFullName(offset);
 	}
 }

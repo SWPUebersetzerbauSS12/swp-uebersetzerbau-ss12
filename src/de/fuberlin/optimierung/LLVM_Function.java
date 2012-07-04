@@ -324,6 +324,15 @@ public class LLVM_Function {
 					case DIV :
 						result = iOP1 / iOP2;
 						break;
+					case AND :
+						result = iOP1 & iOP2;
+						break;
+					case OR :
+						result = iOP1 | iOP2;
+						break;
+					case XOR :
+						result = iOP1 ^ iOP2;
+						break;
 					}
 					
 					op1.setName(""+result);
@@ -461,61 +470,6 @@ public class LLVM_Function {
 					op1.setName(result?"1":"0");
 					op2.setName("0");
 					op1.setTypeString("i1");
-					
-					return true;
-				}
-			}catch(NumberFormatException e){
-				// no numbers
-			}
-		}else if(cmd.getClass().equals(LLVM_BinaryCommand.class) &&
-				(cmd.getOperation() == LLVM_Operation.AND ||
-				cmd.getOperation() == LLVM_Operation.OR ||
-				cmd.getOperation() == LLVM_Operation.XOR)){
-			LinkedList<LLVM_Parameter> operands = cmd.getOperands();
-			LLVM_Parameter op1 = operands.get(0);
-			LLVM_Parameter op2 = operands.get(1);
-			
-			try{
-				if(op1.getType() == LLVM_ParameterType.INTEGER && op2.getType() == LLVM_ParameterType.INTEGER){
-					int iOP1 = Integer.parseInt(op1.getName());
-					int iOP2 = Integer.parseInt(op2.getName());
-					int result = 0;
-					
-					switch(cmd.getOperation()){
-					case AND :
-						result = iOP1 & iOP2;
-						break;
-					case OR :
-						result = iOP1 | iOP2;
-						break;
-					case XOR :
-						result = iOP1 ^ iOP2;
-						break;
-					}
-					
-					op1.setName(""+result);
-					op2.setName("0");
-					
-					return true;
-				}else if(op1.getType() == LLVM_ParameterType.DOUBLE && op2.getType() == LLVM_ParameterType.DOUBLE){
-					int iOP1 = Integer.parseInt(op1.getName());
-					int iOP2 = Integer.parseInt(op2.getName());
-					double result = 0.0;
-					
-					switch(cmd.getOperation()){
-					case AND :
-						result = iOP1 & iOP2;
-						break;
-					case OR :
-						result = iOP1 | iOP2;
-						break;
-					case XOR :
-						result = iOP1 ^ iOP2;
-						break;
-					}
-					
-					op1.setName(""+result);
-					op2.setName("0");
 					
 					return true;
 				}

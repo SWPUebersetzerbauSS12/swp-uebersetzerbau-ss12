@@ -24,6 +24,7 @@ public class LLVM_BinaryCommand extends LLVM_GenericCommand{
 	private boolean has_exact = false;
 	
 	public LLVM_BinaryCommand(){
+		super();
 	}
 	
 	public LLVM_BinaryCommand(String cmdLine, LLVM_GenericCommand predecessor, LLVM_Block block){

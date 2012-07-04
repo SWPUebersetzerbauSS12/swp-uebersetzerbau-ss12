@@ -182,29 +182,37 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 	}
 	
 	public static void main(String args[]) {
-
-		ILLVM_Optimization optimization = new LLVM_Optimization();
-		//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_test.llvm");
-		//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_constant_folding1");
-		//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_cf_prop_deadb");
-		//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_lebendigkeit_global1");
-		//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_dag");
-		//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_dead_block");
-		//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_localsub_registerprop");
-		//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_array");
-		//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_parsertest1");
-		//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/test.ll");
-		String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/test_new.ll");
-
-		System.out.println("###########################################################");
-		System.out.println("################## Optimization Input #####################");
-		System.out.println("###########################################################");
-		System.out.println(optimization.getCode());
 		
-		System.out.println("###########################################################");
-		System.out.println("################## Optimization Output ####################");
-		System.out.println("###########################################################");
-		System.out.println(optimizedCode);
+		if(args.length>0) {
+			ILLVM_Optimization optimization = new LLVM_Optimization();
+			String optimizedCode = optimization.optimizeCodeFromFile(args[0]);
+			System.out.println(optimizedCode);
+		}
+		else {
+
+			ILLVM_Optimization optimization = new LLVM_Optimization();
+			//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_test.llvm");
+			//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_constant_folding1");
+			//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_cf_prop_deadb");
+			//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_lebendigkeit_global1");
+			//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_dag");
+			//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_dead_block");
+			//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_localsub_registerprop");
+			//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_array");
+			//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_parsertest1");
+			//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/test.ll");
+			String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/test3.s");//test_new.ll");
+	
+			System.out.println("###########################################################");
+			System.out.println("################## Optimization Input #####################");
+			System.out.println("###########################################################");
+			System.out.println(optimization.getCode());
+			
+			System.out.println("###########################################################");
+			System.out.println("################## Optimization Output ####################");
+			System.out.println("###########################################################");
+			System.out.println(optimizedCode);
+		}
 	}
 
 }

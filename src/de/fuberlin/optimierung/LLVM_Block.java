@@ -64,6 +64,7 @@ public class LLVM_Block{
 		whitelist.add(LLVM_Operation.DIV.toString());
 		whitelist.add(LLVM_Operation.SUB.toString());
 		whitelist.add(LLVM_Operation.LOAD.toString());
+		whitelist.add(LLVM_Operation.GETELEMENTPTR.toString());
 		
 		for (LLVM_GenericCommand i = this.firstCommand; i != null; i=i.getSuccessor()){
 			// Nur Kommandos aus der Whitelist optimieren
@@ -87,8 +88,8 @@ public class LLVM_Block{
 						neu2.add(new LLVM_Parameter("0", command.getTarget().getTypeString()));
 						neu.setOperands(neu2);
 						i.replaceCommand(neu);
-						this.function.getRegisterMap().addCommand(i);
-						changed.add(i);
+						this.function.getRegisterMap().addCommand(neu);
+						changed.add(neu);
 					}
 				}
 				if (!matched){

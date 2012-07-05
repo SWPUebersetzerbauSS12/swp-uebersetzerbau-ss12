@@ -11,7 +11,8 @@ import de.fuberlin.projecta.lexer.SyntaxErrorException;
 
 public class Parser implements IParser {
 
-	private ParseTable table;
+	private ParseTable table 
+			= new ParseTable(NonTerminal.values(), TokenType.values());
 	private Stack<Symbol> stack = new Stack<Symbol>();
 
 	private boolean debugEnabled = false;
@@ -19,7 +20,6 @@ public class Parser implements IParser {
 	private ISyntaxTree parseTree;
 
 	public Parser() {
-		table = new ParseTable(NonTerminal.values(), TokenType.values());
 		try {
 			fillParseTable();
 		} catch (IllegalStateException e) {
@@ -33,12 +33,17 @@ public class Parser implements IParser {
 		stack.push(new Symbol(NonTerminal.program));
 	}
 
+	/// Implement the public interface
+	@Override
+	public ISyntaxTree parse(ILexer lexer, String grammar) throws ParseException {
+		// We're not interested in the grammar, we don't implement a generic parser 
+		return parse(lexer);
+	}
+
 	/**
 	 * TODO: Error handling
 	 */
-	@Override
-	public ISyntaxTree parse(ILexer lexer, String grammar) throws ParseException {
-
+	private ISyntaxTree parse(ILexer lexer) throws ParseException {
 		if (table.isAmbigous()) {
 			throw new ParseException(
 					"Parsing table is ambigous! Won't start syntax analysis", null);

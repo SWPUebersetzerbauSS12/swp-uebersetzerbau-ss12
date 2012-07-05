@@ -51,7 +51,7 @@ public class Grammar {
 	 * Markiert das rechte Ende des Inputstrings. Wird für die Followmengen benötigt.
 	 * Im Drachenbuch als $ notiert.
 	 */
-	public static final TerminalSymbol INPUT_ENDMARKER = new TerminalSymbol(TokenType.EOF.terminalSymbol()); // 'eof'
+	public static final TerminalSymbol INPUT_ENDMARKER = new TerminalSymbol("EOF"); // 'eof'
 	
 	
 	public Production getStartProduction(){		

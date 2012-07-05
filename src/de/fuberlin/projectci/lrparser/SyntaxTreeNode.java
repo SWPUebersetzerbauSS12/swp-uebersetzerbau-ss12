@@ -42,10 +42,6 @@ public class SyntaxTreeNode implements ISyntaxTree{
 	public SyntaxTreeNode(IToken token, TerminalSymbol symbol) {
 		this.symbol = symbol;
 		this.token=token;
-		if (token.getAttribute()!=null){
-			// TDOO Abhängigkeit zu Project A entfernen
-			setAttribute(Parser.TOKEN_VALUE, token.getAttribute());
-		}
 	}
 	// **************************************************************************** 
 	// * Implementierung von ISyntaxTree

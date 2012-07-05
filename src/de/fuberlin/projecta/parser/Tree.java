@@ -19,7 +19,7 @@ public class Tree implements ISyntaxTree {
 
 	private final Symbol symbol;
 
-	private IToken token; // TODO: USE THIS!
+	private IToken token;
 
 	private final ArrayList<ISyntaxTree> children = new ArrayList<ISyntaxTree>();
 	private HashMap<String, Object> attributes;
@@ -173,6 +173,10 @@ public class Tree implements ISyntaxTree {
 
 	public Symbol getSymbol() {
 		return symbol;
+	}
+
+	public void setToken(IToken token) {
+		this.token = token;
 	}
 
 	public IToken getToken() {

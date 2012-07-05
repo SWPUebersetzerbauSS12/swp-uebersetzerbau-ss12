@@ -74,11 +74,8 @@ public class Parser implements IParser {
 			} else if (peek.isTerminal()) {
 				TokenType terminal = peek.asTerminal();
 				if (terminal == TokenType.valueOf(token.getType())) {
-					ISyntaxTree node = new Tree(new Symbol(terminal));
-					node.addAttribute(TOKEN_VALUE);
-					final boolean success = node.setAttribute(
-							TOKEN_VALUE, token.getAttribute());
-					assert (success);
+					Tree node = new Tree(new Symbol(terminal));
+					node.setToken(token);
 					currentNode.addChild(node);
 					try {
 						token = lexer.getNextToken();

@@ -91,7 +91,7 @@ public class CodeGenerator {
 	public static void main(String[] args) {
 		boolean debug = false;
 		boolean gui = false;
-		boolean exec = false;
+		boolean exec = true;
 		String asmType = "gnu";
 
 		ArrayList<String> inputFile = new ArrayList<String>();
@@ -116,13 +116,13 @@ public class CodeGenerator {
 					System.out.println("Option -C needs a second parameter");
 					return;
 				}
-			} else if (args[i].compareTo("-e") == 0) {
-				exec = true;
+			} else if (args[i].compareTo("-c") == 0) {
+				exec = false;
 			} else if (args[i].compareTo("-intel") == 0) {
 				asmType = "intel";
 			} else if (args[i].compareTo("-gnu") == 0) {
 				asmType = "gnu";
-			} else if (args[i].compareTo("-w") == 0) {
+			} else if (args[i].compareTo("-v") == 0) {
 				debug = true;
 			} else if (args[i].compareTo("-g") == 0) {
 				gui = true;

@@ -33,6 +33,8 @@
 package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser;
 
 
+import java.io.Serializable;
+
 import de.fuberlin.bii.regextodfaconverter.directconverter.AutomatEventHandler;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Nonterminal;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symbol;
@@ -46,8 +48,9 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Lr0C
  *
  * @param <Element>
  */
-public class Goto<Element extends Symbol, SpecializedClosure extends Closure> implements AutomatEventHandler<Element, SpecializedClosure> {
+public class Goto<Element extends Symbol, SpecializedClosure extends Closure> implements AutomatEventHandler<Element, SpecializedClosure>, Serializable {
 
+	private static final long serialVersionUID = 7847504444804006960L;
 	private SpecializedClosure toClosure;
 	private Nonterminal nonterminalToHandle;
 	

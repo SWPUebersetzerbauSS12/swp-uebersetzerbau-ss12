@@ -32,12 +32,16 @@
 
 package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar;
 
+import java.io.Serializable;
+
 
 /**
  * 
  * @author Johannes Dahlke
  *
  */
-public abstract class RuleElement implements Comparable<RuleElement> {
+public abstract class RuleElement implements Comparable<RuleElement>, Serializable {
+
+	private static final long serialVersionUID = 4691013612313548633L;
 
 }

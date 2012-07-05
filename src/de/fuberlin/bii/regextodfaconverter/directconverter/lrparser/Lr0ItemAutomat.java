@@ -32,6 +32,7 @@
 
 package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -72,8 +73,9 @@ import de.fuberlin.bii.utils.Test;
  *
  * @param <Element> der Typ eines Elementes der zu verarbeitenden Eingabe.
  */
-public class Lr0ItemAutomat<Element extends Symbol> implements ItemAutomat<Element>, ItemAutomatInterior<Element, Lr0Closure> {
+public class Lr0ItemAutomat<Element extends Symbol> implements ItemAutomat<Element>, ItemAutomatInterior<Element, Lr0Closure>, Serializable {
 
+	private static final long serialVersionUID = 5228756905357704645L;
 	private HashSet<Lr0Closure> closures = new HashSet<Lr0Closure>();
 	private Lr0Closure currentClosure = null;
 	protected ContextFreeGrammar grammar;

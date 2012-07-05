@@ -23,6 +23,7 @@ public class Parser implements IParser {
 		try {
 			fillParseTable();
 		} catch (IllegalStateException e) {
+			System.out.println("Error: " + e);
 			e.printStackTrace();
 		}
 	}
@@ -43,7 +44,7 @@ public class Parser implements IParser {
 	/**
 	 * TODO: Error handling
 	 */
-	private ISyntaxTree parse(ILexer lexer) throws ParseException {
+	private ISyntaxTree parse(ILexer lexer) throws SyntaxErrorException, ParseException {
 		if (table.isAmbigous()) {
 			throw new ParseException(
 					"Parsing table is ambigous! Won't start syntax analysis", null);
@@ -52,12 +53,8 @@ public class Parser implements IParser {
 		initStack();
 
 		IToken token = null;
-		try {
-			token = lexer.getNextToken();
-		} catch (SyntaxErrorException e) {
-			// TODO: Error handling?
-			e.printStackTrace();
-		}
+
+		token = lexer.getNextToken(); // may throw
 
 		ISyntaxTree currentNode = new Tree(new Symbol(Symbol.Reserved.EPSILON));
 		do {

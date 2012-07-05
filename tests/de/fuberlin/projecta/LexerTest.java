@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import org.junit.Test;
 
 import de.fuberlin.commons.lexer.TokenType;
-import de.fuberlin.projecta.lexer.BasicTokenType;
 import de.fuberlin.projecta.lexer.Lexer;
 import de.fuberlin.projecta.lexer.SyntaxErrorException;
 import de.fuberlin.projecta.lexer.Token;
@@ -150,6 +149,12 @@ public class LexerTest {
 	public void testInvalidSentence() {
 		String code = "a:";
 		tokenize(code);
+	}
+
+	@Test(expected = SyntaxErrorException.class)
+	public void testInvalidRealValue() {
+		String code = "0e.";
+		System.out.println(tokenize(code));
 	}
 
 	@Test

@@ -9,11 +9,9 @@ import de.fuberlin.projecta.lexer.io.StringCharStream;
 
 public class CompilerTest {
 
+	// "forward declare"
 	static String mainC(String block) {
-		String code = "def int main() { ";
-		code += block;
-		code += "return 0; }";
-		return code;
+		return ParserTest.mainC(block);
 	}
 
 	static String executeCode(String code) {

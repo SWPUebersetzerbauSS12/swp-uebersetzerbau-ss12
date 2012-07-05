@@ -1,12 +1,8 @@
 package de.fuberlin.projectci.test.driver;
 
-import java.util.logging.Logger;
-
-import de.fuberlin.commons.util.LogFactory;
 import de.fuberlin.commons.lexer.ILexer;
 import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.commons.parser.ISyntaxTree;
-import de.fuberlin.commons.lexer.IToken;
 import de.fuberlin.projectci.grammar.Grammar;
 import de.fuberlin.projectci.grammar.NonTerminalSymbol;
 import de.fuberlin.projectci.grammar.Production;
@@ -25,8 +21,7 @@ import de.fuberlin.projectci.test.driver.DriverTest.DriverTestDataProvider;
  * Testdaten anhand des Beispiels aus dem Drachenbuch (TODO Referenz angeben)
  *
  */
-public class DriverTestDataProvider1 implements DriverTestDataProvider{
-	private static Logger logger = LogFactory.getLogger(DriverTestDataProvider1.class);
+public class DriverTestDataProvider1 implements DriverTestDataProvider{	
 	private ILexer lexer;
 	private ParseTable parseTable;
 	private Grammar grammar;

@@ -24,12 +24,14 @@ public class DragonCompiler {
     }
 
     // project ci with bi or bii
-    private static void genParseTreeCi(String program) {
+    @SuppressWarnings("unused")
+	private static void genParseTreeCi(String program) {
         return;
     }
 
     // project cii with bii or bi
-    private static void genParseTreeCii(String program) {
+    @SuppressWarnings("unused")
+	private static void genParseTreeCii(String program) {
         return;
     }
 

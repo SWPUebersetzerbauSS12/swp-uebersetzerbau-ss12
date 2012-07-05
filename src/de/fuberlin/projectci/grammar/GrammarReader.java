@@ -23,7 +23,7 @@ public class GrammarReader {
 	 * @throws BNFParsingErrorException Falls das Reader-Objekt keine gültige BNF-Grammatik
 	 * einlesen konnte.
 	 */
-	public static Grammar readGrammar(Reader r) throws BNFParsingErrorException {
+	public Grammar readGrammar(Reader r) throws BNFParsingErrorException {
 		Grammar grammar = new Grammar();
 		int foundProductions = 0;
 		int lineNumber = 0;
@@ -71,7 +71,7 @@ public class GrammarReader {
 	 * @throws BNFParsingErrorException Falls das File-Objekt keine gültige BNF enthält 
 	 * oder nicht gelesen werden konnte.
 	 */
-	public static Grammar readGrammar(File file) throws BNFParsingErrorException{
+	public Grammar readGrammar(File file) throws BNFParsingErrorException{
 		FileReader reader = null;
 		
 		try {
@@ -97,7 +97,7 @@ public class GrammarReader {
 	/* XXX Vorschlag: Mehrere überladene Signaturen für readGrammar: Implementierung in readGrammar(Reader reader) und Aufruf in readGrammar(String), readGrammar(File) etc
 	 * 	-->	Dann kann man den GrammarReader zum Testen auch mit einem StringReader aufrufen
 	*/
-	public static Grammar readGrammar(String filename) throws BNFParsingErrorException {
+	public Grammar readGrammar(String filename) throws BNFParsingErrorException {
 		FileReader reader = null;
 		
 		try {

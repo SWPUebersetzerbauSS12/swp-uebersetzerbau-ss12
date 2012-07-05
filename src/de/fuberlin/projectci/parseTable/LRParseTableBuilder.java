@@ -1,16 +1,15 @@
 package de.fuberlin.projectci.parseTable;
 
-import de.fuberlin.projectci.grammar.Grammar;
-import de.fuberlin.projectci.grammar.Production;
-
-import java.util.Set;
-import de.fuberlin.projectci.grammar.Symbol;
 import java.util.List;
+import java.util.Set;
+
+import de.fuberlin.projectci.grammar.Grammar;
+import de.fuberlin.projectci.grammar.Symbol;
 
 /**
  * Baut eine kanonische LR-Parsetabelle (Action- und Goto-Tabelle) zu einer erweiterten Grammatik.
  */
-public class LRParseTableBuilder extends ParseTableBuilder {
+public abstract class LRParseTableBuilder extends ParseTableBuilder {
  
 	public LRParseTableBuilder(Grammar grammar) {
 		super(grammar);
@@ -25,31 +24,7 @@ public class LRParseTableBuilder extends ParseTableBuilder {
 	 *Vgl. Drachenbuch Abbildung 4.40
 	 */
 	public Set<LR1Item> closure(Set<LR1Item> items) {
-		boolean added= false;
-		
-		do{
-			added=false;
-			for(LR1Item item: items){
-				List<Production> productions = super.getGrammar().getProductions();
-				for(Production prod: productions){
-//					if (prod.getLhs().equals(nextNonTerminal)) {
-//						List<Symbol> rhs = prod.getRhs();
-//						List<Symbol> terminals = getFirst(rhs.substring(item.getIndex())++item.getLookaheadSymbol())
-//						for(Symbol terminal: terminals){
-//							LR1Item newItem = new LR1Item(prod,0,terminal);
-//							items.add(newItem);
-//							added=true;
-//						}
-//					}
-//					else continue;
-					
-				}
-				
-			}
-		}
-		while(added==true);
-		
-		return items;
+		return null;
 	}
 	 
 	/**

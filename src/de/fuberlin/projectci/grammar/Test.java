@@ -1,12 +1,8 @@
 package de.fuberlin.projectci.grammar;
 
 
-import java.io.File;
 import java.util.Map;
 import java.util.Set;
-
-import de.fuberlin.projectci.lrparser.LRParser;
-import de.fuberlin.projectci.parseTable.InvalidGrammarException;
 
 public class Test {
 
@@ -20,7 +16,7 @@ public class Test {
 		try {
 			//g = GrammarReader.readGrammar("./doc/testFirst");
 			//g = GrammarReader.readGrammar("./doc/praefixGrammatik4.28.txt");
-			g = GrammarReader.readGrammar("./doc/quellsprache_bnf.txt");
+			g = new GrammarReader().readGrammar("./doc/quellsprache_bnf.txt");
 			
 		} catch (BNFParsingErrorException e) {
 			// TODO Auto-generated catch block

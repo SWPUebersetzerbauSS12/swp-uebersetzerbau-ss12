@@ -45,7 +45,7 @@ public class Driver {
 			State currentState=stateStack.peek();
 			Action currentAction=parseTable.getAction(currentState, currentTerminalSymbol);
 			// TODO printConfiguration():String und logConfiguration:boolean
-			logger.info(stateStack+" : " +currentToken+" : "+currentAction);
+			logger.fine(stateStack+" : " +currentToken+" : "+currentAction);
 			if (currentAction instanceof ShiftAction){
 				State targetState=((ShiftAction)currentAction).getTargetState();
 				stateStack.push(targetState);
@@ -84,7 +84,7 @@ public class Driver {
 				nodeStack.push(currentNode);				
 			}
 			else if (currentAction instanceof AcceptAction){
-				logger.info("Done.");		
+				logger.fine("Done.");		
 				// Wurzel des Parsebaums vom Stack holen 
 				SyntaxTreeNode syntaxTree= nodeStack.pop();				
 				return syntaxTree;
@@ -108,14 +108,16 @@ public class Driver {
 				}
 				
 				// TODO Fehlerbehandlung implementieren
-				System.out.println("Parse Error: unexpected Token "+currentToken.getText()+" in line "+currentToken.getLineNumber()+":"+currentToken.getOffset());
-				System.out.print("Possible Tokens: ");
-				for(TerminalSymbol t : parseTable.getActionTableForState(currentState).getAllLegalTerminals()) {
-					System.out.print(t.toString()+" ");
-				}
-				System.out.println();
 				
-				//logger.warning("Error");
+				
+				logger.warning("Parse Error: Unexpected Token "+currentToken.getText()+" in line "+currentToken.getLineNumber()+":"+currentToken.getOffset());
+				StringBuffer strBufPossibleTokens=new StringBuffer();					
+				int i=0;
+				for(TerminalSymbol t : parseTable.getActionTableForState(currentState).getAllLegalTerminals()) {
+					if (i>0)strBufPossibleTokens.append(", ");
+					strBufPossibleTokens.append(t);
+				}
+				logger.warning("Parse Error: Expected Token :"+strBufPossibleTokens);								
 				break;
 			}			
 		}

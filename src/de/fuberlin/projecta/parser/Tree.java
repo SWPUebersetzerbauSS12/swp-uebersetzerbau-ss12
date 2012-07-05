@@ -33,12 +33,15 @@ public class Tree implements ISyntaxTree {
 		this.symbol = symbol;
 	}
 
-	public void addChild(ISyntaxTree tree) {
-		if (tree.getParent() == this)
+	public void addChild(ISyntaxTree child) {
+		if (child.getParent() == this)
 			return;
 
-		children.add(tree);
-		tree.setParent(this);
+		if (children.contains(child))
+			return;
+
+		children.add(child);
+		child.setParent(this);
 	}
 
 	public int getChildrenCount() {
@@ -81,18 +84,24 @@ public class Tree implements ISyntaxTree {
 		return false;
 	}
 
-	public void setParent(ISyntaxTree tree) {
-		if (tree.getParent() == this) {
+	public void setParent(ISyntaxTree parent) {
+		if (getParent() == parent) {
+			return;
+		}
+
+		if (parent != null && parent.getParent() == this) {
 			System.out.println("Warning: Cyclic link detected.");
 			return;
 		}
 
-		if (getParent() == tree) {
-			return;
+		if (parent != null) {
+			parent.addChild(this);
 		}
-
-		this.parent = tree;
-		tree.addChild(this);
+		else {
+			// remove this instance from old parent
+			removeChild(this.parent, this);
+		}
+		this.parent = parent;
 	}
 
 	public void printTree() {
@@ -147,23 +156,19 @@ public class Tree implements ISyntaxTree {
 		return children;
 	}
 
-	@Override
-	public boolean equals(Object object) {
-		// TODO: Review. Is this enough?
-		if (object instanceof ISyntaxTree) {
-			ISyntaxTree tree = ((ISyntaxTree)object);
 
-			String id1 = this.getSymbol().getName();
-			String id2 = ((ISyntaxTree)object).getSymbol().getName();
-			return (id1.equals(id2) && this.getChildren().equals(tree.getChildren()));
-		}
-		return false;
+	private static ISyntaxTree removeChild(ISyntaxTree tree, ISyntaxTree child) {
+		final int index = tree.getChildren().indexOf(child);
+		if (index < 0)
+			return null;
+
+		return tree.removeChild(index);
 	}
 
 	@Override
 	public ISyntaxTree removeChild(int i) {
 		ISyntaxTree child = children.remove(i);
-		child.setParent(child);
+		child.setParent(null);
 		return child;
 	}
 

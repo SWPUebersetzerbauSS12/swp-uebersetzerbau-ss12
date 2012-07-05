@@ -145,4 +145,22 @@ public class Symbol implements ISymbol {
 		return "invalid";
 	}
 
+	@Override
+	public boolean equals(Object other) {
+		if (other == null)
+			return false;
+
+		if (other instanceof Symbol) {
+			Symbol that = (Symbol)other;
+			if (this.getName().equals(that.getName()))
+				return true;
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return getName().hashCode();
+	}
+
 }

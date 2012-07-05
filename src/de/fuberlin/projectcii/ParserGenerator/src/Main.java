@@ -13,10 +13,10 @@ public class Main {
 		
 		String data;
 		try {
-			data = IOUtils.readFile("program.txt");
+			data = IOUtils.readFile("fibonacci.txt");
 			ILexer lexer = new Lexer(new StringCharStream(data));
 			LL1Parser ll1 = new LL1Parser();
-			ll1.parse(lexer,"language_mod.txt");		
+			ll1.parse(lexer,"language_mod_new.txt");		
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

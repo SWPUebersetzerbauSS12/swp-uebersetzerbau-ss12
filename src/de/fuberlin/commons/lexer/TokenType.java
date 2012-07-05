@@ -83,26 +83,25 @@ public enum TokenType {
 	/** End-of-file marker */
 	EOF("eof");
 
-	private static Map<String,TokenType> terminalSymbol2TokenType=new HashMap<String, TokenType>();
+	private static Map<String,TokenType> terminalSymbol2TokenType
+		= new HashMap<String, TokenType>();
 
 	static{
 		for(TokenType t : EnumSet.allOf(TokenType.class))
 			terminalSymbol2TokenType.put(t.terminalSymbol(), t);
 	}
 
-
-
 	private final String terminalSymbol;
 
 	private TokenType(String terminalSymbol) {
-		this.terminalSymbol=terminalSymbol;			
+		this.terminalSymbol = terminalSymbol;
 	}
 
 	public String terminalSymbol(){
 		return this.terminalSymbol;
 	}
 
-	public static TokenType byTerminalSymbol(String s){
+	public static TokenType byTerminalSymbol(String s) {
 		return terminalSymbol2TokenType.get(s);
 	}
 

@@ -33,6 +33,7 @@ public class Tree implements ISyntaxTree {
 		this.symbol = symbol;
 	}
 
+	@Override
 	public void addChild(ISyntaxTree child) {
 		if (child.getParent() == this)
 			return;
@@ -44,14 +45,17 @@ public class Tree implements ISyntaxTree {
 		child.setParent(this);
 	}
 
+	@Override
 	public int getChildrenCount() {
 		return children.size();
 	}
 
+	@Override
 	public ISyntaxTree getChild(int i) {
 		return children.get(i);
 	}
 
+	@Override
 	public Object getAttribute(String name) {
 		for (Entry<String, Object> attr : attributes.entrySet()) {
 			if (attr.getKey().equals(name)) {
@@ -61,11 +65,13 @@ public class Tree implements ISyntaxTree {
 		return null;
 	}
 
+	@Override
 	public List<ISyntaxTree> getChildrenByName(String name) {
-		return null; // To change body of implemented methods use File |
-						// Settings | File Templates.
+		assert(false); // not implemented, why do we need this?
+		return null;
 	}
 
+	@Override
 	public boolean setAttribute(String name, Object value) {
 		for (Entry<String, Object> attr : attributes.entrySet()) {
 			if (attr.getKey().equals(name)) {
@@ -84,6 +90,7 @@ public class Tree implements ISyntaxTree {
 		return false;
 	}
 
+	@Override
 	public void setParent(ISyntaxTree parent) {
 		if (getParent() == parent) {
 			return;
@@ -152,6 +159,7 @@ public class Tree implements ISyntaxTree {
 		}
 	}
 
+	@Override
 	public List<ISyntaxTree> getChildren() {
 		return children;
 	}
@@ -172,6 +180,7 @@ public class Tree implements ISyntaxTree {
 		return child;
 	}
 
+	@Override
 	public Symbol getSymbol() {
 		return symbol;
 	}
@@ -180,10 +189,12 @@ public class Tree implements ISyntaxTree {
 		this.token = token;
 	}
 
+	@Override
 	public IToken getToken() {
 		return token;
 	}
 
+	@Override
 	public ISyntaxTree getParent() {
 		return parent;
 	}

@@ -166,7 +166,8 @@ public class SyntaxTree implements ISyntaxTree {
 		this.symbol = symbol;
 	}
 	
-	private void printChild(ISyntaxTree node,int level,boolean first){
+	@SuppressWarnings("unused")
+    private void printChild(ISyntaxTree node,int level,boolean first){
 		SyntaxTree currNode = (SyntaxTree)node;
 		if (!first){
 			for(int i=0;i<level;i++){

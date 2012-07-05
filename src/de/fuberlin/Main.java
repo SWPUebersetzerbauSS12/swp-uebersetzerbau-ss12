@@ -1,8 +1,6 @@
 package de.fuberlin;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.util.HashMap;
 
 import de.fuberlin.bii.lexergen.BuilderType;
@@ -214,7 +212,7 @@ public class Main {
 		
 		
 		// TODO Der Assemblertyp ('gnu' oder 'intel') (siehe de.fuberlin.projectF.CodeGenerator.Translator) sollte über die Kommandozeile definierbar sein können		
-		String machineCode = CodeGenerator.generateCode(optimized_llvm_code, "gnu", debug, guiFlag);
+		String machineCode = CodeGenerator.generateCode(optimized_llvm_code, asmType, debug, guiFlag);
 
 		if (outputFile != null) {
 			CodeGenerator.writeFile(exec, outputFile, machineCode);

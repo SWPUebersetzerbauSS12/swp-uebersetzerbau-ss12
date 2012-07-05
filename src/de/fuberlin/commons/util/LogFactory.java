@@ -27,7 +27,7 @@ public class LogFactory{
 	}
 	
 	// Logger werden für ein Class-Objekt angefordert --> Leichteres Refactoring und Template-Unterstützung
-	public static Logger getLogger(Class clazz){
+	public static Logger getLogger(Class<?extends Object> clazz){
 		return Logger.getLogger(clazz.getName());
 	}
 	

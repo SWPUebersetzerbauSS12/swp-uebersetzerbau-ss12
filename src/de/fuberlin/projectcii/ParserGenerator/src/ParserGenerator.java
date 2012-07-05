@@ -47,13 +47,14 @@ public class ParserGenerator {
 	 * Initializes the grammar so a parsetable can be created from it.
 	 * 
 	 * @param grammar
+	 * @param printSelected 
 	 * 
 	 * @param file
 	 *            Path to the grammar file
 	 * @return returns the created parsertable
 	 * @throws IOException
 	 */
-	public void initialize(boolean changeToLL1, String grammar)
+	public void initialize(boolean changeToLL1, String grammar, boolean printSelected)
 			throws IOException {
 		grammarMap = new HashMap<String, Vector<Vector<String>>>();
 		parserTable = new HashMap<String, HashMap<String, Vector<Integer>>>();
@@ -62,22 +63,32 @@ public class ParserGenerator {
 		firstSetsProductions = new HashMap<String, HashMap<String, Vector<Integer>>>();
 		Terminals = new Vector<String>();
 		Nonterminal = new Vector<String>();
-		readGrammar(changeToLL1, grammar);
-		Printer.printGrammar(grammarMap);
+		readGrammar(changeToLL1, grammar,printSelected);
 		fillTerminalNonterminal();
 		/*
 		 * computeFirstSet
 		 */
 		firstSetsProductions = createFirstSet(grammarMap);
+		if (Settings.getFIRSTSET() && printSelected){
+		    System.out.println("First-Set:");
+		    Printer.printFirstSetsProductions(firstSetsProductions);
+		}
 		/*
 		 * computeFollowSet
 		 */
 		followSets = createFollowSet(grammarMap);
+		if (Settings.getFOLLOWSET() && printSelected){
+		    System.out.println("Follow-Set:");
+		    Printer.printFollowSets(followSets);
+		}
 		/*
 		 * Create Parsetable
 		 */
 		parserTable = createParserTable();
-		Printer.printParserTable(Terminals, Nonterminal, parserTable);
+		if (Settings.getPARSERTABLE() && printSelected){
+		    System.out.println("Parsertabelle");
+		    Printer.printParserTable(Terminals, Nonterminal, parserTable);
+		}
 	}
 
 	/**
@@ -98,12 +109,13 @@ public class ParserGenerator {
 	 * Reads the Grammar from a file specified in SETTINGS.
 	 * 
 	 * @param grammar
+	 * @param printSelected 
 	 * @throws IOException
 	 */
-	private void readGrammar(boolean changeToLL1, String grammar)
+	private void readGrammar(boolean changeToLL1, String grammar, boolean printSelected)
 			throws IOException {
 		GrammarReader gR = new GrammarReader();
-		grammarMap = gR.createGrammar(5, changeToLL1, grammar);
+		grammarMap = gR.createGrammar(5, changeToLL1, grammar, printSelected);
 
 		start = gR.getStartSymbol();
 	}
@@ -146,7 +158,6 @@ public class ParserGenerator {
 			firstSet.put(head,
 					evalFirstSet(head, grammarMap, new HashSet<String>(), true));
 		}
-		Printer.printFirstSetsProductions(firstSet);
 		return firstSet;
 	}
 
@@ -273,7 +284,6 @@ public class ParserGenerator {
 			followSets.put(head,
 					evalFollowSet(head, grammarMap, new HashSet<String>()));
 		}
-		Printer.printFollowSets(followSets);
 		return followSets;
 	}
 
@@ -365,7 +375,7 @@ public class ParserGenerator {
 		HashMap<String, HashMap<String, Vector<Integer>>> ret = new HashMap<String, HashMap<String, Vector<Integer>>>();
 
 		for (String head : Nonterminal) {
-			HashMap<String, Vector<Integer>> parseTableColumn = new HashMap<String, Vector<Integer>>();
+			HashMap<String, Vector<Integer>> parseTableRow = new HashMap<String, Vector<Integer>>();
 			Set<String> currentFirstSet = firstSetsProductions.get(head)
 					.keySet();
 			Set<String> currentFollowSet = followSets.get(head);
@@ -388,9 +398,9 @@ public class ParserGenerator {
 					parseTableEntry.addAll(firstSetsProductions.get(head).get(
 							Settings.getEPSILON()));
 				}
-				parseTableColumn.put(terminal, parseTableEntry);
+				parseTableRow.put(terminal, parseTableEntry);
 			}
-			ret.put(head, parseTableColumn);
+			ret.put(head, parseTableRow);
 		}
 		return ret;
 	}
@@ -411,23 +421,60 @@ public class ParserGenerator {
 	 * @param parsertable
 	 * @return boolean
 	 */
-
 	public boolean parsable_LL1(
 			Map<String, HashMap<String, Vector<Integer>>> parsertable) {
-		HashMap<String, Vector<Integer>> parseTableColumn = new HashMap<String, Vector<Integer>>();
+		HashMap<String, Vector<Integer>> parseTableRow = new HashMap<String, Vector<Integer>>();
 		Vector<Integer> parseTableEntry = new Vector<Integer>();
 
 		for (String head : Nonterminal) {
-			parseTableColumn = parsertable.get(head);
+			parseTableRow = parsertable.get(head);
 			for (String terminal : Terminals) {
-				parseTableEntry = parseTableColumn.get(terminal);
+				parseTableEntry = parseTableRow.get(terminal);
 				// check the no. of entries of each terminal
 				if ((parseTableEntry.size() > 1)) {
-					System.out.println();
-					System.out
-							.println("the grammar is NOT parsable for LL(1), please input a new one...");
-					System.out.println();
-					return false;
+					Vector<String> prod0 = this.grammarMap.get(head).get(parseTableEntry.get(0));
+					Vector<String> prod1 = this.grammarMap.get(head).get(parseTableEntry.get(1));
+					Vector<String> prod = new Vector<String>();
+							
+					//If there are 2 productions in one entry, and one of them is an epsilon production, print a warning and remove epsilon Production
+					if(parseTableEntry.size() == 2 && (prod0.get(0).equals(Settings.getEPSILON()) || prod1.get(0).equals(Settings.getEPSILON())) )
+					{
+						
+						String production = head+" ::= ";
+						//remove epsilon production
+						if(prod0.get(0).equals(Settings.getEPSILON()))
+						{
+							prod = prod1;
+							this.parserTable.get(head).get(terminal).remove(0);
+						}
+						else
+						{
+							prod = prod0;
+							this.parserTable.get(head).get(terminal).remove(1);
+						}
+						
+						//Add rump to output of production
+						production += prod.get(0);
+						for (int i = 1;i<prod.size();i++)
+						{
+							production += "."+prod.get(i);
+						}
+						
+						//Print Warning
+						System.out.println();
+						System.out.println("Warning: There are 2 productions at entry for nonterminal: <"+head+"> " +
+								"and terminal \""+terminal+"\" whereas one of them is an epsilon production!");
+						System.out.println("Parser removed epsilon production to recover LL(1) parseability!");
+						System.out.println("Production used by Parser: "+production);
+						System.out.println();					
+					}
+					else
+					{
+						System.out.println();
+						System.out.println("the grammar is NOT parsable for LL(1), please input a new one...");
+						System.out.println();
+						return false;
+					}
 				}
 			}
 		}

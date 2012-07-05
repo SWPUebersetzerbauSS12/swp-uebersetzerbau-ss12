@@ -1,7 +1,5 @@
 package de.fuberlin.projectci.test.parser;
 
-import static org.junit.Assert.*;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,6 +22,7 @@ public class LRParserTest {
 	public void testParse() {
 		
 		String grammarPath="./input/de/fuberlin/projectci/non-ambigous.txt";
+//		grammarPath="./src/de/fuberlin/projectcii/ParserGenerator/language_mod_new.txt";
 		String strProgram=
 				"def int fib(int n){\n"+
 				"  if (n <= 1) return n;\n"+
@@ -45,10 +44,13 @@ public class LRParserTest {
 		LRParser parser=new LRParser();
 		ISyntaxTree syntaxTree= parser.parse(lexer, grammarPath);
 		System.out.println(syntaxTree);
-		
+		System.out.println(strProgram);
 		SemanticAnalyzer semanticAnalyzer= new SemanticAnalyzer(syntaxTree);
 		semanticAnalyzer.analyze();
-		semanticAnalyzer.getAST().printTree();
+		semanticAnalyzer.getAST().checkSemantics();
+//		semanticAnalyzer.getAST().printTree();
 	}
 
+	
+	
 }

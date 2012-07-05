@@ -837,7 +837,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 			Character currentChar = (Character) terminal.getSymbol().getValue();
 			if ( charset.contains( currentChar)) {
 				if ( currentChar == RegexCharSet.REGEX_RANGE) {
-					result.put( new ProductionRule(NONTERMINAL_FIRST_CV, TERMINAL_MASK, terminal), semanticRulesOfMetaClassValues);						
+					result.put( new ProductionRule(NONTERMINAL_CV, TERMINAL_MASK, terminal), semanticRulesOfMetaClassValues);						
 					result.put( new ProductionRule(NONTERMINAL_FIRST_CV, TERMINAL_MASK, terminal), semanticRulesOfMetaClassValues);			
 				} else if ( currentChar == RegexCharSet.REGEX_CLASS_SIGNUM) {
 					result.put( new ProductionRule(NONTERMINAL_CV, terminal), semanticRulesOfUnguardedClassValues);

@@ -33,7 +33,7 @@ public class Block extends Statement {
 
 	// using super implementation for genCode
 	
-	public int getNewMemory(){
+	public int getNewVar(){
 		return ++memoryCounter;
 	}
 	

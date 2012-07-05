@@ -139,7 +139,10 @@ public class LRParser implements IParser {
 		
 		/////////////// copy&paste von alter parse Methode
 		Driver driver=new Driver();
-		return driver.parse(lexer, grammar, parseTable);
+		ISyntaxTree syntaxTree= driver.parse(lexer, grammar, parseTable);
+		// Der SemanticAnalyzer erwartet einen Parsebaum ohne Epsilon-Knoten
+		((SyntaxTreeNode)syntaxTree).removeAllEpsilonNodes();
+		return syntaxTree;
 	}
 
 

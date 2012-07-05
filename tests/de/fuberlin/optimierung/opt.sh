@@ -10,7 +10,7 @@ llvm_file_optimized=$llvm_ir_file_optimized".bc"
 
 # ohne Optimierung
 clang -S -emit-llvm $c_file
-cat $llvm_ir_file | sed 's/\(.*\)\(getelement.*)\)\(,.*)\)/  %qq = \2\n\1%qq\3/' | sed 's/\(getelement.*\)(\(.*\))/\1\2/' > $llvm_ir_file".tmp"
+cat $llvm_ir_file | sed 's/\(.*\)\(getelement.*)\)\(,.*)\)/  %qq = \2\n\1%qq\3/' | sed 's/\(getelement.*\)(\(.*\))/\1\2/' | sed 's/uwtable//' > $llvm_ir_file".tmp"
 cat $llvm_ir_file".tmp" > $llvm_ir_file
 rm $llvm_ir_file".tmp"
 llvm-as $llvm_ir_file

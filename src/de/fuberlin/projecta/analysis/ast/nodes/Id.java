@@ -1,21 +1,22 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
+import de.fuberlin.projecta.analysis.SymbolTableHelper;
 
-public class Id extends AbstractSyntaxTree {
-	
+public class Id extends Type {
+
 	/**
 	 * Should be set in genCode, when register is allocated
 	 */
-	
+
 	private String value;
-	
-	public Id(String value){
+
+	public Id(String value) {
 		this.value = value;
 	}
-	
+
 	@Override
 	public boolean checkSemantics() {
-		//can't have children!
+		// can't have children!
 		return true;
 	}
 
@@ -23,14 +24,21 @@ public class Id extends AbstractSyntaxTree {
 	public String genCode() {
 		return value;
 	}
-	
-	public String getValue(){
+
+	public String getValue() {
 		return this.value;
 	}
 
+	public Type getType() {
+		if (SymbolTableHelper.lookup(this.getValue(), this) != null)
+			return SymbolTableHelper.lookup(this.getValue(), this).getType();
+		return null;
+	}
+
 	@Override
-	public boolean checkTypes() {
-		// an identifier by itself is ok.
-		return true;
+	public String toTypeString() {
+		if (getType() != null)
+			return getType().toTypeString();
+		return "";
 	}
 }

@@ -34,14 +34,11 @@
 package de.fuberlin.bii.dfaprovider;
 
 import java.io.File;
-import java.util.ArrayList;
 
 import de.fuberlin.bii.parsetokdef.LexTokDef;
 import de.fuberlin.bii.parsetokdef.ReadTokDefAbstract;
-
 import de.fuberlin.bii.regextodfaconverter.ConvertExecption;
 import de.fuberlin.bii.regextodfaconverter.MinimalDfa;
-import de.fuberlin.bii.regextodfaconverter.RegexToNfaConverter;
 import de.fuberlin.bii.regextodfaconverter.directconverter.DirectConverterException;
 import de.fuberlin.bii.regextodfaconverter.directconverter.regex.RegexToDfaConverter;
 import de.fuberlin.bii.regextodfaconverter.directconverter.regex.RegexToPayloadMap;

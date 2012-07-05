@@ -15,6 +15,21 @@ public class CompilerMain {
 
 	static final String LLC_EXE = "llc";
 	static final String GCC_EXE = "gcc";
+	
+	public static void main(String[] args) {
+		if (args.length == 0) {
+			System.out
+					.println("Reading from stdin. Exit with new line and Ctrl+D.");
+			ICharStream stream = StringUtils.readFromStdin();
+			run(stream);
+		} else if (args.length == 1) {
+			final String path = args[0];
+			FileCharStream stream = StringUtils.readFromFile(path);
+			run(stream);
+		} else {
+			System.out.println("Wrong number of parameters.");
+		}
+	}
 
 	public static String execute(ICharStream stream) {
 		final String code = FrontendMain.genCode(stream);
@@ -92,19 +107,6 @@ public class CompilerMain {
 		System.out.println(output);
 	}
 
-	public static void main(String[] args) {
-		if (args.length == 0) {
-			System.out
-					.println("Reading from stdin. Exit with new line and Ctrl+D.");
-			ICharStream stream = StringUtils.readFromStdin();
-			run(stream);
-		} else if (args.length == 1) {
-			final String path = args[0];
-			FileCharStream stream = StringUtils.readFromFile(path);
-			run(stream);
-		} else {
-			System.out.println("Wrong number of parameters.");
-		}
-	}
+	
 
 }

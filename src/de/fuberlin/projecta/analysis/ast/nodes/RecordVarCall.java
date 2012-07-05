@@ -7,7 +7,7 @@ package de.fuberlin.projecta.analysis.ast.nodes;
  * 
  * @author sh4ke
  */
-public class RecordVarCall extends AbstractSyntaxTree {
+public class RecordVarCall extends Type {
 
 	@Override
 	public boolean checkSemantics() {
@@ -19,11 +19,5 @@ public class RecordVarCall extends AbstractSyntaxTree {
 	public String genCode() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public boolean checkTypes() {
-		// TODO Auto-generated method stub
-		return false;
 	}
 }

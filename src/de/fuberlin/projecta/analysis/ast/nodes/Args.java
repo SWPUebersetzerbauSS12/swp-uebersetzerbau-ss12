@@ -14,9 +14,4 @@ public class Args extends AbstractSyntaxTree {
 		return null;
 	}
 
-	@Override
-	public boolean checkTypes() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

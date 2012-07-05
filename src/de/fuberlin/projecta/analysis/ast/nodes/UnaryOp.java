@@ -4,7 +4,7 @@ import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.projecta.analysis.SymbolTableStack;
 
 
-public class UnaryOp extends AbstractSyntaxTree {
+public class UnaryOp extends Type {
 	
 	TokenType op;
 	
@@ -35,7 +35,21 @@ public class UnaryOp extends AbstractSyntaxTree {
 
 	@Override
 	public boolean checkTypes() {
-		// TODO Auto-generated method stub
+		switch (this.op) {
+		case OP_NOT:
+			return ((Type) this.getChild(0)).toTypeString().equals(
+					TYPE_BOOL_STRING);
+		case OP_MINUS:
+			return ((Type) this.getChild(0)).toTypeString().equals(
+					TYPE_INT_STRING)
+					|| ((Type) this.getChild(0)).toTypeString().equals(
+							TYPE_REAL_STRING);
+		}
 		return false;
+	}
+	
+	@Override
+	public String toTypeString(){
+		return ((Type) this.getChild(0)).toTypeString();
 	}
 }

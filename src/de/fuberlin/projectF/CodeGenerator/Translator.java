@@ -105,9 +105,11 @@ public class Translator {
 				// TODO: MMX-Register sichern
 				List<Variable> regVars = mem.getRegVariables(true);
 				for (Variable var : regVars) {
-					mem.regToStack(var);
+					//TODO musste ich auskommentieren NULLPOINTEREXCEPTION bei mathStruct.llvm 
+					System.out.println("Var to stack: " + var.getName());
+					//mem.regToStack(var);
 					// Stackpointer verschieben
-					asm.sub(String.valueOf(var.getSize()), "esp", "Move var to stack");
+					//asm.sub(String.valueOf(var.getSize()), "esp", "Move var to stack");
 				}
 				// Alle Register sind nun frei und werden möglicherweise in der
 				// Aufgerufenen Funktion verwendet.
@@ -194,12 +196,12 @@ public class Translator {
 					System.out.println("Allocation of a record");
 					int result;
 					result = findToken(tokenNumber, true, TokenType.TypeDefinition, tok.getTypeTarget(), null, null);
-					System.out.println(result);
+					System.out.println(tok.getTypeTarget() + " found in token #" + result);
 					Record rec = new Record(tok.getTarget());
 					
 					for( int i = 0; i < code.get(result).getParameterCount(); i++) {
 						String type = code.get(result).getParameter(i).getType();
-						rec.add(new Variable(type,String.valueOf(i)));
+						rec.add(new Variable(String.valueOf(i),type));
 					}
 					
 					mem.newStackVar(rec);
@@ -245,7 +247,9 @@ public class Translator {
 						if(tok.getTypeTarget().equals("i32*"))
 							asm.mov(tok.getOp1(), target, "Assignment " + tok.getTarget());
 						else if(tok.getTypeTarget().equals("double*")) {
+							System.out.println("Target: " + tok.getTarget());
 							String target2 = mem.getAddress(tok.getTarget(), +4);
+							System.out.println("Address" + target2);
 							asm.mov(tok.getOp1().substring(0,10), target2, "Assignment " + tok.getTarget());
 							asm.mov("0x" + tok.getOp1().substring(10), target, "Assignment " + tok.getTarget());
 						}
@@ -602,22 +606,15 @@ public class Translator {
 	private void saveRegisterValue(RegisterAddress res) {
 
 	}
-
+	
 	private int findToken(int start, boolean backwards, TokenType type,
 			String target, String op1, String op2) {
 		for (int i = start; i < code.size() && i >= 0;) {
-			if (type != null)
-				if (code.get(i).getType() == type)
-					return i;
-			if (target != null)
-				if (code.get(i).getTarget().equals(target))
-					return i;
-			if (op1 != null)
-				if (code.get(i).getOp1().equals(op1))
-					return i;
-			if (op2 != null)
-				if (code.get(i).getOp2().equals(op2))
-					return i;
+			if (code.get(i).getType() == type || type == null)
+				if (code.get(i).getTarget().equals(target) || target == null)
+					if (code.get(i).getOp1().equals(op1) || op1 == null)
+						if (code.get(i).getOp2().equals(op2) || op2 == null)
+							return i;
 			if (backwards)
 				i--;
 			else

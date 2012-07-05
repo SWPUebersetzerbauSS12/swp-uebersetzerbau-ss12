@@ -26,4 +26,8 @@ public class RecordPointer extends Variable{
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public int getSize() {
+		return 0;
+	}
 }

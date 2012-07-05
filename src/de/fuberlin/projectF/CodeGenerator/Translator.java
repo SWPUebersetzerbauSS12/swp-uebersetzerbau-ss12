@@ -236,6 +236,7 @@ public class Translator {
 				break;
 
 			case Assignment:
+				System.out.println(tok.getTarget());
 				String target = mem.getAddress(tok.getTarget());
 				String source;
 				// Zuweisung Variable
@@ -552,32 +553,6 @@ public class Translator {
 					}
 				}
 				break;
-				
-			case TypeDefinition:
-				System.out.println("Definition of a record:");
-				
-				System.out.println("create new record type: " + tok.getTarget());
-				Record record = new Record(tok.getTarget());
-
-				for( int i = 0 ; i < tok.getParameterCount() ; i++) {
-					System.out.println("add Variable " + i + " of type " + tok.getParameter(i).getType());
-					record.add(new Variable(tok.getParameter(i).getType(),String.valueOf(i)));
-				}
-				System.out.println();
-				System.out.println("add type to heap");
-				mem.addHeapVar(record);
-				
-				System.out.println("get " + tok.getTarget() + " from heap");
-				Variable tmp = mem.getHeapVar(tok.getTarget());
-				
-				if(tmp instanceof Record) {
-					System.out.println();
-					System.out.println("read new record type: " + tmp.getName());
-					Record rec = (Record)tmp;
-					for( int i = 0 ; i < rec.getVariableCount() ; i++) {
-						System.out.println("Variable " + rec.get(String.valueOf(i)).getName() + " with type " + rec.get(String.valueOf(i)).getType());
-					}
-				}
 
 			default:
 				break;

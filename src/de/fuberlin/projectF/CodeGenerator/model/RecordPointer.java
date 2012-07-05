@@ -4,9 +4,9 @@ public class RecordPointer extends Variable{
 	private Record rec;
 	private int offset;
 	
-	public RecordPointer(Variable variable, int offset)
+	public RecordPointer(String name, Variable variable, int offset)
 	{
-		super("undefined", "recordPointer");
+		super(name, "recordPointer");
 		this.rec = (Record) variable;
 		this.offset = offset;
 	}
@@ -20,5 +20,10 @@ public class RecordPointer extends Variable{
 		}	
 		
 		return rec.getAddress(addr);
+	}
+	@Override
+	public String getAddress(int offset) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

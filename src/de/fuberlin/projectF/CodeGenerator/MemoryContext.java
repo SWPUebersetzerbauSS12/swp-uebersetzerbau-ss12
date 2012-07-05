@@ -228,8 +228,9 @@ public class MemoryContext {
 		System.out.println("Record: " + rec);
 		System.out.println("Address " + variables.get(rec).getAddress());
 		System.out.println("Offset: " + offset);
-		variables.put(name, new RecordPointer(variables.get(rec), new Integer(
-				offset)));
+		RecordPointer tmp = new RecordPointer(name, variables.get(rec),new Integer(offset));
+		
+		put(tmp);
 	}
 
 	public void newReference(String name, String var) {

@@ -6,6 +6,7 @@ import java.text.MessageFormat;
 import java.util.Date;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
@@ -15,7 +16,8 @@ import java.util.logging.Logger;
  * TODO: Logger-Klasse mit Signaturen wie bei log4j
  */
 public class LogFactory{
-	
+	// TODO logging.properties im Projekt ablegen und referenzieren
+	private static Level DEFAULT_LEVEL=Level.ALL;
 	static{
 		// java.util.logging.Logger verwendet einen SimpleFormatter, der für jeden Eintrag zwei Zeilen verschwendet
 		SingleLineFormatter formatter=new SingleLineFormatter();
@@ -23,7 +25,9 @@ public class LogFactory{
 		for (int i = 0; i < logger.getHandlers().length; i++) {
 			Handler aHandler = logger.getHandlers()[i];
 			aHandler.setFormatter(formatter);
+			aHandler.setLevel(DEFAULT_LEVEL);
 		}
+		logger.setLevel(DEFAULT_LEVEL);
 	}
 	
 	// Logger werden für ein Class-Objekt angefordert --> Leichteres Refactoring und Template-Unterstützung
@@ -38,6 +42,7 @@ public class LogFactory{
 	private static class SingleLineFormatter extends Formatter {
 		
 		  Date dat = new Date();
+		  // TODO Format aus logging.properties (s.o.) lesen (Wie machen die anderen Formatter das?)
 		  private final static String format = "{0,date} {0,time}";
 		  private MessageFormat formatter;
 		  private Object args[] = new Object[1];

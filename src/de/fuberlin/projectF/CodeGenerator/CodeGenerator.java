@@ -37,7 +37,7 @@ public class CodeGenerator {
 		Translator trans = new Translator(asmType);
 
 		// Token durchgehen und übersetzten bis EOF
-		GUI gui = new GUI();
+		GUI gui = null;
 		int linecount = 0;
 		ArrayList<Token> tokenStream;
 		// Token einlesen
@@ -58,8 +58,10 @@ public class CodeGenerator {
 		}
 
 		// Token Tabelle in der gui füllen
-		if (guiFlag)
+		if (guiFlag) {
+			gui = new GUI();
 			gui.updateTokenStreamTable(tokenStream);
+		}
 
 		// Token übersetzen
 		try {
@@ -99,6 +101,7 @@ public class CodeGenerator {
 		//Inhalt der inputFiles als String
 		ArrayList<String> inputStrings = new ArrayList<String>();
 		String outputFile = null;
+		String configFile = null;
 
 		// Argumente parsen
 		for (int i = 0; i < args.length; i++) {
@@ -108,6 +111,13 @@ public class CodeGenerator {
 					outputFile = args[++i];
 				else {
 					System.out.println("Option -o needs a second parameter");
+					return;
+				}
+			} else if (args[i].compareTo("-C") == 0) {
+				if ((i + 1) <= args.length)
+					configFile = args[++i];
+				else {
+					System.out.println("Option -C needs a second parameter");
 					return;
 				}
 			} else if (args[i].compareTo("-e") == 0) {
@@ -131,102 +141,109 @@ public class CodeGenerator {
 			File file = new File(filename);
 			String output = generateCode(file, asmType, debug, gui);
 			if (outputFile != null) {
-				try{
-					FileOutputStream schreibeStrom;
-					if(exec == true)
-						schreibeStrom = new FileOutputStream(outputFile + ".s");
-					else
-						schreibeStrom = new FileOutputStream(outputFile);
-				    for (int i=0; i < output.length(); i++){
-				      schreibeStrom.write((byte)output.charAt(i));
-				    }
-				    schreibeStrom.close();
-				}catch(Exception e) {
-					
-				}
+				writeFile(exec, outputFile, output);
 			}
 		}
 	
 		if (exec == true) {
-			if(System.getProperty("os.name").toLowerCase().indexOf("windows") >= 0) {
-				System.err.println("The -e option is not applicable for windows systems.");
-				System.err.println("Please change your operating system and do not support such stuff like windows");
-				return;
-			} else if(System.getProperty("os.name").toLowerCase().indexOf("linux") >= 0) {
-				System.out.println("Yeah LINUX :-)");
-				
-				String libc, ld_linux;
-				//String path = 
-				
-				try {
-					String command = "locate lib32/libc.so";
-					System.out.println(command);
-					Process process = Runtime.getRuntime().exec(command);
-					Reader r = new InputStreamReader(process.getInputStream());
-				    BufferedReader in = new BufferedReader(r);
-				    if((libc = in.readLine()) == null) {
-				    	System.err.println("Couldn't find 32bit libc.so library");
-				    	return;
-				    }	
-				    System.out.println("Found libc: " + libc);
-				    
-				    command = "locate lib32/ld-linux.so";
-				    System.out.println(command);
-				    process = Runtime.getRuntime().exec(command);
-					r = new InputStreamReader(process.getInputStream());
-				    in = new BufferedReader(r);
-				    if((ld_linux = in.readLine()) == null) {
-				    	System.err.println("Couldn't find 32bit ld-linux.so library");
-				    	return;
-				    }	
-				    System.out.println("Found ld-linux: " + ld_linux);
-				    
-				    String line;
-				    command = "as -32 -o a.out " + outputFile + ".s";
-				    System.out.println(command);
-				    process = Runtime.getRuntime().exec(command);
-					r = new InputStreamReader(process.getInputStream());
-				    in = new BufferedReader(r);
-				    if((line = in.readLine()) != null) {
-				    	do {
-				    		System.err.println(line);
-				    	}while((line = in.readLine()) != null);
-				    	return;
-				    }
-				    
-				    command = new String("ld -melf_i386 --dynamic-linker " + ld_linux + " " + libc + " -o " + outputFile + " a.out");
-				    System.out.println(command);
-				    process = Runtime.getRuntime().exec(command);
-					r = new InputStreamReader(process.getInputStream());
-				    in = new BufferedReader(r);
-				    if((line = in.readLine()) != null) {
-				    	do {
-				    		System.err.println(line);
-				    	}while((line = in.readLine()) != null);
-				    	return;
-				    }
-				    
-				    command = "rm a.out";
-				    System.out.println(command);
-				    process = Runtime.getRuntime().exec(command);
-					r = new InputStreamReader(process.getInputStream());
-				    in = new BufferedReader(r);
-				    if((line = in.readLine()) != null) {
-				    	do {
-				    		System.err.println(line);
-				    	}while((line = in.readLine()) != null);
-				    	return;
-				    }
-				    
-				    
-				    
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			} else {
-				System.err.println("unknown oparating system detected");
-			}
+			exec(outputFile);
+		}
+	}
+
+	public static void writeFile(boolean exec, String outputFile, String output) {
+		try{
+			FileOutputStream schreibeStrom;
+			if(exec == true)
+				schreibeStrom = new FileOutputStream(outputFile + ".s");
+			else
+				schreibeStrom = new FileOutputStream(outputFile);
+		    for (int i=0; i < output.length(); i++){
+		      schreibeStrom.write((byte)output.charAt(i));
+		    }
+		    schreibeStrom.close();
+		}catch(Exception e) {
 			
+		}
+	}
+
+	public static void exec(String outputFile) {
+		if(System.getProperty("os.name").toLowerCase().indexOf("windows") >= 0) {
+			System.err.println("The -e option is not applicable for windows systems.");
+			System.err.println("Please change your operating system and do not support such stuff like windows");
+			return;
+		} else if(System.getProperty("os.name").toLowerCase().indexOf("linux") >= 0) {
+			System.out.println("Yeah LINUX :-)");
+			
+			String libc, ld_linux;
+			//String path = 
+			
+			try {
+				String command = "locate lib32/libc.so";
+				System.out.println(command);
+				Process process = Runtime.getRuntime().exec(command);
+				Reader r = new InputStreamReader(process.getInputStream());
+			    BufferedReader in = new BufferedReader(r);
+			    if((libc = in.readLine()) == null) {
+			    	System.err.println("Couldn't find 32bit libc.so library");
+			    	return;
+			    }	
+			    System.out.println("Found libc: " + libc);
+			    
+			    command = "locate lib32/ld-linux.so";
+			    System.out.println(command);
+			    process = Runtime.getRuntime().exec(command);
+				r = new InputStreamReader(process.getInputStream());
+			    in = new BufferedReader(r);
+			    if((ld_linux = in.readLine()) == null) {
+			    	System.err.println("Couldn't find 32bit ld-linux.so library");
+			    	return;
+			    }	
+			    System.out.println("Found ld-linux: " + ld_linux);
+			    
+			    String line;
+			    command = "as -32 -o a.out " + outputFile + ".s";
+			    System.out.println(command);
+			    process = Runtime.getRuntime().exec(command);
+				r = new InputStreamReader(process.getInputStream());
+			    in = new BufferedReader(r);
+			    if((line = in.readLine()) != null) {
+			    	do {
+			    		System.err.println(line);
+			    	}while((line = in.readLine()) != null);
+			    	return;
+			    }
+			    
+			    command = new String("ld -melf_i386 --dynamic-linker " + ld_linux + " " + libc + " -o " + outputFile + " a.out");
+			    System.out.println(command);
+			    process = Runtime.getRuntime().exec(command);
+				r = new InputStreamReader(process.getInputStream());
+			    in = new BufferedReader(r);
+			    if((line = in.readLine()) != null) {
+			    	do {
+			    		System.err.println(line);
+			    	}while((line = in.readLine()) != null);
+			    	return;
+			    }
+			    
+			    command = "rm a.out";
+			    System.out.println(command);
+			    process = Runtime.getRuntime().exec(command);
+				r = new InputStreamReader(process.getInputStream());
+			    in = new BufferedReader(r);
+			    if((line = in.readLine()) != null) {
+			    	do {
+			    		System.err.println(line);
+			    	}while((line = in.readLine()) != null);
+			    	return;
+			    }
+			    
+			    
+			    
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else {
+			System.err.println("unknown oparating system detected");
 		}
 	}
 }

@@ -40,7 +40,7 @@ import de.fuberlin.projecta.parser.Symbol.Reserved;
 
 public class SemanticAnalyzer {
 
-	private static final String LAttribute = "LAttribute";
+	private static final String L_ATTRIBUTE = "L_ATTRIBUTE";
 
 	private ISyntaxTree parseTree;
 
@@ -122,9 +122,9 @@ public class SemanticAnalyzer {
 						ISyntaxTree tmp = new Program();
 						toAST(tree.getChild(0), tmp);
 
-						array.addAttribute(LAttribute);
+						array.addAttribute(L_ATTRIBUTE);
 						// this is already the BasicType node
-						boolean success = array.setAttribute(LAttribute,
+						boolean success = array.setAttribute(L_ATTRIBUTE,
 								tmp.getChild(0));
 						assert (success);
 
@@ -144,8 +144,8 @@ public class SemanticAnalyzer {
 						Type array = new Array();
 						toAST(tree.getChild(2), record); // <-- decls!!!
 
-						array.addAttribute(LAttribute);
-						array.setAttribute(LAttribute, record);
+						array.addAttribute(L_ATTRIBUTE);
+						array.setAttribute(L_ATTRIBUTE, record);
 
 						toAST(tree.getChild(4), array);
 
@@ -166,15 +166,15 @@ public class SemanticAnalyzer {
 
 				if (tree.getChild(3).getChildrenCount() != 0) {
 					Array array = new Array();
-					array.addAttribute(LAttribute);
-					array.setAttribute(LAttribute,
-							insertNode.getAttribute(LAttribute));
+					array.addAttribute(L_ATTRIBUTE);
+					array.setAttribute(L_ATTRIBUTE,
+							insertNode.getAttribute(L_ATTRIBUTE));
 					toAST(tree.getChild(3), array);
 					insertNode.addChild(array);
 				} else // array declaration stopped here...
 				{
 					insertNode.addChild((ISyntaxTree) insertNode
-							.getAttribute(LAttribute));
+							.getAttribute(L_ATTRIBUTE));
 				}
 
 				return;
@@ -244,25 +244,54 @@ public class SemanticAnalyzer {
 			case rel:
 			case expr:
 			case term:
-				if (tree.getChild(1).getChildrenCount() == 0) {
-					toAST(tree.getChild(0), insertNode);
+				if (tree.getChild(1).getChildrenCount() > 0) {
+					ISyntaxTree tmp = new Program();
+					toAST(tree.getChild(0), tmp);
+					tree.getChild(1).addAttribute(L_ATTRIBUTE);
+					tree.getChild(1).setAttribute(L_ATTRIBUTE, tmp);
+					toAST(tree.getChild(1), insertNode);
 				} else {
-					BinaryOp bOp = new BinaryOp(translate(
-							tree.getChild(1).getChild(0).getSymbol())
-							.asTerminal());
-
-					// simply hang in both children trees
-					toAST(tree.getChild(0), bOp); // rel
-					toAST(tree.getChild(1), bOp); // equality'
-					insertNode.addChild(bOp);
+					toAST(tree.getChild(0), insertNode);
 				}
+
 				return;
+			case assign_:
+			case bool_:
+			case join_:
+			case equality_:
 			case expr_:
 			case term_:
-				if (tree.getChildrenCount() != 0) {
+				// currently it assumes tmp only got one child !!! 
+				// TODO: is this always the case?
+				if(tree.getChildrenCount() == 0){
+					insertNode.addChild(((ISyntaxTree)tree.getAttribute(L_ATTRIBUTE)).getChild(0));
+				} else {
+					ISyntaxTree tmp = new Program();
+					BinaryOp bOp = new BinaryOp(translate(
+							tree.getChild(0).getSymbol()).asTerminal());
+					// ((ISyntaxTree)tree.getAttribute(L_ATTRIBUTE)) = tmp
+					bOp.addChild(((ISyntaxTree)tree.getAttribute(L_ATTRIBUTE)).getChild(0));
+					toAST(tree.getChild(1), bOp);
+					tmp.addChild(bOp);
 					// simply hang in both children trees
-					toAST(tree.getChild(1), insertNode);
+					tree.getChild(2).addAttribute(L_ATTRIBUTE);
+					tree.getChild(2).setAttribute(L_ATTRIBUTE, tmp);
+					
 					toAST(tree.getChild(2), insertNode);
+				}
+				return;
+			case rel_:
+				// currently it assumes tmp only got one child !!! 
+				// TODO: is this always the case?
+				if(tree.getChildrenCount() == 0){
+					insertNode.addChild(((ISyntaxTree)tree.getAttribute(L_ATTRIBUTE)).getChild(0));
+				} else {
+					BinaryOp bOp = new BinaryOp(translate(
+							tree.getChild(0).getSymbol()).asTerminal());
+					// ((ISyntaxTree)tree.getAttribute(L_ATTRIBUTE)) = tmp
+					bOp.addChild(((ISyntaxTree)tree.getAttribute(L_ATTRIBUTE)).getChild(0));
+					toAST(tree.getChild(1), bOp);
+					insertNode.addChild(bOp);
 				}
 				return;
 			case unary: {
@@ -273,11 +302,9 @@ public class SemanticAnalyzer {
 				} else {
 					UnaryOp uOp = new UnaryOp(firstChildSymbol.asTerminal());
 
-					if (uOp != null) {
-						// simply hang in both children trees
-						toAST(tree.getChild(1), uOp); // unary
-						insertNode.addChild(uOp);
-					}
+					// simply hang in both children trees
+					toAST(tree.getChild(1), uOp); // unary
+					insertNode.addChild(uOp);
 				}
 			}
 			case factor:
@@ -312,24 +339,24 @@ public class SemanticAnalyzer {
 				} else {
 					ISyntaxTree tmp = new Program();
 					toAST(tree.getChild(0), tmp);
-					tree.getChild(1).addAttribute(LAttribute);
+					tree.getChild(1).addAttribute(L_ATTRIBUTE);
 					// there is only one child (the id itself)!
-					tree.getChild(1).setAttribute(LAttribute, tmp.getChild(0));
+					tree.getChild(1).setAttribute(L_ATTRIBUTE, tmp.getChild(0));
 					toAST(tree.getChild(1), insertNode);
 				}
 				return;
 			case loc__:
-				tree.getChild(0).addAttribute(LAttribute);
-				tree.getChild(0).setAttribute(LAttribute,
-						tree.getAttribute(LAttribute));
+				tree.getChild(0).addAttribute(L_ATTRIBUTE);
+				tree.getChild(0).setAttribute(L_ATTRIBUTE,
+						tree.getAttribute(L_ATTRIBUTE));
 				if (tree.getChild(1).getChildrenCount() == 0) {
 					toAST(tree.getChild(0), insertNode);
 				} else {
 					ISyntaxTree tmp = new Program();
 					toAST(tree.getChild(0), tmp);
 					if (tmp.getChildrenCount() == 1) {
-						tree.getChild(1).addAttribute(LAttribute);
-						tree.getChild(1).setAttribute(LAttribute,
+						tree.getChild(1).addAttribute(L_ATTRIBUTE);
+						tree.getChild(1).setAttribute(L_ATTRIBUTE,
 								tmp.getChild(0));
 						toAST(tree.getChild(1), insertNode);
 					}
@@ -340,14 +367,14 @@ public class SemanticAnalyzer {
 				if (translate(tree.getChild(0).getSymbol()).asTerminal() == TokenType.OP_DOT) {
 					RecordVarCall varCall = new RecordVarCall();
 					varCall.addChild((ISyntaxTree) tree
-							.getAttribute(LAttribute));
+							.getAttribute(L_ATTRIBUTE));
 
 					toAST(tree.getChild(1), varCall);
 					insertNode.addChild(varCall);
 				} else {
 					ArrayCall array = new ArrayCall();
 					toAST(tree.getChild(1), array);
-					array.addChild((ISyntaxTree) tree.getAttribute(LAttribute));
+					array.addChild((ISyntaxTree) tree.getAttribute(L_ATTRIBUTE));
 					insertNode.addChild(array);
 				}
 				return;
@@ -367,8 +394,9 @@ public class SemanticAnalyzer {
 			TokenType t = symbol.asTerminal();
 			switch (t) {
 			case BASIC:
-				BasicTokenType type = (BasicTokenType) tree
+				String typeString = (String) tree
 						.getAttribute(Parser.TOKEN_VALUE);
+				BasicTokenType type = BasicTokenType.valueOf(typeString.toUpperCase());
 				insertNode.addChild(new BasicType(type));
 				return;
 			case INT_LITERAL:

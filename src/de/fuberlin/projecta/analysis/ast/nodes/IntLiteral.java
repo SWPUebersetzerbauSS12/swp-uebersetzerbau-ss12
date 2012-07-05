@@ -1,7 +1,7 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 
-public class IntLiteral extends Statement {
+public class IntLiteral extends Type {
 	
 	private int value;
 	
@@ -22,10 +22,9 @@ public class IntLiteral extends Statement {
 	public int getValue(){
 		return this.value;
 	}
-
+	
 	@Override
-	public boolean checkTypes() {
-		// TODO Auto-generated method stub
-		return false;
+	public String toTypeString(){
+		return TYPE_INT_STRING;
 	}
 }

@@ -244,25 +244,54 @@ public class SemanticAnalyzer {
 			case rel:
 			case expr:
 			case term:
-				if (tree.getChild(1).getChildrenCount() == 0) {
-					toAST(tree.getChild(0), insertNode);
+				if (tree.getChild(1).getChildrenCount() > 0) {
+					ISyntaxTree tmp = new Program();
+					toAST(tree.getChild(0), tmp);
+					tree.getChild(1).addAttribute(LAttribute);
+					tree.getChild(1).setAttribute(LAttribute, tmp);
+					toAST(tree.getChild(1), insertNode);
 				} else {
-					BinaryOp bOp = new BinaryOp(translate(
-							tree.getChild(1).getChild(0).getSymbol())
-							.asTerminal());
-
-					// simply hang in both children trees
-					toAST(tree.getChild(0), bOp); // rel
-					toAST(tree.getChild(1), bOp); // equality'
-					insertNode.addChild(bOp);
+					toAST(tree.getChild(0), insertNode);
 				}
+
 				return;
+			case assign_:
+			case bool_:
+			case join_:
+			case equality_:
 			case expr_:
 			case term_:
-				if (tree.getChildrenCount() != 0) {
+				// currently it assumes tmp only got one child !!! 
+				// TODO: is this always the case?
+				if(tree.getChildrenCount() == 0){
+					insertNode.addChild(((ISyntaxTree)tree.getAttribute(LAttribute)).getChild(0));
+				} else {
+					ISyntaxTree tmp = new Program();
+					BinaryOp bOp = new BinaryOp(translate(
+							tree.getChild(0).getSymbol()).asTerminal());
+					// ((ISyntaxTree)tree.getAttribute(LAttribute)) = tmp
+					bOp.addChild(((ISyntaxTree)tree.getAttribute(LAttribute)).getChild(0));
+					toAST(tree.getChild(1), bOp);
+					tmp.addChild(bOp);
 					// simply hang in both children trees
-					toAST(tree.getChild(1), insertNode);
+					tree.getChild(2).addAttribute(LAttribute);
+					tree.getChild(2).setAttribute(LAttribute, tmp);
+					
 					toAST(tree.getChild(2), insertNode);
+				}
+				return;
+			case rel_:
+				// currently it assumes tmp only got one child !!! 
+				// TODO: is this always the case?
+				if(tree.getChildrenCount() == 0){
+					insertNode.addChild(((ISyntaxTree)tree.getAttribute(LAttribute)).getChild(0));
+				} else {
+					BinaryOp bOp = new BinaryOp(translate(
+							tree.getChild(0).getSymbol()).asTerminal());
+					// ((ISyntaxTree)tree.getAttribute(LAttribute)) = tmp
+					bOp.addChild(((ISyntaxTree)tree.getAttribute(LAttribute)).getChild(0));
+					toAST(tree.getChild(1), bOp);
+					insertNode.addChild(bOp);
 				}
 				return;
 			case unary: {
@@ -273,11 +302,9 @@ public class SemanticAnalyzer {
 				} else {
 					UnaryOp uOp = new UnaryOp(firstChildSymbol.asTerminal());
 
-					if (uOp != null) {
-						// simply hang in both children trees
-						toAST(tree.getChild(1), uOp); // unary
-						insertNode.addChild(uOp);
-					}
+					// simply hang in both children trees
+					toAST(tree.getChild(1), uOp); // unary
+					insertNode.addChild(uOp);
 				}
 			}
 			case factor:
@@ -367,8 +394,9 @@ public class SemanticAnalyzer {
 			TokenType t = symbol.asTerminal();
 			switch (t) {
 			case BASIC:
-				BasicTokenType type = (BasicTokenType) tree
+				String typeString = (String) tree
 						.getAttribute(Parser.TOKEN_VALUE);
+				BasicTokenType type = BasicTokenType.valueOf(typeString.toUpperCase());
 				insertNode.addChild(new BasicType(type));
 				return;
 			case INT_LITERAL:

@@ -129,7 +129,7 @@ public class Tree implements ISyntaxTree {
 			} else if (this instanceof BasicType) {
 				System.out.println(StringUtils.repeat(' ', depth)
 						+ className + ":"
-						+ ((BasicType) this).getType());
+						+ ((BasicType) this).getTokenType());
 			} else {
 				System.out.println(StringUtils.repeat(' ', depth)
 						+ className);

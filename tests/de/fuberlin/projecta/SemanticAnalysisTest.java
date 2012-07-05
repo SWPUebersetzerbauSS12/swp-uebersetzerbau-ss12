@@ -1,18 +1,20 @@
 package de.fuberlin.projecta;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
 import de.fuberlin.projecta.analysis.SemanticAnalyzer;
+import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.lexer.Lexer;
 import de.fuberlin.projecta.lexer.io.StringCharStream;
 import de.fuberlin.projecta.parser.ParseException;
 import de.fuberlin.projecta.parser.Parser;
 
 public class SemanticAnalysisTest {
+
+	static String MAIN_DEF = "def int main() {return 0; }";
 
 	@Test(expected = IllegalStateException.class)
 	public void testInvalidCode() {
@@ -22,41 +24,41 @@ public class SemanticAnalysisTest {
 
 	@Test
 	public void testValidFunctionDef() {
-		final String code = "def void foo(int a){int b;} def void foo(real a){int b;}";
+		final String code = MAIN_DEF + "def void foo(int a){int b;} def void foo(real a){int b;}";
 		analyze(code);
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void testInvalidFunctionDef() {
-		final String code = "def int foo() {} def real foo() {}";
+		final String code = MAIN_DEF + "def int foo() {} def real foo() {}";
 		analyze(code);
 	}
 
 	@Test
 	public void testDeclarationScope() {
-		final String code = "def int foo() { int a; { int a; } }";
+		final String code = MAIN_DEF + "def int foo() { int a; { int a; } }";
 		analyze(code);
 	}
 
 	@Test(expected = ClassCastException.class)
 	public void testIncompatibleOperands() {
-		final String code = "def int foo() { int a; a = 0.0; }";
+		final String code = MAIN_DEF + "def int foo() { int a; a = 0.0; }";
 		assertFalse(analyze(code));
 	}
 
 	@Test
 	public void testRecordAsReturnType(){
-		final String code = "def record {int real; int imag;} foo(){record {int real; int imag;} myRecord; return myRecord;}";
+		final String code = MAIN_DEF + "def record {int real; int imag;} foo(){record {int real; int imag;} myRecord; return myRecord;}";
 		analyze(code);
 	}
 
 	@Test
 	public void testRecordBehaviour(){
-		final String code = "def int foobar(record {int r; int i;} myImaginaire){myImaginaire.r = 1; myImaginaire.i = 0;}";
+		final String code = MAIN_DEF + "def int foobar(record {int r; int i;} myImaginaire){myImaginaire.r = 1; myImaginaire.i = 0;}";
 		analyze(code);
 	}
 
-	@Test
+	@Test(expected = SemanticException.class)
 	public void testMissingMain(){
 		final String code = "def int foobar(){return 0;}";
 		assertFalse(analyze(code));

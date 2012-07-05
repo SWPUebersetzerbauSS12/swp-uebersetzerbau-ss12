@@ -24,7 +24,7 @@ public class BasicType extends Type {
 			ret += "i8*";
 			break;
 		case BOOL:
-			ret += "i8";
+			ret += "i1";
 			break;
 		case VOID:
 			ret += "void";
@@ -33,8 +33,26 @@ public class BasicType extends Type {
 		return ret;
 	}
 
-	public BasicTokenType getType() {
+	public BasicTokenType getTokenType() {
 		return type;
+	}
+	
+	@Override
+	public String toTypeString() {
+		switch (this.type) {
+		case BOOL:
+			return TYPE_BOOL_STRING;
+		case REAL:
+			return TYPE_REAL_STRING;
+		case INT:
+			return TYPE_INT_STRING;
+		case STRING:
+			return TYPE_STRING_STRING;
+		case VOID:
+			return TYPE_VOID_STRING;
+		default:
+			return null;
+		}
 	}
 
 }

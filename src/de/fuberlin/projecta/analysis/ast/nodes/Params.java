@@ -20,7 +20,7 @@ public class Params extends AbstractSyntaxTree {
 	public boolean checkSemantics() {
 		for (int i = 0; i < this.getChildrenCount(); i++) {
 			if (this.getChild(i) instanceof BasicType
-					&& ((BasicType) this.getChild(i)).getType() == BasicTokenType.VOID) {
+					&& ((BasicType) this.getChild(i)).getTokenType() == BasicTokenType.VOID) {
 				throw new SemanticException("Parameter must have a type. \"void\" is not allowed!");
 			}
 			if (!((AbstractSyntaxTree) this.getChild(i)).checkSemantics()) {
@@ -44,10 +44,5 @@ public class Params extends AbstractSyntaxTree {
 			ret = ret.substring(0, ret.length() - 2);
 		}
 		return ret;
-	}
-
-	@Override
-	public boolean checkTypes() {
-		return true;
 	}
 }

@@ -1,7 +1,7 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 
-public class RealLiteral extends Statement {
+public class RealLiteral extends Type {
 	
 	private double value;
 	
@@ -22,10 +22,9 @@ public class RealLiteral extends Statement {
 	public double getValue(){
 		return this.value;
 	}
-
+	
 	@Override
-	public boolean checkTypes() {
-		// TODO Auto-generated method stub
-		return false;
+	public String toTypeString(){
+		return TYPE_REAL_STRING;
 	}
 }

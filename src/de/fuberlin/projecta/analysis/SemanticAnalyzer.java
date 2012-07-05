@@ -40,7 +40,7 @@ import de.fuberlin.projecta.parser.Symbol.Reserved;
 
 public class SemanticAnalyzer {
 
-	private static final String L_ATTRIBUTE = "LAttribute";
+	private static final String L_ATTRIBUTE = "L_ATTRIBUTE";
 
 	private ISyntaxTree parseTree;
 
@@ -247,8 +247,8 @@ public class SemanticAnalyzer {
 				if (tree.getChild(1).getChildrenCount() > 0) {
 					ISyntaxTree tmp = new Program();
 					toAST(tree.getChild(0), tmp);
-					tree.getChild(1).addAttribute(LAttribute);
-					tree.getChild(1).setAttribute(LAttribute, tmp);
+					tree.getChild(1).addAttribute(L_ATTRIBUTE);
+					tree.getChild(1).setAttribute(L_ATTRIBUTE, tmp);
 					toAST(tree.getChild(1), insertNode);
 				} else {
 					toAST(tree.getChild(0), insertNode);
@@ -264,18 +264,18 @@ public class SemanticAnalyzer {
 				// currently it assumes tmp only got one child !!! 
 				// TODO: is this always the case?
 				if(tree.getChildrenCount() == 0){
-					insertNode.addChild(((ISyntaxTree)tree.getAttribute(LAttribute)).getChild(0));
+					insertNode.addChild(((ISyntaxTree)tree.getAttribute(L_ATTRIBUTE)).getChild(0));
 				} else {
 					ISyntaxTree tmp = new Program();
 					BinaryOp bOp = new BinaryOp(translate(
 							tree.getChild(0).getSymbol()).asTerminal());
-					// ((ISyntaxTree)tree.getAttribute(LAttribute)) = tmp
-					bOp.addChild(((ISyntaxTree)tree.getAttribute(LAttribute)).getChild(0));
+					// ((ISyntaxTree)tree.getAttribute(L_ATTRIBUTE)) = tmp
+					bOp.addChild(((ISyntaxTree)tree.getAttribute(L_ATTRIBUTE)).getChild(0));
 					toAST(tree.getChild(1), bOp);
 					tmp.addChild(bOp);
 					// simply hang in both children trees
-					tree.getChild(2).addAttribute(LAttribute);
-					tree.getChild(2).setAttribute(LAttribute, tmp);
+					tree.getChild(2).addAttribute(L_ATTRIBUTE);
+					tree.getChild(2).setAttribute(L_ATTRIBUTE, tmp);
 					
 					toAST(tree.getChild(2), insertNode);
 				}
@@ -284,12 +284,12 @@ public class SemanticAnalyzer {
 				// currently it assumes tmp only got one child !!! 
 				// TODO: is this always the case?
 				if(tree.getChildrenCount() == 0){
-					insertNode.addChild(((ISyntaxTree)tree.getAttribute(LAttribute)).getChild(0));
+					insertNode.addChild(((ISyntaxTree)tree.getAttribute(L_ATTRIBUTE)).getChild(0));
 				} else {
 					BinaryOp bOp = new BinaryOp(translate(
 							tree.getChild(0).getSymbol()).asTerminal());
-					// ((ISyntaxTree)tree.getAttribute(LAttribute)) = tmp
-					bOp.addChild(((ISyntaxTree)tree.getAttribute(LAttribute)).getChild(0));
+					// ((ISyntaxTree)tree.getAttribute(L_ATTRIBUTE)) = tmp
+					bOp.addChild(((ISyntaxTree)tree.getAttribute(L_ATTRIBUTE)).getChild(0));
 					toAST(tree.getChild(1), bOp);
 					insertNode.addChild(bOp);
 				}

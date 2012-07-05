@@ -11,7 +11,6 @@ import de.fuberlin.projecta.lexer.SyntaxErrorException;
 
 public class Parser implements IParser {
 
-	public final static String TOKEN_VALUE = "TokenValue";
 	private ParseTable table;
 	private Stack<Symbol> stack = new Stack<Symbol>();
 

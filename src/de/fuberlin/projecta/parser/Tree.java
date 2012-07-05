@@ -3,16 +3,9 @@ package de.fuberlin.projecta.parser;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 
 import de.fuberlin.commons.lexer.IToken;
 import de.fuberlin.commons.parser.ISyntaxTree;
-import de.fuberlin.projecta.analysis.ast.nodes.AbstractSyntaxTree;
-import de.fuberlin.projecta.analysis.ast.nodes.BasicType;
-import de.fuberlin.projecta.analysis.ast.nodes.BinaryOp;
-import de.fuberlin.projecta.analysis.ast.nodes.Id;
-import de.fuberlin.projecta.analysis.ast.nodes.IntLiteral;
-import de.fuberlin.projecta.analysis.ast.nodes.UnaryOp;
 import de.fuberlin.projecta.utils.StringUtils;
 
 public class Tree implements ISyntaxTree {
@@ -111,40 +104,11 @@ public class Tree implements ISyntaxTree {
 	}
 
 	protected void printTree(int depth) {
-		//remove prefix from class name
-		String className = this.getClass().getName().replaceAll("^.*\\.", "");		
+		System.out.print(StringUtils.repeat(' ', depth));
 		if (getSymbol() != null)
-			System.out.println(StringUtils.repeat(' ', depth)
-					+ getSymbol());
+			System.out.println(getSymbol());
 		else {
-			if (this instanceof BinaryOp) {
-				System.out.println(StringUtils.repeat(' ', depth)
-						+ className + ":"
-						+ ((BinaryOp) this).getOp());
-			} else if (this instanceof IntLiteral) {
-				System.out.println(StringUtils.repeat(' ', depth)
-						+ className + ":"
-						+ ((IntLiteral) this).getValue());
-			} else if (this instanceof Id) {
-				System.out.println(StringUtils.repeat(' ', depth)
-						+ className + ":"
-						+ ((Id) this).getValue());
-			} else if (this instanceof UnaryOp) {
-				System.out.println(StringUtils.repeat(' ', depth)
-						+ className + ":"
-						+ ((UnaryOp) this).getOp());
-			} else if (this instanceof BasicType) {
-				System.out.println(StringUtils.repeat(' ', depth)
-						+ className + ":"
-						+ ((BasicType) this).getTokenType());
-			} else {
-				System.out.println(StringUtils.repeat(' ', depth)
-						+ className);
-			}
-			if (((AbstractSyntaxTree) this).getTable() != null) {
-				System.out.println(StringUtils.repeat(' ', depth)
-						+ ((AbstractSyntaxTree) this).getTable());
-			}
+			System.out.println(toString());
 		}
 
 		for (int i = 0; i < getChildrenCount(); ++i) {
@@ -193,4 +157,5 @@ public class Tree implements ISyntaxTree {
 	public ISyntaxTree getParent() {
 		return parent;
 	}
+
 }

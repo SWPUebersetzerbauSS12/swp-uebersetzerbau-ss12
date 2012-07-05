@@ -82,4 +82,31 @@ public abstract class AbstractSyntaxTree extends Tree {
 	 */
 	public abstract boolean checkSemantics();
 
+	@Override
+	public String toString() {
+		// remove prefix from class name
+		final String className = this.getClass().getName().replaceAll("^.*\\.", "");
+
+		String value = "";
+		if (this instanceof BinaryOp) {
+			value += ((BinaryOp) this).getOp();
+		} else if (this instanceof IntLiteral) {
+			value += ((IntLiteral) this).getValue();
+		} else if (this instanceof Id) {
+			value += ((Id) this).getValue();
+		} else if (this instanceof UnaryOp) {
+			value += ((UnaryOp) this).getOp();
+		} else if (this instanceof BasicType) {
+			value += ((BasicType) this).getTokenType();
+		}
+
+		if (getTable() != null) {
+			value += "table contents: " + getTable();
+		}
+
+		if (value.isEmpty())
+			return className;
+		return className + " [" + value + "]";
+	}
+
 }

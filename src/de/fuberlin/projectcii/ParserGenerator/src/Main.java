@@ -8,6 +8,7 @@ import de.fuberlin.projecta.analysis.SemanticAnalyzer;
 import de.fuberlin.projecta.lexer.Lexer;
 import de.fuberlin.projecta.lexer.io.StringCharStream;
 import de.fuberlin.projecta.utils.IOUtils;
+import de.fuberlin.projectci.lrparser.LRParser;
 
 public class Main {
 	
@@ -19,6 +20,10 @@ public class Main {
 			ILexer lexer = new Lexer(new StringCharStream(data));
 			LL1Parser ll1 = new LL1Parser();
 			ISyntaxTree syntaxTree= ll1.parse(lexer,"language_mod_new.txt");
+			
+			
+			//LRParser parser=new LRParser();
+			//ISyntaxTree syntaxTree= parser.parse(lexer, "language_mod_new.txt");
 
 			SemanticAnalyzer semanticAnalyzer= new SemanticAnalyzer(syntaxTree);
 			semanticAnalyzer.analyze();

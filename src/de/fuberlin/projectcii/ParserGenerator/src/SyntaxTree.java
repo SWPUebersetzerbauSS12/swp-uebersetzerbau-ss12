@@ -1,6 +1,8 @@
 package de.fuberlin.projectcii.ParserGenerator.src;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import de.fuberlin.commons.lexer.IToken;
@@ -24,6 +26,8 @@ public class SyntaxTree implements ISyntaxTree {
 	private IToken token = null;
 	//Symbol of the current Node
 	private ISymbol symbol;
+	// Attribute 
+	private Map<String, Object> attributes = new HashMap<String,Object>();
 	
 	/**
 	 * Default Constructor
@@ -107,20 +111,19 @@ public class SyntaxTree implements ISyntaxTree {
 
 	@Override
 	public boolean setAttribute(String name, Object value) {
-		// TODO Auto-generated method stub
-		return false;
+		attributes.put(name, value);
+		return true;
 	}
 
 	@Override
 	public Object getAttribute(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		return attributes.get(name);
 	}
 
 	@Override
 	public boolean addAttribute(String name) {
-		// TODO Auto-generated method stub
-		return false;
+		attributes.put(name, null);
+		return true;
 	}
 
 	@Override
@@ -131,8 +134,7 @@ public class SyntaxTree implements ISyntaxTree {
 	
 	@Override
 	public ISyntaxTree removeChild(int i) {
-		// TODO Auto-generated method stub
-		return null;
+		return children.remove(i);
 	}
 
 	/**

@@ -374,6 +374,7 @@ public class SemanticAnalyzer {
 			case INT_LITERAL:
 				insertNode.addChild(new IntLiteral((Integer) tree
 						.getAttribute(Parser.TOKEN_VALUE)));
+				
 				return;
 			case STRING_LITERAL:
 				insertNode.addChild(new StringLiteral((String) tree

@@ -80,13 +80,13 @@ public class LexerTest {
 		final String code = "def int function();\n/*this should be \nignored*/ def real func();";
 
 		Token[] expected = new Token[] { new Token(TokenType.DEF, null, 1, 0),
-				new Token(TokenType.BASIC, BasicTokenType.INT, 1, 4),
+				new Token(TokenType.BASIC, "int", 1, 4),
 				new Token(TokenType.ID, "function", 1, 8),
 				new Token(TokenType.LPAREN, null, 1, 16),
 				new Token(TokenType.RPAREN, null, 1, 17),
 				new Token(TokenType.OP_SEMIC, null, 1, 18),
 				new Token(TokenType.DEF, null, 3, 11),
-				new Token(TokenType.BASIC, BasicTokenType.REAL, 3, 15),
+				new Token(TokenType.BASIC, "real", 3, 15),
 				new Token(TokenType.ID, "func", 3, 20),
 				new Token(TokenType.LPAREN, null, 3, 24),
 				new Token(TokenType.RPAREN, null, 3, 25),
@@ -100,7 +100,7 @@ public class LexerTest {
 		final String code = "def int function();";
 
 		Token[] expected = new Token[] { new Token(TokenType.DEF, null, 1, 0),
-				new Token(TokenType.BASIC, BasicTokenType.INT, 1, 4),
+				new Token(TokenType.BASIC, "int", 1, 4),
 				new Token(TokenType.ID, "function", 1, 8),
 				new Token(TokenType.LPAREN, null, 1, 16),
 				new Token(TokenType.RPAREN, null, 1, 17),
@@ -130,12 +130,12 @@ public class LexerTest {
 		final String code = "def int foobar(){int[3] myArray;}";
 
 		Token[] expected = new Token[] { new Token(TokenType.DEF, null, 1, 0),
-				new Token(TokenType.BASIC, BasicTokenType.INT, 1, 4),
+				new Token(TokenType.BASIC, "int", 1, 4),
 				new Token(TokenType.ID, "foobar", 1, 8),
 				new Token(TokenType.LPAREN, null, 1, 14),
 				new Token(TokenType.RPAREN, null, 1, 15),
 				new Token(TokenType.LBRACE, null, 1, 16),
-				new Token(TokenType.BASIC, BasicTokenType.INT, 1, 17),
+				new Token(TokenType.BASIC, "int", 1, 17),
 				new Token(TokenType.LBRACKET, null, 1, 20),
 				new Token(TokenType.INT_LITERAL, 3, 1, 22),
 				new Token(TokenType.RBRACKET, null, 1, 22),
@@ -193,10 +193,10 @@ public class LexerTest {
 	public void testBooleanType() {
 		final String code = "def int foobar(bool i);";
 		Token[] expected = new Token[] { new Token(TokenType.DEF, null, 1, 0),
-				new Token(TokenType.BASIC, BasicTokenType.INT, 1, 4),
+				new Token(TokenType.BASIC, "int", 1, 4),
 				new Token(TokenType.ID, "foobar", 1, 8),
 				new Token(TokenType.LPAREN, null, 1, 14),
-				new Token(TokenType.BASIC, BasicTokenType.BOOL, 1, 15),
+				new Token(TokenType.BASIC, "bool", 1, 15),
 				new Token(TokenType.ID, "i", 1, 20),
 				new Token(TokenType.RPAREN, null, 1, 21),
 				new Token(TokenType.OP_SEMIC, null, 1, 22),
@@ -210,10 +210,10 @@ public class LexerTest {
 		Token[] expected = new Token[] {
 				new Token(TokenType.RECORD, null, 1, 0),
 				new Token(TokenType.LBRACE, null, 1, 7),
-				new Token(TokenType.BASIC, BasicTokenType.INT, 1, 9),
+				new Token(TokenType.BASIC, "int", 1, 9),
 				new Token(TokenType.ID, "a", 1, 13),
 				new Token(TokenType.OP_SEMIC, null, 1, 14),
-				new Token(TokenType.BASIC, BasicTokenType.REAL, 1, 16),
+				new Token(TokenType.BASIC, "real", 1, 16),
 				new Token(TokenType.ID, "b", 1, 21),
 				new Token(TokenType.OP_SEMIC, null, 1, 22),
 				new Token(TokenType.RBRACE, null, 1, 24),
@@ -228,13 +228,13 @@ public class LexerTest {
 		final String code = "def int foo();\ndef int bar();";
 
 		Token[] expected = new Token[] { new Token(TokenType.DEF, null, 1, 0),
-				new Token(TokenType.BASIC, BasicTokenType.INT, 1, 4),
+				new Token(TokenType.BASIC, "int", 1, 4),
 				new Token(TokenType.ID, "foo", 1, 8),
 				new Token(TokenType.LPAREN, null, 1, 11),
 				new Token(TokenType.RPAREN, null, 1, 12),
 				new Token(TokenType.OP_SEMIC, null, 1, 13),
 				new Token(TokenType.DEF, null, 2, 0),
-				new Token(TokenType.BASIC, BasicTokenType.INT, 2, 4),
+				new Token(TokenType.BASIC, "int", 2, 4),
 				new Token(TokenType.ID, "bar", 2, 8),
 				new Token(TokenType.LPAREN, null, 2, 11),
 				new Token(TokenType.RPAREN, null, 2, 12),

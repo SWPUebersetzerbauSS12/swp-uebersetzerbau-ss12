@@ -30,7 +30,7 @@ else
 	echo "false"
 fi
 
-#rm $llvm_ir_file
-#rm $llvm_ir_file_optimized
-rm $llvm_file
-rm $llvm_file_optimized
+rm $llvm_ir_file
+rm $llvm_ir_file_optimized
+#rm $llvm_file
+#rm $llvm_file_optimized

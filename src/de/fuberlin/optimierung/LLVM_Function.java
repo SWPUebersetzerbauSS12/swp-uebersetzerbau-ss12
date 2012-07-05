@@ -600,7 +600,10 @@ public class LLVM_Function {
 							LLVM_Parameter op = cmd.getOperands().get(0);
 							registerMap.deleteCommand(_cmds.get(j));
 							//registerMap.deleteCommand(_cmds.get(j), cmd.getTarget());
-							operands.set(k, new LLVM_Parameter(op.getName(), op.getType(), op.getTypeString()));
+							//operands.get(k).setName(op.getName());
+							operands.set(k, new LLVM_Parameter(op.getName(), 
+									operands.get(k).getType(), operands.get(k).getTypeString()));
+							//operands.set(k, new LLVM_Parameter(op.getName(), op.getType(), op.getTypeString()));
 							registerMap.addCommand(_cmds.get(j));
 						}
 					}

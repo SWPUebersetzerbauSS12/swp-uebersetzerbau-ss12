@@ -57,7 +57,6 @@ public abstract class Lexer {
 			p2 = line.indexOf(" ] ",p1 + 1);
 			line = replaceBetween(line, p1, p2, ' ', (char) 1);
 			p1 = line.lastIndexOf(" [ ") + 1;
-			System.out.println("in" + p1);
 		}
 
 		p1 = line.lastIndexOf('{');
@@ -67,9 +66,6 @@ public abstract class Lexer {
 		p1 = line.indexOf('"');
 		p2 = line.indexOf('"', p1 + 1);
 		line = replaceBetween(line, p1, p2, ' ', (char) 1);
-		
-		System.out.println("Bevor:");
-		System.out.println(line);
 		
 		tmpSplitLine = line.split(" ");
 
@@ -124,10 +120,6 @@ public abstract class Lexer {
 				splitLine[count++] = new String(tmpSplitLine[i]);
 			}
 		}
-		
-		for(int i = 0; i < splitLine.length; i++)
-			System.out.print(splitLine[i] + " ");
-		System.out.println();
 		
 		return splitLine;
 	}
@@ -381,11 +373,8 @@ public abstract class Lexer {
 	}
 
 	private String transformInIEEE(String string) {
-		System.out.println("String: " + string);
 		String[] sString = string.split("e");
 		
-		System.out.println(sString[0]);
-		System.out.println(sString[1]);
 		double result = Double.parseDouble(sString[0]);
 		if(sString[1].charAt(0) == '-') {
 			sString[1] = sString[1].substring(1);
@@ -425,9 +414,6 @@ public abstract class Lexer {
 			int p2 = pair[i].indexOf(']');
 			pair[i] = replaceBetween(pair[i], p1, p2, ' ', (char) 1);
 		}
-		
-		for(String p : pair)
-			System.out.println(p);
 		
 		for(String p : pair) {
 			String[] pairValue = p.split(" ");

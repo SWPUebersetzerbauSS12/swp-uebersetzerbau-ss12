@@ -1,16 +1,13 @@
 package de.fuberlin.projectF.CodeGenerator;
 
-import java.awt.List;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import de.fuberlin.projectF.CodeGenerator.model.Token;
-import de.fuberlin.projectF.CodeGenerator.model.TokenType;
 
 public class CodeGenerator {
 
@@ -92,14 +89,13 @@ public class CodeGenerator {
 	
 
 	public static void main(String[] args) {
-		boolean debug = true;
-		boolean gui = true;
+		boolean debug = false;
+		boolean gui = false;
 		boolean exec = false;
 		String asmType = "gnu";
 
 		ArrayList<String> inputFile = new ArrayList<String>();
 		//Inhalt der inputFiles als String
-		ArrayList<String> inputStrings = new ArrayList<String>();
 		String outputFile = null;
 		String configFile = null;
 
@@ -126,6 +122,10 @@ public class CodeGenerator {
 				asmType = "intel";
 			} else if (args[i].compareTo("-gnu") == 0) {
 				asmType = "gnu";
+			} else if (args[i].compareTo("-w") == 0) {
+				debug = true;
+			} else if (args[i].compareTo("-g") == 0) {
+				gui = true;
 			} else
 				inputFile.add(args[i]);
 		}

@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 
 public class Record extends Variable {
 	HashMap<String, Variable> variableList;
+	StackAddress address;
 
 	public Record(String name) {
 		super(name, "record");

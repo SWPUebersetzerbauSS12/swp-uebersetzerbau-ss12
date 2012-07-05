@@ -1,18 +1,25 @@
 package de.fuberlin.projectF.CodeGenerator.model;
 
-public class RecordPointer extends Variable{
+public class RecordPointer extends Reference{
 	private Record rec;
+	private RecordPointer pRec;
+	private StackAddress addr;
 	private int offset;
 	
-	public RecordPointer(String name, Variable variable, int offset)
+	public RecordPointer(String name, Record record, int offset)
 	{
 		super(name, "recordPointer");
-		this.rec = (Record) variable;
+		this.rec =  record;
 		this.offset = offset;
 	}
-	@Override
+	public RecordPointer(String name, RecordPointer recordPointer , int offset)
+	{
+		super(name, "recordPointer");
+		this.pRec =  recordPointer;
+		this.offset = offset;
+	}
+
 	public String getAddress() {
-		System.out.println("Xxx " + rec.stackAddresses.get(0).getAddress() + " offset " + offset);
 		int addr = 0;
 		
 		for( int i = 0; i < offset; i++) {
@@ -21,10 +28,15 @@ public class RecordPointer extends Variable{
 		
 		return rec.getAddress(addr);
 	}
-	@Override
+
 	public String getAddress(int offset) {
-		// TODO Auto-generated method stub
-		return null;
+		int addr = offset;
+		
+		for( int i = 0; i < this.offset; i++) {
+			addr += rec.get(String.valueOf(i)).getSize();
+		}	
+		
+		return rec.getAddress(addr);
 	}
 	
 	public int getSize() {

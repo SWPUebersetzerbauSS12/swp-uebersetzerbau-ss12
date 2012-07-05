@@ -13,7 +13,6 @@ import de.fuberlin.projectF.CodeGenerator.model.MMXRegisterAddress;
 import de.fuberlin.projectF.CodeGenerator.model.Record;
 import de.fuberlin.projectF.CodeGenerator.model.Reference;
 import de.fuberlin.projectF.CodeGenerator.model.RegisterAddress;
-import de.fuberlin.projectF.CodeGenerator.model.StackAddress;
 import de.fuberlin.projectF.CodeGenerator.model.Token;
 import de.fuberlin.projectF.CodeGenerator.model.TokenType;
 import de.fuberlin.projectF.CodeGenerator.model.Variable;
@@ -106,7 +105,7 @@ public class Translator {
 				List<Variable> regVars = mem.getRegVariables(true);
 				for (Variable var : regVars) {
 					//TODO musste ich auskommentieren NULLPOINTEREXCEPTION bei mathStruct.llvm 
-					System.out.println("Var to stack: " + var.getName());
+					//System.out.println("Var to stack: " + var.getName());
 					//mem.regToStack(var);
 					// Stackpointer verschieben
 					//asm.sub(String.valueOf(var.getSize()), "esp", "Move var to stack");
@@ -122,7 +121,6 @@ public class Translator {
 							operand = mem.getAddress(p.getOperand());
 						else
 							operand = p.getOperand();
-						System.out.println("**" + operand);
 						
 						if (operand.charAt(0) == '@')
 							operand = operand.substring(2);
@@ -238,8 +236,9 @@ public class Translator {
 				break;
 
 			case Assignment:
-				System.out.println(tok.getTarget());
+				System.out.println("Target: " + tok.getTarget());
 				String target = mem.getAddress(tok.getTarget());
+				System.out.println("TargetAddress: "+ target);
 				String source;
 				// Zuweisung Variable
 					// Zuweisung Zahl

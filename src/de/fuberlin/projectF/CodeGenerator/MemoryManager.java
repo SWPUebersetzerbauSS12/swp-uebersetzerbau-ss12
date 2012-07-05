@@ -1,6 +1,5 @@
 package de.fuberlin.projectF.CodeGenerator;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 

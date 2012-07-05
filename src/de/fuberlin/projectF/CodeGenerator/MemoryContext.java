@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import de.fuberlin.projectF.CodeGenerator.model.Array;
 import de.fuberlin.projectF.CodeGenerator.model.ArrayPointer;
 import de.fuberlin.projectF.CodeGenerator.model.MMXRegisterAddress;
+import de.fuberlin.projectF.CodeGenerator.model.Record;
 import de.fuberlin.projectF.CodeGenerator.model.RecordPointer;
 import de.fuberlin.projectF.CodeGenerator.model.Reference;
 import de.fuberlin.projectF.CodeGenerator.model.RegisterAddress;
@@ -22,6 +23,7 @@ public class MemoryContext {
 	private HashMap<String, Variable> variables;
 	private HashMap<String, Array> arrays;
 	private HashMap<String, ArrayPointer> arrayPtrs;
+	private HashMap<String, RecordPointer> recordPtrs;
 	private ArrayList<RegisterAddress> freeRegisters;
 	private HashMap<RegisterAddress, Reference> usedRegisters;
 	private ArrayList<MMXRegisterAddress> freeMMXRegisters;
@@ -33,6 +35,7 @@ public class MemoryContext {
 		variables = new HashMap<String, Variable>();
 		arrays = new HashMap<String, Array>();
 		arrayPtrs = new HashMap<String, ArrayPointer>();
+		recordPtrs = new HashMap<String, RecordPointer>();
 		freeRegisters = new ArrayList<RegisterAddress>();
 		usedRegisters = new HashMap<RegisterAddress, Reference>();
 		freeMMXRegisters = new ArrayList<MMXRegisterAddress>();
@@ -228,7 +231,8 @@ public class MemoryContext {
 		System.out.println("Record: " + rec);
 		System.out.println("Address " + variables.get(rec).getAddress());
 		System.out.println("Offset: " + offset);
-		RecordPointer tmp = new RecordPointer(name, variables.get(rec),new Integer(offset));
+		//TODO cast
+		RecordPointer tmp = new RecordPointer(name, (Record)variables.get(rec),new Integer(offset));
 		
 		put(tmp);
 	}
@@ -278,6 +282,12 @@ public class MemoryContext {
 		String name = arrPtr.getName();
 		arrayPtrs.put(name, arrPtr);
 		references.put(name, arrPtr);
+	}
+	
+	private void put(RecordPointer recPtr) {
+		String name = recPtr.getName();
+		recordPtrs.put(name, recPtr);
+		references.put(name, recPtr);
 	}
 
 	private void put(Variable var) {

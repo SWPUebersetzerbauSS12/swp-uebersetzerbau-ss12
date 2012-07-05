@@ -82,7 +82,7 @@ public class Variable extends Reference {
 		return !mmxAddresses.isEmpty();
 	}
 
-	@Override
+	
 	public String getAddress(int offset) {
 		if (!regAddresses.isEmpty())
 			return getRegAddress().getFullName();

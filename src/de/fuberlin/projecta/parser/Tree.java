@@ -19,12 +19,10 @@ public class Tree implements ISyntaxTree {
 
 	private final Symbol symbol;
 
-	private IToken token;
-
 	private final ArrayList<ISyntaxTree> children = new ArrayList<ISyntaxTree>();
-	private HashMap<String, Object> attributes;
-
-	ISyntaxTree parent = null;
+	private final HashMap<String, Object> attributes = new HashMap<String, Object>();
+	private IToken token;
+	private ISyntaxTree parent = null;
 
 	/**
 	 * Creates a new empty node for non-terminals.
@@ -33,7 +31,6 @@ public class Tree implements ISyntaxTree {
 	 */
 	public Tree(Symbol symbol) {
 		this.symbol = symbol;
-		attributes = new HashMap<String, Object>();
 	}
 
 	public void addChild(ISyntaxTree tree) {
@@ -53,7 +50,6 @@ public class Tree implements ISyntaxTree {
 	}
 
 	public Object getAttribute(String name) {
-
 		for (Entry<String, Object> attr : attributes.entrySet()) {
 			if (attr.getKey().equals(name)) {
 				return attr.getValue();

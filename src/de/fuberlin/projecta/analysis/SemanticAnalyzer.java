@@ -42,15 +42,13 @@ public class SemanticAnalyzer {
 
 	private static final String L_ATTRIBUTE = "L_ATTRIBUTE";
 
+	private final SymbolTableStack tables = new SymbolTableStack();;
+
 	private ISyntaxTree parseTree;
-
-	private SymbolTableStack tables;
-
 	private AbstractSyntaxTree AST;
 
 	public SemanticAnalyzer(ISyntaxTree tree) {
 		this.parseTree = tree;
-		tables = new SymbolTableStack();
 	}
 
 	public void analyze() throws SemanticException {

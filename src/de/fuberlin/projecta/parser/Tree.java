@@ -56,13 +56,8 @@ public class Tree implements ISyntaxTree {
 	}
 
 	@Override
-	public Object getAttribute(String name) {
-		for (Entry<String, Object> attr : attributes.entrySet()) {
-			if (attr.getKey().equals(name)) {
-				return attr.getValue();
-			}
-		}
-		return null;
+	public Object getAttribute(String key) {
+		return attributes.get(key);
 	}
 
 	@Override
@@ -72,22 +67,22 @@ public class Tree implements ISyntaxTree {
 	}
 
 	@Override
-	public boolean setAttribute(String name, Object value) {
-		for (Entry<String, Object> attr : attributes.entrySet()) {
-			if (attr.getKey().equals(name)) {
-				attr.setValue(value);
-				return true;
-			}
+	public boolean setAttribute(String key, Object value) {
+		if (!attributes.containsKey(key)) {
+			System.out.println("Warning, attribute not declared: " + key);
+			return false;
 		}
-		return false;
+		attributes.put(key, value);
+		return true;
 	}
 
-	public boolean addAttribute(String name) {
-		if (getAttribute(name) == null) {
-			attributes.put(name, null);
-			return true;
+	public boolean addAttribute(String key) {
+		if (attributes.containsKey(key)) {
+			System.out.println("Warning: attribute already declared: " + key);
+			return false;
 		}
-		return false;
+		attributes.put(key, null); // declare
+		return true;
 	}
 
 	@Override

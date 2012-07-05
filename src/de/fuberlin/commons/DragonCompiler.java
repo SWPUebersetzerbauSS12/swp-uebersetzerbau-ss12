@@ -19,7 +19,8 @@ public class DragonCompiler {
     private static String generateGASAssembler(String llvmCode) {
     	boolean debug = false;
     	boolean guiFlag = false;
-        return CodeGenerator.generateCode(llvmCode, debug, guiFlag);
+    	String assemblerType="gnu";
+        return CodeGenerator.generateCode(llvmCode, assemblerType,  debug, guiFlag);
     }
 
     // project ci with bi or bii

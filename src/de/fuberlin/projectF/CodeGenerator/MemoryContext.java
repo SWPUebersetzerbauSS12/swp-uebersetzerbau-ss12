@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import de.fuberlin.projectF.CodeGenerator.model.Array;
+import de.fuberlin.projectF.CodeGenerator.model.ArrayPointer;
 import de.fuberlin.projectF.CodeGenerator.model.MMXRegisterAddress;
+import de.fuberlin.projectF.CodeGenerator.model.RecordPointer;
 import de.fuberlin.projectF.CodeGenerator.model.StackAddress;
 import de.fuberlin.projectF.CodeGenerator.model.Variable;
 import de.fuberlin.projectF.CodeGenerator.model.RegisterAddress;
@@ -41,17 +44,39 @@ public class MemoryContext {
 
 	// Neue Variable auf dem Stack angeben
 	public Variable newStackVar(String name, String type) {
-		int size = 0;
-		if (type.equals("i32"))
-			size = 4;
-		else if(type.equals("double"))
-			size = 8;
+		int size = getSize(type);
 
 		stackVars++;
 		stackPointer -= size;
 		Variable newVar = new Variable(type, size, stackPointer, name);
 		variables.put(name, newVar);
 		return newVar;
+	}
+	
+	public Variable newStackVar(Variable var) {
+		int size = var.getSize();
+
+		stackVars++;
+		stackPointer -= size;
+		System.out.println("new Stack var " + var.name);
+		System.out.println("Stackpointer: " + stackPointer);
+		var.addStackAddress(new StackAddress(stackPointer));
+		System.out.println("Address " + var.getAddress());
+		variables.put(var.name, var);
+		System.out.println("Address " + variables.get(var.name).getAddress());
+		return var;
+	}
+	
+	public Array newArrayVar(String name, String type, int length) {
+		int typeSize = getSize(type);
+		int size = typeSize * length;
+		
+		stackVars++;
+		stackPointer -= typeSize;
+		Array newArr = new Array(type, size, typeSize, stackPointer, name);
+		stackPointer -= size + typeSize;
+		variables.put(name, newArr);
+		return newArr;
 	}
 
 	// Verweis auf Variable speichern
@@ -94,11 +119,7 @@ public class MemoryContext {
 
 	// Vorhandene Stackvariable hinzufügen, z. B. Funktionsparameter, nach Aufruf
 	public void addStackVar(String name, String type, int stackAddress) {
-		int size;
-		if (type.equals("double"))
-			size = 8;
-		else
-			size = 4;
+		int size = getSize(type);
 
 		Variable newVar = new Variable(type, size, stackAddress, name);
 		variables.put(name, newVar);
@@ -189,6 +210,11 @@ public class MemoryContext {
 		if (!variables.containsKey(name)) return false;
 		return variables.get(name).inMMXReg(regNumber);
 	}
+	
+	public boolean inMMXReg(String name) {
+		if (!variables.containsKey(name)) return false;
+		return variables.get(name).inMMXReg();
+	}
 
 	public RegisterAddress getFreeRegister(int i) {
 		for (RegisterAddress r : freeRegisters)
@@ -200,6 +226,26 @@ public class MemoryContext {
 		for (MMXRegisterAddress r : freeMMXRegisters)
 			if (r.regNumber == i) return r;
 		return null;
+	}
+	
+	public static int getSize(String type){
+		if (type.equals("i32"))
+			return 4;
+		if(type.equals("double"))
+			return 8;
+		return 0;
+	}
+
+	public void newArrayPtr(String name, String arr, String offset) {
+		variables.put(name, new ArrayPointer(variables.get(arr), new Integer(offset)));
+	}
+
+	public void newRecordPtr(String name, String rec, String offset) {
+		System.out.println("Name: " + name);
+		System.out.println("Record: " + rec);
+		System.out.println("Address " + variables.get(rec).getAddress());
+		System.out.println("Offset: " + offset);
+		variables.put(name, new RecordPointer(variables.get(rec), new Integer(offset)));
 	}
 
 }

@@ -39,12 +39,13 @@ public class Main {
 	static final String PARAM_REBUILD_DFA = "-rb"; //Gibt an, dass der DFA neu erstellt werden soll
 	// Allgemein
 	static final String PARAM_SOURCE_FILE = "-f"; // Gibt den Pfad zum Quellprogramm an
-	static final String PARAM_OUTPUT_FILE = "-o"; // Gigt den Pfad zur Ausgabedatei an
-	static final String PARAM_LLVM_INPUT_FILE = "-llvm"; // Gigt den Pfad zur LLVM Quelldatei an
+	static final String PARAM_OUTPUT_FILE = "-o"; // Gibt den Pfad zur Ausgabedatei an
+	static final String PARAM_LLVM_INPUT_FILE = "-llvm"; // Gibt den Pfad zur LLVM Quelldatei an
 	
 	// Standard Parameter
-	static final String DEFAULT_GRAMMAR_FILE = "input/de/fuberlin/projectci/quellsprache_bnf.txt";
-
+	static final String DEFAULT_GRAMMAR_FILE = "input/de/fuberlin/projectci/non-ambigous.txt";
+	static final String DEFAULT_TOKEN_DEFINITION_FILE = "input/de/fuberlin/bii/def/tokendefinition.rd";
+	static final String DEFAULT_SOURCE_FILE = "input/de/fuberlin/common/default.src";
 	// interne Daten
 	static String generatedLLVMCode = "";
 
@@ -78,13 +79,13 @@ public class Main {
 		// -d "/path/to/definitionFile"
 		String defFile = arguments.get(PARAM_DEF_FILE);
 		if( defFile == null )
-			defFile = "input/de/fuberlin/bii/de/tokendefinition.rd"; // fall-back
+			defFile = DEFAULT_TOKEN_DEFINITION_FILE; // fall-back
 		
 		// -f "/path/to/inputProgram"
-		final String inputFile = arguments.get(PARAM_SOURCE_FILE);
+		String inputFile = arguments.get(PARAM_SOURCE_FILE);
 		if (inputFile == null || inputFile.isEmpty()) {
-			System.out.println("Warning: No input file!");
-			return;
+			System.out.println("Warning: No input file! Use default input file");
+			inputFile = DEFAULT_SOURCE_FILE;			
 		}
 
 		//--------------------------
@@ -204,19 +205,23 @@ public class Main {
 		 */
 		boolean debug = false;
 		boolean guiFlag = false;
-		String machineCode = CodeGenerator.generateCode(optimized_llvm_code, debug, guiFlag);
-
+		String outputFile = null;
 		if(arguments.containsKey(PARAM_OUTPUT_FILE)) {
-			try{
-				FileWriter fstream = new FileWriter(arguments.get(PARAM_OUTPUT_FILE));
-				BufferedWriter out = new BufferedWriter(fstream);
-				out.write(machineCode);
-				out.close();
-			}catch(Exception e){
-				System.err.println(e.getMessage());
-			}
-		}else{
-			System.out.println(machineCode);
+			outputFile = arguments.get(PARAM_OUTPUT_FILE);
+		}
+		boolean exec = false;
+		String asmType = "gnu";
+		
+		
+		// TODO Der Assemblertyp ('gnu' oder 'intel') (siehe de.fuberlin.projectF.CodeGenerator.Translator) sollte über die Kommandozeile definierbar sein können		
+		String machineCode = CodeGenerator.generateCode(optimized_llvm_code, "gnu", debug, guiFlag);
+
+		if (outputFile != null) {
+			CodeGenerator.writeFile(exec, outputFile, machineCode);
+		}
+		
+		if (exec) {
+			CodeGenerator.exec(outputFile);
 		}
 
 		//--------------------------

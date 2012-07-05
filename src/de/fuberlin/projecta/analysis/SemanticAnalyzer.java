@@ -394,8 +394,9 @@ public class SemanticAnalyzer {
 			TokenType t = symbol.asTerminal();
 			switch (t) {
 			case BASIC:
-				BasicTokenType type = (BasicTokenType) tree
+				String typeString = (String) tree
 						.getAttribute(Parser.TOKEN_VALUE);
+				BasicTokenType type = BasicTokenType.valueOf(typeString.toUpperCase());
 				insertNode.addChild(new BasicType(type));
 				return;
 			case INT_LITERAL:

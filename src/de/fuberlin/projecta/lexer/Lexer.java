@@ -206,7 +206,7 @@ public class Lexer implements ILexer {
 			}
 			if (is.getNextChars(4).matches("int" + delimiterRegexp)) {
 				is.consumeChars(3);
-				return new Token(TokenType.BASIC, BasicTokenType.INT, this.line, offset);
+				return new Token(TokenType.BASIC, "int", this.line, offset);
 			}
 		}
 		if (s.equals("t")) {
@@ -226,7 +226,7 @@ public class Lexer implements ILexer {
 		}
 		if(s.equals("v") && is.getNextChars(5).matches("void" + delimiterRegexp)){
 			is.consumeChars(4);
-			return new Token(TokenType.BASIC, BasicTokenType.VOID, this.line, offset);
+			return new Token(TokenType.BASIC, "void", this.line, offset);
 		}
 		if (s.equals("w")
 				&& is.getNextChars(6).matches("while" + delimiterRegexp)) {
@@ -249,7 +249,7 @@ public class Lexer implements ILexer {
 			}
 			if (is.getNextChars(5).equals("real ")) {
 				is.consumeChars(4);
-				return new Token(TokenType.BASIC, BasicTokenType.REAL, this.line, offset);
+				return new Token(TokenType.BASIC, "real", this.line, offset);
 			}
 			if (is.getNextChars(7).matches("record" + delimiterRegexp)) {
 				is.consumeChars(6);
@@ -259,7 +259,7 @@ public class Lexer implements ILexer {
 		if (s.equals("s")) {
 			if (is.getNextChars(7).matches("string" + delimiterRegexp)) {
 				is.consumeChars(6);
-				return new Token(TokenType.BASIC, BasicTokenType.STRING,  this.line, offset);
+				return new Token(TokenType.BASIC, "string",  this.line, offset);
 			}
 		}
 		if (s.equals("b")) {
@@ -269,7 +269,7 @@ public class Lexer implements ILexer {
 			}
 			if(is.getNextChars(5).matches("bool" + delimiterRegexp)){
 				is.consumeChars(4);
-				return new Token(TokenType.BASIC, BasicTokenType.BOOL, line, offset);
+				return new Token(TokenType.BASIC, "bool", line, offset);
 			}
 		}
 		if (s.equals("p")

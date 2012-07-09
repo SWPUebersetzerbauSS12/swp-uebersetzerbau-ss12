@@ -19,4 +19,5 @@ public enum TokenType {
 	ExpressionDouble,
 	Cast,
 	Getelementptr,
+	Declare
 }

@@ -34,6 +34,7 @@ package de.fuberlin.bii.tokenmatcher;
 
 import de.fuberlin.bii.utils.Test;
 import de.fuberlin.commons.lexer.IToken;
+import de.fuberlin.commons.lexer.TokenType;
 
 
 public class Token implements IToken {
@@ -62,7 +63,14 @@ public class Token implements IToken {
 	}
 
 	public String getType() {
-		return type;
+		try {
+			return TokenType.byTerminalSymbol(type).toString();
+		} catch (Exception e) {
+			// Should be the EOF token...
+//			System.err.println("getType failed for "+type);
+//			e.printStackTrace();
+			return null;
+		}
 	}
 
 	public <E extends Enum<E>> E tryGetTypeAsEnum(Class<E> enumClass)
@@ -115,11 +123,11 @@ public class Token implements IToken {
 
 	@Override
 	public String toString() {
-		return "<" + getType() + ", " + getAttribute().toString() + ">";
+		return "<" + getType() + ", " + getAttribute() + ">";
 	}
 
 	@Override
 	public String getText() {
-		return getAttributeAsString();
+		return type;
 	}
 }

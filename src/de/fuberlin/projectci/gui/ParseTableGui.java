@@ -35,7 +35,7 @@ public class ParseTableGui {
 	private Set<State> gotoStates;
 
 	ParseTableGui() throws BNFParsingErrorException, InvalidGrammarException {
-		g = GrammarReader.readGrammar("./doc/quellsprache_bnf.txt");
+		g = new GrammarReader().readGrammar("./doc/quellsprache_bnf.txt");
 
 		// Parsetabelle aufbauen
 		ParseTableBuilder ptb = new SLRParseTableBuilder(g);

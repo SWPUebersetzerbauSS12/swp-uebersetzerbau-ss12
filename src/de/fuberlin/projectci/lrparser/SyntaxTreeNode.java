@@ -11,7 +11,6 @@ import de.fuberlin.commons.lexer.IToken;
 import de.fuberlin.commons.parser.ISymbol;
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.commons.util.LogFactory;
-import de.fuberlin.projecta.parser.Parser;
 import de.fuberlin.projectci.grammar.Grammar;
 import de.fuberlin.projectci.grammar.Symbol;
 import de.fuberlin.projectci.grammar.TerminalSymbol;
@@ -42,10 +41,6 @@ public class SyntaxTreeNode implements ISyntaxTree{
 	public SyntaxTreeNode(IToken token, TerminalSymbol symbol) {
 		this.symbol = symbol;
 		this.token=token;
-		if (token.getAttribute()!=null){
-			// TDOO Abhängigkeit zu Project A entfernen
-			setAttribute(Parser.TOKEN_VALUE, token.getAttribute());
-		}
 	}
 	// **************************************************************************** 
 	// * Implementierung von ISyntaxTree
@@ -182,28 +177,6 @@ public class SyntaxTreeNode implements ISyntaxTree{
 	@Override
 	public String toString() {
 		return toXML();
-	}
-	
-	/**
-	 * Rekursive Implementierung von toString
-	 * @param level
-	 * @return
-	 */
-	private void toString(StringBuffer strBuf, int level) {		
-		for (int i = 1; i < level; i++) {
-			strBuf.append("    ");
-		}
-		if (level>0){
-			strBuf.append("--> ");			
-		}
-		strBuf.append(symbol);
-		if (token!=null){
-			strBuf.append(token);
-		}
-		for (ISyntaxTree aChildNode : children) {
-			strBuf.append("\n");
-			((SyntaxTreeNode)aChildNode).toString(strBuf, level+1);			
-		}
 	}
 	
 	/**

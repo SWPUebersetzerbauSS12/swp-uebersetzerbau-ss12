@@ -82,34 +82,31 @@ public abstract class AbstractSyntaxTree extends Tree {
 	 */
 	public abstract boolean checkSemantics();
 
-	/**
-	 * An ast node equals one another ast node if it has the same type, the same
-	 * amount of children and all children must equal the corresponding child in
-	 * the node to check on equality.
-	 * 
-	 * TODO: Can someone please check this to work properly?
-	 */
 	@Override
-	public boolean equals(Object object) {
-		if (object != null) {
-			if (object.getClass() == this.getClass()) {
-				if (this instanceof BasicType) {
-					if (((BasicType) this).getTokenType() != ((BasicType) object)
-							.getTokenType()) {
-						return false;
-					}
-				}
-				ISyntaxTree ot = (ISyntaxTree) object;
-				if (getChildrenCount() == ot.getChildrenCount()) {
-					for (int i = 0; i < getChildrenCount(); i++) {
-						if (!getChild(i).equals(ot.getChild(i))) {
-							return false;
-						}
-					}
-					return true;
-				}
-			}
+	public String toString() {
+		// remove prefix from class name
+		final String className = this.getClass().getName().replaceAll("^.*\\.", "");
+
+		String value = "";
+		if (this instanceof BinaryOp) {
+			value += ((BinaryOp) this).getOp();
+		} else if (this instanceof IntLiteral) {
+			value += ((IntLiteral) this).getValue();
+		} else if (this instanceof Id) {
+			value += ((Id) this).getValue();
+		} else if (this instanceof UnaryOp) {
+			value += ((UnaryOp) this).getOp();
+		} else if (this instanceof BasicType) {
+			value += ((BasicType) this).getTokenType();
 		}
-		return false;
+
+		if (getTable() != null) {
+			value += "table contents: " + getTable();
+		}
+
+		if (value.isEmpty())
+			return className;
+		return className + " [" + value + "]";
 	}
+
 }

@@ -91,7 +91,8 @@ public abstract class EasyComparableObject {
 		  /**
 		  * booleans.
 		  */
-		  public static int hash( int aSeed, boolean aBoolean ) {
+		  @SuppressWarnings("unused")
+		public static int hash( int aSeed, boolean aBoolean ) {
 //		    System.out.println("boolean...");
 		    return firstTerm( aSeed ) + ( aBoolean ? 1 : 0 );
 		  }
@@ -99,7 +100,8 @@ public abstract class EasyComparableObject {
 		  /**
 		  * chars.
 		  */
-		  public static int hash( int aSeed, char aChar ) {
+		  @SuppressWarnings("unused")
+		public static int hash( int aSeed, char aChar ) {
 //		    System.out.println("char...");
 		    return firstTerm( aSeed ) + (int)aChar;
 		  }
@@ -128,14 +130,16 @@ public abstract class EasyComparableObject {
 		  /**
 		  * floats.
 		  */
-		  public static int hash( int aSeed , float aFloat ) {
+		  @SuppressWarnings("unused")
+		public static int hash( int aSeed , float aFloat ) {
 		    return hash( aSeed, Float.floatToIntBits(aFloat) );
 		  }
 
 		  /**
 		  * doubles.
 		  */
-		  public static int hash( int aSeed , double aDouble ) {
+		  @SuppressWarnings("unused")
+		public static int hash( int aSeed , double aDouble ) {
 		    return hash( aSeed, Double.doubleToLongBits(aDouble) );
 		  }
 

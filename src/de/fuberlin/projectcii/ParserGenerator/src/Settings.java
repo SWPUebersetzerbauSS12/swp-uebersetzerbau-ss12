@@ -9,7 +9,7 @@ import java.io.IOException;
  */
 
 public class Settings {
-	private static String SettingsFilePath = "settings.ini";
+	private static String SettingsFilePath = "input/de/fuberlin/projectcii/settings.ini";
 	private static String EOF = "eof";
 	private static String EPSILON = "@";
 	

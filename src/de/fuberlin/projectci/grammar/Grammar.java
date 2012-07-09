@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.fuberlin.commons.lexer.TokenType;
-
 public class Grammar {
  
 	// Die Liste enthält alle Produktion in der Reihenfolge, wie sie zur Grammatik hinzugefügt worden
@@ -51,7 +49,7 @@ public class Grammar {
 	 * Markiert das rechte Ende des Inputstrings. Wird für die Followmengen benötigt.
 	 * Im Drachenbuch als $ notiert.
 	 */
-	public static final TerminalSymbol INPUT_ENDMARKER = new TerminalSymbol(TokenType.EOF.terminalSymbol()); // 'eof'
+	public static final TerminalSymbol INPUT_ENDMARKER = new TerminalSymbol("EOF"); // 'eof'
 	
 	
 	public Production getStartProduction(){		

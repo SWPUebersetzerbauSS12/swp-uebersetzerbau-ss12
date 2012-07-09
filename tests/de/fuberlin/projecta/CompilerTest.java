@@ -85,9 +85,9 @@ public class CompilerTest {
 	
 	@Test
 	public void testLiteralComparison(){
-		final String code = "def int main(){bool a; a = 3 == 4; print a; return 1;}";
+		final String code = "def int main(){bool a; bool b; bool c; bool d; a = 3 == 4; b = 3 == 3; c = 3 != 4; d = 3 != 3; print a; print b; print c; print d; return 1;}";
 		String output = executeCode(code);
-		assertEquals(output, "0");
+		assertEquals(output, "0110");
 	}
 
 	@Test

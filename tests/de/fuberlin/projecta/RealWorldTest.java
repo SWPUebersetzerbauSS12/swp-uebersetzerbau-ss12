@@ -27,4 +27,15 @@ public class RealWorldTest {
 		String output = CompilerTest.executeCode(source);
 		assertEquals(output, "3");
 	}
+	
+	@Test
+	public void compareTwoFunctions(){
+		String source = ""+
+			"def int foo(int x){"+
+			"return x;"+
+			"}"+
+		"def int main() {bool x; x = foo(1) <= foo(2); print x; return 1;}";
+		String output = CompilerTest.executeCode(source);
+		assertEquals(output, "0");
+	}
 }

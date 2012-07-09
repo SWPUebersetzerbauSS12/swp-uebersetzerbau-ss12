@@ -1,6 +1,5 @@
 package de.fuberlin.projecta.lexer;
 
-import de.fuberlin.bii.lexergen.LexergeneratorException;
 import de.fuberlin.commons.lexer.ILexer;
 import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.projecta.lexer.io.ICharStream;
@@ -390,7 +389,8 @@ public class Lexer implements ILexer {
 	}
 	
 	@Override
-	public void reset() throws LexergeneratorException {
-		// TODO Auto-generated method stub	
+	public void reset() {
+		is.resetOffset();
+		line = 1;
 	}
 }

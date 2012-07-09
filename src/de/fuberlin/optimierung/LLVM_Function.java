@@ -746,6 +746,32 @@ public class LLVM_Function {
 		
 	}
 	
+	/**
+	 * Ersetze Multiplikationen/Divisionen mit Zweierpotenz durch
+	 * schneller zu berechnende Bitshifts
+	 */
+	public void strengthReduction() {
+		for(LLVM_Block b : this.blocks) {
+			if(!b.isEmpty()) {
+				for(LLVM_GenericCommand c = b.getFirstCommand(); c!=null; c=c.getSuccessor()) {
+					if(c.getOperation()==LLVM_Operation.MUL) {
+						LinkedList<LLVM_Parameter> operands = c.getOperands();
+						LLVM_Parameter o = operands.getFirst();
+						if(o.getType()==LLVM_ParameterType.INTEGER &&
+								o.getName().equals("2")) {
+							System.out.println("Multiplikation mit 2");
+						}
+						o = operands.get(1);
+						if(o.getType()==LLVM_ParameterType.INTEGER &&
+								o.getName().equals("2")) {
+							System.out.println("Multiplikation mit 2");
+						}
+					}
+				}
+			}
+		}
+	}
+	
 	
 	/*
 	 * *********************************************************

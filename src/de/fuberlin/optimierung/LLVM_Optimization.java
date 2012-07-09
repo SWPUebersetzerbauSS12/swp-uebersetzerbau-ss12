@@ -70,6 +70,8 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 			// Entferne Bloecke, die nur unbedingten Sprungbefehl enthalten
 			tmp.deleteEmptyBlocks();
 			
+			tmp.strengthReduction();
+			
 			// Optimierte Ausgabe
 			tmp.updateUnnamedLabelNames();
 			outputLLVM += tmp.toString();
@@ -206,7 +208,7 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 			//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_array");
 			//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_parsertest1");
 			//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/test.ll");
-			String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/test4.s");//test_new.ll");
+			String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/strength_reduction_argv.s");//test_new.ll");
 	
 			System.out.println("###########################################################");
 			System.out.println("################## Optimization Input #####################");

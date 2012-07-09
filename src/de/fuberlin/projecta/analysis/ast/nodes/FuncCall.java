@@ -41,24 +41,29 @@ public class FuncCall extends Type {
 		if (func != null) {
 			ret = "call " + func.getType().genCode();
 			if (!func.getParams().isEmpty()) {
-				boolean tmp = false;
+				int counter = 0;
 				ret += " (";
 				for (ISyntaxTree child : getChild(1).getChildren()) {
-					tmp = true;
-					Type node = null;
+					if(!(child instanceof IntLiteral || child instanceof RealLiteral || child instanceof BoolLiteral)){
+						counter++;
+						Type node = null;
 
-					if (child instanceof Id)
-						ret += ((Id) child).getType().genCode() + ", ";
-					else if (child instanceof Type) {
-						node = (Type) child;
-						ret += node.genCode() + ", ";
-					} else {
-						// WTF?!
+						if (child instanceof Id)
+							ret += ((Id) child).getType().genCode() + ", ";
+						else if (child instanceof Type) {
+							node = (Type) child;
+							ret += node.genCode() + ", ";
+						} else {
+							// WTF?!
+						}	
 					}
 				}
-				if (tmp)
+				if (counter > 0){
 					ret = ret.substring(0, ret.length() - 2);
-				ret += ")*";
+					ret += ")*";
+				}else {
+					ret = ret.substring(0,ret.length()-1);
+				}
 			}
 
 			ret += " @" + func.getId() + "(";

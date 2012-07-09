@@ -82,6 +82,13 @@ public class CompilerTest {
 		String output = executeCode(code);
 		assertEquals(output, "21");
 	}
+	
+	@Test
+	public void testLiteralComparison(){
+		final String code = "def int main(){bool a; a = 3 == 4; print a; return 1;}";
+		String output = executeCode(code);
+		assertEquals(output, "0");
+	}
 
 	@Test
 	public void testWhile() {

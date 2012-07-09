@@ -159,6 +159,7 @@ public class LLVM_Block{
 					LLVM_GenericCommand def = this.function.getRegisterMap().
 							getDefinition(registerName);
 					
+					// TODO: was ist mit structs?
 					if(def!=null && def.getOperation()!=LLVM_Operation.GETELEMENTPTR 
 							&& !(def.getOperation()==LLVM_Operation.ALLOCA
 							&& def.getTarget().getTypeString().startsWith("["))) {

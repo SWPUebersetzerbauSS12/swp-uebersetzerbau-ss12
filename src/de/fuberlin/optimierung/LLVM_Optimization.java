@@ -3,6 +3,8 @@ package de.fuberlin.optimierung;
 import java.io.*;
 import java.util.LinkedList;
 
+import de.fuberlin.optimierung.commands.LLVM_GenericCommand;
+
 public class LLVM_Optimization implements ILLVM_Optimization {
 	
 	private String code = "";
@@ -40,7 +42,7 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 		
 		// Gehe Funktionen durch
 		for(LLVM_Function tmp : this.functions) {
-	
+			
 			// Erstelle Flussgraph
 			tmp.createFlowGraph();
 			
@@ -51,7 +53,7 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 			tmp.constantFolding();
 			
 			// Reaching vor Lebendigkeitsanalyse
-			// Koennen tote Stores entstehen
+			// Koennen tote Stores entstehen, also vor live variable analysis
 			tmp.reachingAnalysis();
 			
 			// Dead register elimination
@@ -59,6 +61,7 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 			tmp.eliminateDeadBlocks();
 			
 			// CommonExpressions
+			// Store/Load-Paare muessen vorher eliminiert werden, also nach reaching analysis
 			tmp.removeCommonExpressions();
 			
 			// Globale Lebendigkeitsanalyse fuer Store, Load
@@ -203,7 +206,7 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 			//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_array");
 			//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_parsertest1");
 			//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/test.ll");
-			String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/test.s");//test_new.ll");
+			String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/test4.s");//test_new.ll");
 	
 			System.out.println("###########################################################");
 			System.out.println("################## Optimization Input #####################");

@@ -1,6 +1,7 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 import de.fuberlin.commons.lexer.TokenType;
+import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
@@ -375,7 +376,30 @@ public class BinaryOp extends Type {
 		Type leftChild = (Type) this.getChild(0);
 		Type rightChild = (Type) this.getChild(1);
 		if (leftChild.toTypeString().equals(rightChild.toTypeString())) {
-			return true;
+			switch(this.op){
+			case OP_ADD:
+			case OP_MUL:
+			case OP_DIV:
+			case OP_MINUS:
+				for(ISyntaxTree child : this.getChildren()){
+					if(((Type)child).toTypeString().equals(TYPE_STRING_STRING)){
+						throw new TypeErrorException("Cannot perform arithmetic operation on Strings");
+					}
+				}
+			case OP_AND:
+			case OP_OR:
+			case OP_NOT:
+			case OP_LT:
+			case OP_LE:
+			case OP_EQ:
+			case OP_GE:
+			case OP_GT:
+			case OP_NE:
+			case OP_ASSIGN:
+				return true;
+			default:
+				throw new TypeErrorException("Undefined Error in BinaryOp");
+			}
 		}
 		throw new TypeErrorException(
 				"Operands have to be of same type but are:\n left operand: "
@@ -386,7 +410,26 @@ public class BinaryOp extends Type {
 	@Override
 	public String toTypeString() {
 		// if both operands are not equal, checkTypes will catch this
-		return ((Type) this.getChild(0)).toTypeString();
+		switch(this.op){
+		case OP_ADD:
+		case OP_MUL:
+		case OP_DIV:
+		case OP_MINUS:
+			return ((Type) this.getChild(0)).toTypeString();
+		case OP_AND:
+		case OP_OR:
+		case OP_LT:
+		case OP_LE:
+		case OP_EQ:
+		case OP_GE:
+		case OP_GT:
+		case OP_NE:
+		case OP_NOT:
+			return Type.TYPE_BOOL_STRING;
+		default:
+			return Type.TYPE_VOID_STRING;
+		}
+		
 	}
 
 }

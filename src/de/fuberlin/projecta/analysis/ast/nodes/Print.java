@@ -1,5 +1,8 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
 import de.fuberlin.projecta.lexer.BasicTokenType;
@@ -60,7 +63,8 @@ public class Print extends Statement {
 
 	@Override
 	public boolean checkTypes() {
-		// TODO Auto-generated method stub
-		return false;
+		String[] b = {Type.TYPE_BOOL_STRING,Type.TYPE_STRING_STRING,Type.TYPE_INT_STRING,Type.TYPE_REAL_STRING};
+		ArrayList<String> validTypes = new ArrayList<String>(Arrays.asList(b));
+		return validTypes.contains(((Type)getChild(0)).toTypeString());
 	}
 }

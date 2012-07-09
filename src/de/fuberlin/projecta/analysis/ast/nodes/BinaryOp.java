@@ -85,23 +85,38 @@ public class BinaryOp extends Type {
 				|| op == TokenType.OP_LT || op == TokenType.OP_LE
 				|| op == TokenType.OP_GT || op == TokenType.OP_GE) {
 			// load value of id1 if it is an id!!!
-			if (id1 != null) {
-				ret += LLVM.loadVar(id1);
-			}
-			// load value of id2 if it is an id!!!
-			if (id2 != null) {
-				ret += LLVM.loadVar(id2);
-			}
-			if (id1 != null && id2 != null) {
-				int tmp = block.getNewVar();
-				ret += "%" + tmp + " = " + getIntOrReal(id1, t1) + " "
-						+ getOpName(id1, t1) + " ";
-				ret += SymbolTableHelper.lookup(id1.getValue(), this).getType()
-						.genCode()
-						+ " %";
-				ret += LLVM.getMem(id1) + ", %";
-				ret += LLVM.getMem(id2) + "\n";
-			}
+						ret += LLVM.loadVar(id1);
+						// load value of id2 if it is an id!!!
+						ret += LLVM.loadVar(id2);
+						int mem = block.getNewVar();
+						if (id1 != null && id2 != null) {
+
+							ret += "%" + mem + " = " + getIntOrReal(id1, t1) + " "
+									+ getOpName(id1, t1) + " ";
+							ret += SymbolTableHelper.lookup(id1.getValue(), this).getType()
+									.genCode()
+									+ " %";
+							ret += LLVM.getMem(id1) + ", %";
+							ret += LLVM.getMem(id2) + "\n";
+						} else if (t1 != null && t2 != null) {
+							ret += "%" + mem + " = " + getIntOrReal(id1, t1) + " "
+									+ getOpName(id1, t1) + " ";
+							ret += t1.genCode() + ", ";
+							ret += t2.genCode().split(" ")[1] + "\n";
+						} else if (id1 != null && t2 != null) {
+							ret += "%" + mem + " = " + getIntOrReal(id1, t1) + " "
+									+ getOpName(id1, t1) + " ";
+							ret += SymbolTableHelper.lookup(id1.getValue(), this).getType()
+									.genCode() + " %";
+							ret += LLVM.getMem(id1) + ", %";
+							ret += t2.genCode().split(" ")[1] + "\n";
+						} else if (t1 != null && id2 != null) {
+							ret += "%" + mem + " = " + getIntOrReal(id1, t1) + " "
+									+ getOpName(id1, t1) + " ";
+							ret += t1.genCode() + ", %";
+							ret += LLVM.getMem(id2) + "\n";
+						}
+						this.setValMemory(mem);
 		} else if (op == TokenType.OP_ADD || op == TokenType.OP_MINUS
 				|| op == TokenType.OP_DIV || op == TokenType.OP_MUL) {
 			String type = "";

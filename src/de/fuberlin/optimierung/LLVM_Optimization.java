@@ -10,8 +10,8 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 	
 	private LinkedList<LLVM_Function> functions;
 	
-	public static final boolean DEBUG = false;
-	public static final boolean STATISTIC = false;
+	public static final boolean DEBUG = true;
+	public static final boolean STATISTIC = true;
 	
 	public LLVM_Optimization(){
 		functions = new LinkedList<LLVM_Function>();
@@ -60,7 +60,7 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 			
 			// CommonExpressions
 			// Store/Load-Paare muessen vorher eliminiert werden, also nach reaching analysis
-			tmp.removeCommonExpressions();
+			//tmp.removeCommonExpressions();
 			
 			// Globale Lebendigkeitsanalyse fuer Store, Load
 			tmp.globalLiveVariableAnalysis();
@@ -205,8 +205,9 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_array");
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_parsertest1");
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/test.ll");
-				String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/strength_reduction_argv.s");//test_new.ll");
-		
+				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/strength_reduction_argv.s");//test_new.ll");
+				String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_maschco");//test_new.ll");
+				
 				System.out.println("###########################################################");
 				System.out.println("################## Optimization Input #####################");
 				System.out.println("###########################################################");

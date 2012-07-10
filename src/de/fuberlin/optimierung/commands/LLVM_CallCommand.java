@@ -60,6 +60,8 @@ public class LLVM_CallCommand extends LLVM_GenericCommand{
 	}
 	
 	public String toString() {
+		if (target == null || operands == null) return null;
+		
 		String cmd_out = "";
 		
 		if (startsnotwithcall){

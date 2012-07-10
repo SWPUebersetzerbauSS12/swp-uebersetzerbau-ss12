@@ -33,6 +33,8 @@ public class LLVM_AllocaCommand extends LLVM_GenericCommand{
 	}
 	
 	public String toString(){
+		if (target == null || operands == null) return null;
+		
 		String cmd_output = target.getName() + " = ";
 		
 		switch(operation){

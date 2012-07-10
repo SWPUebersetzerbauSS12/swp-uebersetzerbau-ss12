@@ -46,6 +46,8 @@ public class LLVM_InsertExtractValueCommand extends LLVM_GenericCommand {
 	}
 	
 	public String toString(){
+		if (target == null || operands == null) return null;
+		
 		String cmd_out = target.getName() + " = ";
 		if (this.getOperation() == LLVM_Operation.INSERTVALUE){
 			cmd_out += "insertvalue ";

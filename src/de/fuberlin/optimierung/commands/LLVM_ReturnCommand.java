@@ -33,6 +33,8 @@ public class LLVM_ReturnCommand extends LLVM_GenericCommand{
 	}
 	
 	public String toString() {
+		if (operands == null || operands.size() < 1) return null;
+		
 		String cmd_output = "ret ";
 		
 		switch(operation){

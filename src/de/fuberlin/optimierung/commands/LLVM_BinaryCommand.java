@@ -94,6 +94,8 @@ public class LLVM_BinaryCommand extends LLVM_GenericCommand{
 	}
 	
 	public String toString() {
+		if (target == null || operands == null || operands.size() < 2) return null;
+		
 		String cmd_output = target.getName()+" = ";
 		
 		switch(operation){

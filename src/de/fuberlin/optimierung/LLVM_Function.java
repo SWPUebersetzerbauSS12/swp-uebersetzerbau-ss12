@@ -9,8 +9,8 @@ public class LLVM_Function {
 	String func_define = "";
 	String afterFunc = "";
 	
-	private LLVM_Block startBlock;
-	private LLVM_Block endBlock;
+	//private LLVM_Block startBlock;
+	//private LLVM_Block endBlock;
 	private ArrayList<LLVM_Block> blocks;
 	private int numberBlocks;
 	
@@ -18,7 +18,7 @@ public class LLVM_Function {
 	
 	private LLVM_RegisterMap registerMap = new LLVM_RegisterMap();
 	
-	public LLVM_Function(String code) {
+	public LLVM_Function(String code) throws LLVM_OptimizationException{
 		func_define = "define " + code.substring(0, code.indexOf("\n"));
 		code = code.substring(code.indexOf("\n")+1);
 		
@@ -31,8 +31,8 @@ public class LLVM_Function {
 		for(int i = 0; i < this.numberBlocks; i++) {
 			this.blocks.add(new LLVM_Block(codeBlocks[i],this));
 		}
-		this.startBlock = this.blocks.get(0);
-		this.endBlock = this.blocks.get(this.numberBlocks-1);
+		//this.startBlock = this.blocks.get(0);
+		//this.endBlock = this.blocks.get(this.numberBlocks-1);
 	}
 	
 	/*
@@ -46,7 +46,7 @@ public class LLVM_Function {
 	 * nextBlocks und previousBlocks der Bloecke werden gesetzt.
 	 * Labels werden gegebenenfalls erstellt.
 	 */
-	public void createFlowGraph() {
+	public void createFlowGraph() throws LLVM_OptimizationException{
 		
 		// Teste, ob Labels gesetzt sind
 		// Wenn nein, dann erstelle die Labels
@@ -170,7 +170,7 @@ public class LLVM_Function {
 	 * Definition und Verwendungen der Register werden in registerMap abgelegt
 	 * Alte Informationen werden entfernt, aktuelle gesetzt
 	 */
-	public void createRegisterMaps() {
+	public void createRegisterMaps() throws LLVM_OptimizationException{
 		
 		// Loesche alte Werte
 		this.registerMap.clean();
@@ -227,7 +227,7 @@ public class LLVM_Function {
 	 * Erstelle IN OUT Mengen pro Block fuer Lebendigkeitsanalyse
 	 * Entferne anschliessend ueberfluessige Stores
 	 */
-	public void globalLiveVariableAnalysis() {
+	public void globalLiveVariableAnalysis() throws LLVM_OptimizationException{
 		for(LLVM_Block b : this.blocks) {
 			b.createDefUseSets();
 		}
@@ -267,7 +267,7 @@ public class LLVM_Function {
 	 * Erstelle IN OUT Mengen pro Block fuer Lebendigkeitsanalyse
 	 * Entferne anschliessend ueberfluessige Stores
 	 */
-	public void reachingAnalysis() {
+	public void reachingAnalysis() throws LLVM_OptimizationException{
 		for(LLVM_Block b : this.blocks) {
 			b.createGenKillSets();
 		}
@@ -286,7 +286,7 @@ public class LLVM_Function {
 	/**
 	 * Löscht alle doppelten Befehle in einem Block
 	 */
-	public void removeCommonExpressions (){
+	public void removeCommonExpressions () throws LLVM_OptimizationException{
 		for (LLVM_Block block : blocks){
 			block.removeCommonExpressions();
 		}
@@ -539,7 +539,7 @@ public class LLVM_Function {
 	}
 	
 	
-	public void constantFolding() {
+	public void constantFolding() throws LLVM_OptimizationException{
 		
 		LinkedList<LLVM_GenericCommand> changed_cmds = new LinkedList<LLVM_GenericCommand>();
 		
@@ -730,7 +730,7 @@ public class LLVM_Function {
 	 * eliminateDeadRegistersGlobal und eliminateDeadRegistersFromList werden als
 	 * Unterfunktionen verwendet
 	 */
-	public void eliminateDeadRegisters() {
+	public void eliminateDeadRegisters() throws LLVM_OptimizationException{
 		
 		LinkedList<LLVM_GenericCommand> deletedCommands;
 		deletedCommands = this.eliminateDeadRegistersGlobal();
@@ -750,7 +750,7 @@ public class LLVM_Function {
 	 * Ersetze Multiplikationen/Divisionen mit Zweierpotenz durch
 	 * schneller zu berechnende Bitshifts
 	 */
-	public void strengthReduction() {
+	public void strengthReduction() throws LLVM_OptimizationException{
 		for(LLVM_Block b : this.blocks) {
 			if(!b.isEmpty()) {
 				for(LLVM_GenericCommand c = b.getFirstCommand(); c!=null; c=c.getSuccessor()) {
@@ -909,7 +909,7 @@ public class LLVM_Function {
 	 * und gegebenenfalls ebenfalls geloescht
 	 * Abhaengigkeiten zwischen Bloecken werden aufgeloest
 	 */
-	public void eliminateDeadBlocks() {
+	public void eliminateDeadBlocks() throws LLVM_OptimizationException{
 		LinkedList<LLVM_Block> deletedBlocks;
 		deletedBlocks = this.eliminateDeadBlocksGlobal();
 	
@@ -924,7 +924,7 @@ public class LLVM_Function {
 	/**
 	 * Entferne Bloecke, die nur unbedingten Sprungbefehl enthalten
 	 */
-	public void deleteEmptyBlocks() {
+	public void deleteEmptyBlocks() throws LLVM_OptimizationException{
 		// Gehe Bloecke durch
 		LinkedList<LLVM_Block> toDelete = new LinkedList<LLVM_Block>();
 		for(LLVM_Block actualBlock : this.blocks) {
@@ -934,7 +934,7 @@ public class LLVM_Function {
 				// Block kann geloescht werden
 				LLVM_Block targetBlock = actualBlock.getNextBlocks().getFirst();
 				String targetBlockLabel = targetBlock.getLabel();
-				String actualBlockLabel = actualBlock.getLabel();
+				//String actualBlockLabel = actualBlock.getLabel();
 				
 				// Gehe Vorgaengerbloecke durch
 				for(LLVM_Block previousBlock : actualBlock.getPreviousBlocks()) {
@@ -1029,7 +1029,7 @@ public class LLVM_Function {
 	 * Achtung: nur direkt vor der Ausgabe des Codes nutzen, Hashmaps
 	 * werden nicht aktualisiert.
 	 */
-	public void updateUnnamedLabelNames() {
+	public void updateUnnamedLabelNames() throws LLVM_OptimizationException{
 	
 		String nextUnnamed = "%1";
 		int nextNumber = 1;

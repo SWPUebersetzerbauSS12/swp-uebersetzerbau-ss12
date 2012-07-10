@@ -38,15 +38,11 @@ public class LLVM_Block{
 	// Kompletter Code des Blocks als String
 	private String blockCode;
 
-	public LLVM_Block(String blockCode, LLVM_Function function) {
+	public LLVM_Block(String blockCode, LLVM_Function function) throws LLVM_OptimizationException{
 		
 		this.function = function;
 		this.blockCode = blockCode;		
 		this.createCommands();
-		this.optimizeBlock();
-	}
-
-	public void optimizeBlock() {
 	}
 	
 	/**
@@ -54,7 +50,7 @@ public class LLVM_Block{
 	 * Bei Änderungen wird ConstantPropagation aufgerufen
 	 * Doppelte Befehle werden nur überprüft, falls in Whitelist
 	 */
-	public void removeCommonExpressions() {
+	public void removeCommonExpressions() throws LLVM_OptimizationException{
 		List<String> whitelist = new ArrayList<String>();
 		LinkedList<LLVM_GenericCommand> changed = new LinkedList<LLVM_GenericCommand>();
 		HashMap<String, LinkedList<LLVM_GenericCommand>> commonex = new HashMap<String, LinkedList<LLVM_GenericCommand>>();
@@ -466,7 +462,7 @@ public class LLVM_Block{
 		return false;
 	}
 	
-	private void createCommands() {
+	private void createCommands() throws LLVM_OptimizationException{
 		String commandsArray[] = this.blockCode.split("\n");
 		
 		int i = 0;
@@ -497,7 +493,7 @@ public class LLVM_Block{
 	
 	// Ermittelt Operation und erzeugt Command mit passender Klasse
 	//TODO elegante Methode finden, switch funktioniert auf Strings nicht!
-	private LLVM_GenericCommand mapCommands(String cmdLine, LLVM_GenericCommand predecessor){
+	private LLVM_GenericCommand mapCommands(String cmdLine, LLVM_GenericCommand predecessor) throws LLVM_OptimizationException{
 		
 		// comment handling
 		if (cmdLine.startsWith(";")){
@@ -543,13 +539,11 @@ public class LLVM_Block{
 			return new LLVM_CallCommand(cmdLine, predecessor, this);
 		}else if(cmdLine.contains(" = icmp ")){
 			return new LLVM_IcmpCommand(cmdLine, predecessor, this);
-		}else if(!cmdLine.isEmpty()){
-			return new LLVM_DummyCommand(cmdLine, predecessor, this);
 		}else{
-			return null;
+			throw new LLVM_OptimizationException("Nicht implementiertes LLVM_Kommando: " + cmdLine);
 		}
 	}
-	
+
 	/*
 	 * *********************************************************
 	 * *********** Hilfsfunktionen *****************************

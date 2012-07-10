@@ -746,46 +746,6 @@ public class LLVM_Function {
 		
 	}
 	
-	/**
-	 * Ersetze Multiplikationen/Divisionen mit Zweierpotenz durch
-	 * schneller zu berechnende Bitshifts
-	 */
-	public void strengthReduction() throws LLVM_OptimizationException{
-		for(LLVM_Block b : this.blocks) {
-			if(!b.isEmpty()) {
-				for(LLVM_GenericCommand c = b.getFirstCommand(); c!=null; c=c.getSuccessor()) {
-					if(c.getOperation()==LLVM_Operation.MUL) {
-						// Multiplikation gefunden
-						LinkedList<LLVM_Parameter> operands = c.getOperands();
-						LLVM_Parameter o = operands.getFirst();
-						if(o.getType()==LLVM_ParameterType.INTEGER &&
-								o.getName().equals("2")) {
-
-							LLVM_Parameter sndOperand = operands.get(1);
-							LLVM_Parameter tmp = new LLVM_Parameter(sndOperand.getName(),
-									sndOperand.getType(), sndOperand.getTypeString());
-							sndOperand.setName("1");
-							sndOperand.setType(LLVM_ParameterType.INTEGER);
-							sndOperand.setTypeString(o.getTypeString());
-							operands.set(0, tmp);		
-							c.setOperation(LLVM_Operation.SHL);
-						}
-						else {
-							o = operands.get(1);
-							if(o.getType()==LLVM_ParameterType.INTEGER &&
-								o.getName().equals("2")) {
-								
-								c.setOperation(LLVM_Operation.SHL);
-								o.setName("1");
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	
 	/*
 	 * *********************************************************
 	 * *********** Tote Bloecke entfernen **********************
@@ -1012,6 +972,77 @@ public class LLVM_Function {
 			// Entferne zu loeschenden Block aus this.blocks
 			this.blocks.remove(del);
 			this.numberBlocks--;
+		}
+	}
+	
+	/*
+	 * *********************************************************
+	 * *********** Strength Reduction **************************
+	 * *********************************************************
+	 */
+	
+	/**
+	 * Ersetze Multiplikationen/Divisionen mit Zweierpotenz durch
+	 * schneller zu berechnende Bitshifts in gegebenem Befehl c.
+	 * Hilfsfunktion fuer strengthReduction.
+	 * @param c gegebener Befehl
+	 */
+	private void commandStrengthReduction(LLVM_GenericCommand c) {
+		if(c.getOperation()==LLVM_Operation.MUL) {
+			// Multiplikation gefunden
+			LinkedList<LLVM_Parameter> operands = c.getOperands();
+			
+			LLVM_Parameter o = operands.getFirst();
+			if(o.getType()==LLVM_ParameterType.INTEGER) {
+				
+				// Im ersten Operanden koennte eine Zweierpotenz stehen 
+				int powerOfTwo = 1;
+				for(int i=1; i<32; i++) {
+					powerOfTwo = powerOfTwo * 2;
+					if ( (new Integer(powerOfTwo)).toString().equals(o.getName()) ) {
+						// Passende Zweierpotenz wurde gefunden
+						LLVM_Parameter sndOperand = operands.get(1);
+						LLVM_Parameter tmp = new LLVM_Parameter(sndOperand.getName(),
+								sndOperand.getType(), sndOperand.getTypeString());
+						sndOperand.setName((new Integer(i)).toString());
+						sndOperand.setType(LLVM_ParameterType.INTEGER);
+						sndOperand.setTypeString(o.getTypeString());
+						operands.set(0, tmp);		
+						c.setOperation(LLVM_Operation.SHL);
+					}
+				}
+			}
+			else {
+				o = operands.get(1);
+				if(o.getType()==LLVM_ParameterType.INTEGER) {
+					
+					// Im zweiten Operanden koennte eine Zweierpotenz stehen 	
+					int powerOfTwo = 1;
+					for(int i=1; i<32; i++) {
+						powerOfTwo = powerOfTwo * 2;
+						if ( (new Integer(powerOfTwo)).toString().equals(o.getName()) ) {
+							// Passende Zweierpotenz wurde gefunden
+							c.setOperation(LLVM_Operation.SHL);
+							o.setName((new Integer(i)).toString());
+						}
+					}
+					
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Ersetze Multiplikationen/Divisionen mit Zweierpotenz durch
+	 * schneller zu berechnende Bitshifts
+	 */
+	public void strengthReduction() throws LLVM_OptimizationException{
+		for(LLVM_Block b : this.blocks) {
+			if(!b.isEmpty()) {
+				for(LLVM_GenericCommand c = b.getFirstCommand(); c!=null; c=c.getSuccessor()) {
+					this.commandStrengthReduction(c);
+				}
+			}
 		}
 	}
 	

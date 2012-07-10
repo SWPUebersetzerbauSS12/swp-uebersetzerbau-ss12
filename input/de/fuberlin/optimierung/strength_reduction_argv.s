@@ -19,7 +19,7 @@ define i32 @main(i32 %argc, i8** %argv) nounwind {
   %7 = call i32 @atoi(i8* %6) nounwind readonly
   store i32 %7, i32* %a, align 4
   %8 = load i32* %a, align 4
-  %9 = mul i32 %8, 2
+  %9 = mul i32 2, %8
   store i32 %9, i32* %b, align 4
   %10 = load i32* %b, align 4
   %q = getelementptr inbounds [3 x i8]* @.str, i32 0, i32 0

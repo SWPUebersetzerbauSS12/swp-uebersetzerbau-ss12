@@ -760,7 +760,7 @@ public class LLVM_Function {
 						LLVM_Parameter o = operands.getFirst();
 						if(o.getType()==LLVM_ParameterType.INTEGER &&
 								o.getName().equals("2")) {
-							System.out.println("Multiplikation mit 2");
+
 							LLVM_Parameter sndOperand = operands.get(1);
 							LLVM_Parameter tmp = new LLVM_Parameter(sndOperand.getName(),
 									sndOperand.getType(), sndOperand.getTypeString());
@@ -774,7 +774,7 @@ public class LLVM_Function {
 							o = operands.get(1);
 							if(o.getType()==LLVM_ParameterType.INTEGER &&
 								o.getName().equals("2")) {
-								System.out.println("Multiplikation mit 2");
+								
 								c.setOperation(LLVM_Operation.SHL);
 								o.setName("1");
 							}

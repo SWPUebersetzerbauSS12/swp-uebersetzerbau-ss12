@@ -59,6 +59,7 @@ public class ShiftAction<Element extends Symbol, SpecializedClosure extends Clos
 		this.terminalToHandle = theTerminalToHandle;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object handleOnAutomat( ItemAutomatInterior<Element, SpecializedClosure> itemAutomat) throws ShiftException {
 	  if (itemAutomat.getInputQueue().peek().equals(terminalToHandle.getSymbol())) {
 			itemAutomat.getClosureStack().push( toClosure);
@@ -91,7 +92,8 @@ public class ShiftAction<Element extends Symbol, SpecializedClosure extends Clos
 		if ( !(theOtherObject instanceof ShiftAction))
 			return false;
 		
-		ShiftAction<Symbol, Closure> theOtherShiftAction = (ShiftAction<Symbol, Closure> ) theOtherObject;
+		@SuppressWarnings("unchecked")
+		final ShiftAction<Symbol, Closure> theOtherShiftAction = (ShiftAction<Symbol, Closure> ) theOtherObject;
 		
 		return this.toClosure.equals( theOtherShiftAction.toClosure) 
 				    && this.terminalToHandle.equals( theOtherShiftAction.terminalToHandle);

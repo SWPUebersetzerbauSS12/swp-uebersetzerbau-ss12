@@ -42,6 +42,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.ConcreteSy
  */
 public class Leaf<Value> extends TreeNode<Value> {	
 	
+	@SuppressWarnings("unchecked")
 	public Leaf( Value value) {
 		super( value);
 	}

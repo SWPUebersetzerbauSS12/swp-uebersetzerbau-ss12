@@ -51,8 +51,10 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Term
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public class GrammarTest {
 
+	@SuppressWarnings("unchecked")
 	public static ContextFreeGrammar getRegexGrammar() {
 		ContextFreeGrammar grammar = new ContextFreeGrammar();
 		// we define a simple regex grammar for testing
@@ -87,7 +89,7 @@ public class GrammarTest {
 	}
 	
 	@Test
-	public void testGrammar() throws Exception {
+	public static void testGrammar() throws Exception {
 
 		ContextFreeGrammar grammar = getRegexGrammar();
 		

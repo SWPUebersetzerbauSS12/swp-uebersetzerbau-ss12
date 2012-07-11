@@ -40,9 +40,16 @@ import de.fuberlin.bii.utils.Test;
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public class EmptyString extends Terminal  {
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6049332912490542794L;
+
+	@SuppressWarnings("unchecked")
 	public EmptyString() {
 		super( new Symbol(RegexCharSet.EMPTY_STRING));
 	}

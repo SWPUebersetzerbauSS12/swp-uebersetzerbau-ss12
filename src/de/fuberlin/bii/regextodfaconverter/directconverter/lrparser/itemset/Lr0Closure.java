@@ -52,6 +52,11 @@ import de.fuberlin.bii.utils.Test;
 public class Lr0Closure extends Closure<Lr0Item> {
 	
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -9139209662535070627L;
+
 	public Lr0ItemSet getItemSet() {
 		Lr0ItemSet itemSet = new Lr0ItemSet();
 		itemSet.addAll( this.keySet());	

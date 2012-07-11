@@ -47,6 +47,12 @@ import de.fuberlin.bii.tokenmatcher.StatePayload;
 public class RegularExpressionElement<StatePayloadType> extends Symbol<Character, StatePayloadType> {
 
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2273877974147487056L;
+
+
 	public RegularExpressionElement( Character value) {
 		super( value);
 	}

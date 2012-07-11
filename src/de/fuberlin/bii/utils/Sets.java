@@ -53,6 +53,7 @@ public class Sets {
 	 * @param c2
 	 * @return a HashSet with all elements of both lists once.
 	 */
+	@SuppressWarnings({ "unchecked", "null"})
 	public static <T, C extends Collection<T>> C unionCollections(  C c1,
 			 C c2) {
 

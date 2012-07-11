@@ -44,6 +44,11 @@ import java.util.HashSet;
 public class ItemSet<Item> extends HashSet<Item> {
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1381274614679028939L;
+
 	public ItemSet() {
 		super();
 	}

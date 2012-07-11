@@ -40,5 +40,6 @@ import java.util.Collection;
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public interface TreeNodeCollection extends Collection<TreeNode> {
 }

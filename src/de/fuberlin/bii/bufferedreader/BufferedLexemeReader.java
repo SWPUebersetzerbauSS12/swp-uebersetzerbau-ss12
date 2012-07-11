@@ -115,7 +115,7 @@ public class BufferedLexemeReader implements LexemeReader {
 	}   
 			
 	
-	private int getCurrentPosition() throws Exception {
+	private static int getCurrentPosition() throws Exception {
 	  throw new Exception( "Not yet implemented");
 	}   
 	

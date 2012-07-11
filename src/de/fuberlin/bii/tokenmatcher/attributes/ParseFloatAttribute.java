@@ -45,6 +45,11 @@ package de.fuberlin.bii.tokenmatcher.attributes;
  */
 public class ParseFloatAttribute extends GenericParseAttribute<Float> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5356804624489779876L;
+
 	public ParseFloatAttribute() {
 		super( Float.class);
 	}

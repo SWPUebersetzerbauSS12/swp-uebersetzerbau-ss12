@@ -40,6 +40,12 @@ package de.fuberlin.bii.regextodfaconverter.directconverter.regex.operatortree;
 public class OperatorTreeException extends Exception {
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4651924971345587496L;
+
+
 	public OperatorTreeException() {
 		super();
 	}

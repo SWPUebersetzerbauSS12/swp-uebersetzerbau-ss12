@@ -47,6 +47,12 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Rule
 public class SyntaxDirectedDefinition extends HashMap<ProductionRule, SemanticRules> {
 
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3386009257284160733L;
+
+
 	@Override
 	public boolean containsKey( Object key) {
 		for ( ProductionRule rule : this.keySet()) {

@@ -46,6 +46,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Lr0C
  *
  * @param <Element>
  */
+@SuppressWarnings("rawtypes")
 public interface ItemAutomatInterior<Element extends Symbol, SpecializedClosure extends Closure> {
 
 	Stack<RuleElement> getSymbolStack();

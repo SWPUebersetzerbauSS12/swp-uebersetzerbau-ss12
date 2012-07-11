@@ -39,6 +39,11 @@ package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser;
  */
 public class ReduceException extends Exception {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5302597894554152044L;
+
 	public ReduceException() {
 	  super();
 	}

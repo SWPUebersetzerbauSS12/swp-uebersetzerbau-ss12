@@ -3,7 +3,7 @@ package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node;
 
 /**
  * Struktur kapselt einen TreeNode und weist diesem eine Nummer zu. 
- * @author workstation
+ * @author Johannes Dahlke
  *
  * @param <Value>
  */

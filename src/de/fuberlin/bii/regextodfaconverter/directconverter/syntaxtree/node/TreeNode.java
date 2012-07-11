@@ -47,6 +47,7 @@ import de.fuberlin.bii.utils.Test;
  *
  * @param <Value>
  */
+@SuppressWarnings("rawtypes")
 public class TreeNode<Value> implements Cloneable {
 
 	protected List<Value> values;
@@ -136,6 +137,7 @@ public class TreeNode<Value> implements Cloneable {
 	
 	@Override
 	public Object clone() throws CloneNotSupportedException {
+		@SuppressWarnings("unchecked")
 		TreeNode<Value> clonedTreeNode = (TreeNode<Value>) super.clone();
 		clonedTreeNode.parentNode = this.parentNode;
 		clonedTreeNode.values = new ArrayList<Value>( this.values);

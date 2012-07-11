@@ -45,6 +45,11 @@ import de.fuberlin.bii.utils.Test;
 public class ProductionMap extends HashMap<Nonterminal, HashSet<RuleElementSequenz>> {
 	
 		
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5390987967530104938L;
+
 	public boolean addProduction( ProductionRule productionRule) {
 		if ( Test.isUnassigned( productionRule))
 			return false;

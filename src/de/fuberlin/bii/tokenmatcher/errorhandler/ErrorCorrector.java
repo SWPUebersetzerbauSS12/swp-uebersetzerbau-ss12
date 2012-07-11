@@ -85,7 +85,7 @@ public class ErrorCorrector {
 	}
 
 
-	private String handleMismatchInPanicMode( Character currentChar,
+	private static String handleMismatchInPanicMode( Character currentChar,
 			LexemeReader lexemeReader,
 			DeterministicFiniteAutomata<Character, StatePayload> dfa, int lineNumber,
 			int positionInLine) throws ErrorCorrectorException, LexemeReaderException {

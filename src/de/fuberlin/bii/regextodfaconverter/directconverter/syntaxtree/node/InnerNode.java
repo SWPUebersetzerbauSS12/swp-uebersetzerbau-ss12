@@ -41,10 +41,12 @@ import java.util.Iterator;
  *
  * @param <Value>
  */
+@SuppressWarnings("rawtypes")
 public abstract class InnerNode<Value> extends TreeNode<Value> implements Iterable<TreeNode> {
 	
 	private ArrayList<TreeNode> childNodes = new ArrayList<TreeNode>();
 	
+	@SuppressWarnings("unchecked")
 	public InnerNode( Value value) {
 		super( value);
 	}
@@ -62,6 +64,7 @@ public abstract class InnerNode<Value> extends TreeNode<Value> implements Iterab
 	/**
 	 * Fügt ein Kindobjekt an das Ende der rechten Seite an.
 	 */
+	@SuppressWarnings("unchecked")
 	public boolean addChild( TreeNode childNode) {
 		if ( canAddChild( childNode)) {
 			childNode.parentNode = this;
@@ -79,6 +82,7 @@ public abstract class InnerNode<Value> extends TreeNode<Value> implements Iterab
 		return childNodes.remove( index);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public boolean insertChild( TreeNode childNode, int index) {
 		if ( canAddChild( childNode)) {
 		  childNode.parentNode = this;
@@ -122,6 +126,7 @@ public abstract class InnerNode<Value> extends TreeNode<Value> implements Iterab
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		
+		@SuppressWarnings("unchecked")
 		InnerNode<Value> clonedInnerNode = (InnerNode<Value>) super.clone();
 		clonedInnerNode.childNodes = new ArrayList<TreeNode>();
 		for ( TreeNode<Value> thisChildNode : this.childNodes) {

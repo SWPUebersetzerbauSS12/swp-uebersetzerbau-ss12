@@ -41,6 +41,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.Leaf;
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public class TerminalNode extends Leaf<Symbol> {	
 	
 	public TerminalNode( Symbol value) {

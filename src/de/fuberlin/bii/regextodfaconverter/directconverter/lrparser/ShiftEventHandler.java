@@ -40,6 +40,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Term
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public interface ShiftEventHandler {
 
 	

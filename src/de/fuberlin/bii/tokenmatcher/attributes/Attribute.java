@@ -45,7 +45,7 @@ public interface Attribute  extends Serializable  {
 
 	Object lexemToValue( String lexem);
 	
-	Class getValueType();
+	Class<?> getValueType();
 	
 	
 }

@@ -58,7 +58,7 @@ public class RepetitionRange {
 		setUpperBound( upperBound);
 	}
 	
-	private int ensureValidRangeValue( Integer value) {
+	private static int ensureValidRangeValue( Integer value) {
 		if ( value < MIN_VALUE)
 			value = MIN_VALUE;
 		if ( value > MAX_VALUE)

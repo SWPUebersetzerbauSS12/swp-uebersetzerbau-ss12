@@ -18,6 +18,7 @@ public class LexergenTest {
 	/**
 	 * Test of getNextToken method, of class Lexergen.
 	 */
+	@SuppressWarnings("static-method")
 	@Test
 	public void testGetNextToken() throws Exception {
     Notification.enableDebugInfoPrinting();

@@ -43,6 +43,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Clos
  *
  * @param <Element>
  */
+@SuppressWarnings("rawtypes")
 public class AcceptAction<Element extends Symbol, SpecializedClosure extends Closure> extends Action<Element, SpecializedClosure> implements Serializable {
 
 	private static final long serialVersionUID = 1504940521718982284L;

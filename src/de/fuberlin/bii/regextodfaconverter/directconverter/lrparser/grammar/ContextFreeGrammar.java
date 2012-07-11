@@ -46,7 +46,13 @@ import de.fuberlin.bii.utils.Test;
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public class ContextFreeGrammar extends ProductionMap implements Grammar {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5244247250895811777L;
 
 	private Nonterminal startSymbol = null;
 
@@ -160,7 +166,7 @@ public class ContextFreeGrammar extends ProductionMap implements Grammar {
 	  
 	}
 
-	private <K, V> Map<K, ? extends Set<V>> removeEmptySetsFromMap(Map<K, ? extends Set<V>> map) {
+	private static <K, V> Map<K, ? extends Set<V>> removeEmptySetsFromMap(Map<K, ? extends Set<V>> map) {
 		Set<K> keySet = new HashSet<K>(map.keySet());
 		for (K key : keySet) {
 			Set<V> currentSet = map.get(key);

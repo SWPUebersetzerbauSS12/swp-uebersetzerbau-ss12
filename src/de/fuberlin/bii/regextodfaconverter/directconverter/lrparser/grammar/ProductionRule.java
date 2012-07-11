@@ -47,6 +47,7 @@ import de.fuberlin.bii.utils.Test;
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public class ProductionRule implements Iterable<RuleElement>, Serializable {
 
 	private static final long serialVersionUID = 652665932709829362L;
@@ -68,6 +69,9 @@ public class ProductionRule implements Iterable<RuleElement>, Serializable {
 
 	public ProductionRule(Nonterminal leftRuleSide, final RuleElement... rightRuleSideElements) {
 		this(leftRuleSide, new RuleElementArray() {
+
+			private static final long serialVersionUID = -8519909723287300646L;
+
 			RuleElementArray getFilledArray() {
 				RuleElementArray ruleElementArray = new RuleElementArray();
 				ruleElementArray.addAll(Arrays.asList(rightRuleSideElements));
@@ -76,7 +80,7 @@ public class ProductionRule implements Iterable<RuleElement>, Serializable {
 		}.getFilledArray());
 	}
 
-	private RuleElementSequenz filterEmptyStrings(RuleElementSequenz elementSequenz) {
+	private static RuleElementSequenz filterEmptyStrings(RuleElementSequenz elementSequenz) {
 		int len = elementSequenz.size();
 		for (int i = len - 1; i > 0; i--) {
 			if (elementSequenz.get(i) instanceof EmptyString)

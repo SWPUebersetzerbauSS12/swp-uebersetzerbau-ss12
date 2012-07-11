@@ -42,6 +42,10 @@ import de.fuberlin.bii.utils.Test;
  */
 public class Nonterminal extends RuleElement {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6680662147321558406L;
 	private String name = null;
 	
 	

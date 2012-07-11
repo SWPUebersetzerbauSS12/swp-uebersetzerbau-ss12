@@ -71,14 +71,20 @@ import de.fuberlin.bii.utils.Test;
  * @param <Element>
  *            der Typ eines Elementes der zu verarbeitenden Eingabe.
  */
+@SuppressWarnings("rawtypes")
 public class Slr1ItemAutomat<Element extends Symbol> extends
 		Lr0ItemAutomat<Element> {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3994075596507437910L;
 
 	public Slr1ItemAutomat(ContextFreeGrammar grammar) {
 		super(grammar);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked"})
 	@Override
 	protected void SetupParserTable(Lr0Closure startClosure) {
 
@@ -87,6 +93,11 @@ public class Slr1ItemAutomat<Element extends Symbol> extends
 		}
 
 		HashSet<Lr0Closure> unhandledClosures = new HashSet<Lr0Closure>() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 4319562418085155280L;
 
 			@Override
 			public boolean contains(Object o) {
@@ -199,6 +210,7 @@ public class Slr1ItemAutomat<Element extends Symbol> extends
 		writePersistentParserTable();
 	}
 
+	@SuppressWarnings("unchecked")
 	private boolean readPersistenParserTable() {
 		File dir = new File("/tmp/lexergen/");
 		File parserTableObject = new File("/tmp/lexergen/parserTable");

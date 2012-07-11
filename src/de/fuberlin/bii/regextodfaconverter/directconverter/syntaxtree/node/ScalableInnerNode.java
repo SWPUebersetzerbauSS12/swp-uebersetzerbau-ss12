@@ -46,6 +46,7 @@ import de.fuberlin.bii.utils.Test;
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public class ScalableInnerNode<Value> extends InnerNode<Value> {	
 
 	public ScalableInnerNode( Value value) {

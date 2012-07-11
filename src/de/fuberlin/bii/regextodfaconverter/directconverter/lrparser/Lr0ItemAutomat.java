@@ -73,6 +73,7 @@ import de.fuberlin.bii.utils.Test;
  *
  * @param <Element> der Typ eines Elementes der zu verarbeitenden Eingabe.
  */
+@SuppressWarnings("rawtypes")
 public class Lr0ItemAutomat<Element extends Symbol> implements ItemAutomat<Element>, ItemAutomatInterior<Element, Lr0Closure>, Serializable {
 
 	private static final long serialVersionUID = 5228756905357704645L;
@@ -95,6 +96,12 @@ public class Lr0ItemAutomat<Element extends Symbol> implements ItemAutomat<Eleme
 
 	protected Map<Lr0Closure, Map<RuleElement, AutomatEventHandler>> parserTable = new HashMap<Lr0Closure, Map<RuleElement, AutomatEventHandler>>() {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -2972626016358362006L;
+
+
 		@Override
 		public boolean containsKey( Object o) {
 			for ( Lr0Closure closure : this.keySet()) {
@@ -102,7 +109,7 @@ public class Lr0ItemAutomat<Element extends Symbol> implements ItemAutomat<Eleme
 					return true;
 			}
 			return false;
-		};
+		}
 
 
 		@Override
@@ -144,8 +151,14 @@ public class Lr0ItemAutomat<Element extends Symbol> implements ItemAutomat<Eleme
 	}
 
 
+	@SuppressWarnings("unchecked")
 	protected void SetupParserTable( Lr0Closure startClosure) {
 		HashSet<Lr0Closure> unhandledClosures = new HashSet<Lr0Closure>() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -1000685274957046293L;
 
 			@Override
 			public boolean contains( Object o) {
@@ -268,6 +281,7 @@ public class Lr0ItemAutomat<Element extends Symbol> implements ItemAutomat<Eleme
 	}
 
 
+	@SuppressWarnings("unchecked")
 	public boolean match( List<Element> input) throws ItemAutomatException {
 		ResetAutomat();
 		LoadInputIntoQueue( input);
@@ -424,7 +438,7 @@ public class Lr0ItemAutomat<Element extends Symbol> implements ItemAutomat<Eleme
 	}
 
 
-	public Queue getInputQueue() {
+	public Queue<Element> getInputQueue() {
 		return inputQueue;
 	}
 

@@ -45,8 +45,15 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Term
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public class Lr1Item extends Item {
 
+
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2299113205108459441L;
 	private Terminal lookahead = new Terminator();
 	
 	public Lr1Item( ProductionRule productionRule, int analysePosition, Terminal lookahead) {

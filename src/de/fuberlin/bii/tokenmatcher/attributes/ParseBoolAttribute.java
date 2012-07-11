@@ -45,6 +45,11 @@ package de.fuberlin.bii.tokenmatcher.attributes;
  */
 public class ParseBoolAttribute extends GenericParseAttribute<Boolean> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6276076881751141914L;
+
 	public ParseBoolAttribute() {
 		super( Boolean.class);
 	}

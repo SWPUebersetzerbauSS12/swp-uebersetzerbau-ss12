@@ -42,6 +42,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symb
  *
  * @param <Element>
  */
+@SuppressWarnings("rawtypes")
 public interface ItemAutomat<Element extends Symbol> {
 
 	boolean match( List<Element> input) throws ItemAutomatException;

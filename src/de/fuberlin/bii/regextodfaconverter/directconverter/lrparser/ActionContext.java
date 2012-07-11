@@ -49,6 +49,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Lr1C
  * @param <Element>
  * @param <SpecializedClosure>
  */
+@SuppressWarnings("rawtypes")
 public class ActionContext<Element extends Symbol, SpecializedClosure extends Closure> {
 	
 	private SpecializedClosure currentClosure;
@@ -81,9 +82,9 @@ public class ActionContext<Element extends Symbol, SpecializedClosure extends Cl
 	}
 
 
-	public static void shallowCopyStack( Stack fromStack, Stack toStack) {
+	public static <T> void shallowCopyStack( Stack<T> fromStack, Stack<T> toStack) {
 		toStack.clear();
-		for ( Object fromObject : fromStack) {
+		for ( T fromObject : fromStack) {
 		  toStack.push( fromObject);
 		}
 	}

@@ -54,6 +54,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Gram
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Nonterminal;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionRule;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionSet;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.RuleElement;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symbol;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Terminal;
 import de.fuberlin.bii.regextodfaconverter.directconverter.regex.RegexCharSet;
@@ -77,6 +78,7 @@ import de.fuberlin.bii.utils.Test;
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public class RegexOperatorTree<StatePayloadType extends Serializable> implements Tree, AttributizedOperatorTree {
 
 	// definition of nonterminals
@@ -120,6 +122,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 			new RegularExpressionElement( RegexCharSet.REGEX_REPETITION_END));
 	
 	private static final Terminal<RegularExpressionElement> OPERATOR_ALTERNATIVE = new Terminal<RegularExpressionElement>( new RegularExpressionElement( RegexCharSet.REGEX_ALTERNATIVE));
+	@SuppressWarnings("unchecked")
 	private static final Terminal<RegularExpressionElement> EMPTY_STRING = new EmptyString();
 	//private static final Terminal<RegularExpressionElement> OPERATOR_CONCATENATION = new Terminal<RegularExpressionElement>( new RegularExpressionElement( '.'));
 	private static final Terminal<RegularExpressionElement> CLASSIFIER_JOKER = new Terminal<RegularExpressionElement>( new RegularExpressionElement( RegexCharSet.REGEX_JOKER));
@@ -188,6 +191,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 	
 	
 	
+	@SuppressWarnings("unchecked")
 	public RegexOperatorTree( RegularExpressionElement<StatePayloadType>[] regularExpression) throws Exception {
 		super();
 		ContextFreeGrammar regexGrammar = getRegexGrammar();
@@ -196,12 +200,13 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 	  // extends regex string
 		regularExpression = Arrays.copyOf( regularExpression, regularExpression.length +1);
 		regularExpression[regularExpression.length -1] = new RegularExpressionElement( RegexCharSet.TERMINATOR, null);
-		ast = new AbstractSyntaxTree( regexGrammar, regexSdd, regularExpression) {
+		ast = new AbstractSyntaxTree<RegularExpressionElement<StatePayloadType>>( regexGrammar, regexSdd, regularExpression) {
+				
 			@Override
-			protected ItemAutomat getNewItemAutomat( Grammar grammar) {
-				return new Slr1ItemAutomat<Symbol>( (ContextFreeGrammar) grammar);
+			protected ItemAutomat<RegularExpressionElement<StatePayloadType>> getNewItemAutomat( Grammar grammar) {
+				return new Slr1ItemAutomat<RegularExpressionElement<StatePayloadType>>( (ContextFreeGrammar) grammar);
 			}
-		};
+    };
 		operatorTreeAttributor.attributizeOperatorTree( this);
 	}
 	
@@ -574,6 +579,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 	  // U -> [ CS CF CE ] and U -> [ CS CF ]
 		semanticRules = new SemanticRules();
 		semanticRules.add( new SemanticRule() {	
+			@SuppressWarnings("unchecked")
 			public void apply( AttributesMap... attributesMaps) {
 				OperatorNode nodeU = new OperatorNode( OperatorType.ALTERNATIVE);
 				Boolean buildComplementClass = (Boolean) attributesMaps[2].get( "complement");
@@ -655,6 +661,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 		// CE -> CE CEP
 		semanticRules = new SemanticRules();
 		semanticRules.add( new SemanticRule() {	
+			@SuppressWarnings("unchecked")
 			public void apply( AttributesMap... attributesMaps) {
 				List<Symbol> valuesCE = (List<Symbol>) attributesMaps[1].get( "values");
 				List<Symbol> valuesCEP = (List<Symbol>) attributesMaps[2].get( "values");
@@ -702,6 +709,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 		// CF -> CFV - CFV   whereas holds Ord(V) <= Ord(V1) 
 		semanticRules = new SemanticRules();
 		semanticRules.add( new SemanticRule() {	
+			@SuppressWarnings("unchecked")
 			public void apply( AttributesMap... attributesMaps) throws OperatorTreeException {
 				List<Symbol> values = new ArrayList<Symbol>();
 				RegularExpressionElement valueV = (RegularExpressionElement) attributesMaps[1].get( "value");
@@ -742,6 +750,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 		// U -> . 
 		semanticRules = new SemanticRules();
 		semanticRules.add( new SemanticRule() {	
+			@SuppressWarnings("unchecked")
 			public void apply( AttributesMap... attributesMaps) {
 				Object payload = ((Symbol) attributesMaps[1].get( "value")).getPayload();
 				int firstChar = RegexCharSet.getFirstAsciiChar();
@@ -801,6 +810,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 		// Z -> 0..9
 		SemanticRules semanticRulesOfRepetitionValues = new SemanticRules();
 		semanticRulesOfRepetitionValues.add( new SemanticRule() {	
+			@SuppressWarnings("unchecked")
 			public void apply( AttributesMap... attributesMaps) {
 				Character nodeValue = ((RegularExpressionElement<StatePayload>) attributesMaps[1].get( "value")).getValue();
 				int intValue = Integer.valueOf( nodeValue + "");
@@ -860,6 +870,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 	
 	
 	
+	@SuppressWarnings("unchecked")
 	protected static void tryPassPayloadDownwards( Object payload, TreeNode ... nodes) {
 		for ( TreeNode node : nodes) {
 			if ( node instanceof OperatorNode) {

@@ -55,6 +55,7 @@ import de.fuberlin.bii.utils.Test;
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public class AbstractSyntaxTree<ExpressionElement extends Symbol> extends ConcreteSyntaxTree<ExpressionElement>  {
 	
 	private SyntaxDirectedDefinition sddTable;
@@ -86,7 +87,7 @@ public class AbstractSyntaxTree<ExpressionElement extends Symbol> extends Concre
 				
 				// create the map contains attributes of this node
 				AttributesMap thisAttributesMap = new AttributesMap();
-				rootAttributesMap = thisAttributesMap;;
+				rootAttributesMap = thisAttributesMap;
 
 				// create new inner node
 				InnerNode<AttributesMap> newInnerNode = new ScalableInnerNode<AttributesMap>( thisAttributesMap);
@@ -123,7 +124,7 @@ public class AbstractSyntaxTree<ExpressionElement extends Symbol> extends Concre
 					onNewNodeEvent.doOnEvent( this, newInnerNode);
 
 				// push the inner node onto stack
-				NumberedTreeNode newNumberedNode = new NumberedTreeNode( newInnerNode, sequenceNumber);
+				NumberedTreeNode newNumberedNode = new NumberedTreeNode<AttributesMap>( newInnerNode, sequenceNumber);
 				getNodeStack().push( newNumberedNode);
 
 				snapshotCurrentStackWithSequenceNumber( sequenceNumber);
@@ -155,7 +156,7 @@ public class AbstractSyntaxTree<ExpressionElement extends Symbol> extends Concre
 				if ( Test.isAssigned( onNewNodeEvent))
 					onNewNodeEvent.doOnEvent( this, newLeaf);
 
-				NumberedTreeNode newNumberedLeaf = new NumberedTreeNode( newLeaf, sequenceNumber);
+				NumberedTreeNode newNumberedLeaf = new NumberedTreeNode<AttributesMap>( newLeaf, sequenceNumber);
 				getNodeStack().push( newNumberedLeaf);
 				
 				snapshotCurrentStackWithSequenceNumber( sequenceNumber);

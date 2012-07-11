@@ -80,8 +80,9 @@ private Value value;
   public boolean equalsTotally( Object obj) {
   	if ( !equals( obj))
   		return false;
-  
-  	Symbol<Value,Payload> theOtherSymbol = (Symbol<Value,Payload>) obj;
+  	
+  	@SuppressWarnings("unchecked")
+		final Symbol<Value,Payload> theOtherSymbol = (Symbol<Value,Payload>) obj;
   	
   	return Test.isAssigned( this.payload) 
   			? this.payload.equals( theOtherSymbol.payload)
@@ -97,7 +98,9 @@ private Value value;
   	if ( !( obj instanceof Symbol))
   		return false;
   	
-  	Symbol theOtherSymbol = (Symbol) obj;
+
+		@SuppressWarnings("unchecked")
+		final Symbol<Value,Payload> theOtherSymbol = (Symbol<Value,Payload>) obj;
   	
   	return this.value.equals( theOtherSymbol.value);
   }

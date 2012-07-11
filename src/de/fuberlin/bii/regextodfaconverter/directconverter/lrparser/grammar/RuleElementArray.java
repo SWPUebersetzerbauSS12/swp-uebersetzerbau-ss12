@@ -39,8 +39,17 @@ import java.util.ArrayList;
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public class RuleElementArray extends ArrayList<RuleElement> implements RuleElementSequenz {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 330334622181950391L;
+
+
+
+
 	public RuleElementArray() {
 	  super();
 	}

@@ -41,4 +41,9 @@ import java.util.ArrayList;
  */
 public class SemanticRules extends ArrayList<SemanticRule> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4249205388587573051L;
+
 }

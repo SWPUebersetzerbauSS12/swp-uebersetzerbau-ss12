@@ -41,6 +41,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Clos
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public interface AutomatEventHandler<Element extends Symbol, SpecializedClosure extends Closure> {
 
 	

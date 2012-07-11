@@ -56,6 +56,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Gram
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Nonterminal;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionRule;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionSet;
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.RuleElement;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symbol;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Terminal;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.TerminalSet;
@@ -76,6 +77,7 @@ import de.fuberlin.bii.utils.Test;
  * @author Johannes Dahlke
  * 
  */
+@SuppressWarnings("rawtypes")
 public class ConcreteSyntaxTree<ExpressionElement extends Symbol> implements Tree, Cloneable {
 
 	private ArrayList<ExpressionElement> inputElements = null;
@@ -118,7 +120,8 @@ public class ConcreteSyntaxTree<ExpressionElement extends Symbol> implements Tre
 		return nodeStack;
 	}
 	
-	protected ItemAutomat<ExpressionElement> getNewItemAutomat( Grammar grammar) {
+	@SuppressWarnings("static-method")
+	protected ItemAutomat<ExpressionElement> getNewItemAutomat( final Grammar grammar) {
 		return new Slr1ItemAutomat<ExpressionElement>( (ContextFreeGrammar) grammar);
 	}
 
@@ -135,7 +138,7 @@ public class ConcreteSyntaxTree<ExpressionElement extends Symbol> implements Tre
 	}
 
 
-	private PrintHandler getNodePrintHandler() {
+	private static PrintHandler getNodePrintHandler() {
 		return new PrintHandler() {
 
 			public String print( Object... params) {
@@ -187,7 +190,7 @@ public class ConcreteSyntaxTree<ExpressionElement extends Symbol> implements Tre
 				}
 
 				// push the inner node onto stack
-				NumberedTreeNode newNumberedNode = new NumberedTreeNode( newInnerNode, sequenceNumber);
+				NumberedTreeNode newNumberedNode = new NumberedTreeNode<ProductionRule>( newInnerNode, sequenceNumber);
 				nodeStack.push( newNumberedNode);
 
 				snapshotCurrentStackWithSequenceNumber( sequenceNumber);
@@ -205,13 +208,13 @@ public class ConcreteSyntaxTree<ExpressionElement extends Symbol> implements Tre
 				
 				updateStackBySequenceNumber( sequenceNumber);
 				
-				Leaf newLeaf = new Leaf( shiftedTerminal);
+				Leaf<RuleElement> newLeaf = new Leaf<RuleElement>( shiftedTerminal);
 				newLeaf.setPrintHandler( getNodePrintHandler());
 
 				if ( Test.isAssigned( onNewNodeEvent))
 					onNewNodeEvent.doOnEvent( this, newLeaf);
 
-				NumberedTreeNode newNumberedLeaf = new NumberedTreeNode( newLeaf, sequenceNumber);
+				NumberedTreeNode newNumberedLeaf = new NumberedTreeNode<RuleElement>( newLeaf, sequenceNumber);
 				nodeStack.push( newNumberedLeaf);
 				
 				snapshotCurrentStackWithSequenceNumber( sequenceNumber);
@@ -221,6 +224,7 @@ public class ConcreteSyntaxTree<ExpressionElement extends Symbol> implements Tre
 	}
 
 
+	@SuppressWarnings("unchecked")
 	protected void updateStackBySequenceNumber( int sequenceNumber) {
 		// clear overhang
 		int recentSerial = -1;
@@ -236,14 +240,15 @@ public class ConcreteSyntaxTree<ExpressionElement extends Symbol> implements Tre
 		
 		// update stack;
 		if ( recentSerial > -1) {
-		  nodeStack = (Stack) stackSnapshots.get( recentSerial).clone();
+		  nodeStack = (Stack<NumberedTreeNode>) stackSnapshots.get( recentSerial).clone();
 		} else {
 			nodeStack.clear();
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	protected void snapshotCurrentStackWithSequenceNumber( int sequenceNumber) {
-		stackSnapshots.put( sequenceNumber, (Stack) nodeStack.clone());
+		stackSnapshots.put( sequenceNumber, (Stack<NumberedTreeNode>) nodeStack.clone());
 	}
 	
 	
@@ -270,6 +275,7 @@ public class ConcreteSyntaxTree<ExpressionElement extends Symbol> implements Tre
 	}
 
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 
@@ -283,6 +289,7 @@ public class ConcreteSyntaxTree<ExpressionElement extends Symbol> implements Tre
 	}
 
 
+	@SuppressWarnings("unchecked")
 	public static ConcreteSyntaxTree compress( ConcreteSyntaxTree originalTree) {
 
 		// we work on a copy

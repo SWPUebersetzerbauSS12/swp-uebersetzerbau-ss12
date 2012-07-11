@@ -40,9 +40,16 @@ import de.fuberlin.bii.utils.Test;
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public class Terminator extends Terminal  {
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8929638685441712256L;
+
+	@SuppressWarnings("unchecked")
 	public Terminator() {
 		super( new Symbol( '$'));
 	}

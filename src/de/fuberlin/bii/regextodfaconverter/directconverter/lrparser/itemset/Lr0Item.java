@@ -46,6 +46,12 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Rule
  */
 public class Lr0Item extends Item {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 365106322353635423L;
+
+
 	public Lr0Item( ProductionRule productionRule, int analysePosition) {
 		super( productionRule, analysePosition);
 	}

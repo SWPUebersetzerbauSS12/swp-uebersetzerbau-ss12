@@ -48,6 +48,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Lr0C
  *
  * @param <Element>
  */
+@SuppressWarnings("rawtypes")
 public class Goto<Element extends Symbol, SpecializedClosure extends Closure> implements AutomatEventHandler<Element, SpecializedClosure>, Serializable {
 
 	private static final long serialVersionUID = 7847504444804006960L;

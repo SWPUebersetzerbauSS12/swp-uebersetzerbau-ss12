@@ -60,7 +60,7 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 			
 			// CommonExpressions
 			// Store/Load-Paare muessen vorher eliminiert werden, also nach reaching analysis
-			tmp.removeCommonExpressions();
+			//tmp.removeCommonExpressions();
 			
 			// Globale Lebendigkeitsanalyse fuer Store, Load
 			tmp.globalLiveVariableAnalysis();

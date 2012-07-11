@@ -310,10 +310,13 @@ public class LLVM_Block{
 				if(stores==null) {
 					stores = new LinkedList<LLVM_GenericCommand>();
 				}
-				// Fuege ein, falls der Befehl noch nicht enthalten ist
-				if(!stores.contains(c)) {
-					stores.add(c);
+				else {
+					stores.clear();
 				}
+				// Fuege ein, falls der Befehl noch nicht enthalten ist
+				//if(!stores.contains(c)) {
+				stores.add(c);
+				//}
 				
 				reaching.put(registerName, stores);
 			}

@@ -197,6 +197,7 @@ public class Main {
 			}
 		}catch(Exception e){
 			System.err.println(e.getMessage());
+			System.err.println("Optimization not done!\nUse unoptimized code!\n");
 			
 			// Nutze nicht optimierten Code
 			optimized_llvm_code = generatedLLVMCode;

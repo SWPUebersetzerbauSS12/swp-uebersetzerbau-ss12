@@ -4,7 +4,7 @@ target triple = "x86_64-unknown-linux-gnu"
 
 @.str = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
 
-define i32 @factorial(i32 %X) nounwind uwtable {
+define i32 @factorial(i32 %X) nounwind {
   %1 = alloca i32, align 4
   %2 = alloca i32, align 4
   store i32 %X, i32* %2, align 4
@@ -30,7 +30,7 @@ define i32 @factorial(i32 %X) nounwind uwtable {
   ret i32 %13
 }
 
-define i32 @init(i32 %i) nounwind uwtable {
+define i32 @init(i32 %i) nounwind {
   %1 = alloca i32, align 4
   %a = alloca i32, align 4
   %b = alloca i32, align 4
@@ -60,7 +60,7 @@ define i32 @init(i32 %i) nounwind uwtable {
   ret i32 %13
 }
 
-define i32 @main(i32 %argc, i8** %argv) nounwind uwtable {
+define i32 @main(i32 %argc, i8** %argv) nounwind {
   %1 = alloca i32, align 4
   %2 = alloca i32, align 4
   %3 = alloca i8**, align 8

@@ -32,7 +32,9 @@ public class LLVM_AllocaCommand extends LLVM_GenericCommand{
 		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());
 	}
 	
-	public String toString() {
+	public String toString(){
+		if (target == null || operands == null) return null;
+		
 		String cmd_output = target.getName() + " = ";
 		
 		switch(operation){

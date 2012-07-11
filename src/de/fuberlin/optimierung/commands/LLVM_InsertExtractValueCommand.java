@@ -21,7 +21,6 @@ public class LLVM_InsertExtractValueCommand extends LLVM_GenericCommand {
 		if (cond.startsWith("insertvalue")) setOperation(LLVM_Operation.INSERTVALUE);
 		if (cond.startsWith("extractvalue")) setOperation(LLVM_Operation.EXTRACTVALUE);
 		
-		
 		String aggr = parseReadType(cmd);
 		String val = parseReadValue(cmd);
 		parseEraseString(cmd, ",");
@@ -47,6 +46,8 @@ public class LLVM_InsertExtractValueCommand extends LLVM_GenericCommand {
 	}
 	
 	public String toString(){
+		if (target == null || operands == null) return null;
+		
 		String cmd_out = target.getName() + " = ";
 		if (this.getOperation() == LLVM_Operation.INSERTVALUE){
 			cmd_out += "insertvalue ";

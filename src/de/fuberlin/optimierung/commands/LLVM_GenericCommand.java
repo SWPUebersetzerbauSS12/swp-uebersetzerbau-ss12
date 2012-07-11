@@ -68,6 +68,7 @@ public abstract class LLVM_GenericCommand{
 	public void replaceCommand(LLVM_GenericCommand c) {
 		c.setPredecessor(this.predecessor);
 		c.setSuccessor(this.successor);
+		c.setBlock(this.block);
 		if (this.isSingleCommand()){
 			
 		} else if(this.isFirstCommand()) {	// Loesche erstes Element
@@ -96,38 +97,6 @@ public abstract class LLVM_GenericCommand{
 		}else{
 			return command + "\n";
 		}
-	}
-	
-	public static int getComplexStructEnd (String cmdLine){
-		int count = 0;
-		if (cmdLine.startsWith("[")){
-			// Arrayende finden
-			for (int i = 0; i < cmdLine.length(); i++){
-				String str = cmdLine.substring(i, i+1);
-				if (str.contains("[")) count++;
-				if (str.contains("]")) count--;
-				if (count == 0){
-					// Arrayende bei count
-					count = i;
-					break;
-				}
-			}
-		}
-		
-		if (cmdLine.startsWith("{")){
-			// Structende finden
-			for (int i = 0; i < cmdLine.length(); i++){
-				String str = cmdLine.substring(i, i+1);
-				if (str.contains("{")) count++;
-				if (str.contains("}")) count--;
-				if (count == 0){
-					// Structende bei count
-					count = i;
-					break;
-				}
-			}
-		}
-		return count;
 	}
 	
 	protected static String parseReadType (StringBuilder cmd){

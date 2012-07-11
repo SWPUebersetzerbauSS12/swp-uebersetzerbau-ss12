@@ -43,6 +43,8 @@ public class LLVM_StoreCommand extends LLVM_GenericCommand{
 	}
 	
 	public String toString() {
+		if (operands == null || operands.size() < 1) return null;
+		
 		String cmd_out = "store ";
 		
 		if (atom) cmd_out += "atomic ";

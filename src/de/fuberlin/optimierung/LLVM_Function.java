@@ -1030,6 +1030,26 @@ public class LLVM_Function {
 				}
 			}
 		}
+		else if(c.getOperation()==LLVM_Operation.UDIV) {
+			// Division gefunden
+			LinkedList<LLVM_Parameter> operands = c.getOperands();
+			
+			LLVM_Parameter o = operands.get(1);
+			if(o.getType()==LLVM_ParameterType.INTEGER) {
+				
+				// Im zweiten Operanden koennte eine Zweierpotenz stehen 	
+				int powerOfTwo = 1;
+				for(int i=1; i<32; i++) {
+					powerOfTwo = powerOfTwo * 2;
+					if ( (new Integer(powerOfTwo)).toString().equals(o.getName()) ) {
+						// Passende Zweierpotenz wurde gefunden
+						c.setOperation(LLVM_Operation.LSHR);
+						o.setName((new Integer(i)).toString());
+					}
+				}
+				
+			}
+		}
 	}
 	
 	/**

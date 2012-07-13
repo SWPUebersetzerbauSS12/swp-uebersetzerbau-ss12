@@ -85,7 +85,7 @@ public class FuncCall extends Type {
 
 			// implicit var incrementation
 			if (!searchUpAssign()
-					&& !func.getType().toTypeString().equals("void")) {
+					&& func.getType().toTypeString().equals("void")) {
 				getHighestBlock().getNewVar();
 			}
 		}
@@ -106,7 +106,6 @@ public class FuncCall extends Type {
 				parent = parent.getParent();
 			}
 		}
-
 		return false;
 	}
 

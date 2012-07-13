@@ -139,10 +139,6 @@ public class BinaryOp extends Type {
 			} else {
 				ret += LLVM.loadType(t2);
 				String t = t2.fromTypeStringToLLVMType();
-				if (t.equals("")) {
-					throw new SemanticException("t is empty! toTypeString was:"
-							+ t2.toTypeString());
-				}
 				ret += "store " + t + " %" + LLVM.getMem(t2) + ", " + t + "* "
 						+ "%" + id1.getValue();
 			}

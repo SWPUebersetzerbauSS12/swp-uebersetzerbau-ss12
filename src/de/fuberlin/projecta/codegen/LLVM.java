@@ -5,6 +5,7 @@ import de.fuberlin.projecta.analysis.SymbolTableHelper;
 import de.fuberlin.projecta.analysis.ast.nodes.AbstractSyntaxTree;
 import de.fuberlin.projecta.analysis.ast.nodes.Args;
 import de.fuberlin.projecta.analysis.ast.nodes.Block;
+import de.fuberlin.projecta.analysis.ast.nodes.FuncCall;
 import de.fuberlin.projecta.analysis.ast.nodes.FuncDef;
 import de.fuberlin.projecta.analysis.ast.nodes.Id;
 import de.fuberlin.projecta.analysis.ast.nodes.Literal;
@@ -76,9 +77,8 @@ public class LLVM {
 		String ret = "";
 		if (args != null) {
 			for (ISyntaxTree child : args.getChildren()) {
-				if (child instanceof Id)
-					if (!isInParams((Id) child))
-						ret += loadVar((Id) child);
+				Type t = (Type) child;
+				ret += loadType(t);
 			}
 		}
 		return ret;
@@ -149,11 +149,10 @@ public class LLVM {
 	public static String loadType(Type type) {
 		String ret = "";
 		Block block = type.getHighestBlock();
-
 		// If getVar is 0 it must be loaded, otherwise it is already loaded
 		if (type.getVar() == 0) {
 			if (type instanceof Literal) {
-				int n = block.getNewVar(),m = block.getNewVar();
+				int n = block.getNewVar(), m = block.getNewVar();
 				String t = type.genCode().split(" ")[0];
 				String v = type.genCode().split(" ")[1];
 				ret += "%" + n + " = alloca " + t + "\n";
@@ -162,6 +161,11 @@ public class LLVM {
 				type.setValMemory(m);
 			} else if (type instanceof Id) {
 				ret += loadVar((Id) type);
+			} else if (type instanceof FuncCall) {				
+				ret += LLVM.loadParams((Args) type.getChild(1));
+				int n = block.getNewVar();
+				ret += "%" + n + " = " + type.genCode() + "\n";
+				type.setValMemory(n);
 			}
 		}
 

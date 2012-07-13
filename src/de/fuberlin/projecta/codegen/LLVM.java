@@ -4,6 +4,7 @@ import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
 import de.fuberlin.projecta.analysis.ast.nodes.AbstractSyntaxTree;
 import de.fuberlin.projecta.analysis.ast.nodes.Args;
+import de.fuberlin.projecta.analysis.ast.nodes.BinaryOp;
 import de.fuberlin.projecta.analysis.ast.nodes.Block;
 import de.fuberlin.projecta.analysis.ast.nodes.FuncCall;
 import de.fuberlin.projecta.analysis.ast.nodes.FuncDef;
@@ -166,6 +167,9 @@ public class LLVM {
 				int n = block.getNewVar();
 				ret += "%" + n + " = " + type.genCode() + "\n";
 				type.setValMemory(n);
+			} else {
+				// TODO: is this already calling setValMemory always?
+				ret += type.genCode();
 			}
 		}
 

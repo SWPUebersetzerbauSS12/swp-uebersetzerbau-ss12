@@ -3,10 +3,8 @@ def int fib(int n){
   return fib(n-1) + fib(n-2);
 }
 def int main(){
-  int n;
   int a;
-  n = 7;
-  a=fib(n);
+  a=fib(7);
   print a;
   return 0;
 } 

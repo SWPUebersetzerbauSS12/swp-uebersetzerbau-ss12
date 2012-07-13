@@ -60,7 +60,7 @@ public class LLVM {
 		return ret;
 	}
 
-	public static String loadVar(Id id) {
+	private static String loadVar(Id id) {
 		String ret = "";
 		if (id != null && !isInParams(id) && id.getVar() == 0) {
 			int memory = id.getHighestBlock().getNewVar();

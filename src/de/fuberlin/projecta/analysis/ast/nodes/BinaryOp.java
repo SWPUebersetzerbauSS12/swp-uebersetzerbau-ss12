@@ -2,9 +2,7 @@ package de.fuberlin.projecta.analysis.ast.nodes;
 
 import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.commons.parser.ISyntaxTree;
-import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SemanticException;
-import de.fuberlin.projecta.analysis.SymbolTableHelper;
 import de.fuberlin.projecta.analysis.TypeErrorException;
 import de.fuberlin.projecta.codegen.LLVM;
 
@@ -72,15 +70,15 @@ public class BinaryOp extends Type {
 		if (op == TokenType.OP_EQ || op == TokenType.OP_NE
 				|| op == TokenType.OP_LT || op == TokenType.OP_LE
 				|| op == TokenType.OP_GT || op == TokenType.OP_GE) {
-			
+
 			// load both values into new memory addresses
 			ret += LLVM.loadType(t1);
 			ret += LLVM.loadType(t2);
 
 			int mem = block.getNewVar();
 			this.setValMemory(mem);
-			ret += "%" + mem + " = " + getIntOrReal(t1) + " "
-					+ getOpName(t1) + " " + t1.fromTypeStringToLLVMType() + " %" ;
+			ret += "%" + mem + " = " + getIntOrReal(t1) + " " + getOpName(t1)
+					+ " " + t1.fromTypeStringToLLVMType() + " %";
 			ret += LLVM.getMem(t1) + ", %";
 			ret += LLVM.getMem(t2) + "\n";
 		} else if (op == TokenType.OP_ADD || op == TokenType.OP_MINUS
@@ -104,7 +102,7 @@ public class BinaryOp extends Type {
 			case OP_DIV:
 				mathOp += "div";
 				break;
-			}			
+			}
 
 			// load both values into new memory addresses
 			ret += LLVM.loadType(t1);
@@ -112,16 +110,15 @@ public class BinaryOp extends Type {
 
 			int val = block.getNewVar();
 			this.setValMemory(val); // save currents computation in this node
-			
+
 			type = t1.fromTypeStringToLLVMType();
 			ret += "%" + val + " = " + mathOp + " " + type + " %"
 					+ LLVM.getMem(t1) + ", %" + LLVM.getMem(t2) + "\n";
 
 		} else if (op == TokenType.OP_ASSIGN) {
 			Id id1 = (Id) t1;
-			EntryType eA = null;
-			eA = SymbolTableHelper.lookup(id1.getValue(), this);
 			if (getChild(1) instanceof StringLiteral) {
+				
 				StringLiteral str = (StringLiteral) getChild(1);
 				/*
 				 * if you look below, this is what is implemented (it's kind of
@@ -130,53 +127,24 @@ public class BinaryOp extends Type {
 				 * x i8]* %r3 %firstEl = getelementptr [9 x i8]* %r3, i8 0, i8 0
 				 * store i8* %firstEl, i8** %str3
 				 */
-				int tempReg = block.getNewVar();
-				int tempReg2 = block.getNewVar();
+				int tmp1 = block.getNewVar();
+				int tmp2 = block.getNewVar();
 				int strLength = (str.getValue().length() + 1);
-				ret = "%" + tempReg + " = alloca [" + strLength + " x i8]\n";
+				ret = "%" + tmp1 + " = alloca [" + strLength + " x i8]\n";
 				ret += "store [" + strLength + " x i8] c\"" + str.getValue()
-						+ "\\00\", [" + strLength + " x i8]* %" + tempReg
-						+ "\n";
-				ret += "%" + tempReg2 + " = getelementptr [" + strLength
-						+ " x i8]* %" + tempReg + ", i8 0, i8 0 \n";
-				ret += "store i8* %" + tempReg2 + ", i8** %" + id1.getValue();
-			} else if (getChild(1) instanceof FuncCall) {
-
-				// id1 must exist!!!
-
-				// load parameters of this function first
-				if (getChild(1).getChildrenCount() > 1
-						&& getChild(1).getChild(1).getChildrenCount() != 0) {
-					ret += LLVM.loadParams((Args) getChild(1).getChild(1));
-				}
-				int reg = block.getNewVar();
-				String type = SymbolTableHelper.lookup(id1.getValue(), this)
-						.getType().genCode();
-				ret += "%" + reg + " = " + ((FuncCall) getChild(1)).genCode()
-						+ "\n";
-
-				ret += "store " + type + " %" + reg + ", " + type + "* %"
-						+ id1.getValue();
-			} else if (getChild(1) instanceof Id) {
-				Id id2 = (Id) t2;
-				String type = SymbolTableHelper.lookup(id1.getValue(), this)
-						.getType().genCode();
-				ret += LLVM.loadType(id2);
-				ret += "store " + type + " %" + LLVM.getMem(id2) + ", "
-						+ eA.getType().genCode() + "* %" + id1.getValue();
-			} else if (getChild(1) instanceof BinaryOp) {
-				// First execute operations, then save the result
-				ret += ((BinaryOp) getChild(1)).genCode();
-				// int result = block.getCurrentRegister();
-				// ret += "%" + block.getNewMemory() + " = load "
-				// + eA.getType().genCode() + "* %" + result + "\n";
-				ret += "store " + eA.getType().genCode() + " %"
-						+ ((BinaryOp) getChild(1)).getVar() + ", "
-						+ eA.getType().genCode() + "* %" + id1.getValue();
+						+ "\\00\", [" + strLength + " x i8]* %" + tmp1 + "\n";
+				ret += "%" + tmp2 + " = getelementptr [" + strLength
+						+ " x i8]* %" + tmp1 + ", i8 0, i8 0 \n";
+				ret += "store i8* %" + tmp2 + ", i8** %" + id1.getValue();
 			} else {
-				ret = "store " + ((AbstractSyntaxTree) getChild(1)).genCode()
-						+ ", " + eA.getType().genCode() + "* %"
-						+ id1.getValue();
+				ret += LLVM.loadType(t2);
+				String t = t2.fromTypeStringToLLVMType();
+				if (t.equals("")) {
+					throw new SemanticException("t is empty! toTypeString was:"
+							+ t2.toTypeString());
+				}
+				ret += "store " + t + " %" + LLVM.getMem(t2) + ", " + t + "* "
+						+ "%" + id1.getValue();
 			}
 		} else {
 			System.out.println("Unknown Binary OP: " + op);

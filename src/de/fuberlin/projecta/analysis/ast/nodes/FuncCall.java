@@ -4,6 +4,7 @@ import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
+import de.fuberlin.projecta.codegen.LLVM;
 
 /**
  * This class represents one function call. It has one or two children. The
@@ -21,6 +22,9 @@ public class FuncCall extends Type {
 	}
 
 	@Override
+	/**
+	 * For this to work properly all parameters MUST be loaded before!
+	 */
 	public String genCode() {
 		String ret = "";
 		EntryType func = null;
@@ -44,7 +48,7 @@ public class FuncCall extends Type {
 				int counter = 0;
 				ret += " (";
 				for (ISyntaxTree child : getChild(1).getChildren()) {
-					if(!(child instanceof IntLiteral || child instanceof RealLiteral || child instanceof BoolLiteral)){
+					if (!(child instanceof Literal)) {
 						counter++;
 						Type node = null;
 
@@ -55,14 +59,14 @@ public class FuncCall extends Type {
 							ret += node.genCode() + ", ";
 						} else {
 							// WTF?!
-						}	
+						}
 					}
 				}
-				if (counter > 0){
+				if (counter > 0) {
 					ret = ret.substring(0, ret.length() - 2);
 					ret += ")*";
-				}else {
-					ret = ret.substring(0,ret.length()-1);
+				} else {
+					ret = ret.substring(0, ret.length() - 1);
 				}
 			}
 
@@ -71,20 +75,12 @@ public class FuncCall extends Type {
 			if (getChildrenCount() > 1)
 				for (ISyntaxTree child : getChild(1).getChildren()) {
 					tmp = true;
-					Type node = null;
-
-					if (child instanceof Id)
-						ret += ((Id) child).getType().genCode() + " %"
-								+ ((Id) child).getVar() + ", ";
-					else if (child instanceof Type) {
-						node = (Type) child;
-						ret += node.genCode() + ", ";
-					} else {
-						// WTF?!
-					}
+					Type node = (Type) child;
+					ret += node.fromTypeStringToLLVMType() + " %"
+							+ LLVM.getMem(node) + "\n";
 				}
 			if (tmp)
-				ret = ret.substring(0, ret.length() - 2);
+				ret = ret.substring(0, ret.length() - 1);
 			ret += ")";
 
 			// implicit var incrementation

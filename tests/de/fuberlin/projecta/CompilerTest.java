@@ -110,5 +110,19 @@ public class CompilerTest {
 		String output = executeCode(code);
 		assertEquals("12", output);
 	}
+	
+	@Test
+	public void testReturnWithBinaryOp(){
+		final String code = "def int foo(int i){ return i+1;} def int main(){int i; i = foo(3); print i; return 0;}";
+		String output = executeCode(code);
+		assertEquals("4", output);
+	}
+	
+	@Test
+	public void testFuncCallWithBinaryOp(){
+		final String code = "def int foo(int i){ return i;} def int main(){int i; i = foo(3+4); print i; return 0;}";
+		String output = executeCode(code);
+		assertEquals("7", output);
+	}
 
 }

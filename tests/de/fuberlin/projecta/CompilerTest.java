@@ -103,5 +103,12 @@ public class CompilerTest {
 		String output = executeCode(code);
 		assertEquals(output, "6");
 	}
+	
+	@Test
+	public void testFuncCallWithLiteralParameter(){
+		final String code = "def int foo(int i){ return i;} def int main(){int i; i = foo(3)*foo(4); print i; return 0;}";
+		String output = executeCode(code);
+		assertEquals("12", output);
+	}
 
 }

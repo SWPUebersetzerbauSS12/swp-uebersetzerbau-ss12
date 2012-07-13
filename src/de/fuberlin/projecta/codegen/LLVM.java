@@ -7,6 +7,7 @@ import de.fuberlin.projecta.analysis.ast.nodes.Args;
 import de.fuberlin.projecta.analysis.ast.nodes.Block;
 import de.fuberlin.projecta.analysis.ast.nodes.FuncDef;
 import de.fuberlin.projecta.analysis.ast.nodes.Id;
+import de.fuberlin.projecta.analysis.ast.nodes.Literal;
 import de.fuberlin.projecta.analysis.ast.nodes.Statement;
 import de.fuberlin.projecta.analysis.ast.nodes.Type;
 
@@ -113,20 +114,57 @@ public class LLVM {
 		}
 		return null;
 	}
-	
-	public static String store(){
+
+	public static String store() {
 		String out = "";
-		
+
 		return out;
 	}
-	
-	public static String getMem(Id id) {
+
+	public static String getMem(Type type) {
 		String ret = "";
-		if(LLVM.isInParams(id)){
-			ret = id.getValue();
+		if (type instanceof Id) {
+			Id id = (Id) type;
+			if (LLVM.isInParams(id)) {
+				ret = id.getValue();
+			} else {
+				ret = "" + id.getVar();
+			}
 		} else {
-			ret = "" + id.getVar();
+			ret = "" + type.getVar();
 		}
+
+		return ret;
+	}
+
+	/**
+	 * The idea is to load the value into a register, even if it is a literal or
+	 * a funcCall in order to statically take the valMemory after calling this
+	 * function
+	 * 
+	 * @param type
+	 *            the node to load the value into a new memory
+	 * @return the code for loading it
+	 */
+	public static String loadType(Type type) {
+		String ret = "";
+		Block block = type.getHighestBlock();
+
+		// If getVar is 0 it must be loaded, otherwise it is already loaded
+		if (type.getVar() == 0) {
+			if (type instanceof Literal) {
+				int n = block.getNewVar(),m = block.getNewVar();
+				String t = type.genCode().split(" ")[0];
+				String v = type.genCode().split(" ")[1];
+				ret += "%" + n + " = alloca " + t + "\n";
+				ret += "store " + t + " " + v + ", " + t + "* %" + n + "\n";
+				ret += "%" + m + " = load " + t + "* %" + n + "\n";
+				type.setValMemory(m);
+			} else if (type instanceof Id) {
+				ret += loadVar((Id) type);
+			}
+		}
+
 		return ret;
 	}
 }

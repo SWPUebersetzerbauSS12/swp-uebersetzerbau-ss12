@@ -11,6 +11,7 @@ import de.fuberlin.commons.parser.IParser;
 import de.fuberlin.commons.util.LogFactory;
 import de.fuberlin.commons.lexer.ILexer;
 import de.fuberlin.commons.parser.ISyntaxTree;
+import de.fuberlin.projectci.grammar.BNFGrammarReader;
 import de.fuberlin.projectci.grammar.BNFParsingErrorException;
 import de.fuberlin.projectci.grammar.Grammar;
 import de.fuberlin.projectci.grammar.GrammarReader;
@@ -39,7 +40,7 @@ public class LRParser implements IParser {
 		
 		// Grammatik einlesen
 		try {
-			GrammarReader grammarReader=new GrammarReader();
+			GrammarReader grammarReader=new BNFGrammarReader();
 			this.grammar=grammarReader.readGrammar(grammarFile.getAbsolutePath());
 		} 
 		catch (BNFParsingErrorException e) {
@@ -115,7 +116,7 @@ public class LRParser implements IParser {
 		/////////////// copy&paste vom Konstruktor (Exceptions unterdrückt)
 		// Grammatik einlesen
 		try {
-			GrammarReader grammarReader=new GrammarReader();
+			GrammarReader grammarReader=new BNFGrammarReader();
 			this.grammar=grammarReader.readGrammar(grammarFile.getAbsolutePath());
 		} 
 		catch (BNFParsingErrorException e) {

@@ -1,6 +1,11 @@
 package de.fuberlin.projectci.grammar;
 
-public class BNFParsingErrorException extends Exception {
+/**
+ * 
+ * Spezielle Exception, die beim Einlesen einer BNF-Grammatik-Datei auftreten kann.
+ *
+ */
+public class BNFParsingErrorException extends RuntimeException {
 	/**
 	 * Serial ID
 	 */

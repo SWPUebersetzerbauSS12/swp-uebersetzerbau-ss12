@@ -77,10 +77,10 @@ public class FuncCall extends Type {
 					tmp = true;
 					Type node = (Type) child;
 					ret += node.fromTypeStringToLLVMType() + " %"
-							+ LLVM.getMem(node) + "\n";
+							+ LLVM.getMem(node) + ", ";
 				}
 			if (tmp)
-				ret = ret.substring(0, ret.length() - 1);
+				ret = ret.substring(0, ret.length() - 2);
 			ret += ")";
 
 			// implicit var incrementation

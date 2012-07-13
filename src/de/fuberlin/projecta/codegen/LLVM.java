@@ -148,10 +148,10 @@ public class LLVM {
 	 */
 	public static String loadType(Type type) {
 		String ret = "";
-		Block block = type.getHighestBlock();
+		
 		// If getVar is 0 it must be loaded, otherwise it is already loaded
-
 		if (type != null && type.getVar() == 0) {
+			Block block = type.getHighestBlock();
 			if (type instanceof Literal) {
 				int n = block.getNewVar(), m = block.getNewVar();
 				String t = type.genCode().split(" ")[0];

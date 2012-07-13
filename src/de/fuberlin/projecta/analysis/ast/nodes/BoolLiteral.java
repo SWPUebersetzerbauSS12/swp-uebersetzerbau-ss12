@@ -1,7 +1,7 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 
-public class BoolLiteral extends Type {
+public class BoolLiteral extends Literal {
 	
 	private boolean value;
 	

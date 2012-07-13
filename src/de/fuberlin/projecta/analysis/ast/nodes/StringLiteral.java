@@ -1,7 +1,7 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 
-public class StringLiteral extends Type {
+public class StringLiteral extends Literal {
 
 	private String value;
 

@@ -1,8 +1,7 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 import de.fuberlin.commons.parser.ISyntaxTree;
-import de.fuberlin.projecta.analysis.EntryType;
-import de.fuberlin.projecta.analysis.SymbolTableHelper;
+import de.fuberlin.projecta.codegen.LLVM;
 
 public class Return extends Statement {
 
@@ -15,20 +14,17 @@ public class Return extends Statement {
 	public String genCode() {
 		Block block = getHighestBlock();
 		String ret = "";
-		if (getChildrenCount() == 0)
+		if (getChildrenCount() == 0) {
 			return "ret void";
-
-		if ((AbstractSyntaxTree) getChild(0) instanceof Id) {
-			EntryType eA = null;
-			eA = SymbolTableHelper.lookup(((Id) getChild(0)).getValue(), this);
-			int reg = block.getNewVar();
-			ret = "%" + reg + " = load " + eA.getType().genCode() + "* %"
-					+ ((AbstractSyntaxTree) getChild(0)).genCode() + "\n";
-			ret += "ret " + eA.getType().genCode() + " %" + reg;
-		} else {
-			ret += "ret " + ((AbstractSyntaxTree) getChild(0)).genCode();
+		} else if (getChild(0) instanceof Literal) {
+			ret += "ret " + ((Type) getChild(0)).genCode() + "\n";
+		} else if (getChild(0) instanceof Type) {
+			Type t = (Type) getChild(0);
+			ret += LLVM.loadType(t);
+			ret += "ret " + t.fromTypeStringToLLVMType() + " %"
+					+ LLVM.getMem(t) + "\n";
 		}
-		if(!ret.equals("")){
+		if (!ret.equals("")) {
 			ret += "\n; <label>:" + block.getNewVar();
 		}
 		return ret;
@@ -36,20 +32,21 @@ public class Return extends Statement {
 
 	@Override
 	public boolean checkTypes() {
-		String funcType = ((Type)getParentFunction().getChild(0)).toTypeString();
-		if(this.getChildrenCount() == 0){
+		String funcType = ((Type) getParentFunction().getChild(0))
+				.toTypeString();
+		if (this.getChildrenCount() == 0) {
 			// return type must be void!
 			return funcType.equals(Type.TYPE_VOID_STRING);
 		} else {
-			return funcType.equals(((Type)getChild(0)).toTypeString());
+			return funcType.equals(((Type) getChild(0)).toTypeString());
 		}
 	}
-	
-	private FuncDef getParentFunction(){
+
+	private FuncDef getParentFunction() {
 		ISyntaxTree func = this;
-		do{
+		do {
 			func = func.getParent();
-		}while(!(func instanceof FuncDef));
+		} while (!(func instanceof FuncDef));
 		return (FuncDef) func;
 	}
 }

@@ -49,16 +49,16 @@ public class FuncCall extends Type {
 				ret += " (";
 				for (ISyntaxTree child : getChild(1).getChildren()) {
 					if (!(child instanceof Literal)) {
-						counter++;
+
 						Type node = null;
 
-						if (child instanceof Id)
+						if (child instanceof Id) {
+							counter++;
 							ret += ((Id) child).getType().genCode() + ", ";
-						else if (child instanceof Type) {
+						} else if (child instanceof BasicType) {
+							counter++;
 							node = (Type) child;
 							ret += node.genCode() + ", ";
-						} else {
-							// WTF?!
 						}
 					}
 				}

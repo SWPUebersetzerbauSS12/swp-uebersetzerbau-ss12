@@ -5,19 +5,8 @@ import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.codegen.LLVM;
 
 public class If extends Statement {
-	private Block block;
 
-	@Override
-	public boolean checkSemantics() {
-		// semantics of if-statement is unambiguous
-		// only need to check children
-		for (int i = 0; i < this.getChildrenCount(); i++) {
-			if (!((AbstractSyntaxTree) this.getChild(i)).checkSemantics()) {
-				return false;
-			}
-		}
-		return true;
-	}
+	private Block block;
 
 	@Override
 	public String genCode() {

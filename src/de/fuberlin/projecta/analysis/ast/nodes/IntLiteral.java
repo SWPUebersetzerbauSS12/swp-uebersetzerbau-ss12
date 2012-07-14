@@ -10,11 +10,6 @@ public class IntLiteral extends Literal {
 	}
 
 	@Override
-	public boolean checkSemantics() {
-		return true;
-	}
-
-	@Override
 	public String genCode() {
 		return "i32 " + this.value;
 	}

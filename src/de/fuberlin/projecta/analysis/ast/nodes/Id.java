@@ -15,12 +15,6 @@ public class Id extends Type {
 	}
 
 	@Override
-	public boolean checkSemantics() {
-		// can't have children!
-		return true;
-	}
-
-	@Override
 	public String genCode() {
 		return value;
 	}

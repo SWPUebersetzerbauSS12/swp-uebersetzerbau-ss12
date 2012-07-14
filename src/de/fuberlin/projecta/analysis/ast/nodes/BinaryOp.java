@@ -19,7 +19,7 @@ public class BinaryOp extends Type {
 	}
 
 	@Override
-	public boolean checkSemantics() {
+	public void checkSemantics() {
 		switch (this.getOp()) {
 		// TODO: think if you can find other cases, where semantics can be
 		// wrong/ambiguous
@@ -27,7 +27,7 @@ public class BinaryOp extends Type {
 			if (!(this.getChild(0) instanceof Id)) {
 				throw new SemanticException(
 						"Left side of an assignment has to be an identifier, but is "
-								+ this.getChild(0).getClass().toString());
+								+ this.getChild(0).toString());
 			}
 			if (this.getChild(1) instanceof BinaryOp
 					&& (((BinaryOp) this.getChild(1)).getOp() == TokenType.OP_ASSIGN)) {
@@ -40,23 +40,18 @@ public class BinaryOp extends Type {
 				int v = ((IntLiteral) this.getChild(1)).getValue();
 				if (v == 0)
 					throw new SemanticException("Division by Zero!");
-				else
-					return true;
 			}
-			if (this.getChild(1) instanceof RealLiteral) {
+			else if (this.getChild(1) instanceof RealLiteral) {
 				double v = ((RealLiteral) this.getChild(1)).getValue();
 				if (v == 0.0)
 					throw new SemanticException("Division by Zero!");
-				else
-					return true;
 			}
 		}
+
+		// check all children, may throw
 		for (int i = 0; i < this.getChildrenCount(); i++) {
-			if (!((AbstractSyntaxTree) this.getChild(i)).checkSemantics()) {
-				return false;
-			}
+			((AbstractSyntaxTree)this.getChild(i)).checkSemantics();
 		}
-		return true;
 	}
 
 	@Override

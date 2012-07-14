@@ -10,11 +10,6 @@ public class RealLiteral extends Literal {
 	}
 
 	@Override
-	public boolean checkSemantics() {
-		return true;
-	}
-
-	@Override
 	public String genCode() {
 		return "double " + this.value;
 	}

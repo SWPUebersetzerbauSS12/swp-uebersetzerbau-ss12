@@ -6,11 +6,6 @@ import de.fuberlin.projecta.codegen.LLVM;
 public class Return extends Statement {
 
 	@Override
-	public boolean checkSemantics() {
-		return true;
-	}
-
-	@Override
 	public String genCode() {
 		Block block = getHighestBlock();
 		String ret = "";

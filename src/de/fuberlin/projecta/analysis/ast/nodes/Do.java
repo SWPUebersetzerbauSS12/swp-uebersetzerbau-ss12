@@ -12,16 +12,6 @@ import de.fuberlin.commons.parser.ISyntaxTree;
 public class Do extends Statement {
 
 	@Override
-	public boolean checkSemantics() {
-		for(int i = 0; i < this.getChildrenCount(); i++){
-			if(!((AbstractSyntaxTree)this.getChild(i)).checkSemantics()){
-				return false;
-			}
-		}
-		return true;
-	}
-
-	@Override
 	public String genCode() {
 		// TODO Auto-generated method stub
 		return null;

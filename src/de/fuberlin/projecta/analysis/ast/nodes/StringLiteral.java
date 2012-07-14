@@ -8,11 +8,6 @@ public class StringLiteral extends Literal {
 	public StringLiteral(String value) {
 		this.value = value;
 	}
-
-	@Override
-	public boolean checkSemantics() {
-		return true;
-	}
 	
 	@Override
 	public String genCode() {

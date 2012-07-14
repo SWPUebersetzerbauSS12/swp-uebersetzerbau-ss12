@@ -10,11 +10,6 @@ import de.fuberlin.projecta.lexer.BasicTokenType;
 public class Print extends Statement {
 
 	@Override
-	public boolean checkSemantics() {
-		return true;
-	}
-
-	@Override
 	/*
 	 * we use the puts function to print to screen 
 	 * %forprinting = load i8**

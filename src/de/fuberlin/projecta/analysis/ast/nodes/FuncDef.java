@@ -13,11 +13,10 @@ import de.fuberlin.commons.parser.ISyntaxTree;
 public class FuncDef extends Type {
 
 	@Override
-	public boolean checkSemantics() {
+	public void checkSemantics() {
 		for (int i = 0; i < this.getChildrenCount(); i++) {
-			if (!((AbstractSyntaxTree) this.getChild(i)).checkSemantics()) {
-				return false;
-			}
+			((AbstractSyntaxTree) this.getChild(i)).checkSemantics();
+
 			// if not, we have an empty method. The semantics of empty methods
 			// is defined as correct
 			if (this.getChild(this.getChildrenCount() - 1) instanceof Block) {
@@ -39,7 +38,6 @@ public class FuncDef extends Type {
 				throw new SemanticException("Methods needs to return a value");
 			}
 		}
-		return true;
 	}
 
 	@Override

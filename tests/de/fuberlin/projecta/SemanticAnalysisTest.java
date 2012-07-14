@@ -1,6 +1,5 @@
 package de.fuberlin.projecta;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
@@ -43,7 +42,7 @@ public class SemanticAnalysisTest {
 	@Test(expected = ClassCastException.class)
 	public void testIncompatibleOperands() {
 		final String code = MAIN_DEF + "def int foo() { int a; a = 0.0; }";
-		assertFalse(analyze(code));
+		analyze(code);
 	}
 
 	@Test
@@ -61,10 +60,10 @@ public class SemanticAnalysisTest {
 	@Test(expected = SemanticException.class)
 	public void testMissingMain(){
 		final String code = "def int foobar(){return 0;}";
-		assertFalse(analyze(code));
+		analyze(code);
 	}
 
-	private static boolean analyze(String code) {
+	private static void analyze(String code) {
 		Lexer lexer = new Lexer(new StringCharStream(code));
 		Parser parser = new Parser();
 		try {
@@ -75,6 +74,6 @@ public class SemanticAnalysisTest {
 		}
 		SemanticAnalyzer analyzer = new SemanticAnalyzer(parser.getParseTree());
 		analyzer.analyze();
-		return analyzer.getAST().checkSemantics();
+		analyzer.getAST().checkSemantics();
 	}
 }

@@ -8,11 +8,6 @@ public class BoolLiteral extends Literal {
 	public BoolLiteral(boolean value) {
 		this.value = value;
 	}
-	
-	@Override
-	public boolean checkSemantics() {
-		return true;
-	}
 
 	@Override
 	public String genCode() {

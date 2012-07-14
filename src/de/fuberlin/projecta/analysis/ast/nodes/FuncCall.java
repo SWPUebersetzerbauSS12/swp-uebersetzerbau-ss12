@@ -17,11 +17,6 @@ import de.fuberlin.projecta.codegen.LLVM;
 public class FuncCall extends Type {
 
 	@Override
-	public boolean checkSemantics() {
-		return true;
-	}
-
-	@Override
 	/**
 	 * For this to work properly all parameters MUST be loaded before!
 	 */

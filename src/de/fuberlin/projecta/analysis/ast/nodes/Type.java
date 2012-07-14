@@ -10,11 +10,6 @@ public abstract class Type extends AbstractSyntaxTree {
 
 	private int valMemory;
 
-	@Override
-	public boolean checkSemantics() {
-		return true;
-	}
-
 	public String genCode() {
 		return "";
 	}

@@ -4,21 +4,9 @@ import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.codegen.LLVM;
 
-
-
 public class While extends Statement {
 
 	private Block block;
-	
-	@Override
-	public boolean checkSemantics() {
-		for(int i = 0; i < this.getChildrenCount(); i++){
-			if(!((AbstractSyntaxTree)getChild(i)).checkSemantics()){
-				return false;
-			}
-		}
-		return true;
-	}
 
 	@Override
 	public String genCode() {

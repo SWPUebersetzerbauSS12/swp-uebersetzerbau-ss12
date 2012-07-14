@@ -76,11 +76,13 @@ public abstract class AbstractSyntaxTree extends Tree {
 	}
 
 	/**
-	 * 
-	 * @return <code>true</code> if semantic is well in this node and in
-	 *         (recursively) <b><u>all</u></b> child nodes
+	 * Reimplement in subclass if needed!
 	 */
-	public abstract boolean checkSemantics();
+	public void checkSemantics() {
+		for(int i = 0; i < this.getChildrenCount(); i++){
+			((AbstractSyntaxTree)this.getChild(i)).checkSemantics();
+		}
+	}
 
 	@Override
 	public String toString() {

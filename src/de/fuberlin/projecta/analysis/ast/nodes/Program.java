@@ -18,13 +18,12 @@ public class Program extends AbstractSyntaxTree {
 	}
 
 	@Override
-	public boolean checkSemantics() {
+	public void checkSemantics() {
 		int mains = 0;
 		for (int i = 0; i < this.getChildrenCount(); i++) {
 			AbstractSyntaxTree child = (AbstractSyntaxTree) this.getChild(i);
-			if (!child.checkSemantics()) {
-				return false;
-			}
+			child.checkSemantics();
+
 			if (child instanceof FuncDef) {
 				String name = ((Id) child.getChild(1)).getValue();
 				if (name.equals("main")) {
@@ -32,9 +31,8 @@ public class Program extends AbstractSyntaxTree {
 				}
 			}
 		}
-		if (mains == 1) {
-			return true;
-		} else {
+
+		if (mains != 1) {
 			throw new SemanticException(
 					"Program needs exactly one main method! Program contains "
 							+ mains + " main methods.");

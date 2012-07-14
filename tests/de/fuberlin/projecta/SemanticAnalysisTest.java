@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import de.fuberlin.projecta.analysis.SemanticAnalyzer;
 import de.fuberlin.projecta.analysis.SemanticException;
+import de.fuberlin.projecta.analysis.TypeErrorException;
 import de.fuberlin.projecta.lexer.Lexer;
 import de.fuberlin.projecta.lexer.io.StringCharStream;
 import de.fuberlin.projecta.parser.ParseException;
@@ -39,9 +40,9 @@ public class SemanticAnalysisTest {
 		analyze(code);
 	}
 
-	@Test(expected = ClassCastException.class)
+	@Test(expected = TypeErrorException.class)
 	public void testIncompatibleOperands() {
-		final String code = MAIN_DEF + "def int foo() { int a; a = 0.0; }";
+		final String code = MAIN_DEF + "def int foo() { int a; a = 0.0; return a; }";
 		analyze(code);
 	}
 
@@ -74,6 +75,8 @@ public class SemanticAnalysisTest {
 		}
 		SemanticAnalyzer analyzer = new SemanticAnalyzer(parser.getParseTree());
 		analyzer.analyze();
+		// TODO: Call the next methods in analyer.analyze()?
 		analyzer.getAST().checkSemantics();
+		analyzer.getAST().checkTypes();
 	}
 }

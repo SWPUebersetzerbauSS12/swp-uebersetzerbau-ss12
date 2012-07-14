@@ -96,9 +96,12 @@ public class Tokenizer implements LexerToParserInterface {
 					&& SpecialChars.isWhiteSpace( currentChar)) {
 
 				// count newlines
-				// bei windowssystemen muss dann am Ende durch 2 geteilt werden ,
-				// wegen \r\n
 				if( SpecialChars.isNewLine( currentChar)) {
+				  // handle \r\n for windows systems					
+					if ( currentChar == SpecialChars.CHAR_CARRIAGE_RETURN) {
+						if ( lexemeReader.getNextChar() != SpecialChars.CHAR_LINE_FEED)
+							lexemeReader.stepBackward( 1);     
+					}	
 					currentLine++;
 					currentPositionInLine = 0;
 				}

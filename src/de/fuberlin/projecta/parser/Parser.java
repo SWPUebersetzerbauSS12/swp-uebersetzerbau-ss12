@@ -11,8 +11,7 @@ import de.fuberlin.projecta.lexer.SyntaxErrorException;
 
 public class Parser implements IParser {
 
-	private ParseTable table 
-			= new ParseTable(NonTerminal.values(), TokenType.values());
+	private ParseTable table = new ParseTable();
 	private Stack<Symbol> stack = new Stack<Symbol>();
 
 	private boolean debugEnabled = false;
@@ -92,7 +91,13 @@ public class Parser implements IParser {
 			{
 				NonTerminal nonT = peek.asNonTerminal();
 				assert(nonT != null);
+
 				String prod = table.getEntry(nonT, TokenType.valueOf(token.getType()));
+				if (prod == null || prod.trim().equals("")) {
+					throw new ParseException("Didn't expect token",
+							"Syntax error: No rule in parsing table (Stack: "
+									+ peek + ", token: " + token + ")", token);
+				}
 
 				ISyntaxTree node = new Tree(new Symbol(nonT));
 				currentNode.addChild(node);
@@ -113,10 +118,6 @@ public class Parser implements IParser {
 							stack.push(symbol);
 						}
 					}
-				} else if (prod.trim().equals("")) {
-					throw new ParseException("Didn't expect token",
-							"Syntax error: No rule in parsing table (Stack: "
-									+ peek + ", token: " + token + ")", token);
 				} else {
 					throw new ParseException(
 							"Internal error",

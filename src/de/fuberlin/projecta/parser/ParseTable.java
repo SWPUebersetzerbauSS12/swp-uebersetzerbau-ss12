@@ -1,69 +1,47 @@
 package de.fuberlin.projecta.parser;
 
+import java.util.HashMap;
+
 import de.fuberlin.commons.lexer.TokenType;
 
 public class ParseTable {
 
 	private static final char DELIM = '#';
 
-	private boolean isAmbigous;
+	private boolean isAmbigous = false;
 
-	private NonTerminal[] nonTerminals;
-	private TokenType[] terminals;
-
-	private String[][] table;
-
-	public ParseTable(NonTerminal[] nonTerminals, TokenType[] terminals) {
-		this.nonTerminals = nonTerminals;
-		this.terminals = terminals;
-
-		isAmbigous = false;
-
-		table = new String[nonTerminals.length][terminals.length];
-		for (int i = 0; i < nonTerminals.length; i++) {
-			for (int j = 0; j < terminals.length; j++) {
-				table[i][j] = "";
-			}
-		}
+	private HashMap<String, String> table = new HashMap<String,String>();
+	
+	private static String toKey(NonTerminal nonT, TokenType t) {
+		return nonT.toString() + "/" + t.toString();
 	}
 
 	/**
 	 * Stores the BNF String into the right cell, only if terminals and
 	 * nonTerminals are unique! (Otherwise it takes the first occurrence).
-	 * 
-	 * @param nonT
-	 * @param t
-	 * @param entry
+	 *
 	 * @throws IllegalStateException
 	 */
 	public void setEntry(NonTerminal nonT, TokenType t, String entry)
 			throws IllegalStateException {
-		boolean found = false;
-		for (int i = 0; i < nonTerminals.length; i++) {
-			if (nonTerminals[i].equals(nonT)) {
-				for (int j = 0; j < terminals.length; j++) {
-					if (terminals[j].equals(t)) {
-						if (table[i][j].equals("")) {
-							table[i][j] = entry;
-							found = true;
-						} else {
-							table[i][j] += DELIM + entry;
-							isAmbigous = true;
-							throw new IllegalStateException(
-									"parsing table is ambigous in cell ["
-											+ nonT + "," + t + "]");
-						}
-					}
-				}
-			}
+
+		final String key = toKey(nonT, t);
+		
+		// check if combination is already in parse table
+		if (table.containsKey(key)) {
+			String oldEntry = table.get(key);
+			table.put(key, oldEntry + DELIM + entry);
+			isAmbigous = true;
+			throw new IllegalStateException(
+					"parsing table is ambigous in cell ["
+							+ nonT + "," + t + "]");
 		}
-		if (!found)
-			throw new IllegalStateException("Missing parsing table field [" + nonT
-					+ "," + t + "]");
+
+		table.put(key, entry);
 	}
 
 	/**
-	 * 
+	 * Get an entry out of the parse table
 	 * 
 	 * @param nonT
 	 *            non terminal
@@ -72,19 +50,10 @@ public class ParseTable {
 	 * @return All entries of the parsing table cell with the given arguments
 	 *         nonT and t. Entries are separated by one delimiter. If no entry
 	 *         is found null is returned.
-	 * @throws ParseException 
 	 */
-	public String getEntry(NonTerminal nonT, TokenType t) throws ParseException {
-		for (int i = 0; i < nonTerminals.length; i++) {
-			if (nonTerminals[i].equals(nonT)) {
-				for (int j = 0; j < terminals.length; j++) {
-					if (terminals[j].equals(t)) {
-						return table[i][j];
-					}
-				}
-			}
-		}
-		return null;
+	public String getEntry(NonTerminal nonT, TokenType t) {
+		final String key = toKey(nonT, t);
+		return table.get(key);
 	}
 
 	public boolean isAmbigous() {

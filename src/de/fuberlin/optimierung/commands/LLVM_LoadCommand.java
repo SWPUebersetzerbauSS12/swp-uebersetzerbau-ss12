@@ -42,6 +42,7 @@ public class LLVM_LoadCommand extends LLVM_GenericCommand{
 	}
 	
 	public String toString() {
+		if (target == null || operands == null || operands.size() < 1) return null;
 		String cmd_out = target.getName() + " = ";
 		cmd_out += "load ";
 		

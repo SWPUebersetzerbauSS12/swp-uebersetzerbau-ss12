@@ -15,43 +15,32 @@ public class LLVM_GetElementPtrCommand extends LLVM_GenericCommand {
 	public LLVM_GetElementPtrCommand(String cmdLine, LLVM_GenericCommand predecessor, LLVM_Block block){
 		super(predecessor, block, cmdLine);
 		setOperation(LLVM_Operation.GETELEMENTPTR);
-		// Kommentar entfernen
-		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
+
+		StringBuilder cmd = new StringBuilder(cmdLine);
+		parseEraseComment(cmd);
+		String result = parseReadResult(cmd);
+		parseEraseString(cmd, "getelementptr");
 		
-		// result einlesen
-		String result = cmdLine.substring(0, cmdLine.indexOf("=")).trim();
-		cmdLine = cmdLine.substring(cmdLine.indexOf("getelementptr ") + 13).trim();
+		if (parseOptionalString(cmd, "inbounds")) hasInbounds = true;
 		
-		// inbounds einlesen
-		if (cmdLine.startsWith("inbounds ")){
-			hasInbounds = true;
-			cmdLine = cmdLine.substring(cmdLine.indexOf("inbounds ") + 8).trim();
-		}
+		String pty = parseReadPointer(cmd);
+		String ptyval = parseReadValue(cmd);
 		
-		int count = getComplexStructEnd(cmdLine);
-				
-		if (count == 0) count = cmdLine.indexOf("* ");
-		count = count + 2;
+		target = new LLVM_Parameter(result, pty);
+		operands.add(new LLVM_Parameter(ptyval, pty));
 		
-		// ty einlesen
-		String ty = "";
-		ty = cmdLine.substring(0, count).trim();
-		target = new LLVM_Parameter(result, ty);
-		
-		cmdLine = cmdLine.substring(count).trim();
-		
-		String[] comma = cmdLine.split(",");
-		operands.add(new LLVM_Parameter(comma[0].trim(), ty));
-		
-		for (int i = 1; i < comma.length; i++){
-			int cutAt = comma[i].lastIndexOf(" ");
-			operands.add(new LLVM_Parameter(comma[i].substring(cutAt).trim(), comma[i].substring(0, cutAt).trim()));
+		while (parseEraseString(cmd, ",")){
+			String ty = parseReadType(cmd);
+			String idx = parseReadValue(cmd);
+			operands.add(new LLVM_Parameter(idx, ty));
 		}
 		
 		if (LLVM_Optimization.DEBUG) System.out.println("Operation generiert: " + this.toString());
 	}
 	
 	public String toString(){
+		if (target == null || operands == null || operands.size() < 1) return null;
+		
 		String cmd_out = target.getName() + " = ";
 		cmd_out += "getelementptr ";
 		

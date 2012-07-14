@@ -11,6 +11,7 @@ import de.fuberlin.commons.lexer.ILexer;
 import de.fuberlin.commons.parser.IParser;
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.optimierung.LLVM_Optimization;
+import de.fuberlin.optimierung.LLVM_OptimizationException;
 import de.fuberlin.projectF.CodeGenerator.CodeGenerator;
 import de.fuberlin.projecta.analysis.SemanticAnalyzer;
 import de.fuberlin.projecta.analysis.SemanticException;
@@ -184,12 +185,22 @@ public class Main {
 		 *	output:	String optimized_llvm_code
 		 */
 		
-		String optimized_llvm_code;
+		System.out.println(generatedLLVMCode);
+		
+		String optimized_llvm_code = "";
 		LLVM_Optimization llvm_optimizer = new LLVM_Optimization();
-		if(arguments.containsKey(PARAM_LLVM_INPUT_FILE)) {
-			optimized_llvm_code = llvm_optimizer.optimizeCodeFromFile(arguments.get(PARAM_LLVM_INPUT_FILE));
-		} else{
-			optimized_llvm_code = llvm_optimizer.optimizeCodeFromString(generatedLLVMCode);
+		try{
+			if(arguments.containsKey(PARAM_LLVM_INPUT_FILE)) {
+				optimized_llvm_code = llvm_optimizer.optimizeCodeFromFile(arguments.get(PARAM_LLVM_INPUT_FILE));
+			} else{
+				optimized_llvm_code = llvm_optimizer.optimizeCodeFromString(generatedLLVMCode);
+			}
+		}catch(Exception e){
+			System.err.println(e.getMessage());
+			System.err.println("Optimization not done!\nUse unoptimized code!\n");
+			
+			// Nutze nicht optimierten Code
+			optimized_llvm_code = generatedLLVMCode;
 		}
 		
 		//--------------------------

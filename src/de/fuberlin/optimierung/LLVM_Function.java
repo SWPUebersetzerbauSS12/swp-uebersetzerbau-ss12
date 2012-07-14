@@ -9,8 +9,8 @@ public class LLVM_Function {
 	String func_define = "";
 	String afterFunc = "";
 	
-	private LLVM_Block startBlock;
-	private LLVM_Block endBlock;
+	//private LLVM_Block startBlock;
+	//private LLVM_Block endBlock;
 	private ArrayList<LLVM_Block> blocks;
 	private int numberBlocks;
 	
@@ -18,7 +18,7 @@ public class LLVM_Function {
 	
 	private LLVM_RegisterMap registerMap = new LLVM_RegisterMap();
 	
-	public LLVM_Function(String code) {
+	public LLVM_Function(String code) throws LLVM_OptimizationException{
 		func_define = "define " + code.substring(0, code.indexOf("\n"));
 		code = code.substring(code.indexOf("\n")+1);
 		
@@ -31,8 +31,8 @@ public class LLVM_Function {
 		for(int i = 0; i < this.numberBlocks; i++) {
 			this.blocks.add(new LLVM_Block(codeBlocks[i],this));
 		}
-		this.startBlock = this.blocks.get(0);
-		this.endBlock = this.blocks.get(this.numberBlocks-1);
+		//this.startBlock = this.blocks.get(0);
+		//this.endBlock = this.blocks.get(this.numberBlocks-1);
 	}
 	
 	/*
@@ -46,7 +46,7 @@ public class LLVM_Function {
 	 * nextBlocks und previousBlocks der Bloecke werden gesetzt.
 	 * Labels werden gegebenenfalls erstellt.
 	 */
-	public void createFlowGraph() {
+	public void createFlowGraph() throws LLVM_OptimizationException{
 		
 		// Teste, ob Labels gesetzt sind
 		// Wenn nein, dann erstelle die Labels
@@ -170,7 +170,7 @@ public class LLVM_Function {
 	 * Definition und Verwendungen der Register werden in registerMap abgelegt
 	 * Alte Informationen werden entfernt, aktuelle gesetzt
 	 */
-	public void createRegisterMaps() {
+	public void createRegisterMaps() throws LLVM_OptimizationException{
 		
 		// Loesche alte Werte
 		this.registerMap.clean();
@@ -227,7 +227,7 @@ public class LLVM_Function {
 	 * Erstelle IN OUT Mengen pro Block fuer Lebendigkeitsanalyse
 	 * Entferne anschliessend ueberfluessige Stores
 	 */
-	public void globalLiveVariableAnalysis() {
+	public void globalLiveVariableAnalysis() throws LLVM_OptimizationException{
 		for(LLVM_Block b : this.blocks) {
 			b.createDefUseSets();
 		}
@@ -267,7 +267,7 @@ public class LLVM_Function {
 	 * Erstelle IN OUT Mengen pro Block fuer Lebendigkeitsanalyse
 	 * Entferne anschliessend ueberfluessige Stores
 	 */
-	public void reachingAnalysis() {
+	public void reachingAnalysis() throws LLVM_OptimizationException{
 		for(LLVM_Block b : this.blocks) {
 			b.createGenKillSets();
 		}
@@ -286,7 +286,7 @@ public class LLVM_Function {
 	/**
 	 * Löscht alle doppelten Befehle in einem Block
 	 */
-	public void removeCommonExpressions (){
+	public void removeCommonExpressions () throws LLVM_OptimizationException{
 		for (LLVM_Block block : blocks){
 			block.removeCommonExpressions();
 		}
@@ -306,7 +306,15 @@ public class LLVM_Function {
 			LLVM_Parameter op2 = operands.get(1);
 			
 			try{
-				if(op1.getType() == LLVM_ParameterType.INTEGER && op2.getType() == LLVM_ParameterType.INTEGER){
+				if(op1.getType() == LLVM_ParameterType.INTEGER && op2.getType() == LLVM_ParameterType.INTEGER && 
+						(cmd.getOperation() == LLVM_Operation.ADD ||
+						cmd.getOperation() == LLVM_Operation.SUB ||
+						cmd.getOperation() == LLVM_Operation.MUL ||
+						cmd.getOperation() == LLVM_Operation.DIV ||
+						cmd.getOperation() == LLVM_Operation.AND ||
+						cmd.getOperation() == LLVM_Operation.OR ||
+						cmd.getOperation() == LLVM_Operation.XOR
+						)){
 					int iOP1 = Integer.parseInt(op1.getName());
 					int iOP2 = Integer.parseInt(op2.getName());
 					int result = 0;
@@ -324,6 +332,15 @@ public class LLVM_Function {
 					case DIV :
 						result = iOP1 / iOP2;
 						break;
+					case AND :
+						result = iOP1 & iOP2;
+						break;
+					case OR :
+						result = iOP1 | iOP2;
+						break;
+					case XOR :
+						result = iOP1 ^ iOP2;
+						break;
 					}
 					
 					op1.setName(""+result);
@@ -336,7 +353,12 @@ public class LLVM_Function {
 					if(iOP2 == 0){
 						return true;
 					}
-				}else if(op1.getType() == LLVM_ParameterType.DOUBLE && op2.getType() == LLVM_ParameterType.DOUBLE){
+				}else if(op1.getType() == LLVM_ParameterType.DOUBLE && op2.getType() == LLVM_ParameterType.DOUBLE &&
+						(cmd.getOperation() == LLVM_Operation.FADD ||
+						cmd.getOperation() == LLVM_Operation.FSUB ||
+						cmd.getOperation() == LLVM_Operation.FMUL ||
+						cmd.getOperation() == LLVM_Operation.FDIV
+						)){
 					double iOP1 = Double.parseDouble(op1.getName());
 					double iOP2 = Double.parseDouble(op2.getName());
 					double result = 0;
@@ -377,7 +399,18 @@ public class LLVM_Function {
 			LLVM_Parameter op2 = operands.get(1);
 			
 			try{
-				if(op1.getType() == LLVM_ParameterType.INTEGER && op2.getType() == LLVM_ParameterType.INTEGER){
+				if(op1.getType() == LLVM_ParameterType.INTEGER && op2.getType() == LLVM_ParameterType.INTEGER &&
+						(cmd.getOperation() == LLVM_Operation.ICMP_EQ ||
+						cmd.getOperation() == LLVM_Operation.ICMP_NE ||
+						cmd.getOperation() == LLVM_Operation.ICMP_UGT ||
+						cmd.getOperation() == LLVM_Operation.ICMP_UGE ||
+						cmd.getOperation() == LLVM_Operation.ICMP_ULT ||
+						cmd.getOperation() == LLVM_Operation.ICMP_ULE ||
+						cmd.getOperation() == LLVM_Operation.ICMP_SGT ||
+						cmd.getOperation() == LLVM_Operation.ICMP_SGE ||
+						cmd.getOperation() == LLVM_Operation.ICMP_SLT ||
+						cmd.getOperation() == LLVM_Operation.ICMP_SLE
+						)){
 					int iOP1 = Integer.parseInt(op1.getName());
 					int iOP2 = Integer.parseInt(op2.getName());
 					boolean result = false;
@@ -461,61 +494,6 @@ public class LLVM_Function {
 					op1.setName(result?"1":"0");
 					op2.setName("0");
 					op1.setTypeString("i1");
-					
-					return true;
-				}
-			}catch(NumberFormatException e){
-				// no numbers
-			}
-		}else if(cmd.getClass().equals(LLVM_BinaryCommand.class) &&
-				(cmd.getOperation() == LLVM_Operation.AND ||
-				cmd.getOperation() == LLVM_Operation.OR ||
-				cmd.getOperation() == LLVM_Operation.XOR)){
-			LinkedList<LLVM_Parameter> operands = cmd.getOperands();
-			LLVM_Parameter op1 = operands.get(0);
-			LLVM_Parameter op2 = operands.get(1);
-			
-			try{
-				if(op1.getType() == LLVM_ParameterType.INTEGER && op2.getType() == LLVM_ParameterType.INTEGER){
-					int iOP1 = Integer.parseInt(op1.getName());
-					int iOP2 = Integer.parseInt(op2.getName());
-					int result = 0;
-					
-					switch(cmd.getOperation()){
-					case AND :
-						result = iOP1 & iOP2;
-						break;
-					case OR :
-						result = iOP1 | iOP2;
-						break;
-					case XOR :
-						result = iOP1 ^ iOP2;
-						break;
-					}
-					
-					op1.setName(""+result);
-					op2.setName("0");
-					
-					return true;
-				}else if(op1.getType() == LLVM_ParameterType.DOUBLE && op2.getType() == LLVM_ParameterType.DOUBLE){
-					int iOP1 = Integer.parseInt(op1.getName());
-					int iOP2 = Integer.parseInt(op2.getName());
-					double result = 0.0;
-					
-					switch(cmd.getOperation()){
-					case AND :
-						result = iOP1 & iOP2;
-						break;
-					case OR :
-						result = iOP1 | iOP2;
-						break;
-					case XOR :
-						result = iOP1 ^ iOP2;
-						break;
-					}
-					
-					op1.setName(""+result);
-					op2.setName("0");
 					
 					return true;
 				}
@@ -561,7 +539,7 @@ public class LLVM_Function {
 	}
 	
 	
-	public void constantFolding() {
+	public void constantFolding() throws LLVM_OptimizationException{
 		
 		LinkedList<LLVM_GenericCommand> changed_cmds = new LinkedList<LLVM_GenericCommand>();
 		
@@ -622,7 +600,10 @@ public class LLVM_Function {
 							LLVM_Parameter op = cmd.getOperands().get(0);
 							registerMap.deleteCommand(_cmds.get(j));
 							//registerMap.deleteCommand(_cmds.get(j), cmd.getTarget());
-							operands.set(k, new LLVM_Parameter(op.getName(), op.getType(), op.getTypeString()));
+							//operands.get(k).setName(op.getName());
+							operands.set(k, new LLVM_Parameter(op.getName(), 
+									op.getType(), operands.get(k).getTypeString()));
+							//operands.set(k, new LLVM_Parameter(op.getName(), op.getType(), op.getTypeString()));
 							registerMap.addCommand(_cmds.get(j));
 						}
 					}
@@ -667,11 +648,20 @@ public class LLVM_Function {
 
 		}
 		// Wenn einzige Verwendung ein Store, dann löschen
-		if (this.registerMap.existsUses(registerName) && this.registerMap.getUses(registerName).size() == 1 && this.registerMap.getUses(registerName).get(0).getOperation() == LLVM_Operation.STORE ){
-			LLVM_GenericCommand store = this.registerMap.getUses(registerName).get(0);
-			this.registerMap.deleteCommand(store);
-			store.deleteCommand("eliminateDeadRegister - store");
-			return store;
+		if (this.registerMap.existsUses(registerName) &&
+				this.registerMap.existsDefintion(registerName)) {
+			
+			LinkedList<LLVM_GenericCommand> uses = this.registerMap.getUses(registerName);
+			LLVM_GenericCommand def = this.registerMap.getDefinition(registerName);
+			
+			if(uses.size() == 1 && uses.get(0).getOperation() == LLVM_Operation.STORE 
+					&& def.getOperation() == LLVM_Operation.ALLOCA){	
+				
+				LLVM_GenericCommand store = uses.get(0);
+				this.registerMap.deleteCommand(store);
+				store.deleteCommand("eliminateDeadRegister - store");
+				return store;
+			}
 		}
 		return null;
 	}
@@ -740,7 +730,7 @@ public class LLVM_Function {
 	 * eliminateDeadRegistersGlobal und eliminateDeadRegistersFromList werden als
 	 * Unterfunktionen verwendet
 	 */
-	public void eliminateDeadRegisters() {
+	public void eliminateDeadRegisters() throws LLVM_OptimizationException{
 		
 		LinkedList<LLVM_GenericCommand> deletedCommands;
 		deletedCommands = this.eliminateDeadRegistersGlobal();
@@ -755,7 +745,6 @@ public class LLVM_Function {
 		}
 		
 	}
-	
 	
 	/*
 	 * *********************************************************
@@ -893,7 +882,7 @@ public class LLVM_Function {
 	 * und gegebenenfalls ebenfalls geloescht
 	 * Abhaengigkeiten zwischen Bloecken werden aufgeloest
 	 */
-	public void eliminateDeadBlocks() {
+	public void eliminateDeadBlocks() throws LLVM_OptimizationException{
 		LinkedList<LLVM_Block> deletedBlocks;
 		deletedBlocks = this.eliminateDeadBlocksGlobal();
 	
@@ -908,7 +897,7 @@ public class LLVM_Function {
 	/**
 	 * Entferne Bloecke, die nur unbedingten Sprungbefehl enthalten
 	 */
-	public void deleteEmptyBlocks() {
+	public void deleteEmptyBlocks() throws LLVM_OptimizationException{
 		// Gehe Bloecke durch
 		LinkedList<LLVM_Block> toDelete = new LinkedList<LLVM_Block>();
 		for(LLVM_Block actualBlock : this.blocks) {
@@ -918,7 +907,7 @@ public class LLVM_Function {
 				// Block kann geloescht werden
 				LLVM_Block targetBlock = actualBlock.getNextBlocks().getFirst();
 				String targetBlockLabel = targetBlock.getLabel();
-				String actualBlockLabel = actualBlock.getLabel();
+				//String actualBlockLabel = actualBlock.getLabel();
 				
 				// Gehe Vorgaengerbloecke durch
 				for(LLVM_Block previousBlock : actualBlock.getPreviousBlocks()) {
@@ -988,6 +977,77 @@ public class LLVM_Function {
 	
 	/*
 	 * *********************************************************
+	 * *********** Strength Reduction **************************
+	 * *********************************************************
+	 */
+	
+	/**
+	 * Ersetze Multiplikationen/Divisionen mit Zweierpotenz durch
+	 * schneller zu berechnende Bitshifts in gegebenem Befehl c.
+	 * Hilfsfunktion fuer strengthReduction.
+	 * @param c gegebener Befehl
+	 */
+	private void commandStrengthReduction(LLVM_GenericCommand c) {
+		if(c.getOperation()==LLVM_Operation.MUL) {
+			// Multiplikation gefunden
+			LinkedList<LLVM_Parameter> operands = c.getOperands();
+			
+			LLVM_Parameter o = operands.getFirst();
+			if(o.getType()==LLVM_ParameterType.INTEGER) {
+				
+				// Im ersten Operanden koennte eine Zweierpotenz stehen 
+				int powerOfTwo = 1;
+				for(int i=1; i<32; i++) {
+					powerOfTwo = powerOfTwo * 2;
+					if ( (new Integer(powerOfTwo)).toString().equals(o.getName()) ) {
+						// Passende Zweierpotenz wurde gefunden
+						LLVM_Parameter sndOperand = operands.get(1);
+						LLVM_Parameter tmp = new LLVM_Parameter(sndOperand.getName(),
+								sndOperand.getType(), sndOperand.getTypeString());
+						sndOperand.setName((new Integer(i)).toString());
+						sndOperand.setType(LLVM_ParameterType.INTEGER);
+						sndOperand.setTypeString(o.getTypeString());
+						operands.set(0, tmp);		
+						c.setOperation(LLVM_Operation.SHL);
+					}
+				}
+			}
+			else {
+				o = operands.get(1);
+				if(o.getType()==LLVM_ParameterType.INTEGER) {
+					
+					// Im zweiten Operanden koennte eine Zweierpotenz stehen 	
+					int powerOfTwo = 1;
+					for(int i=1; i<32; i++) {
+						powerOfTwo = powerOfTwo * 2;
+						if ( (new Integer(powerOfTwo)).toString().equals(o.getName()) ) {
+							// Passende Zweierpotenz wurde gefunden
+							c.setOperation(LLVM_Operation.SHL);
+							o.setName((new Integer(i)).toString());
+						}
+					}
+					
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Ersetze Multiplikationen/Divisionen mit Zweierpotenz durch
+	 * schneller zu berechnende Bitshifts
+	 */
+	public void strengthReduction() throws LLVM_OptimizationException{
+		for(LLVM_Block b : this.blocks) {
+			if(!b.isEmpty()) {
+				for(LLVM_GenericCommand c = b.getFirstCommand(); c!=null; c=c.getSuccessor()) {
+					this.commandStrengthReduction(c);
+				}
+			}
+		}
+	}
+	
+	/*
+	 * *********************************************************
 	 * *********** Labels zur Ausgabe anpassen *****************
 	 * *********************************************************
 	 */
@@ -1013,7 +1073,7 @@ public class LLVM_Function {
 	 * Achtung: nur direkt vor der Ausgabe des Codes nutzen, Hashmaps
 	 * werden nicht aktualisiert.
 	 */
-	public void updateUnnamedLabelNames() {
+	public void updateUnnamedLabelNames() throws LLVM_OptimizationException{
 	
 		String nextUnnamed = "%1";
 		int nextNumber = 1;

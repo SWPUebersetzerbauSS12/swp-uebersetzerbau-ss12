@@ -10,6 +10,7 @@ import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.commons.util.LogFactory;
 import de.fuberlin.projecta.lexer.Lexer;
 import de.fuberlin.projecta.lexer.io.StringCharStream;
+import de.fuberlin.projectci.grammar.BNFGrammarReader;
 import de.fuberlin.projectci.grammar.BNFParsingErrorException;
 import de.fuberlin.projectci.grammar.Grammar;
 import de.fuberlin.projectci.grammar.GrammarReader;
@@ -87,7 +88,7 @@ public class DriverTestDataProvider2 implements DriverTestDataProvider{
 	}
 
 	private Grammar sourceGrammar(){
-		GrammarReader grammarReader = new GrammarReader();
+		GrammarReader grammarReader = new BNFGrammarReader();
 		Grammar g3 = null;
 		try {
 			g3 = grammarReader.readGrammar("./input/de/fuberlin/projectci/non-ambigous.txt");

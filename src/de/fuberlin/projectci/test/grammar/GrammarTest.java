@@ -13,6 +13,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.fuberlin.projectci.grammar.BNFGrammarReader;
 import de.fuberlin.projectci.grammar.BNFParsingErrorException;
 import de.fuberlin.projectci.grammar.Grammar;
 import de.fuberlin.projectci.grammar.GrammarReader;
@@ -36,7 +37,7 @@ public class GrammarTest {
 				"<T1>  ::= \"*\" <F> <T1> | \"@\"\n"+
 				"<F>  ::= \"(\" <E> \")\" | \"id\"";
 
-		GrammarReader grammarReader=new GrammarReader();
+		GrammarReader grammarReader=new BNFGrammarReader();
 		
 		try {
 			grammar=grammarReader.readGrammar(new StringReader(strGrammar));

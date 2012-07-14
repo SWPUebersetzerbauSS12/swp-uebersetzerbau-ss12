@@ -124,7 +124,14 @@ public class CompilerTest {
 		String output = executeCode(code);
 		assertEquals("7", output);
 	}
-	
+
+	@Test
+	public void testMultiExpression() {
+		String code = mainC("int a; a = 1 + 2 + 3; print a;");
+		String output = executeCode(code);
+		assertEquals("6", output);
+	}
+
 	@Test
 	public void testRecursiveFuncCall(){
 		final String code = "def int foo(int i){if (i==0) {return 1;} return foo(i-1);} def int main(){int i; i = foo(3); print i; return 0;}";

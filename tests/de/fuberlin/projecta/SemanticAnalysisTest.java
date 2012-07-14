@@ -1,16 +1,11 @@
 package de.fuberlin.projecta;
 
-import static org.junit.Assert.fail;
-
 import org.junit.Test;
 
+import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.SemanticAnalyzer;
 import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.TypeErrorException;
-import de.fuberlin.projecta.lexer.Lexer;
-import de.fuberlin.projecta.lexer.io.StringCharStream;
-import de.fuberlin.projecta.parser.ParseException;
-import de.fuberlin.projecta.parser.Parser;
 
 public class SemanticAnalysisTest {
 
@@ -56,6 +51,12 @@ public class SemanticAnalysisTest {
 	}
 
 	@Test
+	public void testMultiExpression() {
+		String code = mainC("int a; a = 1 + 2 + 3;");
+		analyze(code);
+	}
+
+	@Test
 	public void testRecordBehaviour(){
 		final String code = mainC("") + "def int foobar(record {int r; int i;} myImaginaire){myImaginaire.r = 1; myImaginaire.i = 0;}";
 		analyze(code);
@@ -67,11 +68,9 @@ public class SemanticAnalysisTest {
 		analyze(code);
 	}
 
-	private static void analyze(String code) {
-		Lexer lexer = new Lexer(new StringCharStream(code));
-		Parser parser = new Parser();
-		parser.parse(lexer, "");
-		SemanticAnalyzer analyzer = new SemanticAnalyzer(parser.getParseTree());
+	static void analyze(String code) {
+		ISyntaxTree parseTree = ParserTest.parse(code);
+		SemanticAnalyzer analyzer = new SemanticAnalyzer(parseTree);
 		analyzer.analyze();
 		// TODO: Call the next methods in analyer.analyze()?
 		analyzer.getAST().checkSemantics();

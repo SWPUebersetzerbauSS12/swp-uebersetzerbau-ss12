@@ -1,5 +1,6 @@
 package de.fuberlin.projecta.parser;
 
+import java.util.Set;
 import java.util.Stack;
 
 import de.fuberlin.commons.lexer.ILexer;
@@ -8,6 +9,7 @@ import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.commons.parser.IParser;
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.lexer.SyntaxErrorException;
+import de.fuberlin.projecta.utils.ListComprehension;
 
 public class Parser implements IParser {
 
@@ -94,9 +96,18 @@ public class Parser implements IParser {
 
 				String prod = table.getEntry(nonT, TokenType.valueOf(token.getType()));
 				if (prod == null || prod.trim().equals("")) {
+					Set<String> expectedTokens = ListComprehension.map(table.getEntries(nonT).keySet(),
+							new ListComprehension.Func<TokenType, String>() {
+								public String apply(TokenType in) {
+									return in.terminalSymbol();
+								}
+					});
+
 					throw new ParseException("Didn't expect token",
 							"Syntax error: No rule in parsing table (Stack: "
-									+ peek + ", token: " + token + ")", token);
+									+ peek + ", token: " + token + ")\n" +
+							"Expected: " + expectedTokens
+							, token);
 				}
 
 				ISyntaxTree node = new Tree(new Symbol(nonT));

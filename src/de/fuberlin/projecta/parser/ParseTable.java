@@ -1,5 +1,7 @@
 package de.fuberlin.projecta.parser;
 
+import java.util.HashMap;
+
 import de.fuberlin.commons.lexer.TokenType;
 
 public class ParseTable {
@@ -51,6 +53,16 @@ public class ParseTable {
 	public String getEntry(NonTerminal nonT, TokenType t) {
 		String entry = table[nonT.ordinal()][t.ordinal()];
 		return entry;
+	}
+
+	public HashMap<TokenType,String> getEntries(NonTerminal nonT) {
+		HashMap<TokenType,String> entries = new HashMap<TokenType,String>();
+		for (TokenType t : TokenType.values()) {
+			String entry = table[nonT.ordinal()][t.ordinal()];
+			if (entry != null)
+				entries.put(t, entry);
+		}
+		return entries;
 	}
 
 	public boolean isAmbigous() {

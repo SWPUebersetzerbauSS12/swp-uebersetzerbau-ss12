@@ -92,6 +92,7 @@ public abstract class Closure<SpecializedItem extends Item> extends HashMap<Spec
 	
 	@Override
 	public abstract boolean equals( Object theOtherObject);
+	
 		
 	
 	public void setNumber(int number) {

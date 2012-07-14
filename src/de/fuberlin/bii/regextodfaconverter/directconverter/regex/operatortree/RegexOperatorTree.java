@@ -316,7 +316,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 				OperatorNode nodeR = new OperatorNode( OperatorType.ALTERNATIVE);
 				TreeNode nodeR1 = (TreeNode) attributesMaps[1].get( "node");	
 				TreeNode nodeS = (TreeNode) attributesMaps[3].get( "node");
-				Object payload = ((Symbol) attributesMaps[2].get( "value")).getPayload();
+				Serializable payload = ((Symbol) attributesMaps[2].get( "value")).getPayload();
 				tryPassPayloadDownwards( payload, nodeR1, nodeS);
 				nodeR.setLeftChildNode( nodeR1);
 				nodeR.setRightChildNode( nodeS);
@@ -394,7 +394,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 				RepetitionRange repetitionRange = new RepetitionRange( 0, Integer.MAX_VALUE);
 				OperatorNode nodeT = new OperatorNode( OperatorType.REPETITION, repetitionRange);
 				TreeNode nodeU = (TreeNode) attributesMaps[1].get( "node");
-				Object payload = ((Symbol) attributesMaps[2].get( "value")).getPayload();
+				Serializable payload = ((Symbol) attributesMaps[2].get( "value")).getPayload();
 				tryPassPayloadDownwards( payload, nodeU);
 				nodeT.setLeftChildNode( nodeU);
 				attributesMaps[0].put( "node", nodeT);
@@ -408,7 +408,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 			public void apply( AttributesMap... attributesMaps) {
 				OperatorNode nodeT = new OperatorNode( OperatorType.CONCATENATION);
 				TreeNode nodeU = (TreeNode) attributesMaps[1].get( "node");
-				Object payload = ((Symbol) attributesMaps[2].get( "value")).getPayload();
+				Serializable payload = ((Symbol) attributesMaps[2].get( "value")).getPayload();
 				tryPassPayloadDownwards( payload, nodeU);
 				// The first fix repetition 
 				nodeT.setLeftChildNode( nodeU);
@@ -430,7 +430,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 				OperatorNode nodeT = new OperatorNode( OperatorType.ALTERNATIVE);
 			//	cNodeR++;
 				TreeNode nodeU = (TreeNode) attributesMaps[1].get( "node");
-				Object payload = ((Symbol) attributesMaps[2].get( "value")).getPayload();
+				Serializable payload = ((Symbol) attributesMaps[2].get( "value")).getPayload();
 				tryPassPayloadDownwards( payload, nodeU);
 				// The possibility to accept the empty string
 				nodeT.setLeftChildNode( new TerminalNode( new RegularExpressionElement( RegexCharSet.EMPTY_STRING)));
@@ -563,7 +563,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 		semanticRules.add( new SemanticRule() {	
 			public void apply( AttributesMap... attributesMaps) {
 				TreeNode nodeR = (TreeNode) attributesMaps[2].get( "node");
-				Object payload = ((Symbol) attributesMaps[3].get( "value")).getPayload();
+				Serializable payload = ((Symbol) attributesMaps[3].get( "value")).getPayload();
 				tryPassPayloadDownwards( payload, nodeR);
 				attributesMaps[0].put( "node", nodeR);
 			}
@@ -585,9 +585,9 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 				Boolean buildComplementClass = (Boolean) attributesMaps[2].get( "complement");
 				
 				// determin the common payload
-				Object commonPayload = ((Symbol) attributesMaps[1].get( "value")).getPayload();
+				Serializable commonPayload = ((Symbol) attributesMaps[1].get( "value")).getPayload();
 				if ( Test.isUnassigned( commonPayload))
-					commonPayload = (Object) attributesMaps[2].get( "payload");
+					commonPayload = (Serializable) attributesMaps[2].get( "payload");
 				
 				
 				
@@ -713,7 +713,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 			public void apply( AttributesMap... attributesMaps) throws OperatorTreeException {
 				List<Symbol> values = new ArrayList<Symbol>();
 				RegularExpressionElement valueV = (RegularExpressionElement) attributesMaps[1].get( "value");
-				Object commonPayload = ((Symbol) attributesMaps[2].get( "value")).getPayload();
+				Serializable commonPayload = ((Symbol) attributesMaps[2].get( "value")).getPayload();
 				RegularExpressionElement valueV1 = (RegularExpressionElement) attributesMaps[3].get( "value");
 				char valueVChar = (Character) valueV.getValue();
 				char valueV1Char = (Character) valueV1.getValue();
@@ -752,7 +752,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 		semanticRules.add( new SemanticRule() {	
 			@SuppressWarnings("unchecked")
 			public void apply( AttributesMap... attributesMaps) {
-				Object payload = ((Symbol) attributesMaps[1].get( "value")).getPayload();
+				Serializable payload = ((Symbol) attributesMaps[1].get( "value")).getPayload();
 				int firstChar = RegexCharSet.getFirstAsciiChar();
 				int lastChar = RegexCharSet.getLastAsciiChar();
 				RegularExpressionElement currentCharElement;
@@ -871,7 +871,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 	
 	
 	@SuppressWarnings("unchecked")
-	protected static void tryPassPayloadDownwards( Object payload, TreeNode ... nodes) {
+	protected static void tryPassPayloadDownwards( Serializable payload, TreeNode ... nodes) {
 		for ( TreeNode node : nodes) {
 			if ( node instanceof OperatorNode) {
 				OperatorNode operatorNode = (OperatorNode) node;

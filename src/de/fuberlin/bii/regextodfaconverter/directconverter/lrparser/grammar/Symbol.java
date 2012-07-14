@@ -48,11 +48,11 @@ import de.fuberlin.bii.utils.Test;
  * @param <Value>
  * @param <Payload>
  */
-public class Symbol<Value extends Comparable<Value>, Payload> implements Comparable<Symbol<Value,Payload>>, Serializable{
+public class Symbol<Value extends Comparable<Value> & Serializable, Payload extends Serializable> implements Comparable<Symbol<Value,Payload>>, Serializable{
 	
 	private static final long serialVersionUID = -6760212067935299676L;
 
-private Value value;
+  private Value value;
 	
 	private Payload payload;
 

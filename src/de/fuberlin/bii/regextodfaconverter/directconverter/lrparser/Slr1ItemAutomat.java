@@ -89,8 +89,14 @@ public class Slr1ItemAutomat<Element extends Symbol> extends
 	protected void SetupParserTable(Lr0Closure startClosure) {
 
 		if (readPersistenParserTable()) {
+			System.out.println( "LOAD---------------------");
+			for ( Lr0Closure lr0Closure : parserTable.keySet()) {
+				if ( lr0Closure.size() > 1 )
+					System.out.println( lr0Closure.size());
+			}
 			return;
 		}
+		System.out.println();
 
 		HashSet<Lr0Closure> unhandledClosures = new HashSet<Lr0Closure>() {
 
@@ -207,6 +213,13 @@ public class Slr1ItemAutomat<Element extends Symbol> extends
 			parserTable.put(currentClosure, handlerMap);
 		}
 
+		System.out.println( "STORE---------------------");
+		for ( Lr0Closure lr0Closure : parserTable.keySet()) {
+			if ( lr0Closure.size() > 1 )
+				System.out.println( lr0Closure.size());
+		}
+		System.out.println();
+		
 		writePersistentParserTable();
 	}
 
@@ -227,7 +240,8 @@ public class Slr1ItemAutomat<Element extends Symbol> extends
 				start = System.currentTimeMillis();
 
 				Object o = inp.readObject();
-
+				inp.close();
+				
 				end = System.currentTimeMillis();
 				length = (end - start);
 				Notification.printDebugInfoMessage("Read parser table in "
@@ -256,6 +270,8 @@ public class Slr1ItemAutomat<Element extends Symbol> extends
 					new FileOutputStream(parserTableObject));
 
 			out.writeObject(parserTable);
+      out.flush();
+      out.close();
 
 		} catch (Exception e) {
 			Notification

@@ -33,6 +33,8 @@
 
 package de.fuberlin.bii.regextodfaconverter.directconverter.regex.operatortree;
 
+import java.io.Serializable;
+
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symbol;
 import de.fuberlin.bii.tokenmatcher.StatePayload;
 
@@ -44,7 +46,7 @@ import de.fuberlin.bii.tokenmatcher.StatePayload;
  *
  * @param <StatePayloadType>
  */
-public class RegularExpressionElement<StatePayloadType> extends Symbol<Character, StatePayloadType> {
+public class RegularExpressionElement<StatePayloadType extends Serializable> extends Symbol<Character, StatePayloadType> {
 
 
 	/**

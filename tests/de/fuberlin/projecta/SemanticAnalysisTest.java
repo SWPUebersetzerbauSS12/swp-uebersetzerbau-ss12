@@ -22,7 +22,9 @@ public class SemanticAnalysisTest {
 
 	@Test
 	public void testValidFunctionDef() {
-		final String code = mainC("") + "def void foo(int a){int b;} def void foo(real a){int b;}";
+		final String code = mainC("") + 
+				"def void foo(int a){int b;}" + 
+				"def void foo(real a){int b;}";
 		analyze(code);
 	}
 
@@ -46,7 +48,10 @@ public class SemanticAnalysisTest {
 
 	@Test
 	public void testRecordAsReturnType(){
-		final String code = mainC("") + "def record {int real; int imag;} foo(){record {int real; int imag;} myRecord; return myRecord;}";
+		final String code = mainC("") + 
+				"def record {int real; int imag;} foo() {" + 
+					"record {int real; int imag;} myRecord; return myRecord;" + 
+				"}";
 		analyze(code);
 	}
 
@@ -58,7 +63,16 @@ public class SemanticAnalysisTest {
 
 	@Test
 	public void testRecordBehaviour(){
-		final String code = mainC("") + "def int foobar(record {int r; int i;} myImaginaire){myImaginaire.r = 1; myImaginaire.i = 0;}";
+		final String code = mainC("") + 
+				"def int foobar(record {int r; int i;} t) {" + 
+				"t.r = 1; t.i = 0;" +
+				"}";
+		analyze(code);
+	}
+
+	@Test
+	public void testReturnRecordElement() { 
+		String code = mainC("record {int r; int i;} r; r.r = 0; return r.r;");
 		analyze(code);
 	}
 

@@ -159,17 +159,19 @@ public class ProductionRule implements Iterable<RuleElement>, Serializable {
 		if (!theOtherProductionRule.getLeftRuleSide().equals(this.leftRuleSide))
 			return false;
 
-		if (theOtherProductionRule.getRightRuleSide().size() != this.rightRuleSide.size())
+		if (!theOtherProductionRule.getRightRuleSide().equals( this.rightRuleSide))
 			return false;
 
-		int length = rightRuleSide.size();
-		List<RuleElement> theOtherRightRuleSide = theOtherProductionRule.getRightRuleSide();
-		for (int i = 0; i < length; i++) {
-			if (!theOtherRightRuleSide.get(i).equals(this.rightRuleSide.get(i)))
-				return false;
-		}
-
 		return true;
+	}
+	
+	@Override
+	public int hashCode() {
+		int hashCode = 5;
+		hashCode = 31 * hashCode + leftRuleSide.hashCode();
+		hashCode = 31 * hashCode + rightRuleSide.hashCode();
+		
+		return hashCode;
 	}
 	
 	@Override

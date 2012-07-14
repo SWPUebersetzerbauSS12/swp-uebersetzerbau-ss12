@@ -86,6 +86,14 @@ public class Lr0Item extends Item {
 		
 		return theOtherItem.getAnalysePosition() == this.getAnalysePosition();
 	}
+	
+	@Override
+	public int hashCode() {
+		int hashCode = super.hashCode();
+		hashCode = 31 * hashCode + getAnalysePosition(); 	
+		
+		return hashCode;
+	}
 
 
 	@Override

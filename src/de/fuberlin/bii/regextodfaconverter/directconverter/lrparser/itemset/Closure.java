@@ -93,6 +93,10 @@ public abstract class Closure<SpecializedItem extends Item> extends HashMap<Spec
 	@Override
 	public abstract boolean equals( Object theOtherObject);
 	
+	protected boolean superEquals( Object theOtherObject) {
+		return super.equals( theOtherObject);
+	}
+	
 		
 	
 	public void setNumber(int number) {

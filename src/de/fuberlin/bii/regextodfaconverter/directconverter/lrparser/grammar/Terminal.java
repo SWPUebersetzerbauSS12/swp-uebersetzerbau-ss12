@@ -75,6 +75,14 @@ public class Terminal<T extends Symbol> extends RuleElement {
 		
 		return true;
 	}
+	
+	@Override
+	public int hashCode() {
+		int hashCode = 5;
+		hashCode = 31 * hashCode + symbol.hashCode(); 	
+		
+		return hashCode;
+	}
 
 	
 	

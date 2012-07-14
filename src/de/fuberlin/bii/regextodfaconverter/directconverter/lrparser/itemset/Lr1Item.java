@@ -97,6 +97,14 @@ public class Lr1Item extends Item {
 		return theOtherItem.getAnalysePosition() == this.getAnalysePosition()
 				&& lookahead.equals( theOtherItem.lookahead);
 	}
+	
+	public int hashCode() {
+		int hashCode = super.hashCode();
+		hashCode = 31 * hashCode + getAnalysePosition(); 	
+		hashCode = 31 * hashCode + lookahead.hashCode(); 
+		
+		return hashCode;
+	}
 
 	@Override
 	public String toString() {

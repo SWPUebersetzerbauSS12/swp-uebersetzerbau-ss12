@@ -98,5 +98,14 @@ public class ShiftAction<Element extends Symbol, SpecializedClosure extends Clos
 		return this.toClosure.equals( theOtherShiftAction.toClosure) 
 				    && this.terminalToHandle.equals( theOtherShiftAction.terminalToHandle);
 	}
+	
+	@Override
+	public int hashCode() {
+		int hashCode = 5;
+		hashCode = 31 * hashCode + (toClosure != null ? toClosure.hashCode() : 0); 	
+		hashCode = 31 * hashCode + (terminalToHandle != null ? terminalToHandle.hashCode() : 0); 	
+		
+		return hashCode;
+	}
 
 }

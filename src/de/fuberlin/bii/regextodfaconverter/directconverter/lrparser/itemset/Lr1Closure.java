@@ -89,20 +89,9 @@ public class Lr1Closure extends Closure<Lr1Item> {
 		
 		Lr1Closure theOtherClosure = (Lr1Closure) theOtherObject;
 		
-		if ( theOtherClosure.size() != this.size())
+		if (!super.superEquals( theOtherClosure))
 			return false;
 		
-		if ( !theOtherClosure.keySet().equals( this.keySet()))
-			return false;
-		
-		for ( Lr1Item thisItem : this.keySet()) {
-			for ( Lr1Item theOtherItem : theOtherClosure.keySet()) {
-				
-				if ( thisItem.equals(theOtherItem) && 
-					 !this.get( thisItem).equals( theOtherClosure.get( theOtherItem)))			
-				return false;
-		    }
-		}
 		
 		// theOtherClosure equals this 
 		if ( this.getNumber() == -1)

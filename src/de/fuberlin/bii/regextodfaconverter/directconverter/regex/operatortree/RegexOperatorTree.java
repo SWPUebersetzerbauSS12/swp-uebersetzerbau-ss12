@@ -934,7 +934,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 	private static void extendGrammarAndSddWithTerminator( Grammar grammar, SyntaxDirectedDefinition sdd) {
 		// extends grammar
 		Grammar extendedGrammar = grammar;
-		Nonterminal embracingNonterminal = new Nonterminal();
+		Nonterminal embracingNonterminal = new Nonterminal( "_ROOT_");
 		Nonterminal priorStartSymbol = extendedGrammar.getStartSymbol();
 	  // end rule
 		ProductionRule terminatorProductionRule = new ProductionRule( embracingNonterminal, priorStartSymbol, TERMINAL_TERMINATOR);

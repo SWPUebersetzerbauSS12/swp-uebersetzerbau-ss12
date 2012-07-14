@@ -63,6 +63,7 @@ public class Lr0Closure extends Closure<Lr0Item> {
 		return itemSet;
 	}
 	
+	
 	@Override
 	public boolean containsKey(Object key) {
 		if ( key == null)
@@ -75,6 +76,7 @@ public class Lr0Closure extends Closure<Lr0Item> {
 		}
 		return false;
 	}
+	
 		
 	@Override
 	public boolean equals( Object theOtherObject) {
@@ -88,20 +90,10 @@ public class Lr0Closure extends Closure<Lr0Item> {
 		
 		Lr0Closure theOtherClosure = (Lr0Closure) theOtherObject;
 		
-		if ( theOtherClosure.size() != this.size())
+		
+		if (!super.superEquals( theOtherClosure))
 			return false;
 		
-		if ( !theOtherClosure.keySet().equals( this.keySet()))
-			return false;
-		
-		for ( Lr0Item thisItem : this.keySet()) {
-			for ( Lr0Item theOtherItem : theOtherClosure.keySet()) {
-				
-				if ( thisItem.equals(theOtherItem) && 
-					 !this.get( thisItem).equals( theOtherClosure.get( theOtherItem)))			
-				return false;
-		    }
-		}
 		
 		// theOtherClosure equals this 
 		if ( this.getNumber() == -1)
@@ -112,6 +104,9 @@ public class Lr0Closure extends Closure<Lr0Item> {
 		
 		return true;
 	}
+
+	
+	
 
 
 	

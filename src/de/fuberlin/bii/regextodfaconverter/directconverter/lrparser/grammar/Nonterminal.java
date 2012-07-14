@@ -77,6 +77,17 @@ public class Nonterminal extends RuleElement {
 	}
 	
 	@Override
+	public int hashCode() {
+		if ( name == null)
+			return super.hashCode();
+		
+		int hashCode = 5;
+		hashCode = 31 * hashCode + name.hashCode(); 	
+		
+		return hashCode;
+	}
+	
+	@Override
 	public String toString() {
 		return name != null ? name : super.toString();
 	}

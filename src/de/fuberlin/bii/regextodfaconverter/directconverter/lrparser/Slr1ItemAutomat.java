@@ -89,15 +89,9 @@ public class Slr1ItemAutomat<Element extends Symbol> extends
 	protected void SetupParserTable(Lr0Closure startClosure) {
 
 		if (readPersistenParserTable()) {
-			System.out.println( "LOAD---------------------");
-			for ( Lr0Closure lr0Closure : parserTable.keySet()) {
-				if ( lr0Closure.size() > 1 )
-					System.out.println( lr0Closure.size());
-			}
 			return;
 		}
-		System.out.println();
-
+		
 		HashSet<Lr0Closure> unhandledClosures = new HashSet<Lr0Closure>() {
 
 			/**
@@ -213,13 +207,6 @@ public class Slr1ItemAutomat<Element extends Symbol> extends
 			parserTable.put(currentClosure, handlerMap);
 		}
 
-		System.out.println( "STORE---------------------");
-		for ( Lr0Closure lr0Closure : parserTable.keySet()) {
-			if ( lr0Closure.size() > 1 )
-				System.out.println( lr0Closure.size());
-		}
-		System.out.println();
-		
 		writePersistentParserTable();
 	}
 

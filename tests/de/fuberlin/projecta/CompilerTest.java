@@ -139,4 +139,13 @@ public class CompilerTest {
 		assertEquals("1", output);
 	}
 
+	@Test
+	public void testIfElseReturnStatement() {
+		final String code = mainC("int a; int b;  bool c; a = 1;  b = 2; c = true;\n" +
+				"if (c) { print a; }\n" + 
+				"else { print b; }");
+		String output = executeCode(code);
+		assertEquals("1", output);
+	}
+
 }

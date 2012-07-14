@@ -14,47 +14,50 @@ import de.fuberlin.projecta.parser.Parser;
 
 public class SemanticAnalysisTest {
 
-	static String MAIN_DEF = "def int main() {return 0; }";
+	// "forward declare"
+	static String mainC(String block) {
+		return ParserTest.mainC(block);
+	}
 
 	@Test(expected = IllegalStateException.class)
 	public void testInvalidCode() {
-		final String code = "def int foo() { int a; int a; }";
+		final String code = mainC("int a; int a;");
 		analyze(code);
 	}
 
 	@Test
 	public void testValidFunctionDef() {
-		final String code = MAIN_DEF + "def void foo(int a){int b;} def void foo(real a){int b;}";
+		final String code = mainC("") + "def void foo(int a){int b;} def void foo(real a){int b;}";
 		analyze(code);
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void testInvalidFunctionDef() {
-		final String code = MAIN_DEF + "def int foo() {} def real foo() {}";
+		final String code = mainC("") + "def int foo() {} def real foo() {}";
 		analyze(code);
 	}
 
 	@Test
 	public void testDeclarationScope() {
-		final String code = MAIN_DEF + "def int foo() { int a; { int a; } }";
+		final String code = mainC("int a; { int a; }");
 		analyze(code);
 	}
 
 	@Test(expected = TypeErrorException.class)
 	public void testIncompatibleOperands() {
-		final String code = MAIN_DEF + "def int foo() { int a; a = 0.0; return a; }";
+		final String code = mainC("int a; a = 0.0;");
 		analyze(code);
 	}
 
 	@Test
 	public void testRecordAsReturnType(){
-		final String code = MAIN_DEF + "def record {int real; int imag;} foo(){record {int real; int imag;} myRecord; return myRecord;}";
+		final String code = mainC("") + "def record {int real; int imag;} foo(){record {int real; int imag;} myRecord; return myRecord;}";
 		analyze(code);
 	}
 
 	@Test
 	public void testRecordBehaviour(){
-		final String code = MAIN_DEF + "def int foobar(record {int r; int i;} myImaginaire){myImaginaire.r = 1; myImaginaire.i = 0;}";
+		final String code = mainC("") + "def int foobar(record {int r; int i;} myImaginaire){myImaginaire.r = 1; myImaginaire.i = 0;}";
 		analyze(code);
 	}
 
@@ -67,12 +70,7 @@ public class SemanticAnalysisTest {
 	private static void analyze(String code) {
 		Lexer lexer = new Lexer(new StringCharStream(code));
 		Parser parser = new Parser();
-		try {
-			parser.parse(lexer, "");
-		} catch (ParseException e) {
-			e.printStackTrace();
-			fail();
-		}
+		parser.parse(lexer, "");
 		SemanticAnalyzer analyzer = new SemanticAnalyzer(parser.getParseTree());
 		analyzer.analyze();
 		// TODO: Call the next methods in analyer.analyze()?

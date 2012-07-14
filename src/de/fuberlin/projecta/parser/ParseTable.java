@@ -1,7 +1,5 @@
 package de.fuberlin.projecta.parser;
 
-import java.util.HashMap;
-
 import de.fuberlin.commons.lexer.TokenType;
 
 public class ParseTable {
@@ -10,7 +8,8 @@ public class ParseTable {
 
 	private boolean isAmbigous = false;
 
-	private HashMap<String, String> table = new HashMap<String,String>();
+	private String[][] table 
+		= new String[NonTerminal.values().length][TokenType.values().length];
 	
 	private static String toKey(NonTerminal nonT, TokenType t) {
 		return nonT.toString() + "/" + t.toString();
@@ -25,19 +24,17 @@ public class ParseTable {
 	public void setEntry(NonTerminal nonT, TokenType t, String entry)
 			throws IllegalStateException {
 
-		final String key = toKey(nonT, t);
-		
+		String oldEntry = table[nonT.ordinal()][t.ordinal()];
 		// check if combination is already in parse table
-		if (table.containsKey(key)) {
-			String oldEntry = table.get(key);
-			table.put(key, oldEntry + DELIM + entry);
+		if (oldEntry != null) {
+			table[nonT.ordinal()][t.ordinal()] += DELIM + entry;
 			isAmbigous = true;
 			throw new IllegalStateException(
 					"parsing table is ambigous in cell ["
 							+ nonT + "," + t + "]");
 		}
 
-		table.put(key, entry);
+		table[nonT.ordinal()][t.ordinal()] = entry;
 	}
 
 	/**
@@ -52,8 +49,8 @@ public class ParseTable {
 	 *         is found null is returned.
 	 */
 	public String getEntry(NonTerminal nonT, TokenType t) {
-		final String key = toKey(nonT, t);
-		return table.get(key);
+		String entry = table[nonT.ordinal()][t.ordinal()];
+		return entry;
 	}
 
 	public boolean isAmbigous() {

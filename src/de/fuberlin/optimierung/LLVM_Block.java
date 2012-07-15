@@ -160,10 +160,14 @@ public class LLVM_Block{
 					LLVM_GenericCommand def = this.function.getRegisterMap().
 							getDefinition(registerName);
 					
-					// TODO: was ist mit structs?
+					// auf Arrays/Structs ist Aktion nicht einfach moeglich,
+					// wird daher ausgeschlossen
+					// bis auf null und getelementptr-abfrage kann der rest wahrscheinlich weg
 					if(def!=null && def.getOperation()!=LLVM_Operation.GETELEMENTPTR 
 							&& !(def.getOperation()==LLVM_Operation.ALLOCA
-							&& def.getTarget().getTypeString().startsWith("["))) {
+							&& def.getTarget().getTypeString().startsWith("["))
+							&& !(def.getOperation()==LLVM_Operation.ALLOCA
+							&& def.getTarget().getTypeString().startsWith("%"))) {
 						
 						// c kann geloescht werden
 						this.function.getRegisterMap().deleteCommand(c);
@@ -333,29 +337,44 @@ public class LLVM_Block{
 				String registerName = c.getOperands().getFirst().getName();
 				LinkedList<LLVM_GenericCommand> stores = reaching.get(registerName);
 				if(stores!=null) {
-					if(stores.size()==1) {
-						LLVM_GenericCommand store = stores.getFirst();
-						// Veraendere Load Befehl, store ist einzige Definition, die Load erreicht
-						this.function.getRegisterMap().deleteCommand(c);
+					if(stores.size()==1) {	// Gibt es nur ein erreichendes Store?
 						
-						// Erstelle  neuen Befehl
-						LLVM_GenericCommand newCommand = new LLVM_BinaryCommand();
-						newCommand.setOperation(LLVM_Operation.ADD);
-						LinkedList<LLVM_Parameter> parameterList = new LinkedList<LLVM_Parameter>();
-						LLVM_Parameter newParameter = store.getOperands().getFirst();
-						parameterList.add(new LLVM_Parameter(newParameter.getName(),
-								newParameter.getTypeString()));
-						parameterList.add(new LLVM_Parameter("0",newParameter.getTypeString()));
-						newCommand.setOperands(parameterList);
-						newCommand.setTarget(c.getTarget());
-						newCommand.setBlock(c.getBlock());
-						newCommand.setPredecessor(c.getPredecessor());
-						newCommand.setSuccessor(c.getSuccessor());
-						c.replaceCommand(newCommand);
+						LLVM_GenericCommand def = this.function.getRegisterMap().
+								getDefinition(registerName);
 						
-						this.function.getRegisterMap().addCommand(newCommand);
+						// auf Arrays/Structs ist Aktion nicht einfach moeglich,
+						// wird daher ausgeschlossen
+						// bis auf null und getelementptr-abfrage kann der rest wahrscheinlich weg
+						if(def!=null && def.getOperation()!=LLVM_Operation.GETELEMENTPTR 
+								&& !(def.getOperation()==LLVM_Operation.ALLOCA
+								&& def.getTarget().getTypeString().startsWith("["))
+								&& !(def.getOperation()==LLVM_Operation.ALLOCA
+								&& def.getTarget().getTypeString().startsWith("%"))) {
 						
-						changed.add(newCommand);
+							LLVM_GenericCommand store = stores.getFirst();
+							// Veraendere Load Befehl, store ist einzige Definition, die Load erreicht
+							this.function.getRegisterMap().deleteCommand(c);
+							
+							// Erstelle  neuen Befehl
+							LLVM_GenericCommand newCommand = new LLVM_BinaryCommand();
+							newCommand.setOperation(LLVM_Operation.ADD);
+							LinkedList<LLVM_Parameter> parameterList = new LinkedList<LLVM_Parameter>();
+							LLVM_Parameter newParameter = store.getOperands().getFirst();
+							parameterList.add(new LLVM_Parameter(newParameter.getName(),
+									newParameter.getTypeString()));
+							parameterList.add(new LLVM_Parameter("0",newParameter.getTypeString()));
+							newCommand.setOperands(parameterList);
+							newCommand.setTarget(c.getTarget());
+							newCommand.setBlock(c.getBlock());
+							newCommand.setPredecessor(c.getPredecessor());
+							newCommand.setSuccessor(c.getSuccessor());
+							c.replaceCommand(newCommand);
+							
+							this.function.getRegisterMap().addCommand(newCommand);
+							
+							changed.add(newCommand);
+							
+						}
 						
 					}
 				}

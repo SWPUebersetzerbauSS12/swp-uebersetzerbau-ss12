@@ -155,12 +155,14 @@ public class LLVM_Block{
 					LLVM_GenericCommand def = this.function.getRegisterMap().
 							getDefinition(registerName);
 					
-					// TODO: was ist mit structs?
 					// auf Arrays/Structs ist Aktion nicht einfach moeglich,
 					// wird daher ausgeschlossen
+					// bis auf null und getelementptr-abfrage kann der rest wahrscheinlich weg
 					if(def!=null && def.getOperation()!=LLVM_Operation.GETELEMENTPTR 
 							&& !(def.getOperation()==LLVM_Operation.ALLOCA
-							&& def.getTarget().getTypeString().startsWith("["))) {
+							&& def.getTarget().getTypeString().startsWith("["))
+							&& !(def.getOperation()==LLVM_Operation.ALLOCA
+							&& def.getTarget().getTypeString().startsWith("%"))) {
 						
 						// c kann geloescht werden
 						this.function.getRegisterMap().deleteCommand(c);
@@ -335,12 +337,14 @@ public class LLVM_Block{
 						LLVM_GenericCommand def = this.function.getRegisterMap().
 								getDefinition(registerName);
 						
-						// TODO: was ist mit structs?
 						// auf Arrays/Structs ist Aktion nicht einfach moeglich,
 						// wird daher ausgeschlossen
+						// bis auf null und getelementptr-abfrage kann der rest wahrscheinlich weg
 						if(def!=null && def.getOperation()!=LLVM_Operation.GETELEMENTPTR 
 								&& !(def.getOperation()==LLVM_Operation.ALLOCA
-								&& def.getTarget().getTypeString().startsWith("["))) {
+								&& def.getTarget().getTypeString().startsWith("["))
+								&& !(def.getOperation()==LLVM_Operation.ALLOCA
+								&& def.getTarget().getTypeString().startsWith("%"))) {
 						
 							LLVM_GenericCommand store = stores.getFirst();
 							// Veraendere Load Befehl, store ist einzige Definition, die Load erreicht

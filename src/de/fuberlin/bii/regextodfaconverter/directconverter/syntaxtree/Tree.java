@@ -46,6 +46,7 @@ import de.fuberlin.bii.utils.Test;
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public interface Tree extends Iterable<TreeNode> {
 
 	

@@ -19,6 +19,7 @@ public class LexTokDefTest {
 	/**
 	 * Test of readFile method, of class ReadTokDefinition.
 	 */
+	@SuppressWarnings("static-method")
 	@Test
 	public void testReadFile() throws Exception {
 		File rdFile = new File("input/de/fuberlin/bii/def/tokendefinition.rd");
@@ -26,6 +27,7 @@ public class LexTokDefTest {
 		instance.readFile(rdFile);
 	}
 
+	@SuppressWarnings("static-method")
 	@Test
 	public void testRegex() throws Exception {
 		File rdFile = new File("input/de/fuberlin/bii/def/tokendefinition.rd");

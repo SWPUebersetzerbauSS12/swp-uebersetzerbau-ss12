@@ -43,5 +43,11 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeN
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public class TreeNodesAttributesMap extends HashMap<TreeNode, AttributesMap> {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4352575555976574907L;
 }

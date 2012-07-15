@@ -39,6 +39,6 @@ package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node;
  */
 public interface NewNodeEventHandler {
   
-  void doOnEvent( Object sender, TreeNode node);
+  void doOnEvent( Object sender, @SuppressWarnings("rawtypes") TreeNode node);
   
 }

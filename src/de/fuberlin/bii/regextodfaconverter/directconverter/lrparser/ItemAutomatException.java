@@ -39,6 +39,11 @@ package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser;
  */
 public class ItemAutomatException extends Exception {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7434154180305088074L;
+
 	public ItemAutomatException() {
 	  super();
 	}

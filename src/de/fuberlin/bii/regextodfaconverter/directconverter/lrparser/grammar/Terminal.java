@@ -32,6 +32,8 @@
 
 package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar;
 
+import javax.xml.ws.soap.Addressing;
+
 import de.fuberlin.bii.utils.Test;
 
 
@@ -41,8 +43,13 @@ import de.fuberlin.bii.utils.Test;
  *
  * @param <Symbol>
  */
+@SuppressWarnings("rawtypes")
 public class Terminal<T extends Symbol> extends RuleElement {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private T symbol;
 	
 	
@@ -68,6 +75,14 @@ public class Terminal<T extends Symbol> extends RuleElement {
 		
 		return true;
 	}
+	
+	@Override
+	public int hashCode() {
+		int hashCode = 5;
+		hashCode = 31 * hashCode + symbol.hashCode(); 	
+		
+		return hashCode;
+	}
 
 	
 	
@@ -81,6 +96,7 @@ public class Terminal<T extends Symbol> extends RuleElement {
 	}
 
 
+	@SuppressWarnings("unchecked")
 	public int compareTo(RuleElement o) {
 		if ( Test.isUnassigned(o))
 			return 1;

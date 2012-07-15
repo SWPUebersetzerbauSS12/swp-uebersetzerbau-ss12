@@ -44,6 +44,11 @@ import java.util.HashSet;
 public class Lr1ItemSet extends ItemSet<Lr1Item> {
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -259046183968168134L;
+
 	public Lr1ItemSet() {
 		super();
 	}

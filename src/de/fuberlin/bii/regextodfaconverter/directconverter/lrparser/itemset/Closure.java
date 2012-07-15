@@ -51,6 +51,10 @@ import de.fuberlin.bii.utils.Test;
  */
 public abstract class Closure<SpecializedItem extends Item> extends HashMap<SpecializedItem, Boolean> {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7957752941028034850L;
 	private int number = -1;
 	
 	public boolean isKernelItem( SpecializedItem item) {
@@ -88,6 +92,11 @@ public abstract class Closure<SpecializedItem extends Item> extends HashMap<Spec
 	
 	@Override
 	public abstract boolean equals( Object theOtherObject);
+	
+	protected boolean superEquals( Object theOtherObject) {
+		return super.equals( theOtherObject);
+	}
+	
 		
 	
 	public void setNumber(int number) {

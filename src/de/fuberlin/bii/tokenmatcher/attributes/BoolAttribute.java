@@ -43,6 +43,11 @@ package de.fuberlin.bii.tokenmatcher.attributes;
  */
 public class BoolAttribute extends GenericAttribute<Boolean> {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4311041801793053323L;
+
 	public BoolAttribute( Boolean value) {
 	  super( Boolean.class, value);
 	}

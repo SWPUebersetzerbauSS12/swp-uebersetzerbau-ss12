@@ -24,6 +24,7 @@ public class DirectMinimalDfaBuilderTest {
 	/**
 	 * Test of buildMinimalDfa method, of class IndirectMinimalDfaBuilder.
 	 */
+	@SuppressWarnings("static-method")
 	@Test
 	public void testBuildMinimalDfa() throws Exception {
 		Notification.enableDebugPrinting();

@@ -40,6 +40,11 @@ package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser;
  */
 public class ShiftException extends Exception {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 74628898800008783L;
+
 	public ShiftException() {
 	  super();
 	}

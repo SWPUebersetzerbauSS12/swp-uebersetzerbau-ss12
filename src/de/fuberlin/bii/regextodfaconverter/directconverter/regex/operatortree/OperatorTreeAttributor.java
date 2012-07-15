@@ -55,6 +55,7 @@ import de.fuberlin.bii.utils.Test;
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public class OperatorTreeAttributor<StatePayloadType extends Serializable>  {
 	
 	private HashMap<TreeNode,TreeNodeCollection> followPositions = new HashMap<TreeNode, TreeNodeCollection>();
@@ -67,6 +68,7 @@ public class OperatorTreeAttributor<StatePayloadType extends Serializable>  {
 	private boolean calculateNullableForNode( TreeNode node) {
 		if ( node instanceof TerminalNode) {
 		  // \epsilon-Knoten sind per definition true
+			@SuppressWarnings("unchecked")
 			RegularExpressionElement<StatePayloadType> regexElement = (RegularExpressionElement<StatePayloadType>)((TerminalNode)node).getValue();
 			if ( regexElement.getValue() == RegexCharSet.EMPTY_STRING)
 				return true;
@@ -92,6 +94,7 @@ public class OperatorTreeAttributor<StatePayloadType extends Serializable>  {
 	private TreeNodeCollection calculateFirstposForNode( TreeNode node) {
 		// \epsilon-Knoten liefern per definition die leere Menge
 		if ( node instanceof TerminalNode) {
+			@SuppressWarnings("unchecked")
 			RegularExpressionElement<StatePayloadType>  regexElement = (RegularExpressionElement<StatePayloadType>)((TerminalNode)node).getValue();
 			if ( regexElement.getValue() == RegexCharSet.EMPTY_STRING)
 				return new TreeNodeSet();
@@ -127,6 +130,7 @@ public class OperatorTreeAttributor<StatePayloadType extends Serializable>  {
 	private TreeNodeCollection calculateLastposForNode( TreeNode node) {
 		// \epsilon-Knoten liefern per definition die leere Menge
 		if ( node instanceof TerminalNode) {
+			@SuppressWarnings("unchecked")
 			RegularExpressionElement<StatePayloadType> regexElement = (RegularExpressionElement<StatePayloadType>)((TerminalNode)node).getValue();
 			if ( regexElement.getValue() == RegexCharSet.EMPTY_STRING)
 				return new TreeNodeSet();

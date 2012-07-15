@@ -76,7 +76,7 @@ public class TransitionTable<E> {
 	
 	
 
-	private void checkAndEnsureUniqueStartState( State theState) {
+	private static void checkAndEnsureUniqueStartState( State theState) {
 		if ( theState.isStartState()) {
 			if ( Test.isAssigned( startState)) {
 			  startState.unsetStart();

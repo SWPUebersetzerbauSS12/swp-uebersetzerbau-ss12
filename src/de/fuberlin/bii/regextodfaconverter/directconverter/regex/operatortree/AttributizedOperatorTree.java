@@ -43,6 +43,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeN
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public interface AttributizedOperatorTree {
 	
 	HashMap<TreeNode, TreeNodeCollection> getFirstPositions();

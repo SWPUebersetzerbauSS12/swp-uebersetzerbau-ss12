@@ -32,6 +32,8 @@
 
 package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar;
 
+import java.io.Serializable;
+
 import de.fuberlin.bii.regextodfaconverter.directconverter.regex.operatortree.RegularExpressionElement;
 import de.fuberlin.bii.tokenmatcher.StatePayload;
 import de.fuberlin.bii.utils.Test;
@@ -46,8 +48,10 @@ import de.fuberlin.bii.utils.Test;
  * @param <Value>
  * @param <Payload>
  */
-public class Symbol<Value extends Comparable<Value>, Payload> implements Comparable<Symbol<Value,Payload>>{
+public class Symbol<Value extends Comparable<Value> & Serializable, Payload extends Serializable> implements Comparable<Symbol<Value,Payload>>, Serializable{
 	
+	private static final long serialVersionUID = -6760212067935299676L;
+
   private Value value;
 	
 	private Payload payload;
@@ -76,8 +80,9 @@ public class Symbol<Value extends Comparable<Value>, Payload> implements Compara
   public boolean equalsTotally( Object obj) {
   	if ( !equals( obj))
   		return false;
-  
-  	Symbol<Value,Payload> theOtherSymbol = (Symbol<Value,Payload>) obj;
+  	
+  	@SuppressWarnings("unchecked")
+		final Symbol<Value,Payload> theOtherSymbol = (Symbol<Value,Payload>) obj;
   	
   	return Test.isAssigned( this.payload) 
   			? this.payload.equals( theOtherSymbol.payload)
@@ -93,7 +98,9 @@ public class Symbol<Value extends Comparable<Value>, Payload> implements Compara
   	if ( !( obj instanceof Symbol))
   		return false;
   	
-  	Symbol theOtherSymbol = (Symbol) obj;
+
+		@SuppressWarnings("unchecked")
+		final Symbol<Value,Payload> theOtherSymbol = (Symbol<Value,Payload>) obj;
   	
   	return this.value.equals( theOtherSymbol.value);
   }

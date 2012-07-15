@@ -40,6 +40,12 @@ package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
 public class SyntaxTreeException extends Exception {
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4534495131206662652L;
+
+
 	public SyntaxTreeException() {
 		super();
 	}

@@ -40,6 +40,12 @@ import java.util.HashSet;
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public class TreeNodeSet extends HashSet<TreeNode> implements TreeNodeCollection {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 117440821659033376L;
 
 }

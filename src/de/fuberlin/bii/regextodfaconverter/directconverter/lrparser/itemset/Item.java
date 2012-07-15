@@ -50,6 +50,11 @@ import de.fuberlin.bii.utils.Test;
  */
 public abstract class Item extends ProductionRule {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5146432627519920922L;
+	
 	private int analysePosition = 0;
 	RuleElementSequenz simplifiedRightRuleSide = null;
 

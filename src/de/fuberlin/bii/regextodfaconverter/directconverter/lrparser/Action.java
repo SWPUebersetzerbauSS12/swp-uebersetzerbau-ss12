@@ -45,6 +45,7 @@ import de.fuberlin.bii.utils.Test;
  *
  * @param <Element>
  */
+@SuppressWarnings("rawtypes")
 public abstract class Action<Element extends Symbol, SpecializedClosure extends Closure> implements AutomatEventHandler<Element, SpecializedClosure> {
 	
 	private Action alternativeAction = null; 

@@ -29,6 +29,21 @@ public class LLVM_Function {
 		afterFunc = code.substring(code.lastIndexOf("}")+1);
 		code = code.substring(0, code.lastIndexOf("}"));
 		
+		// remove double newline
+		code = code.replaceAll("\n\n", "\n");
+		
+		// add newline after Branch
+		int searchindex = 0;
+		boolean search = true;
+		while(search){
+			search = code.indexOf("br ", searchindex) >= 0;
+			if (search){
+				searchindex = code.indexOf("br ", searchindex) + 3;
+				int index = code.indexOf('\n', searchindex);
+				code = code.substring(0, index) + "\n" + code.substring(index);
+			}
+		}
+		
 		String codeBlocks[] = code.split("\n\n"); 
 		this.numberBlocks = codeBlocks.length;
 		this.blocks = new ArrayList<LLVM_Block>(this.numberBlocks);
@@ -105,6 +120,9 @@ public class LLVM_Function {
 					this.blocks.get(blockPosition2).appendToPreviousBlocks(block);
 				}
 				
+			}
+			else{
+				throw new LLVM_OptimizationException("corrupt block-end");
 			}
 				
 		}

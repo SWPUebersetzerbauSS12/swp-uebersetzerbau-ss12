@@ -19,11 +19,6 @@ public class UnaryOp extends Type {
 	}
 
 	@Override
-	public boolean checkSemantics() {
-		return true;
-	}
-
-	@Override
 	public String genCode() {
 		// TODO Auto-generated method stub
 		return null;

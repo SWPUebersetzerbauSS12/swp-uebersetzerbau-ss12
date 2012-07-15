@@ -1,17 +1,12 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 
-public class BoolLiteral extends Type {
+public class BoolLiteral extends Literal {
 	
 	private boolean value;
 	
 	public BoolLiteral(boolean value) {
 		this.value = value;
-	}
-	
-	@Override
-	public boolean checkSemantics() {
-		return true;
 	}
 
 	@Override

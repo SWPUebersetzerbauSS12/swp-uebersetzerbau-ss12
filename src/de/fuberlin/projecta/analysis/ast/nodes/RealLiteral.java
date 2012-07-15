@@ -1,17 +1,12 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 
-public class RealLiteral extends Type {
+public class RealLiteral extends Literal {
 	
 	private double value;
 	
 	public RealLiteral(double value){
 		this.value = value;
-	}
-
-	@Override
-	public boolean checkSemantics() {
-		return true;
 	}
 
 	@Override

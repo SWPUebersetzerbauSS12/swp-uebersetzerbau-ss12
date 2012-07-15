@@ -10,11 +10,6 @@ public abstract class Type extends AbstractSyntaxTree {
 
 	private int valMemory;
 
-	@Override
-	public boolean checkSemantics() {
-		return true;
-	}
-
 	public String genCode() {
 		return "";
 	}
@@ -34,5 +29,18 @@ public abstract class Type extends AbstractSyntaxTree {
 
 	public void setValMemory(int valMemory) {
 		this.valMemory = valMemory;
+	}
+
+	public String fromTypeStringToLLVMType() {
+		String type = "";
+		if (this.toTypeString().equals(TYPE_INT_STRING))
+			type = "i32";
+		else if (this.toTypeString().equals(TYPE_REAL_STRING))
+			type = "double";
+		else if (this.toTypeString().equals(TYPE_BOOL_STRING))
+			type = "i1";
+		else if (this.toTypeString().equals(TYPE_STRING_STRING))
+			type = "i8*";
+		return type;
 	}
 }

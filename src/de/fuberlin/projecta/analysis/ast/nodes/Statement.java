@@ -1,6 +1,7 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 public abstract class Statement extends AbstractSyntaxTree {
+
 	private int beginLabel, endLabel;
 
 	public int getBeginLabel() {

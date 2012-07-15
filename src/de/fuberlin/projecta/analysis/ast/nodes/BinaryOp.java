@@ -1,9 +1,8 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 import de.fuberlin.commons.lexer.TokenType;
-import de.fuberlin.projecta.analysis.EntryType;
+import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.SemanticException;
-import de.fuberlin.projecta.analysis.SymbolTableHelper;
 import de.fuberlin.projecta.analysis.TypeErrorException;
 import de.fuberlin.projecta.codegen.LLVM;
 
@@ -20,7 +19,7 @@ public class BinaryOp extends Type {
 	}
 
 	@Override
-	public boolean checkSemantics() {
+	public void checkSemantics() {
 		switch (this.getOp()) {
 		// TODO: think if you can find other cases, where semantics can be
 		// wrong/ambiguous
@@ -28,7 +27,7 @@ public class BinaryOp extends Type {
 			if (!(this.getChild(0) instanceof Id)) {
 				throw new SemanticException(
 						"Left side of an assignment has to be an identifier, but is "
-								+ this.getChild(0).getClass().toString());
+								+ this.getChild(0).toString());
 			}
 			if (this.getChild(1) instanceof BinaryOp
 					&& (((BinaryOp) this.getChild(1)).getOp() == TokenType.OP_ASSIGN)) {
@@ -41,82 +40,49 @@ public class BinaryOp extends Type {
 				int v = ((IntLiteral) this.getChild(1)).getValue();
 				if (v == 0)
 					throw new SemanticException("Division by Zero!");
-				else
-					return true;
 			}
-			if (this.getChild(1) instanceof RealLiteral) {
+			else if (this.getChild(1) instanceof RealLiteral) {
 				double v = ((RealLiteral) this.getChild(1)).getValue();
 				if (v == 0.0)
 					throw new SemanticException("Division by Zero!");
-				else
-					return true;
 			}
 		}
+
+		// check all children, may throw
 		for (int i = 0; i < this.getChildrenCount(); i++) {
-			if (!((AbstractSyntaxTree) this.getChild(i)).checkSemantics()) {
-				return false;
-			}
+			((AbstractSyntaxTree)this.getChild(i)).checkSemantics();
 		}
-		return true;
 	}
 
 	@Override
 	public String genCode() {
 		String ret = "";
 		Block block = getHighestBlock();
-		// int regs[] = new int[5];
-		Id id1 = null, id2 = null;
 		Type t1 = null, t2 = null;
-
-		if (getChild(0) instanceof Id) {
-			id1 = (Id) getChild(0);
-		} else {
-			t1 = (Type) getChild(0);
-		}
-
-		if (getChild(1) instanceof Id) {
-			id2 = (Id) getChild(1);
-		} else {
-			t2 = (Type) getChild(1);
-		}
+		t1 = (Type) getChild(0);
+		t2 = (Type) getChild(1);
 
 		if (op == TokenType.OP_EQ || op == TokenType.OP_NE
 				|| op == TokenType.OP_LT || op == TokenType.OP_LE
 				|| op == TokenType.OP_GT || op == TokenType.OP_GE) {
-			// load value of id1 if it is an id!!!
-			if (id1 != null) {
-				ret += LLVM.loadVar(id1);
-			}
-			// load value of id2 if it is an id!!!
-			if (id2 != null) {
-				ret += LLVM.loadVar(id2);
-			}
-			if (id1 != null && id2 != null) {
-				int tmp = block.getNewVar();
-				ret += "%" + tmp + " = " + getIntOrReal(id1, t1) + " "
-						+ getOpName(id1, t1) + " ";
-				ret += SymbolTableHelper.lookup(id1.getValue(), this).getType()
-						.genCode()
-						+ " %";
-				ret += LLVM.getMem(id1) + ", %";
-				ret += LLVM.getMem(id2) + "\n";
-			}
+
+			// load both values into new memory addresses
+			ret += LLVM.loadType(t1);
+			ret += LLVM.loadType(t2);
+
+			int mem = block.getNewVar();
+			this.setValMemory(mem);
+			ret += "%" + mem + " = " + getIntOrReal(t1) + " " + getOpName(t1)
+					+ " " + t1.fromTypeStringToLLVMType() + " %";
+			ret += LLVM.getMem(t1) + ", %";
+			ret += LLVM.getMem(t2) + "\n";
 		} else if (op == TokenType.OP_ADD || op == TokenType.OP_MINUS
 				|| op == TokenType.OP_DIV || op == TokenType.OP_MUL) {
 			String type = "";
 			String mathOp = "";
-			int val1 = 0, val2 = 0; // used to store both values
-			if (getChild(0) instanceof Id) {
-				if (SymbolTableHelper.lookup(id1.getValue(), this).getType()
-						.toTypeString().equals("double"))
-					mathOp = "f"; // append f in front of math_op
-			} else if (getChild(0) instanceof Type) {
-				if (((Type) getChild(0)).toTypeString().equals("double"))
-					mathOp = "f"; // append f in front of math_op
-			} else {
-				throw new SemanticException("type couldn't be figured out in: "
-						+ getChild(0));
-			}
+
+			if ((t1.fromTypeStringToLLVMType()).equals("i64"))
+				mathOp = "f"; // append f in front of math_op
 
 			switch (op) {
 			case OP_ADD:
@@ -133,68 +99,21 @@ public class BinaryOp extends Type {
 				break;
 			}
 
-			if (id1 != null) {
-				// the value must only be loaded if it is instanceof Id and if
-				// it is not parameter!
-				ret += LLVM.loadVar(id1);
-
-				if (SymbolTableHelper.lookup(id1.getValue(), this).getType()
-						.toTypeString().equals("int")) {
-					type = "i32";
-				} else if (SymbolTableHelper.lookup(id1.getValue(), this)
-						.getType().toTypeString().equals("double")) {
-					type = "double";
-				}
-
-			} else if (getChild(0) instanceof Type) {
-				if (((Type) getChild(0)).toTypeString().equals("int"))
-					type = "i32";
-				else if (((Type) getChild(0)).toTypeString().equals("double"))
-					type = "double";
-			} else {
-				throw new SemanticException("No type could be made in: "
-						+ this.getClass());
-			}
-			// load value of id2 if it is an id and not in params
-			if (getChild(1) instanceof Id) {
-				ret += LLVM.loadVar(id2);
-			}
+			// load both values into new memory addresses
+			ret += LLVM.loadType(t1);
+			ret += LLVM.loadType(t2);
 
 			int val = block.getNewVar();
 			this.setValMemory(val); // save currents computation in this node
-			if (id1 != null)
-				val1 = id1.getVar();
-			if (id2 != null)
-				val2 = id2.getVar();
-			if (id1 != null && id2 != null) {
-				ret += "%" + val + " = " + mathOp + " " + type + " %"
-						+ LLVM.getMem(id1) + ", %" + LLVM.getMem(id2) + "\n";
-			} else if (t1 != null && t2 != null) {
-				// both are types?
-				String s1 = t1.genCode(), s2 = t2.genCode();
-				String[] tmp1 = s1.split(" ");
-				String[] tmp2 = s2.split(" ");
-				type = tmp1[0];
-				ret += "%" + val + " = " + mathOp + " " + type + " " + tmp1[1]
-						+ ", " + tmp2[1] + "\n";
-			} else if (t1 != null) {
-				String s1 = t1.genCode();
-				String[] tmp1 = s1.split(" ");
-				type = tmp1[0];
-				ret += "%" + val + " = " + mathOp + " " + type + " " + tmp1[1]
-						+ ", %" + LLVM.getMem(id2) + "\n";
-			} else {
-				String s2 = t2.genCode();
-				String[] tmp2 = s2.split(" ");
-				type = tmp2[0];
-				ret += "%" + val + " = " + mathOp + " " + type + " %"
-						+ LLVM.getMem(id1) + ", " + tmp2[1] + "\n";
-			}
+
+			type = t1.fromTypeStringToLLVMType();
+			ret += "%" + val + " = " + mathOp + " " + type + " %"
+					+ LLVM.getMem(t1) + ", %" + LLVM.getMem(t2) + "\n";
 
 		} else if (op == TokenType.OP_ASSIGN) {
-			EntryType eA = null;
-			eA = SymbolTableHelper.lookup(id1.getValue(), this);
+			Id id1 = (Id) t1;
 			if (getChild(1) instanceof StringLiteral) {
+				
 				StringLiteral str = (StringLiteral) getChild(1);
 				/*
 				 * if you look below, this is what is implemented (it's kind of
@@ -203,52 +122,20 @@ public class BinaryOp extends Type {
 				 * x i8]* %r3 %firstEl = getelementptr [9 x i8]* %r3, i8 0, i8 0
 				 * store i8* %firstEl, i8** %str3
 				 */
-				int tempReg = block.getNewVar();
-				int tempReg2 = block.getNewVar();
+				int tmp1 = block.getNewVar();
+				int tmp2 = block.getNewVar();
 				int strLength = (str.getValue().length() + 1);
-				ret = "%" + tempReg + " = alloca [" + strLength + " x i8]\n";
+				ret = "%" + tmp1 + " = alloca [" + strLength + " x i8]\n";
 				ret += "store [" + strLength + " x i8] c\"" + str.getValue()
-						+ "\\00\", [" + strLength + " x i8]* %" + tempReg
-						+ "\n";
-				ret += "%" + tempReg2 + " = getelementptr [" + strLength
-						+ " x i8]* %" + tempReg + ", i8 0, i8 0 \n";
-				ret += "store i8* %" + tempReg2 + ", i8** %" + id1.getValue();
-			} else if (getChild(1) instanceof FuncCall) {
-
-				// id1 must exist!!!
-
-				// load parameters of this function first
-				if (getChild(1).getChildrenCount() > 1
-						&& getChild(1).getChild(1).getChildrenCount() != 0) {
-					ret += LLVM.loadParams((Args) getChild(1).getChild(1));
-				}
-				int reg = block.getNewVar();
-				String type = SymbolTableHelper.lookup(id1.getValue(), this)
-						.getType().genCode();
-				ret += "%" + reg + " = " + ((FuncCall) getChild(1)).genCode()
-						+ "\n";
-
-				ret += "store " + type + " %" + reg + ", " + type + "* %"
-						+ id1.getValue();
-			} else if (getChild(1) instanceof Id) {
-				String type = SymbolTableHelper.lookup(id1.getValue(), this)
-						.getType().genCode();
-				ret += LLVM.loadVar(id2);
-				ret += "store " + type + " %" + LLVM.getMem(id2) + ", "
-						+ eA.getType().genCode() + "* %" + id1.getValue();
-			} else if (getChild(1) instanceof BinaryOp) {
-				// First execute operations, then save the result
-				ret += ((BinaryOp) getChild(1)).genCode();
-				// int result = block.getCurrentRegister();
-				// ret += "%" + block.getNewMemory() + " = load "
-				// + eA.getType().genCode() + "* %" + result + "\n";
-				ret += "store " + eA.getType().genCode() + " %"
-						+ ((BinaryOp) getChild(1)).getVar() + ", "
-						+ eA.getType().genCode() + "* %" + id1.getValue();
+						+ "\\00\", [" + strLength + " x i8]* %" + tmp1 + "\n";
+				ret += "%" + tmp2 + " = getelementptr [" + strLength
+						+ " x i8]* %" + tmp1 + ", i8 0, i8 0 \n";
+				ret += "store i8* %" + tmp2 + ", i8** %" + id1.getValue();
 			} else {
-				ret = "store " + ((AbstractSyntaxTree) getChild(1)).genCode()
-						+ ", " + eA.getType().genCode() + "* %"
-						+ id1.getValue();
+				ret += LLVM.loadType(t2);
+				String t = t2.fromTypeStringToLLVMType();
+				ret += "store " + t + " %" + LLVM.getMem(t2) + ", " + t + "* "
+						+ "%" + id1.getValue();
 			}
 		} else {
 			System.out.println("Unknown Binary OP: " + op);
@@ -256,16 +143,10 @@ public class BinaryOp extends Type {
 		return ret;
 	}
 
-	private String getIntOrReal(Id id, Type type) {
+	private String getIntOrReal(Type type) {
 		String ret = "";
-		if (id != null) {
-			if ((id.getType().toTypeString().equals("double"))) {
-				ret = "fcmp";
-			} else {
-				ret = "icmp";
-			}
-		} else if (type != null) {
-			if ((type.toTypeString().equals("double"))) {
+		if (type != null) {
+			if ((type.fromTypeStringToLLVMType()).equals("i64")) {
 				ret = "fcmp";
 			} else {
 				ret = "icmp";
@@ -275,53 +156,10 @@ public class BinaryOp extends Type {
 		return ret;
 	}
 
-	private String getOpName(Id id, Type type) {
+	private String getOpName(Type type) {
 		String ret = "";
-		if (id != null) {
-			if ((id.getType().toTypeString().equals("double"))) {
-				switch (op) {
-				case OP_LT:
-					ret = "olt";
-					break;
-				case OP_LE:
-					ret = "ole";
-					break;
-				case OP_GT:
-					ret = "ogt";
-					break;
-				case OP_GE:
-					ret = "oge";
-					break;
-				case OP_EQ:
-					ret = "eq";
-					break;
-				case OP_NE:
-					ret = "ne";
-					break;
-				}
-			} else {
-				switch (op) {
-				case OP_LT:
-					ret = "slt";
-					break;
-				case OP_LE:
-					ret = "sle";
-					break;
-				case OP_GT:
-					ret = "sgt";
-					break;
-				case OP_GE:
-					ret = "sge";
-					break;
-				case OP_EQ:
-					ret = "eq";
-					break;
-				case OP_NE:
-					ret = "ne";
-					break;
-				}
-			}
-		} else if (type != null) {
+
+		if (type != null) {
 			if ((type.toTypeString().equals("double"))) {
 				switch (op) {
 				case OP_LT:
@@ -375,15 +213,62 @@ public class BinaryOp extends Type {
 		Type leftChild = (Type) this.getChild(0);
 		Type rightChild = (Type) this.getChild(1);
 		if (leftChild.toTypeString().equals(rightChild.toTypeString())) {
-			return true;
+			switch (this.op) {
+			case OP_ADD:
+			case OP_MUL:
+			case OP_DIV:
+			case OP_MINUS:
+				for (ISyntaxTree child : this.getChildren()) {
+					if (((Type) child).toTypeString()
+							.equals(TYPE_STRING_STRING)) {
+						throw new TypeErrorException(
+								"Cannot perform arithmetic operation on Strings");
+					}
+				}
+			case OP_AND:
+			case OP_OR:
+			case OP_NOT:
+			case OP_LT:
+			case OP_LE:
+			case OP_EQ:
+			case OP_GE:
+			case OP_GT:
+			case OP_NE:
+			case OP_ASSIGN:
+				return true;
+			default:
+				throw new TypeErrorException("Undefined Error in BinaryOp");
+			}
 		}
-		throw new TypeErrorException("Operands have to be of same type!");
+		throw new TypeErrorException(
+				"Operands have to be of same type but are:\n left operand: "
+						+ leftChild.toTypeString() + "\nright operand: "
+						+ rightChild.toTypeString());
 	}
 
 	@Override
 	public String toTypeString() {
 		// if both operands are not equal, checkTypes will catch this
-		return ((Type) this.getChild(0)).toTypeString();
+		switch (this.op) {
+		case OP_ADD:
+		case OP_MUL:
+		case OP_DIV:
+		case OP_MINUS:
+			return ((Type) this.getChild(0)).toTypeString();
+		case OP_AND:
+		case OP_OR:
+		case OP_LT:
+		case OP_LE:
+		case OP_EQ:
+		case OP_GE:
+		case OP_GT:
+		case OP_NE:
+		case OP_NOT:
+			return Type.TYPE_BOOL_STRING;
+		default:
+			return Type.TYPE_VOID_STRING;
+		}
+
 	}
 
 }

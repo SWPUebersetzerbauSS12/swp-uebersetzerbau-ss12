@@ -10,12 +10,6 @@ package de.fuberlin.projecta.analysis.ast.nodes;
 public class RecordVarCall extends Type {
 
 	@Override
-	public boolean checkSemantics() {
-		// Any situation where this could be ambiguous???
-		return true;
-	}
-
-	@Override
 	public String genCode() {
 		// TODO Auto-generated method stub
 		return null;

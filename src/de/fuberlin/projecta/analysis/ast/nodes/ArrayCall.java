@@ -13,7 +13,7 @@ import de.fuberlin.projecta.analysis.SymbolTableHelper;
 public class ArrayCall extends Type {
 
 	@Override
-	public boolean checkSemantics() {
+	public void checkSemantics() {
 		ISyntaxTree child = this;
 		do {
 			child = child.getChild(1);
@@ -44,7 +44,6 @@ public class ArrayCall extends Type {
 				throw new SemanticException("Only full array calls are allowed!");
 			}
 		}
-		return true;
 	}
 
 	@Override

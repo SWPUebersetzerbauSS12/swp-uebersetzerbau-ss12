@@ -1,16 +1,10 @@
 def int fib(int n){
   if (n <= 1) return n;
-  else {
-    int fib;
-    fib=fib(n-1) + fib(n-2);
-    return fib;
-  }
+  return fib(n-1) + fib(n-2);
 }
-
 def int main(){
-  int n;
-  int fib;
-  fib=fib(n);
-  print fib;
-  return fib;
-}
+  int a;
+  a=fib(7);
+  print a;
+  return 0;
+} 

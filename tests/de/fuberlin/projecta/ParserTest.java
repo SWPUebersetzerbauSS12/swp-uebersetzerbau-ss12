@@ -7,6 +7,7 @@ import java.io.File;
 import org.junit.Test;
 
 import de.fuberlin.commons.lexer.ILexer;
+import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.lexer.Lexer;
 import de.fuberlin.projecta.lexer.SyntaxErrorException;
 import de.fuberlin.projecta.lexer.io.FileCharStream;
@@ -24,15 +25,22 @@ public class ParserTest {
 		return code;
 	}
 
-	void parse(ICharStream stream) {
+	static ISyntaxTree parse(ICharStream stream) {
 		ILexer lexer = new Lexer(stream);
 		Parser parser = new Parser();
-		parser.parse(lexer, "");
+		ISyntaxTree parseTree = null;
+		try {
+			parseTree = parser.parse(lexer, "");
+		} catch (ParseException e) {
+			System.out.println(e.getDetails());
+			throw e;
+		}
+		return parseTree;
 	}
 
-	void parse(String code) {
+	static ISyntaxTree parse(String code) {
 		ICharStream stream = new StringCharStream(code);
-		parse(stream);
+		return parse(stream);
 	}
 
 	@Test
@@ -53,6 +61,12 @@ public class ParserTest {
 	@Test(expected=SyntaxErrorException.class)
 	public void testReceiveLexerException() {
 		parse("0e.");
+	}
+
+	@Test
+	public void testMultiExpression() {
+		String code = mainC("int a; a = 1 + 2 + 3;");
+		parse(code);
 	}
 
 	@Test

@@ -13,6 +13,8 @@ public class LLVM_Parameter {
 				type = LLVM_ParameterType.REGISTER;
 			else if(name.charAt(0) == '[')
 				type = LLVM_ParameterType.ARRAY;
+			else if(typeString.contains("double"))
+				type = LLVM_ParameterType.DOUBLE;
 			else
 				type = LLVM_ParameterType.INTEGER;
 		}

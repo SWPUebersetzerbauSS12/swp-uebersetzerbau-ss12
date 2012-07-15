@@ -10,7 +10,7 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 	
 	private LinkedList<LLVM_Function> functions;
 	
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
 	public static final boolean STATISTIC = true;
 	
 	public LLVM_Optimization(){
@@ -207,6 +207,8 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 				String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_clangdemo");
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/strength_reduction_argv.s");//test_new.ll");
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_maschco");//test_new.ll");
+				String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/srem_test.ll");
+
 				
 				System.out.println("###########################################################");
 				System.out.println("################## Optimization Input #####################");

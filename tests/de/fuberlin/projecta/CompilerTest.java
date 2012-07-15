@@ -159,5 +159,14 @@ public class CompilerTest {
 		String output = executeCode(code);
 		assertEquals("1", output);
 	}
+	
+	@Test
+	public void testRecordDeclaration() {
+		final String code = 
+				mainC("record {int i; int j;} myRecord;");
+		System.out.println(code);
+		String output = executeCode(code);
+		assertEquals("", output);
+	}
 
 }

@@ -20,6 +20,10 @@ public class LLVM_Function {
 	
 	public LLVM_Function(String code) throws LLVM_OptimizationException{
 		func_define = "define " + code.substring(0, code.indexOf("\n"));
+		
+		// Fix, weil llc uwtable nicht mag
+		if (func_define.contains("uwtable")) func_define = func_define.replace("uwtable", "");
+		
 		code = code.substring(code.indexOf("\n")+1);
 		
 		afterFunc = code.substring(code.lastIndexOf("}")+1);

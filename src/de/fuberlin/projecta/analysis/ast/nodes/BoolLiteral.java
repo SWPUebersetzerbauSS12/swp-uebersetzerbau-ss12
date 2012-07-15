@@ -11,7 +11,7 @@ public class BoolLiteral extends Literal {
 
 	@Override
 	public String genCode() {
-		return "i8 " + ((this.value)?"1":"0");
+		return "i1 " + ((this.value)?"1":"0");
 	}
 	
 	public boolean getValue(){

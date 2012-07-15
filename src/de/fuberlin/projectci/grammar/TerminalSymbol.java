@@ -1,7 +1,16 @@
 package de.fuberlin.projectci.grammar;
 
+
+/**
+ * Terminalsymbole.
+ *
+ */
 public class TerminalSymbol extends Symbol {
 
+	/**
+	 * Erstellt ein Terminalsymbol.
+	 * @param value Bezeichnung des Terminalsymbols.
+	 */
 	public TerminalSymbol(String value) {
 		super(value);
 	}

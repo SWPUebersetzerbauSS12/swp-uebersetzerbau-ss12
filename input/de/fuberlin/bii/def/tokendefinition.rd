@@ -13,11 +13,16 @@
 >=						{return(">=", "")}
 ==						{return("==", "")}
 !=						{return("!=", "")}
+&&						{return("&&", "")}
+\|\|					{return("||", "")}
+!						{return("!", "")}
 \+						{return("+", "")}
 \-						{return("-", "")}
 \*						{return("*", "")}
 /						{return("/", "")}
 ;						{return(";", "")}
+,						{return(",", "")}
+\.						{return(".", "")}
 record					{return("record", "")}
 def						{return("def", "")}
 if						{return("if", "")}

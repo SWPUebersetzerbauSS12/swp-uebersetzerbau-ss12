@@ -139,4 +139,25 @@ public class CompilerTest {
 		assertEquals("1", output);
 	}
 
+	@Test
+	public void testIfElsePrintStatement() {
+		final String code = mainC("int a; int b;  bool c; a = 1;  b = 2; c = true;\n" +
+				"if (c) { print a; }\n" + 
+				"else { print b; }");
+		String output = executeCode(code);
+		assertEquals("1", output);
+	}
+
+	@Test
+	public void testIfElseReturnStatement() {
+		final String code = "def int foo() { int a; int b;  bool c; a = 1;  b = 2; c = true;\n" +
+					"if (c) { return a; }\n" + 
+					"else { return b; }\n" + 
+				"}\n" +
+				mainC("int a; a = foo(); print a;");
+		System.out.println(code);
+		String output = executeCode(code);
+		assertEquals("1", output);
+	}
+
 }

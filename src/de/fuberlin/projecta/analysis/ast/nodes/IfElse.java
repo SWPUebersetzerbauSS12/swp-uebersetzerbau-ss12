@@ -13,22 +13,37 @@ public class IfElse extends Statement {
 		String ret = "";
 		block = getHighestBlock();
 		if (block != null) {
-			AbstractSyntaxTree uOp = (AbstractSyntaxTree) getChild(0);
 			boolean not = false;
-			while (uOp instanceof UnaryOp) {
-				if (((UnaryOp) uOp).getOp() == TokenType.OP_NOT) {
-					not = !not;
+			if(getChild(0) instanceof UnaryOp){
+				AbstractSyntaxTree uOp = (AbstractSyntaxTree) getChild(0);
+				while (uOp instanceof UnaryOp) {
+					if (((UnaryOp) uOp).getOp() == TokenType.OP_NOT) {
+						not = !not;
+					}
+					uOp = (AbstractSyntaxTree) uOp.getChild(0);
 				}
-				uOp = (AbstractSyntaxTree) uOp.getChild(0);
-			}
+			}			
+			
 			int label = block.getNewVar();
 			this.setBeginLabel(label);
 			ret += "br label %" + label + "\n\n";
 			ret += "; <label> %" + label + "\n";
-			ret += ((AbstractSyntaxTree) getChild(0)).genCode();
+			if(!(getChild(0) instanceof Id)){
+				ret += ((AbstractSyntaxTree) getChild(0)).genCode();
+				ret += LLVM.genBranch(this, ((AbstractSyntaxTree) getChild(1)),
+						((AbstractSyntaxTree) getChild(2)), not, false);
+			} else {
+				Id id = (Id) getChild(0);
+				int tmp1 = block.getNewVar();
+				ret += "%" + tmp1 + " = load i1* %" + id.getValue() + "\n";
+				int tmp2 = block.getNewVar();
+				ret += "%" + tmp2 + " = icmp ne i1 %" + tmp1 + ", 0\n";
+				ret += LLVM.genBranch(this,  ((AbstractSyntaxTree) getChild(1)),
+						((AbstractSyntaxTree) getChild(2)), not, false);
+			}
+			
 
-			ret += LLVM.genBranch(this, ((AbstractSyntaxTree) getChild(1)),
-					((AbstractSyntaxTree) getChild(2)), not, false);
+			
 		}
 
 		return ret;

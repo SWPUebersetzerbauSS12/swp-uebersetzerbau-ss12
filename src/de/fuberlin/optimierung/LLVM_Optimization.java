@@ -60,6 +60,9 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 			
 			// CommonExpressions
 			// Store/Load-Paare muessen vorher eliminiert werden, also nach reaching analysis
+			// Wenn getelementptr zusammengefasst wird, so kann ein neues store/load-paar
+			// entstehen. Dieses arbeitet aber auf Arrays/Structs und wird daher nicht
+			// zusammengefasst.
 			tmp.removeCommonExpressions();
 			
 			// Globale Lebendigkeitsanalyse fuer Store, Load

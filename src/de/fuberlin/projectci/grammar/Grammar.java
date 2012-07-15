@@ -26,7 +26,7 @@ public class Grammar {
 	
 	// Speichert zu jedem Nichtterminal eine Liste von Produktionen, bei denen es auf der linken Regelseite vorkommt
 	private Map<NonTerminalSymbol, List<Production>> nonTerminal2Productions = new HashMap<NonTerminalSymbol, List<Production>>();
-	
+
 	//Startsymbol	
 	NonTerminalSymbol startSymbol = null;
 	
@@ -52,14 +52,28 @@ public class Grammar {
 	public static final TerminalSymbol INPUT_ENDMARKER = new TerminalSymbol("EOF"); // 'eof'
 	
 	
+	/**
+	 * Gibt die erste Produktion der Grammatik zurück. <br>
+	 * 1. Produktion mit dem Startsymbol
+	 * @return
+	 */
 	public Production getStartProduction(){		
 		return getProductionsByLhs(getStartSymbol()).get(0);
 	}
 	
+	/**
+	 * Gibt eine Liste aller Produktionen in der Grammatik zurück.
+	 * @return
+	 */
 	public List<Production> getProductions() {
 		return productions;
 	}
-
+	
+	/**
+	 * Gibt die Produktion an einem bestimmten Index zurück.
+	 * @param index
+	 * @return
+	 */
 	public Production getProductionAtIndex(int index){
 		return productions.get(index);
 	}
@@ -71,10 +85,11 @@ public class Grammar {
 		return nonTerminal2Productions.get(lhs);
 	}
 	
-	void setProductions(List<Production> productions) {
-		this.productions = productions;
-	}
 	
+	/**
+	 * Fügt eine neue Produktion hinzu.
+	 * @param production
+	 */
 	public void addProduction(Production production){
 		if(!productions.contains(production))
 			productions.add(production);
@@ -87,9 +102,9 @@ public class Grammar {
 		if (temp != null) {
 			nonTerminal2Productions.get(production.getLhs()).add(production);
 		} else {
-			List<Production> p = new LinkedList<Production>();	// XXX temp benutzen?
-			p.add(production);
-			nonTerminal2Productions.put(production.getLhs(), p);
+		    temp = new LinkedList<Production>();
+			temp.add(production);
+			nonTerminal2Productions.put(production.getLhs(), temp);
 		}
 		
 	}
@@ -147,12 +162,17 @@ public class Grammar {
 	}
 	
 	/**
-	 * Legt das Startsymbol für die Grammatik fest
+	 * Legt das Startsymbol für die Grammatik fest.
 	 * @param startSymbol
 	 */
 	public void setStartSymbol(NonTerminalSymbol startSymbol) {
-		//TODO prüfen ob das Symbol gültig ist!
-		this.startSymbol = startSymbol;
+		
+		if(nonTerminal2Productions.containsKey(startSymbol)) {
+			this.startSymbol = startSymbol;
+		} else {
+			throw new RuntimeException("Ungültiges Startsymbol");
+		}
+		
 	}
 	
 	/**
@@ -164,8 +184,8 @@ public class Grammar {
 	}
 	
 	/**
-	 * Gibt eine Menge @see java.util.Set der Nichtterminale zurück.
-	 * @return
+	 * Gibt eine Menge der Nichtterminale zurück.
+	 * @return@see java.util.Set
 	 */
 	public Set<NonTerminalSymbol> getAllNonTerminals() {
 		return nonTerminal2Productions.keySet();
@@ -173,14 +193,14 @@ public class Grammar {
 	
 	/**
 	 * Gibt die Namen der Nichtterminale zurück.
-	 * @return Menge @see java.util.Set von Strings aller Nichtterminale.
+	 * @return Menge von Strings aller Nichtterminale.
 	 */
 	public Set<String> getAllNonterminalNames(){
 		return name2NonTerminal.keySet();
 	}
 	
 	/**
-	 * Gibt eine Menge @see java.util.Set aller Terminale zurück
+	 * Gibt eine Menge aller Terminale zurück
 	 * @return
 	 */
 	public Set<TerminalSymbol> getAllTerminalSymols() {
@@ -239,7 +259,6 @@ public class Grammar {
 		// Die Firstmenge für das Symbol zurück geben
 		return firstSets.get(s);
 		
-		//TODO eventuell noch bessere Fehlerbehandlung
 	}
 	
 	
@@ -279,12 +298,12 @@ public class Grammar {
 		
 	}
 	/**
-	 * Berechnet parallel und erschöpfend die First-Mengen für alle Symbole der Grammatik.
+	 * Berechnet erschöpfend die First-Mengen für alle Symbole der Grammatik.
 	 * Implementierung des Algorithmus aus dem Drachenbuch Kapitel 4.4.2 Seite 221 (Englische Fassung)
 	 * 
 	 * @return Es wird ein Wörterbuch von Symbolen auf eine Menge von Terminalsymbolen zurück gegeben
 	 */
-	//TODO Eventuell private
+	
 	public Map<Symbol,Set<TerminalSymbol>> calculateFirstSets() {
 		firstSets = new HashMap<Symbol,Set<TerminalSymbol>>();
 		// 1. Für alle Terminalsymbole die Mengen erzeugen.
@@ -344,12 +363,14 @@ public class Grammar {
 	/**
 	 * Berechnet die Follow-Menge zu einem Nicht-Terminalsymbol nach dem Algorithmus im Drachenbuch.
 	 * Abschnitt 4.4.2 "FIRST and FOLLOW" Seite 221f (Englische, 2. Ausgabe)
+	 * 
+	 * <b> Das Startsymbol muss hierzu gesetzt sein! </b>
 	 */
-	
 	public Set<TerminalSymbol> follow(NonTerminalSymbol nts) {
 		// ohne gesetztes Startsymbol kann der Algorithmus nicht arbeiten
 		if(startSymbol == null)
-			return null; // TODO Vielleicht lieber eine Exception werfen?
+			//return null; 
+			throw new RuntimeException("Kein Startsymbol gesetzt, kann follow Mengen nicht berechnen!");
 		
 		// Ohne Firstmengen kann der Algorithmus nicht laufen
 		if(firstSets == null )
@@ -357,16 +378,23 @@ public class Grammar {
 		
 		if(followSets == null)
 			followSets = calculateFollowSets();
-		// TODO Implementiere mich.
 		
 
 		return followSets.get(nts);
 	}
 
+	/**
+	 * Berechnet erschöpfend die Follow-Mengen für alle Symbole in dieser Grammatik. 
+	 * Abschnitt 4.4.2 "FIRST and FOLLOW" Seite 221f (Englische, 2. Ausgabe)
+	 * 
+	 * <b> Das Startsymbol muss hierzu gesetzt sein! </b>
+	 * @return
+	 */
 	public Map<NonTerminalSymbol, Set<TerminalSymbol>> calculateFollowSets() {
 		// ohne gesetztes Startsymbol kann der Algorithmus nicht arbeiten
 		if(startSymbol == null)
-			return null; // TODO Vielleicht lieber eine Exception werfen?
+			//return null; 
+			throw new RuntimeException("Kein Startsymbol gesetzt, kann follow Mengen nicht berechnen!");
 		
 		// Die Mengen in der Map initialisieren		
 		followSets = new HashMap<NonTerminalSymbol,Set<TerminalSymbol>>();		

@@ -28,6 +28,7 @@ public class LLVM {
 			int varDecision, labelTrue, labelFalse, labelBehind;
 
 			varDecision = block.getCurrentRegister();
+
 			labelTrue = block.getNewVar();
 			if (block1 != null)
 				s1 = block1.genCode();
@@ -36,7 +37,6 @@ public class LLVM {
 				s2 = block2.genCode();
 			labelBehind = block.getNewVar();
 			current.setEndLabel(labelBehind);
-
 			if (!not) {
 				ret += "br i1 %" + varDecision + ", label %" + labelTrue
 						+ ", label %" + labelFalse + "\n\n";
@@ -44,17 +44,16 @@ public class LLVM {
 				ret += "br i1 %" + varDecision + ", label %" + labelFalse
 						+ ", label %" + labelTrue + "\n\n";
 			}
-
-			ret += "; <label> %" + labelTrue + "\n";
+			ret += "; <label>:" + labelTrue + "\n";
 			ret += s1 + "\n";
 			if (!loop)
 				ret += "br label %" + labelBehind + "\n\n";
 			else
 				ret += "br label %" + current.getBeginLabel() + "\n\n";
-			ret += "; <label> %" + labelFalse + "\n";
+			ret += "; <label>:" + labelFalse + "\n";
 			ret += s2 + "\n";
 			ret += "br label %" + labelBehind + "\n\n";
-			ret += "; <label> %" + labelBehind + "\n";
+			ret += "; <label>:" + labelBehind + "\n";
 		}
 		return ret;
 	}
@@ -115,12 +114,6 @@ public class LLVM {
 		return null;
 	}
 
-	public static String store() {
-		String out = "";
-
-		return out;
-	}
-
 	public static String getMem(Type type) {
 		String ret = "";
 		if (type instanceof Id) {
@@ -148,7 +141,7 @@ public class LLVM {
 	 */
 	public static String loadType(Type type) {
 		String ret = "";
-		
+
 		// If getVar is 0 it must be loaded, otherwise it is already loaded
 		if (type != null && type.getVar() == 0) {
 			Block block = type.getHighestBlock();

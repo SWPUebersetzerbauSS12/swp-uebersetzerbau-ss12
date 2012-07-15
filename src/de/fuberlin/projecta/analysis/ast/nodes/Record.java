@@ -11,10 +11,12 @@ import de.fuberlin.commons.parser.ISyntaxTree;
  * @author sh4ke
  */
 public class Record extends Type {
-	
+
 	@Override
-	public String genCode(){
-		String ret = "%struct." + getId().getValue();
+	public String genCode() {
+		String ret = "";
+		if (getId() != null)
+			ret = "%struct." + getId().getValue();
 		return ret;
 	}
 
@@ -49,21 +51,25 @@ public class Record extends Type {
 
 	@Override
 	public String genStruct() {
-		String ret = "%struct." + getId().getValue() + " = type { ";
-		boolean tmp = false;
-		for (int i = 0; i < getChildrenCount(); i++) {
-			String t = ((Type) (getChild(i).getChild(0))).genCode();
-			if (!t.equals("")) {
-				t += ", ";
-				tmp = true;
+		String ret = "";
+		if (getId() != null) {
+			ret = "%struct." + getId().getValue() + " = type { ";
+			boolean tmp = false;
+			for (int i = 0; i < getChildrenCount(); i++) {
+				String t = ((Type) (getChild(i).getChild(0))).genCode();
+				if (!t.equals("")) {
+					t += ", ";
+					tmp = true;
+				}
+				ret += t;
 			}
-			ret += t;
+			if (tmp) {
+				ret = ret.substring(0, ret.length() - 2);
+			}
+			ret += " }";
+			return ret + "\n";
 		}
-		if (tmp) {
-			ret = ret.substring(0, ret.length() - 2);
-		}
-		ret +=  " }";
-		return ret + "\n";
+		return ret;
 	}
 
 	/**
@@ -73,7 +79,9 @@ public class Record extends Type {
 	 * @return
 	 */
 	private Id getId() {
-		Declaration decl = (Declaration) this.getParent();
-		return (Id) decl.getChild(1);
+		if (!(getParent().getParent() instanceof FuncDef))
+			if (getParent() != null)
+				return (Id) getParent().getChild(1);
+		return null;
 	}
 }

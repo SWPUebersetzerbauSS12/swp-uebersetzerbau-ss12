@@ -19,6 +19,6 @@ public class BoolLiteral extends Literal {
 	}
 	
 	public String toTypeString(){
-		return Type.TYPE_BOOL_STRING;
+		return BasicType.TYPE_BOOL_STRING;
 	}
 }

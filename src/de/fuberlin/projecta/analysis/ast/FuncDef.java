@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.fuberlin.commons.lexer.TokenType;
+import de.fuberlin.projecta.analysis.BasicTokenType;
 import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.SymbolTableStack;
-import de.fuberlin.projecta.lexer.BasicTokenType;
 
 public class FuncDef extends Type {
 

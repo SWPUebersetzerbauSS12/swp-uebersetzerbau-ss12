@@ -1,4 +1,4 @@
-package de.fuberlin.projecta.lexer;
+package de.fuberlin.projecta.analysis;
 
 public enum BasicTokenType {
 

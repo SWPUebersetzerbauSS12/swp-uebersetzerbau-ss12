@@ -24,6 +24,6 @@ public class StringLiteral extends Expression {
 	
 	@Override
 	public String toTypeString(){
-		return Type.TYPE_STRING_STRING;
+		return BasicType.TYPE_STRING_STRING;
 	}
 }

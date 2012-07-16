@@ -1,8 +1,8 @@
 package de.fuberlin.projecta.analysis.ast;
 
+import de.fuberlin.projecta.analysis.BasicTokenType;
 import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.SymbolTableStack;
-import de.fuberlin.projecta.lexer.BasicTokenType;
 
 public class Declaration extends AbstractSyntaxTree {
 

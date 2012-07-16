@@ -37,10 +37,10 @@ public class Return extends Statement {
 		String funcType = getParentFunction().toTypeString();
 		if (this.getChildrenCount() == 0) {
 			// return type must be void!
-			if (!funcType.equals(Type.TYPE_VOID_STRING))
+			if (!funcType.equals(BasicType.TYPE_VOID_STRING))
 				throw new SemanticException("Missing return value in non-void function");
 		} else {
-			String returnType = ((Expression) getChild(0)).toTypeString();
+			String returnType = getArgument().toTypeString();
 			if (!funcType.equals(returnType))
 				throw new SemanticException("Incompatible arguments: Function declared with return type " + funcType + " but returned " + returnType);
 		}

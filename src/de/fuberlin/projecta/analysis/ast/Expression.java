@@ -33,13 +33,13 @@ public abstract class Expression extends AbstractSyntaxTree {
 
 	public String fromTypeStringToLLVMType() {
 		String type = "";
-		if (this.toTypeString().equals(Type.TYPE_INT_STRING))
+		if (this.toTypeString().equals(BasicType.TYPE_INT_STRING))
 			type = "i32";
-		else if (this.toTypeString().equals(Type.TYPE_REAL_STRING))
+		else if (this.toTypeString().equals(BasicType.TYPE_REAL_STRING))
 			type = "double";
-		else if (this.toTypeString().equals(Type.TYPE_BOOL_STRING))
+		else if (this.toTypeString().equals(BasicType.TYPE_BOOL_STRING))
 			type = "i1";
-		else if (this.toTypeString().equals(Type.TYPE_STRING_STRING))
+		else if (this.toTypeString().equals(BasicType.TYPE_STRING_STRING))
 			type = "i8*";
 		return type;
 	}

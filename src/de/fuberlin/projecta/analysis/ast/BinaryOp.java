@@ -286,9 +286,9 @@ public class BinaryOp extends Expression {
 		case OP_GT:
 		case OP_NE:
 		case OP_NOT:
-			return Type.TYPE_BOOL_STRING;
+			return BasicType.TYPE_BOOL_STRING;
 		default:
-			return Type.TYPE_VOID_STRING;
+			return BasicType.TYPE_VOID_STRING;
 		}
 	}
 

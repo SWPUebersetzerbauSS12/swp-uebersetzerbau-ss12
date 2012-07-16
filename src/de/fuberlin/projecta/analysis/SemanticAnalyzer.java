@@ -32,7 +32,6 @@ import de.fuberlin.projecta.analysis.ast.StringLiteral;
 import de.fuberlin.projecta.analysis.ast.Type;
 import de.fuberlin.projecta.analysis.ast.UnaryOp;
 import de.fuberlin.projecta.analysis.ast.While;
-import de.fuberlin.projecta.lexer.BasicTokenType;
 import de.fuberlin.projecta.parser.NonTerminal;
 import de.fuberlin.projecta.parser.Symbol;
 import de.fuberlin.projecta.parser.Symbol.Reserved;

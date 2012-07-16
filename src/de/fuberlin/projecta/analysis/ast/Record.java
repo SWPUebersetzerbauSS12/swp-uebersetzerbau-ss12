@@ -6,8 +6,9 @@ import java.util.Comparator;
 import de.fuberlin.commons.parser.ISyntaxTree;
 
 /**
- * unknown count of declaration children !
+ * Record type
  * 
+ * Declarations are the children, there may be an arbitrary amount of them
  */
 public class Record extends Type {
 

@@ -3,10 +3,10 @@ package de.fuberlin.projecta.analysis.ast;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import de.fuberlin.projecta.analysis.BasicTokenType;
 import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
-import de.fuberlin.projecta.lexer.BasicTokenType;
 
 public class Print extends Statement {
 
@@ -60,10 +60,10 @@ public class Print extends Statement {
 	@Override
 	public void checkTypes() {
 		String[] b = {
-				Type.TYPE_BOOL_STRING,
-				Type.TYPE_STRING_STRING,
-				Type.TYPE_INT_STRING,
-				Type.TYPE_REAL_STRING
+				BasicType.TYPE_BOOL_STRING,
+				BasicType.TYPE_STRING_STRING,
+				BasicType.TYPE_INT_STRING,
+				BasicType.TYPE_REAL_STRING
 		};
 		String argumentType = ((Expression)getChild(0)).toTypeString();
 		ArrayList<String> validTypes = new ArrayList<String>(Arrays.asList(b));

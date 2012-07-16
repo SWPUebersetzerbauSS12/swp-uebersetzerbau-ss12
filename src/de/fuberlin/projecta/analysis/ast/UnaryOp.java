@@ -24,10 +24,10 @@ public class UnaryOp extends Expression {
 		String type = getExpression().toTypeString();
 		switch (this.op) {
 		case OP_NOT:
-			if (!(type.equals(Type.TYPE_BOOL_STRING)))
+			if (!(type.equals(BasicType.TYPE_BOOL_STRING)))
 				throw new SemanticException("Invalid operand to NOT: " + type);
 		case OP_MINUS:
-			if (!type.equals(Type.TYPE_INT_STRING) || !type.equals(Type.TYPE_REAL_STRING))
+			if (!type.equals(BasicType.TYPE_INT_STRING) || !type.equals(BasicType.TYPE_REAL_STRING))
 				throw new SemanticException("Invalid operand to MINUS: " + type);
 		}
 	}

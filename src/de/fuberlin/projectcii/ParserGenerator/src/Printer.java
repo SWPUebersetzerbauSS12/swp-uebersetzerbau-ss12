@@ -317,7 +317,7 @@ public class Printer {
 			            childNode.setAttributeNode(typeAttr);
                 
 			            Attr attributeAttr = doc.createAttribute("attribute");
-			            attributeAttr.setValue("not Implemented");
+			            attributeAttr.setValue(child.getToken().getType());
 			            childNode.setAttributeNode(attributeAttr);
                     
 			            Attr lNAttr = doc.createAttribute("LineNumber");

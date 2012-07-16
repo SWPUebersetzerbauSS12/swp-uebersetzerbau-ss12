@@ -1,0 +1,5 @@
+def int main(){
+  int [5] a;
+  a[2]=7;
+  return a[2];
+} 

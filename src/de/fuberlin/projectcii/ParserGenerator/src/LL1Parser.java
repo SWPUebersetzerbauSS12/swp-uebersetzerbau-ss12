@@ -41,7 +41,8 @@ public class LL1Parser implements IParser {
 		ISyntaxTree parsetree = new SyntaxTree();
 		
 		try{
-		    pG.initialize(false,grammar,printSelected);		    
+		    pG.initialize(false,grammar,printSelected);
+		    //Use generated parsertable if LL1 parseable, else try to convert grammar
 			if(pG.parsable_LL1(pG.getParseTable())){
 				TokenParser tP = new TokenParser(lexer, pG.getParseTable(),pG.getGrammar(),pG.getStartSymbol());
 				parsetree = tP.parseTokenStream(printSelected);

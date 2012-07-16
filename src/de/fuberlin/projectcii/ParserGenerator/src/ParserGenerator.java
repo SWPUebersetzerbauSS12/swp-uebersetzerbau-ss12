@@ -198,6 +198,7 @@ public class ParserGenerator {
 			} else {
 				// Check if NonTerminal allready evaluated
 				if (!visitedNonTerminals.contains(term)) {
+					//mark NonTerminal as visited
 					visitedNonTerminals.add(head);
 					if (term.equals(head)) {
 						currentFS.addAll(evalFirstSet(head, grammarMap,
@@ -310,7 +311,7 @@ public class ParserGenerator {
 		if (start.equals(head)) {
 			fs.add(Settings.getEOF());
 		}
-		//
+
 		for (String currentHead : grammarMap.keySet()) {
 			for (Vector<String> product : grammarMap.get(currentHead)) {
 				for (Iterator<String> itr = product.iterator(); itr.hasNext();) {
@@ -371,18 +372,23 @@ public class ParserGenerator {
 	 *         production in grammarMap
 	 */
 	private HashMap<String, HashMap<String, Vector<Integer>>> createParserTable() {
-
+		
 		HashMap<String, HashMap<String, Vector<Integer>>> ret = new HashMap<String, HashMap<String, Vector<Integer>>>();
 
+		//eval each row (each NonTerminal) of parsertable
 		for (String head : Nonterminal) {
 			HashMap<String, Vector<Integer>> parseTableRow = new HashMap<String, Vector<Integer>>();
+			//get FirstSet of current head
 			Set<String> currentFirstSet = firstSetsProductions.get(head)
 					.keySet();
+			//get FollowSet of current head
 			Set<String> currentFollowSet = followSets.get(head);
 
+			//eval each table element (each Terminal) of the current row
 			for (String terminal : Terminals) {
 				Vector<Integer> parseTableEntry = new Vector<Integer>();
 
+				//1st Rule (Productions with FirstSet entry)
 				if (currentFirstSet.contains(terminal)) {
 					if (!terminal.equals(Settings.getEPSILON())) {
 						// Get index of production for current FirstSet item
@@ -392,14 +398,17 @@ public class ParserGenerator {
 
 				}
 
+				//2nd Rule (add apsilon producion)
 				if (currentFirstSet.contains(Settings.getEPSILON())
 						&& currentFollowSet.contains(terminal)) {
 					// Get index of production for current FirstSet item
 					parseTableEntry.addAll(firstSetsProductions.get(head).get(
 							Settings.getEPSILON()));
 				}
+				//add table element to row
 				parseTableRow.put(terminal, parseTableEntry);
 			}
+			//add row to parsertable
 			ret.put(head, parseTableRow);
 		}
 		return ret;

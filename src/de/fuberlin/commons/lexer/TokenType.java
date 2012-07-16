@@ -20,7 +20,7 @@ public enum TokenType {
 	/** relational operators <(LT), <=(LE), ==(EQ), !=(NE), >(GT), >=(GE) */
 	OP_LT("<"), OP_LE("<="), OP_EQ("=="), OP_NE("!="), OP_GT(">"), OP_GE(">="),
 	/** ||(OR), &&(AND), !(NOT) */
-	OP_OR("||"), OP_AND("||"), OP_NOT("!"),
+	OP_OR("||"), OP_AND("&&"), OP_NOT("!"),
 	/** Plus (+) operator */
 	OP_ADD("+"),
 	/** Minus (-) operator. Both for unary and binary operations */

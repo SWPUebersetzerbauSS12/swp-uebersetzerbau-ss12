@@ -3,6 +3,11 @@ package de.fuberlin.projectci.grammar;
 import de.fuberlin.commons.parser.ISymbol;
 
 
+/**
+ * 
+ * Abstrakte Klasse für Symbole (Terminale und Nichtterminale)
+ *
+ */
 public abstract class Symbol implements ISymbol {
 	private String name;
 	

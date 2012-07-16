@@ -103,9 +103,6 @@ public class Driver {
 					continue;
 				}
 				
-				// TODO Fehlerbehandlung implementieren
-				
-				
 				logger.warning("Parse Error: Unexpected Token "+currentToken.getText()+" in line "+currentToken.getLineNumber()+":"+currentToken.getOffset());
 				StringBuffer strBufPossibleTokens=new StringBuffer();					
 				int i=0;
@@ -114,12 +111,10 @@ public class Driver {
 					strBufPossibleTokens.append(t);
 					i++;
 				}
-				logger.warning("Parse Error: Expected Token :"+strBufPossibleTokens);								
-				break;
+				logger.warning("Parse Error: Expected Tokens are: "+strBufPossibleTokens);								
+				throw new LRParserException("Parse Error: Unexpected Token "+currentToken.getText()+" in line "+currentToken.getLineNumber()+":"+currentToken.getOffset());
 			}			
 		}
-		//logger.severe("Unexpected Error");
-		return null;
 	}
 	
 	

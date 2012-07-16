@@ -25,56 +25,16 @@ import de.fuberlin.projectci.parseTable.ParseTableBuilder;
 public class LRParser implements IParser {
 	private static Logger logger = LogFactory.getLogger(LRParser.class);
 	
-	private Grammar grammar;
-	private ParseTable parseTable;
 	
-	// TODO Konstruktoren evtl ganz weglassen und in z.B. parse Methode überprüfen, 
-	// ob erzeugte Grammatik die selbe ist wie die zuvor benutzte und dann das Erstellen
-	// der Parsetabelle weglassen
 	public LRParser() {
-		grammar = null;
-		parseTable = null;
 	}
 
-	public LRParser(File grammarFile) throws BNFParsingErrorException, InvalidGrammarException {
-		
-		// Grammatik einlesen
-		try {
-			GrammarReader grammarReader=new BNFGrammarReader();
-			this.grammar=grammarReader.readGrammar(grammarFile.getAbsolutePath());
-		} 
-		catch (BNFParsingErrorException e) {
-			logger.log(Level.WARNING, "Failed to read grammar from file: "+grammarFile.getAbsolutePath(), e);
-			throw e;
-		}
-		// Grammatik erweitern
-		extendGrammar(this.grammar);
-		
-		// ParseTable erstellen
-		ParseTableBuilder parseTableBuilder=ParseTableBuilder.createParseTableBuilder(grammar);
-		try {
-			this.parseTable=parseTableBuilder.buildParseTable();
-		} 
-		catch (InvalidGrammarException e) {
-			logger.log(Level.WARNING, "Failed to build ParseTable for grammar from file: "+grammarFile.getAbsolutePath(), e);
-			throw e;
-		}
-	}
-	
-	/*
-	public ISyntaxTree parse(ILexer lexer) {
-		Driver driver=new Driver();
-		return driver.parse(lexer, grammar, parseTable);
-	}
-	*/
-	 
 	/**
 	 * Erweitert die übergebene Grammatik mit einem neuen Startsymbol 
-	 * und einer neuen Produktion vom neuen Startsymbol auf das alte Startsymbol.
-	 * XXX Grammatik als Argument evtl weglassen, weil man im Konstruktor sowieso eine Grammatik übergeben muss, oder vllt Methode statisch?
+	 * und einer neuen Produktion vom neuen Startsymbol auf das alte Startsymbol.	
 	 * @param grammar eine Grammatik, die erweitert werden soll
 	 */
-	public void extendGrammar(Grammar grammar){
+	private void extendGrammar(Grammar grammar){
 		// alle Namen der Nichtterminale aus der Grammatik holen
 		Set<String> nonTerminalsNames = grammar.getAllNonterminalNames();
 		
@@ -100,58 +60,53 @@ public class LRParser implements IParser {
 		
 		// neues Nichtterminal erzeugen und als Startsymbol festlegen
 		NonTerminalSymbol startSymbol = grammar.createNonTerminalSymbol(freeName);
-		grammar.setStartSymbol(startSymbol);
 		
 		// neue Produktion vom neuen zum alten Startsymbol anlegen
 		List<Symbol> rhs = new LinkedList<Symbol>();
 		rhs.add(oldStartSymbol);
 		Production production = new Production(startSymbol, rhs);
 		grammar.addProduction(production);
+		
+		grammar.setStartSymbol(startSymbol);
 	}
 
 	@Override
 	public ISyntaxTree parse(ILexer lexer, String grammarPath) {
 		File grammarFile = new File(grammarPath);
-		
-		/////////////// copy&paste vom Konstruktor (Exceptions unterdrückt)
+		Grammar grammar = null;
+		ParseTable parseTable = null;
 		// Grammatik einlesen
 		try {
 			GrammarReader grammarReader=new BNFGrammarReader();
-			this.grammar=grammarReader.readGrammar(grammarFile.getAbsolutePath());
+			grammar=grammarReader.readGrammar(grammarFile.getAbsolutePath());
 		} 
 		catch (BNFParsingErrorException e) {
 			logger.log(Level.WARNING, "Failed to read grammar from file: "+grammarFile.getAbsolutePath(), e);
-			// throw e; // TODO Exception werfen
+			throw new LRParserException("Failed to read grammar from file: "+grammarFile.getAbsolutePath(),e);
 		}
 		// Grammatik erweitern
-		extendGrammar(this.grammar);
+		extendGrammar(grammar);
 		
 		// ParseTable erstellen
 		ParseTableBuilder parseTableBuilder=ParseTableBuilder.createParseTableBuilder(grammar);
 		try {
-			this.parseTable=parseTableBuilder.buildParseTable();
+			parseTable=parseTableBuilder.buildParseTable();
 		} 
 		catch (InvalidGrammarException e) {
 			logger.log(Level.WARNING, "Failed to build ParseTable for grammar from file: "+grammarFile.getAbsolutePath(), e);
-			// throw e; // TODO Exception werfen
+			throw new LRParserException("Failed to build ParseTable for grammar from file: "+grammarFile.getAbsolutePath(), e);
 		}
-		/////////////// copy&paste vom Konstruktor (Exceptions unterdrückt)
 		
-		
-		/////////////// copy&paste von alter parse Methode
 		Driver driver=new Driver();
 		ISyntaxTree syntaxTree= driver.parse(lexer, grammar, parseTable);
 		
 		if (syntaxTree==null){
-			logger.warning("LRParser failed.");
-			// TODO Besser den Driver eine Exception werfen lassen und als (LR)ParserException weiterreichen
-			throw new RuntimeException("LRParser failed.");
+			logger.warning("LRParser failed.");			
+			throw new LRParserException("LRParser failed.");
 		}
 		// Der SemanticAnalyzer erwartet einen Parsebaum ohne Epsilon-Knoten
 		((SyntaxTreeNode)syntaxTree).removeAllEpsilonNodes();
 		return syntaxTree;
 	}
-
-
 }
  

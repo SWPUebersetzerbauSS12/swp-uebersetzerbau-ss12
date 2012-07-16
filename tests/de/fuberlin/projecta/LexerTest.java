@@ -16,6 +16,12 @@ import de.fuberlin.projecta.lexer.Token;
 import de.fuberlin.projecta.lexer.io.FileCharStream;
 import de.fuberlin.projecta.lexer.io.StringCharStream;
 
+/**
+ * This tests the following parts:
+ * Lexer
+ * 
+ * The focus here lies on lexing failures
+ */
 public class LexerTest {
 
 	@Test

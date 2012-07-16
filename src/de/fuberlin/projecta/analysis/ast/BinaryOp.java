@@ -61,6 +61,7 @@ public class BinaryOp extends Expression {
 		Expression t1 = (Expression) getLeftSide();
 		Expression t2 = (Expression) getRightSide();
 
+		// comparison operators
 		if (op == TokenType.OP_EQ || op == TokenType.OP_NE
 				|| op == TokenType.OP_LT || op == TokenType.OP_LE
 				|| op == TokenType.OP_GT || op == TokenType.OP_GE) {
@@ -75,7 +76,9 @@ public class BinaryOp extends Expression {
 					+ " " + t1.fromTypeStringToLLVMType() + " %";
 			ret += LLVM.getMem(t1) + ", %";
 			ret += LLVM.getMem(t2) + "\n";
-		} else if (op == TokenType.OP_ADD || op == TokenType.OP_MINUS
+		}
+		// arithmetic operators
+		else if (op == TokenType.OP_ADD || op == TokenType.OP_MINUS
 				|| op == TokenType.OP_DIV || op == TokenType.OP_MUL) {
 			String type = "";
 			String mathOp = getMathOpName(t1);
@@ -90,8 +93,9 @@ public class BinaryOp extends Expression {
 			type = t1.fromTypeStringToLLVMType();
 			ret += "%" + val + " = " + mathOp + " " + type + " %"
 					+ LLVM.getMem(t1) + ", %" + LLVM.getMem(t2) + "\n";
-
-		} else if (op == TokenType.OP_ASSIGN) {
+		}
+		// assignment operator
+		else if (op == TokenType.OP_ASSIGN) {
 			Id id1 = null;
 			if (t1 instanceof RecordVarCall)
 				id1 = ((RecordVarCall) t1).getVarId();

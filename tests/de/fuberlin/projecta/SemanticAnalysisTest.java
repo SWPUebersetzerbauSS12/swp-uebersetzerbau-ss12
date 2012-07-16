@@ -7,6 +7,12 @@ import de.fuberlin.projecta.analysis.SemanticAnalyzer;
 import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.TypeErrorException;
 
+/**
+ * This tests the following parts:
+ * Lexer -> Parser -> Semantic Analysis
+ * 
+ * The focus here lies on semantic analysis failures
+ */
 public class SemanticAnalysisTest {
 
 	// "forward declare"

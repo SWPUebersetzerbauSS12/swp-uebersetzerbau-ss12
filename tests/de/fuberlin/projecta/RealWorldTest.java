@@ -4,7 +4,11 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+/**
+ * Tests for more complex programs
+ */
 public class RealWorldTest {
+
 	@Test
 	public void fib() {
 		String source = "def int main(){int x; x = fib(4); print x; return 0;}\n" +

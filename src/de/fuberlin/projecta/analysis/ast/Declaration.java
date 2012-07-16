@@ -1,9 +1,14 @@
 package de.fuberlin.projecta.analysis.ast;
 
-import de.fuberlin.projecta.analysis.BasicTokenType;
-import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.SymbolTableStack;
+import de.fuberlin.projecta.analysis.TypeErrorException;
 
+/**
+ * Declaration consists of two child nodes
+ * 
+ * First child: Type node
+ * Second child: Id node
+ */
 public class Declaration extends AbstractSyntaxTree {
 
 	@Override
@@ -12,14 +17,13 @@ public class Declaration extends AbstractSyntaxTree {
 	}
 
 	@Override
-	public void checkSemantics() {
-		for (int i = 0; i < this.getChildrenCount(); i++) {
-			if (this.getChild(i) instanceof BasicType
-					&& ((BasicType) this.getChild(i)).getTokenType() == BasicTokenType.VOID) {
-				throw new SemanticException("Variable cannot be from type void");
-			}
-			((AbstractSyntaxTree) this.getChild(i)).checkSemantics();
+	public void checkTypes() {
+		if (getType().toTypeString().equals(BasicType.TYPE_VOID_STRING)) {
+			throw new TypeErrorException("Variable cannot be from type void");
 		}
+
+		for (int i = 0; i < getChildrenCount(); ++i)
+			((AbstractSyntaxTree)getChild(i)).checkTypes();
 	}
 
 	@Override

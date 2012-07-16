@@ -21,7 +21,7 @@ public class SemanticAnalysisTest {
 	}
 
 	@Test(expected = IllegalStateException.class)
-	public void testInvalidCode() {
+	public void testDuplicateIds() {
 		final String code = mainC("int a; int a;");
 		analyze(code);
 	}
@@ -133,6 +133,12 @@ public class SemanticAnalysisTest {
 	@Test
 	public void testFunctionCallAsOperand() {
 		String code = "def int foo() { return 1; }" + mainC("int i; i = foo();");
+		analyze(code);
+	}
+
+	@Test(expected = TypeErrorException.class)
+	public void testVariableDeclaredVoid() {
+		final String code = mainC("void v;");
 		analyze(code);
 	}
 

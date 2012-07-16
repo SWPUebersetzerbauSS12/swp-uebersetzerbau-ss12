@@ -10,10 +10,6 @@ public abstract class Type extends AbstractSyntaxTree {
 
 	private int valMemory;
 
-	public String genCode() {
-		return "";
-	}
-
 	public String toTypeString() {
 		return "";
 	}

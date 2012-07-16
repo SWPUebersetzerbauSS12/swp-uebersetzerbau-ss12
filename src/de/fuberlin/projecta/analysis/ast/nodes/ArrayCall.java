@@ -45,12 +45,6 @@ public class ArrayCall extends Type {
 			}
 		}
 	}
-
-	@Override
-	public String genCode() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
 	@Override
 	public String toTypeString(){

@@ -15,12 +15,6 @@ public class UnaryOp extends Expression {
 		return (Expression)this.getChild(0);
 	}
 
-	@Override
-	public String genCode() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
 	public TokenType getOp() {
 		return this.op;
 	}
@@ -40,6 +34,6 @@ public class UnaryOp extends Expression {
 	
 	@Override
 	public String toTypeString(){
-		return ((Expression) this.getChild(0)).toTypeString();
+		return getExpression().toTypeString();
 	}
 }

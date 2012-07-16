@@ -1,7 +1,6 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 import de.fuberlin.commons.lexer.TokenType;
-import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.TypeChecker;
 import de.fuberlin.projecta.analysis.TypeErrorException;

@@ -11,12 +11,6 @@ import de.fuberlin.commons.parser.ISyntaxTree;
  */
 public class Do extends Statement {
 
-	@Override
-	public String genCode() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	protected boolean hasReturnStatement() {
 //		if (this.getChild(0) instanceof ControlStructure) {
 //			ControlStructure cs = (ControlStructure) this.getChild(0);

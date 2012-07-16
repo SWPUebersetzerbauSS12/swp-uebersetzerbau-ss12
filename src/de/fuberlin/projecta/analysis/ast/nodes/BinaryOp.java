@@ -59,8 +59,8 @@ public class BinaryOp extends Type {
 		String ret = "";
 		Block block = getHighestBlock();
 		Type t1 = null, t2 = null;
-		t1 = (Type) getChild(0);
-		t2 = (Type) getChild(1);
+		t1 = (Type) getLeftSide();
+		t2 = (Type) getRightSide();
 
 		if (op == TokenType.OP_EQ || op == TokenType.OP_NE
 				|| op == TokenType.OP_LT || op == TokenType.OP_LE
@@ -79,25 +79,7 @@ public class BinaryOp extends Type {
 		} else if (op == TokenType.OP_ADD || op == TokenType.OP_MINUS
 				|| op == TokenType.OP_DIV || op == TokenType.OP_MUL) {
 			String type = "";
-			String mathOp = "";
-
-			if ((t1.fromTypeStringToLLVMType()).equals("i64"))
-				mathOp = "f"; // append f in front of math_op
-
-			switch (op) {
-			case OP_ADD:
-				mathOp += "add";
-				break;
-			case OP_MINUS:
-				mathOp += "sub";
-				break;
-			case OP_MUL:
-				mathOp += "mul";
-				break;
-			case OP_DIV:
-				mathOp += "div";
-				break;
-			}
+			String mathOp = getMathOpName(t1);
 
 			// load both values into new memory addresses
 			ret += LLVM.loadType(t1);
@@ -111,7 +93,12 @@ public class BinaryOp extends Type {
 					+ LLVM.getMem(t1) + ", %" + LLVM.getMem(t2) + "\n";
 
 		} else if (op == TokenType.OP_ASSIGN) {
-			Id id1 = (Id) t1;
+			Id id1 = null;
+			if (t1 instanceof RecordVarCall)
+				id1 = ((RecordVarCall) t1).getVarId();
+			else
+				id1 = (Id)t1;
+
 			if (getChild(1) instanceof StringLiteral) {
 				
 				StringLiteral str = (StringLiteral) getChild(1);
@@ -154,6 +141,38 @@ public class BinaryOp extends Type {
 		}
 
 		return ret;
+	}
+
+	private AbstractSyntaxTree getLeftSide() {
+		return (AbstractSyntaxTree)getChild(0);
+	}
+
+	private AbstractSyntaxTree getRightSide() {
+		return (AbstractSyntaxTree)getChild(1);
+	}
+
+	private String getMathOpName(Type t1) {
+		String mathOp = "";
+		if ((t1.fromTypeStringToLLVMType()).equals("i64"))
+			mathOp = "f"; // append f in front of math_op
+
+		switch (op) {
+		case OP_ADD:
+			mathOp += "add";
+			break;
+		case OP_MINUS:
+			mathOp += "sub";
+			break;
+		case OP_MUL:
+			mathOp += "mul";
+			break;
+		case OP_DIV:
+			mathOp += "div";
+			break;
+		default:
+			assert(false); // should never happen!
+		}
+		return mathOp;
 	}
 
 	private String getOpName(Type type) {

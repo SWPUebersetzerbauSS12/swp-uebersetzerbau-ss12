@@ -5,7 +5,7 @@ import de.fuberlin.projecta.analysis.SymbolTableStack;
 import de.fuberlin.projecta.lexer.BasicTokenType;
 
 public class Declaration extends AbstractSyntaxTree {
-	
+
 	@Override
 	public void buildSymbolTable(SymbolTableStack tables) {
 		tables.top().insertEntry((Id) getChild(1), (Type) getChild(0));
@@ -33,5 +33,13 @@ public class Declaration extends AbstractSyntaxTree {
 	@Override
 	public boolean checkTypes(){
 		return true;
+	}
+
+	public Type getType() {
+		return (Type)getChild(0);
+	}
+
+	public Id getId() {
+		return (Id)getChild(1);
 	}
 }

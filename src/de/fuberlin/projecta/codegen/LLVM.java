@@ -191,6 +191,8 @@ public class LLVM {
 						+ findNumberOfRecordVar(rec, recVarCall
 								.getVarId().getValue()) + "\n";
 				type.setValMemory(n);
+				Id recName = recVarCall.getRecordId();
+						+ "* %" + recName.getValue() + ", i32 0, i32 "
 			} else {
 				// TODO: is this already calling setValMemory always?
 				ret += type.genCode();

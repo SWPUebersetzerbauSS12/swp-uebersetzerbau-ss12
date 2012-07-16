@@ -10,14 +10,14 @@ import de.fuberlin.commons.parser.ISyntaxTree;
  * 
  */
 public class Record extends Type {
-	
-	private int memberCounter;
 
 	@Override
 	public String genCode() {
 		String ret = "";
-		if (getId() != null)
-			ret = "%struct." + getId().getValue();
+		if (!(getParent().getParent() instanceof FuncDef))
+			ret = "%struct." + getFuncId().getValue();
+		if (getParent() instanceof Params)
+			ret = "%struct." + getFuncId().getValue() + "* byval";
 		return ret;
 	}
 
@@ -53,8 +53,8 @@ public class Record extends Type {
 	@Override
 	public String genStruct() {
 		String ret = "";
-		if (getId() != null) {
-			ret = "%struct." + getId().getValue() + " = type { ";
+		if (getFuncId() != null) {
+			ret = "%struct." + getFuncId().getValue() + " = type { ";
 			boolean tmp = false;
 			for (int i = 0; i < getChildrenCount(); i++) {
 				String t = ((Type) (getChild(i).getChild(0))).genCode();
@@ -79,18 +79,8 @@ public class Record extends Type {
 	 * 
 	 * @return
 	 */
-	private Id getId() {
-		if (!(getParent().getParent() instanceof FuncDef))
-			if (getParent() != null)
-				return (Id) getParent().getChild(1);
-		return null;
+	private Id getFuncId() {
+		return (Id) getParent().getChild(1);
 	}
 
-	public int getMemberCounter() {
-		return memberCounter;
-	}
-
-	public void setMemberCounter(int memberCounter) {
-		this.memberCounter = memberCounter;
-	}
 }

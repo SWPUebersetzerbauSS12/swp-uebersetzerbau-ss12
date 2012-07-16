@@ -229,8 +229,8 @@ public class BinaryOp extends Type {
 
 	@Override
 	public boolean checkTypes() {
-		Type leftChild = (Type) this.getChild(0);
-		Type rightChild = (Type) this.getChild(1);
+		Type leftChild = (Type)getLeftSide();
+		Type rightChild = (Type)getRightSide();
 		if (leftChild.toTypeString().equals(rightChild.toTypeString())) {
 			switch (this.op) {
 			case OP_ADD:

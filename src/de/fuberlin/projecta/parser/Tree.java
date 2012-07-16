@@ -1,12 +1,13 @@
 package de.fuberlin.projecta.parser;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import de.fuberlin.commons.lexer.IToken;
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.utils.StringUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Tree implements ISyntaxTree {
 
@@ -20,7 +21,7 @@ public class Tree implements ISyntaxTree {
 	/**
 	 * Creates a new empty node for non-terminals.
 	 * 
-	 * @param name
+	 * @param symbol
 	 */
 	public Tree(Symbol symbol) {
 		this.symbol = symbol;
@@ -55,8 +56,12 @@ public class Tree implements ISyntaxTree {
 
 	@Override
 	public List<ISyntaxTree> getChildrenByName(String name) {
-		assert(false); // not implemented, why do we need this?
-		return null;
+		List<ISyntaxTree> res = new LinkedList<ISyntaxTree>();
+		for (ISyntaxTree child : getChildren()) {
+			if (child.getSymbol().getName().equals(name))
+				res.add(child);
+		}
+		return res;
 	}
 
 	@Override

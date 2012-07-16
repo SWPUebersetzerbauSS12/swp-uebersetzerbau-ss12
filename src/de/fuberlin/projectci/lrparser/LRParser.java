@@ -60,13 +60,14 @@ public class LRParser implements IParser {
 		
 		// neues Nichtterminal erzeugen und als Startsymbol festlegen
 		NonTerminalSymbol startSymbol = grammar.createNonTerminalSymbol(freeName);
-		grammar.setStartSymbol(startSymbol);
 		
 		// neue Produktion vom neuen zum alten Startsymbol anlegen
 		List<Symbol> rhs = new LinkedList<Symbol>();
 		rhs.add(oldStartSymbol);
 		Production production = new Production(startSymbol, rhs);
 		grammar.addProduction(production);
+		
+		grammar.setStartSymbol(startSymbol);
 	}
 
 	@Override

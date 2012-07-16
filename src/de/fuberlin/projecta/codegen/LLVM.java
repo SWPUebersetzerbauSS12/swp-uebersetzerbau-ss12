@@ -180,19 +180,15 @@ public class LLVM {
 				RecordVarCall recVarCall = (RecordVarCall) type;
 				Record rec = (Record) SymbolTableHelper.lookup(
 						recVarCall.getRecordId().getValue(), type).getType();
-				Id recName = null;
-				if (recVarCall.getChild(0) instanceof Id)
-					recName = (Id) recVarCall.getChild(0);
+				Id recName = recVarCall.getRecordId();
 				ret += "%"
 						+ n
 						+ " = getelementptr inbounds %struct."
 						+ recName.getValue()
-						+ "* %a, i32 0, i32 "
+						+ "* %" + recName.getValue() + ", i32 0, i32 "
 						+ findNumberOfRecordVar(rec, recVarCall
 								.getVarId().getValue()) + "\n";
 				type.setValMemory(n);
-				Id recName = recVarCall.getRecordId();
-						+ "* %" + recName.getValue() + ", i32 0, i32 "
 			} else {
 				// TODO: is this already calling setValMemory always?
 				ret += type.genCode();

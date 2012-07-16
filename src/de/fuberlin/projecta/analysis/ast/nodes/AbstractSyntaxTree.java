@@ -85,13 +85,16 @@ public abstract class AbstractSyntaxTree extends Tree {
 		return out;
 	}
 
-	public boolean checkTypes() {
+	/**
+	 * Check types
+	 * 
+	 * Default implementation recursively checks types
+	 * @return True if types are correct, 
+	 */
+	public void checkTypes() {
 		for (ISyntaxTree child : this.getChildren()) {
-			if (!((AbstractSyntaxTree) child).checkTypes()) {
-				return false;
-			}
+			((AbstractSyntaxTree) child).checkTypes();
 		}
-		return true;
 	}
 
 	/**

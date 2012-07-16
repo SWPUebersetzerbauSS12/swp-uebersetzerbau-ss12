@@ -41,7 +41,19 @@ public class SemanticAnalysisTest {
 	}
 
 	@Test(expected = TypeErrorException.class)
-	public void testIncompatibleOperands() {
+	public void testInvalidAssignOperand1() {
+		final String code = mainC("bool a; a = !42;");
+		analyze(code);
+	}
+
+	@Test(expected = TypeErrorException.class)
+	public void testInvalidAssignOperand2() {
+		final String code = mainC("bool b; int i; i = b;");
+		analyze(code);
+	}
+
+	@Test(expected = TypeErrorException.class)
+	public void testInvalidAssignOperand3() {
 		final String code = mainC("int a; a = 0.0;");
 		analyze(code);
 	}
@@ -79,6 +91,24 @@ public class SemanticAnalysisTest {
 	@Test(expected = SemanticException.class)
 	public void testMissingMain(){
 		final String code = "def int foobar(){return 0;}";
+		analyze(code);
+	}
+
+	@Test(expected = SemanticException.class)
+	public void testReturnVoidInNonVoidFunction() {
+		final String code = "def int main() { return; }";
+		analyze(code);
+	}
+
+	@Test(expected = SemanticException.class)
+	public void testReturnValueInVoidFunction() {
+		final String code = mainC("") + "def void foo() { return 1; }";
+		analyze(code);
+	}
+
+	@Test(expected = SemanticException.class)
+	public void testInvalidPrintArgument() {
+		final String code = mainC("record { int a; int b; } r; print r;");
 		analyze(code);
 	}
 

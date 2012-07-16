@@ -1,6 +1,7 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 import de.fuberlin.commons.parser.ISyntaxTree;
+import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.codegen.LLVM;
 
 public class Return extends Statement {
@@ -26,14 +27,18 @@ public class Return extends Statement {
 	}
 
 	@Override
-	public boolean checkTypes() {
+	public void checkTypes() {
 		String funcType = ((Type) getParentFunction().getChild(0))
 				.toTypeString();
+
 		if (this.getChildrenCount() == 0) {
 			// return type must be void!
-			return funcType.equals(Type.TYPE_VOID_STRING);
+			if (!funcType.equals(Type.TYPE_VOID_STRING))
+				throw new SemanticException("Missing return value in non-void function");
 		} else {
-			return funcType.equals(((Type) getChild(0)).toTypeString());
+			String returnType = ((Type) getChild(0)).toTypeString();
+			if (!funcType.equals(returnType))
+				throw new SemanticException("Incompatible arguments: Function declared with return type " + funcType + " but returned " + returnType);
 		}
 	}
 

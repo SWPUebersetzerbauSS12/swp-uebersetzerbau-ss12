@@ -228,7 +228,7 @@ public class BinaryOp extends Type {
 	}
 
 	@Override
-	public boolean checkTypes() {
+	public void checkTypes() {
 		Type leftChild = (Type)getLeftSide();
 		Type rightChild = (Type)getRightSide();
 		if (leftChild.toTypeString().equals(rightChild.toTypeString())) {
@@ -254,14 +254,14 @@ public class BinaryOp extends Type {
 			case OP_GT:
 			case OP_NE:
 			case OP_ASSIGN:
-				return true;
+				return;
 			default:
 				throw new TypeErrorException("Undefined Error in BinaryOp");
 			}
 		}
 		throw new TypeErrorException(
-				"Operands have to be of same type but are:\n left operand: "
-						+ leftChild.toTypeString() + "\nright operand: "
+				"Operands have to be of same type but are:\n Left operand: "
+						+ leftChild.toTypeString() + "\nRight operand: "
 						+ rightChild.toTypeString());
 	}
 

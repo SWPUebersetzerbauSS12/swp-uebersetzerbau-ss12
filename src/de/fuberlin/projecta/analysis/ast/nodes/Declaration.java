@@ -29,11 +29,6 @@ public class Declaration extends AbstractSyntaxTree {
 				+ ((Type) getChild(0)).genCode();
 		return ret;
 	}
-	
-	@Override
-	public boolean checkTypes(){
-		return true;
-	}
 
 	public Type getType() {
 		return (Type)getChild(0);

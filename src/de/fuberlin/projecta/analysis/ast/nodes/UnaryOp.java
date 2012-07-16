@@ -1,8 +1,8 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 import de.fuberlin.commons.lexer.TokenType;
+import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.SymbolTableStack;
-
 
 public class UnaryOp extends Type {
 	
@@ -13,8 +13,6 @@ public class UnaryOp extends Type {
 	}
 	
 	public void buildSymbolTable(SymbolTableStack tables) {
-		//Is this correct? first child is type, second id?
-		//Yep, this should be correct xD
 		tables.top().insertEntry((Id) getChild(1), (Type) getChild(0));
 	}
 
@@ -29,18 +27,16 @@ public class UnaryOp extends Type {
 	}
 
 	@Override
-	public boolean checkTypes() {
+	public void checkTypes() {
+		String type = ((Type) this.getChild(0)).toTypeString();
 		switch (this.op) {
 		case OP_NOT:
-			return ((Type) this.getChild(0)).toTypeString().equals(
-					TYPE_BOOL_STRING);
+			if (!(type.equals(TYPE_BOOL_STRING)))
+				throw new SemanticException("Invalid operand to NOT: " + type);
 		case OP_MINUS:
-			return ((Type) this.getChild(0)).toTypeString().equals(
-					TYPE_INT_STRING)
-					|| ((Type) this.getChild(0)).toTypeString().equals(
-							TYPE_REAL_STRING);
+			if (!type.equals(TYPE_INT_STRING) || !type.equals(TYPE_REAL_STRING))
+				throw new SemanticException("Invalid operand to MINUS: " + type);
 		}
-		return false;
 	}
 	
 	@Override

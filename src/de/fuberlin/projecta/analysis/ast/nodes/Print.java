@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import de.fuberlin.projecta.analysis.EntryType;
+import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
 import de.fuberlin.projecta.lexer.BasicTokenType;
 
@@ -57,14 +58,16 @@ public class Print extends Statement {
 	}
 
 	@Override
-	public boolean checkTypes() {
+	public void checkTypes() {
 		String[] b = {
 				Type.TYPE_BOOL_STRING,
 				Type.TYPE_STRING_STRING,
 				Type.TYPE_INT_STRING,
 				Type.TYPE_REAL_STRING
 		};
+		String argumentType = ((Type)getChild(0)).toTypeString();
 		ArrayList<String> validTypes = new ArrayList<String>(Arrays.asList(b));
-		return validTypes.contains(((Type)getChild(0)).toTypeString());
+		if (!validTypes.contains(argumentType))
+			throw new SemanticException("Invalid argument to print-function of type " + argumentType);
 	}
 }

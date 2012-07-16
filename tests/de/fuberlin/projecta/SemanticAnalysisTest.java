@@ -47,6 +47,12 @@ public class SemanticAnalysisTest {
 	}
 
 	@Test(expected = TypeErrorException.class)
+	public void testInvalidArtihmeticsOnRecords(){
+		final String code = mainC("record {int a; int b; } r; r + r;");
+		analyze(code);
+	}
+
+	@Test(expected = TypeErrorException.class)
 	public void testInvalidAssignOperand1() {
 		final String code = mainC("bool a; a = !42;");
 		analyze(code);
@@ -115,6 +121,12 @@ public class SemanticAnalysisTest {
 	@Test(expected = SemanticException.class)
 	public void testInvalidPrintArgument() {
 		final String code = mainC("record { int a; int b; } r; print r;");
+		analyze(code);
+	}
+
+	@Test
+	public void testFunctionCallAsOperand() {
+		String code = "def int foo() { return 1; }" + mainC("int i; i = foo();");
 		analyze(code);
 	}
 

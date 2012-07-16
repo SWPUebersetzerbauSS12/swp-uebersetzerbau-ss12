@@ -1,25 +1,19 @@
 package de.fuberlin.projecta.analysis;
 
-import de.fuberlin.commons.lexer.TokenType;
+import de.fuberlin.projecta.analysis.ast.nodes.Type;
 
 public class TypeChecker {
 
-	public static boolean isNumeric(TokenType type) {
-		// TODO: Do we have other types here?
-		return (type == TokenType.INT_LITERAL || type == TokenType.REAL_LITERAL);
+	public static boolean isNumeric(String type) {
+		return type.equals(Type.TYPE_INT_STRING) || type.equals(Type.TYPE_REAL_STRING);
 	}
 
-	public static TokenType max(TokenType t1, TokenType t2) {
-		if (!isNumeric(t1) || !isNumeric(t2))
-			return null;
+	public static boolean isBoolean(String type) {
+		return type.equals(Type.TYPE_BOOL_STRING);
+	}
 
-		if (t1 == TokenType.REAL_LITERAL || t2 == TokenType.REAL_LITERAL)
-			return TokenType.REAL_LITERAL;
-
-		if (t1 == TokenType.INT_LITERAL || t2 == TokenType.INT_LITERAL)
-			return TokenType.INT_LITERAL;
-
-		return null;
+	public static boolean isString(String type) {
+		return type.equals(Type.TYPE_STRING_STRING);
 	}
 
 }

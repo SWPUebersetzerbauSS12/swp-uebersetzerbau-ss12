@@ -3,6 +3,7 @@ package de.fuberlin.projecta.analysis.ast.nodes;
 import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.SemanticException;
+import de.fuberlin.projecta.analysis.TypeChecker;
 import de.fuberlin.projecta.analysis.TypeErrorException;
 import de.fuberlin.projecta.codegen.LLVM;
 
@@ -230,16 +231,18 @@ public class BinaryOp extends Expression {
 	public void checkTypes() {
 		Expression leftChild = (Expression)getLeftSide();
 		Expression rightChild = (Expression)getRightSide();
-		if (leftChild.toTypeString().equals(rightChild.toTypeString())) {
+		String leftTypeString = leftChild.toTypeString();
+		String rightTypeString = rightChild.toTypeString();
+		if (leftTypeString.equals(rightTypeString)) {
 			switch (this.op) {
 			case OP_ADD:
 			case OP_MUL:
 			case OP_DIV:
 			case OP_MINUS:
-				if (leftChild.toTypeString().equals(Type.TYPE_STRING_STRING)
-						|| rightChild.toTypeString().equals(Type.TYPE_STRING_STRING)) {
+				if (!TypeChecker.isNumeric(leftTypeString)
+						|| !TypeChecker.isNumeric(rightTypeString)) {
 					throw new TypeErrorException(
-							"Cannot perform arithmetic operation on Strings");
+							"Can only perform arithmetics operations on numeric types");
 				}
 			case OP_AND:
 			case OP_OR:
@@ -258,8 +261,8 @@ public class BinaryOp extends Expression {
 		}
 		throw new TypeErrorException(
 				"Operands have to be of same type but are:\n Left operand: "
-						+ leftChild.toTypeString() + "\nRight operand: "
-						+ rightChild.toTypeString());
+						+ leftTypeString + "\nRight operand: "
+						+ rightTypeString);
 	}
 
 	@Override

@@ -32,8 +32,8 @@ else					{return("else", "")}
 print					{return("print", "")}
 return					{return("return", "")}
 break					{return("break", "")}
-true					{return("bool", parseBoolean())}
-false					{return("bool", parseBoolean())}
+true					{return("bool", "true")}
+false					{return("bool", "false")}
 int						{return("basic", "int")}
 real					{return("basic", "real")}
 string					{return("basic", "string")}

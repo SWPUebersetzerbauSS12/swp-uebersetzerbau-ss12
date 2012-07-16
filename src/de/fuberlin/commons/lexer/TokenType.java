@@ -51,7 +51,7 @@ public enum TokenType {
 	BASIC("basic"),
 
 	/** Boolean literal */
-	BOOL_LITERAL("bool"),	
+	BOOL_LITERAL("boolean"),	
 	/** String constant */
 	STRING_LITERAL("string"),
 	/** Integer number */

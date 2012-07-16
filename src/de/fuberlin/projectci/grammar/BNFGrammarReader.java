@@ -18,12 +18,14 @@ import java.util.regex.Pattern;
  * Zu beachten:<br />
  * 		<ul>
  * 		<li> jede Produktion in einer Zeile</li>
- * 		<li> Leerzeilen zur besseren Übersicht möglich</li>
  * 		<li> Zeichenfolge ::= als Definitionssymbol</li>
  * 		<li> vertikaler Strich | als Zeichen für eine Alternative</li>
  * 		<li> Nichtterminale in spitzen Klammern eingeschlossen <...></li>
  * 		<li> Terminale in doppelten Anführungszeichen "..."</li>
  * 		<li> Startsymbol der Grammatik ist das Nichtterminal der linken Regelseite(LHS) der 1. eingelesenen Produktion</li>
+ * 		<li> Das leere Wort wird mit dem Terminal "@" dargestellt.</li>
+ * 		<li> Leerzeilen zwischen den Produktionen möglich</li>
+ *  	<li> Leerzeichen innerhalb von Produktionen möglich</li>
  * 		</ul>
  * @see <a href="http://de.wikipedia.org/wiki/Backus-Naur-Form">Wikipedia: Backus-Naur-Form</a>
  */

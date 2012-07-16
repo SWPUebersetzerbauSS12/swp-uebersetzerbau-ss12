@@ -32,7 +32,7 @@
 <term>		::= <unary> <term'>
 <term'>		::= "*" <unary> <term'> | "/" <unary> <term'> | "@"
 <unary>		::= "!" <unary> | "−" <unary> | <factor> 		
-<factor>	::= "(" <assign> ")" | <loc> <factor'> | "num" | "real" | "true" | "false" | "string"	
+<factor>	::= "(" <assign> ")" | <loc> <factor'> | "num" | "real" | "boolean" | "string"	
 <factor'>	::= "(" <optargs> ")" | "@"
 <optargs>	::= <args> | "@" 
 <args>		::= <assign> <args'> 

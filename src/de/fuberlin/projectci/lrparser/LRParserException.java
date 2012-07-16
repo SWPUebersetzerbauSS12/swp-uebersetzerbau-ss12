@@ -7,6 +7,11 @@ package de.fuberlin.projectci.lrparser;
  */
 public class LRParserException extends RuntimeException{
 
+	/**
+	 * Serial ID
+	 */
+	private static final long serialVersionUID = 7778258171499091113L;
+
 	public LRParserException() {
 		super();
 	}

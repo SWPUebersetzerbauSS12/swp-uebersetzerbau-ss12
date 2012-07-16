@@ -1,0 +1,16 @@
+def int compareTwoNumbers(int a, int b){
+	if(a > b)
+		return true;
+	else
+		return false;
+}
+
+def int strangeBool(int a){
+	return ((!(a && a) || true) || (false != true) || (a == a));
+}
+
+def int main(){
+	compareTwoNumbers(4,5);
+	strangeBool(1);
+	return 0;
+} 

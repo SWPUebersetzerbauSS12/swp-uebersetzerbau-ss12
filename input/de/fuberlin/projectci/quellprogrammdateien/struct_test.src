@@ -1,0 +1,10 @@
+bla{
+	int a;
+	a = 7;
+}
+
+def int main(){
+  bla bla_object;
+  bla_object = "hallo";
+  return 0;
+} 

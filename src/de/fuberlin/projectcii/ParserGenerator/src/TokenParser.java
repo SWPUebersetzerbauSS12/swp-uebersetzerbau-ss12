@@ -16,9 +16,7 @@ import de.fuberlin.commons.parser.StringSymbol;
  *
  */
 public class TokenParser {
-	//TODO: entfernen wenn IToken angepasst
-	//private HashMap<String,String> Terminals = new HashMap<String,String>();
-	
+
 	private ILexer lexer;
 	private Map<String, HashMap<String,Vector<Integer>>> parserTable;
 	private Map<String, Vector<Vector<String>>> grammar;
@@ -39,48 +37,6 @@ public class TokenParser {
 		this.parserTable = parserTable;
 		this.grammar = grammar;
 		this.StartSymbol = StartSymbol;
-		
-		//TODO entfernen
-		/*
-		Terminals.put("OP_LE","<");
-		Terminals.put("OP_LE","<=");
-		Terminals.put("OP_EQ","==");
-		Terminals.put("OP_NE","!=");
-		Terminals.put("OP_GT",">");
-		Terminals.put("OP_GE",">=");
-		Terminals.put("OP_OR","||");
-		Terminals.put("OP_AND", "&&");
-		Terminals.put("OP_NOT","!");
-		Terminals.put("OP_ADD","+");
-		Terminals.put("OP_MINUS","-");
-		Terminals.put("OP_MUL","*");
-		Terminals.put("OP_DIV","/");
-		Terminals.put("OP_ASSIGN","=");
-		Terminals.put("OP_COMMA",",");
-		Terminals.put("OP_DOT",".");
-		Terminals.put("OP_SEMIC",";");
-		Terminals.put("IF","if");
-		Terminals.put("THEN","then");
-		Terminals.put("ELSE","else");
-		Terminals.put("WHILE","while");
-		Terminals.put("DO","do");
-		Terminals.put("BREAK","break");
-		Terminals.put("RETURN","return");
-		Terminals.put("PRINT","print");
-		Terminals.put("DEF","def");
-		Terminals.put("BASIC","basic");
-		Terminals.put("RECORD","record");
-		Terminals.put("ID","id");
-		//Terminals.put("BOOL_LITERAL","bool");
-		Terminals.put("STRING_LITERAL","string");
-		Terminals.put("INT_LITERAL","num");
-		Terminals.put("LPAREN","(");
-		Terminals.put("RPAREN",")");
-		Terminals.put("LBRACKET","[");
-		Terminals.put("RBRACKET","]");
-		Terminals.put("LBRACE","{");
-		Terminals.put("RBRACE","}");
-		Terminals.put("EOF","eof");*/
 	}
 
 	/**
@@ -171,18 +127,5 @@ public class TokenParser {
 	private void getNextToken() {
 		Token = lexer.getNextToken();
 		TokenTerminal = Token.getText();
-		//TODO entfernen
-		/*
-		if(Token.getType().equals("BOOL_LITERAL"))
-		{			
-			if((Boolean)Token.getAttribute())
-				TokenTerminal = "true";
-			else
-				TokenTerminal = "false";
-		}
-		else
-		{
-			TokenTerminal = Terminals.get(Token.getType());			
-		}*/
 	}
 }

@@ -9,7 +9,7 @@
 <decls>		::= <decl> <decls> | "@" 
 <decl>		::= <type> "id" ";" 
 <type>		::= "basic" <type'> | "record" "{" <decls> "}" <type'>
-<type'>		::= "[" "num" "]" <type'>| "@"
+<type'>		::= "[" "num" "]" <type'> | "@"
 <stmts>		::= <stmt> <stmts> | "@" 
 <stmt>		::= <assign> ";" | "if" "(" <assign> ")" <stmt> <stmt'> | "while" "(" <assign> ")" <stmt> | "do" <stmt> "while" "(" <assign> ")" ";" | "break" ";" | "return" <stmt''> | "print" <loc> ";" | <block>
 <stmt'>		::= "else" <stmt> | "@" 
@@ -33,7 +33,7 @@
 <term'>		::= "*" <unary> <term'> | "/" <unary> <term'> | "@"
 <unary>		::= "!" <unary> | "−" <unary> | <factor> 		
 <factor>	::= "(" <assign> ")" | <loc> <factor'> | "num" | "real" | "true" | "false" | "string"	
-<factor'>	::= "(" <optargs>")" | "@"
+<factor'>	::= "(" <optargs> ")" | "@"
 <optargs>	::= <args> | "@" 
 <args>		::= <assign> <args'> 
 <args'>		::= "," <args> | "@"

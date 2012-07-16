@@ -14,4 +14,12 @@ public class RecordVarCall extends Type {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public Id getRecordId(){
+		return (Id) getChild(0);
+	}
+	
+	public Id getVarId(){
+		return (Id) getChild(1);
+	}
 }

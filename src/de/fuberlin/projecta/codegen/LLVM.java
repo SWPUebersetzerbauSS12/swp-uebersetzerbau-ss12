@@ -5,10 +5,13 @@ import de.fuberlin.projecta.analysis.SymbolTableHelper;
 import de.fuberlin.projecta.analysis.ast.nodes.AbstractSyntaxTree;
 import de.fuberlin.projecta.analysis.ast.nodes.Args;
 import de.fuberlin.projecta.analysis.ast.nodes.Block;
+import de.fuberlin.projecta.analysis.ast.nodes.Declaration;
 import de.fuberlin.projecta.analysis.ast.nodes.FuncCall;
 import de.fuberlin.projecta.analysis.ast.nodes.FuncDef;
 import de.fuberlin.projecta.analysis.ast.nodes.Id;
 import de.fuberlin.projecta.analysis.ast.nodes.Literal;
+import de.fuberlin.projecta.analysis.ast.nodes.Record;
+import de.fuberlin.projecta.analysis.ast.nodes.RecordVarCall;
 import de.fuberlin.projecta.analysis.ast.nodes.Statement;
 import de.fuberlin.projecta.analysis.ast.nodes.Type;
 
@@ -130,6 +133,16 @@ public class LLVM {
 		return ret;
 	}
 
+	public static int findNumberOfRecordVar(Record rec, String recordVar) {
+		for (int i = 0; i < rec.getChildrenCount(); i++) {
+			Declaration decl = (Declaration) rec.getChild(i);
+			if (((Id) decl.getChild(1)).getValue().equals(recordVar)) {
+				return i;
+			}
+		}
+		return 0;
+	}
+
 	/**
 	 * The idea is to load the value into a register, even if it is a literal or
 	 * a funcCall in order to statically take the valMemory after calling this
@@ -161,6 +174,22 @@ public class LLVM {
 				}
 				int n = block.getNewVar();
 				ret += "%" + n + " = " + type.genCode() + "\n";
+				type.setValMemory(n);
+			} else if (type instanceof RecordVarCall) {
+				int n = block.getNewVar();
+				RecordVarCall recVarCall = (RecordVarCall) type;
+				Record rec = (Record) SymbolTableHelper.lookup(
+						recVarCall.getRecordId().getValue(), type).getType();
+				Id recName = null;
+				if (recVarCall.getChild(0) instanceof Id)
+					recName = (Id) recVarCall.getChild(0);
+				ret += "%"
+						+ n
+						+ " = getelementptr inbounds %struct."
+						+ recName.getValue()
+						+ "* %a, i32 0, i32 "
+						+ findNumberOfRecordVar(rec, recVarCall
+								.getVarId().getValue()) + "\n";
 				type.setValMemory(n);
 			} else {
 				// TODO: is this already calling setValMemory always?

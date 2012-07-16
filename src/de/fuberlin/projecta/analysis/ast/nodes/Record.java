@@ -8,9 +8,10 @@ import de.fuberlin.commons.parser.ISyntaxTree;
 /**
  * unknown count of declaration children !
  * 
- * @author sh4ke
  */
 public class Record extends Type {
+	
+	private int memberCounter;
 
 	@Override
 	public String genCode() {
@@ -83,5 +84,13 @@ public class Record extends Type {
 			if (getParent() != null)
 				return (Id) getParent().getChild(1);
 		return null;
+	}
+
+	public int getMemberCounter() {
+		return memberCounter;
+	}
+
+	public void setMemberCounter(int memberCounter) {
+		this.memberCounter = memberCounter;
 	}
 }

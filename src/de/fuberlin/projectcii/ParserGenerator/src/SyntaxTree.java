@@ -10,7 +10,6 @@ import de.fuberlin.commons.parser.ISymbol;
 import de.fuberlin.commons.parser.ISyntaxTree;
 
 
-
 /**
  * 
  * Implementation of the SyntaxTree, composed of SyntaxTree-Nodes
@@ -149,6 +148,9 @@ public class SyntaxTree implements ISyntaxTree {
 //		printChild(this,0,true);
 	}
 
+	/**
+	 * Gets token of this node, value is null if node is not a leaf.
+	 */
 	@Override
 	public IToken getToken() {
 		return this.token;
@@ -158,43 +160,22 @@ public class SyntaxTree implements ISyntaxTree {
 	//---------------------
 	// End of Interface Methodes
 	
+	/**
+	 * Returns Symbol of this node.
+	 */
 	public ISymbol getSymbol() {
 		return this.symbol;
 	}
 	
+	/**
+	 * Sets Symbol of this node.
+	 * @param symbol
+	 */
 	public void setSymbol(ISymbol symbol) {
 		this.symbol = symbol;
 	}
 	
-	private void printChild(ISyntaxTree node,int level,boolean first){
-		SyntaxTree currNode = (SyntaxTree)node;
-		if (!first){
-			for(int i=0;i<level;i++){
-				System.out.print("\t");
-			}
-		}
-		System.out.print(currNode.getSymbol().getName()+"\t");
-		first = true;
-		for (ISyntaxTree child: node.getChildren()){
-			if (child.getChildren().size() > 0){
-				printChild(child,level+1,first);
-				first = false;
-			}
-			else{
-				if (!first){
-					for(int i=0;i<level+1;i++){
-						System.out.print("\t");
-					}
-				}
-				System.out.print(currNode.getSymbol().getName());
-				System.out.println("");
-				first = false;
-			}
-		}
-	}
-	
 	/**
-
 	 * Compresses the SyntaxTree by eliminating all single-child-nodes
 	 */
 	public void CompressSyntaxTree(){
@@ -221,7 +202,10 @@ public class SyntaxTree implements ISyntaxTree {
 		}
 	}
 	
-	   
+	/**
+	 * Sets Token for this node, used at leafs to access tokens in semantic analysis.
+	 * @param token
+	 */
     public void setToken(IToken token){
         this.token = token;
     }

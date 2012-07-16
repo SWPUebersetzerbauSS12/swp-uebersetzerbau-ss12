@@ -81,7 +81,7 @@ public enum TokenType {
 	RBRACE("}"),
 
 	/** End-of-file marker */
-	EOF("eof");
+	EOF("EOF");
 
 	private static Map<String,TokenType> terminalSymbol2TokenType
 		= new HashMap<String, TokenType>();

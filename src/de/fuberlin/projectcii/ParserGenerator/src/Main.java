@@ -10,6 +10,7 @@ import de.fuberlin.projecta.lexer.io.StringCharStream;
 import de.fuberlin.projecta.utils.IOUtils;
 import de.fuberlin.projectci.lrparser.LRParser;
 
+@SuppressWarnings("unused")
 public class Main {
 	
 	public static void main(String[] args) {
@@ -19,15 +20,14 @@ public class Main {
 			data = IOUtils.readFile("fibonacci.txt");
 			ILexer lexer = new Lexer(new StringCharStream(data));
 			LL1Parser ll1 = new LL1Parser();
-			ISyntaxTree syntaxTree= ll1.parse(lexer,"language_mod_new.txt");
-			
+			ISyntaxTree syntaxTree= ll1.parse(lexer,"input/de/fuberlin/projectci/non-ambigous.txt");
 			
 			//LRParser parser=new LRParser();
-			//ISyntaxTree syntaxTree= parser.parse(lexer, "language_mod_new.txt");
+			//ISyntaxTree syntaxTree= parser.parse(lexer, "input/de/fuberlin/projectci/non-ambigous.txt");
 
 			SemanticAnalyzer semanticAnalyzer= new SemanticAnalyzer(syntaxTree);
 			semanticAnalyzer.analyze();
-			//semanticAnalyzer.getAST().printTree();	
+			semanticAnalyzer.getAST().printTree();	
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

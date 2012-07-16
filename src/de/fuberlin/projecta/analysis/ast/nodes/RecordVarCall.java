@@ -7,7 +7,7 @@ package de.fuberlin.projecta.analysis.ast.nodes;
  * 
  * @author sh4ke
  */
-public class RecordVarCall extends Type {
+public class RecordVarCall extends Expression {
 
 	@Override
 	public String genCode() {

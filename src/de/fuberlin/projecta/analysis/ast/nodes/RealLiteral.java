@@ -20,6 +20,6 @@ public class RealLiteral extends Literal {
 	
 	@Override
 	public String toTypeString(){
-		return TYPE_REAL_STRING;
+		return Type.TYPE_REAL_STRING;
 	}
 }

@@ -14,7 +14,7 @@ import de.fuberlin.projecta.codegen.LLVM;
  * @author micha
  * 
  */
-public class FuncCall extends Type {
+public class FuncCall extends Expression {
 
 	@Override
 	/**
@@ -70,7 +70,7 @@ public class FuncCall extends Type {
 			if (getChildrenCount() > 1)
 				for (ISyntaxTree child : getChild(1).getChildren()) {
 					tmp = true;
-					Type node = (Type) child;
+					Expression node = (Expression) child;
 					ret += node.fromTypeStringToLLVMType() + " %"
 							+ LLVM.getMem(node) + ", ";
 				}

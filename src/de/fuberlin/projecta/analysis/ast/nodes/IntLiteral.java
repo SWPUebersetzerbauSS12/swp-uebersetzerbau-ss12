@@ -20,6 +20,6 @@ public class IntLiteral extends Literal {
 	
 	@Override
 	public String toTypeString(){
-		return TYPE_INT_STRING;
+		return Type.TYPE_INT_STRING;
 	}
 }

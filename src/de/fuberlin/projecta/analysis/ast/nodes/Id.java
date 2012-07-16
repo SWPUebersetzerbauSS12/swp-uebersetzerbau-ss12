@@ -2,7 +2,7 @@ package de.fuberlin.projecta.analysis.ast.nodes;
 
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
 
-public class Id extends Type {
+public class Id extends Expression {
 
 	/**
 	 * Should be set in genCode, when register is allocated

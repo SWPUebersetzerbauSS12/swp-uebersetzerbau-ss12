@@ -41,6 +41,12 @@ public class SemanticAnalysisTest {
 	}
 
 	@Test(expected = TypeErrorException.class)
+	public void testInvalidArtihmeticsOnStrings(){
+		final String code = mainC("\"foo\" + \"foo\";");
+		analyze(code);
+	}
+
+	@Test(expected = TypeErrorException.class)
 	public void testInvalidAssignOperand1() {
 		final String code = mainC("bool a; a = !42;");
 		analyze(code);

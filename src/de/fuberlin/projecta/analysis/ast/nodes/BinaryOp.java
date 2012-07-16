@@ -6,7 +6,7 @@ import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.TypeErrorException;
 import de.fuberlin.projecta.codegen.LLVM;
 
-public class BinaryOp extends Type {
+public class BinaryOp extends Expression {
 
 	TokenType op;
 
@@ -58,9 +58,8 @@ public class BinaryOp extends Type {
 	public String genCode() {
 		String ret = "";
 		Block block = getHighestBlock();
-		Type t1 = null, t2 = null;
-		t1 = (Type) getLeftSide();
-		t2 = (Type) getRightSide();
+		Expression t1 = (Expression) getLeftSide();
+		Expression t2 = (Expression) getRightSide();
 
 		if (op == TokenType.OP_EQ || op == TokenType.OP_NE
 				|| op == TokenType.OP_LT || op == TokenType.OP_LE
@@ -130,10 +129,10 @@ public class BinaryOp extends Type {
 		return ret;
 	}
 
-	private String getIntOrReal(Type type) {
+	private String getIntOrReal(Expression expr) {
 		String ret = "";
-		if (type != null) {
-			if ((type.fromTypeStringToLLVMType()).equals("i64")) {
+		if (expr != null) {
+			if ((expr.fromTypeStringToLLVMType()).equals("i64")) {
 				ret = "fcmp";
 			} else {
 				ret = "icmp";
@@ -151,9 +150,9 @@ public class BinaryOp extends Type {
 		return (AbstractSyntaxTree)getChild(1);
 	}
 
-	private String getMathOpName(Type t1) {
+	private String getMathOpName(Expression expr) {
 		String mathOp = "";
-		if ((t1.fromTypeStringToLLVMType()).equals("i64"))
+		if ((expr.fromTypeStringToLLVMType()).equals("i64"))
 			mathOp = "f"; // append f in front of math_op
 
 		switch (op) {
@@ -175,11 +174,11 @@ public class BinaryOp extends Type {
 		return mathOp;
 	}
 
-	private String getOpName(Type type) {
+	private String getOpName(Expression expr) {
 		String ret = "";
 
-		if (type != null) {
-			if ((type.toTypeString().equals("double"))) {
+		if (expr != null) {
+			if ((expr.toTypeString().equals("double"))) {
 				switch (op) {
 				case OP_LT:
 					ret = "olt";
@@ -229,20 +228,18 @@ public class BinaryOp extends Type {
 
 	@Override
 	public void checkTypes() {
-		Type leftChild = (Type)getLeftSide();
-		Type rightChild = (Type)getRightSide();
+		Expression leftChild = (Expression)getLeftSide();
+		Expression rightChild = (Expression)getRightSide();
 		if (leftChild.toTypeString().equals(rightChild.toTypeString())) {
 			switch (this.op) {
 			case OP_ADD:
 			case OP_MUL:
 			case OP_DIV:
 			case OP_MINUS:
-				for (ISyntaxTree child : this.getChildren()) {
-					if (((Type) child).toTypeString()
-							.equals(TYPE_STRING_STRING)) {
-						throw new TypeErrorException(
-								"Cannot perform arithmetic operation on Strings");
-					}
+				if (leftChild.toTypeString().equals(Type.TYPE_STRING_STRING)
+						|| rightChild.toTypeString().equals(Type.TYPE_STRING_STRING)) {
+					throw new TypeErrorException(
+							"Cannot perform arithmetic operation on Strings");
 				}
 			case OP_AND:
 			case OP_OR:
@@ -273,7 +270,7 @@ public class BinaryOp extends Type {
 		case OP_MUL:
 		case OP_DIV:
 		case OP_MINUS:
-			return ((Type) this.getChild(0)).toTypeString();
+			return ((Expression) this.getChild(0)).toTypeString();
 		case OP_AND:
 		case OP_OR:
 		case OP_LT:
@@ -287,7 +284,6 @@ public class BinaryOp extends Type {
 		default:
 			return Type.TYPE_VOID_STRING;
 		}
-
 	}
 
 }

@@ -6,19 +6,25 @@ import de.fuberlin.projecta.codegen.LLVM;
 
 public class Return extends Statement {
 
+	public Expression getArgument() {
+		if (getChildrenCount() == 0)
+			return null;
+		return (Expression)getChild(0);
+	}
+
 	@Override
 	public String genCode() {
 		Block block = getHighestBlock();
 		String ret = "";
-		if (getChildrenCount() == 0) {
+		Expression argument = getArgument();
+		if (argument == null) {
 			return "ret void";
-		} else if (getChild(0) instanceof Literal) {
-			ret += "ret " + ((Type) getChild(0)).genCode() + "\n";
-		} else if (getChild(0) instanceof Type) {
-			Type t = (Type) getChild(0);
-			ret += LLVM.loadType(t);
-			ret += "ret " + t.fromTypeStringToLLVMType() + " %"
-					+ LLVM.getMem(t) + "\n";
+		} else if (argument instanceof Literal) {
+			ret += "ret " + argument.genCode() + "\n";
+		} else {
+			ret += LLVM.loadType(argument);
+			ret += "ret " + argument.fromTypeStringToLLVMType() + " %"
+					+ LLVM.getMem(argument) + "\n";
 		}
 		if (!ret.equals("")) {
 			ret += "\n; <label>:" + block.getNewVar();
@@ -28,15 +34,13 @@ public class Return extends Statement {
 
 	@Override
 	public void checkTypes() {
-		String funcType = ((Type) getParentFunction().getChild(0))
-				.toTypeString();
-
+		String funcType = getParentFunction().toTypeString();
 		if (this.getChildrenCount() == 0) {
 			// return type must be void!
 			if (!funcType.equals(Type.TYPE_VOID_STRING))
 				throw new SemanticException("Missing return value in non-void function");
 		} else {
-			String returnType = ((Type) getChild(0)).toTypeString();
+			String returnType = ((Expression) getChild(0)).toTypeString();
 			if (!funcType.equals(returnType))
 				throw new SemanticException("Incompatible arguments: Function declared with return type " + funcType + " but returned " + returnType);
 		}

@@ -65,7 +65,7 @@ public class Print extends Statement {
 				Type.TYPE_INT_STRING,
 				Type.TYPE_REAL_STRING
 		};
-		String argumentType = ((Type)getChild(0)).toTypeString();
+		String argumentType = ((Expression)getChild(0)).toTypeString();
 		ArrayList<String> validTypes = new ArrayList<String>(Arrays.asList(b));
 		if (!validTypes.contains(argumentType))
 			throw new SemanticException("Invalid argument to print-function of type " + argumentType);

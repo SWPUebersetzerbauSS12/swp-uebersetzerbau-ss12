@@ -6,6 +6,7 @@ import de.fuberlin.projecta.analysis.ast.nodes.AbstractSyntaxTree;
 import de.fuberlin.projecta.analysis.ast.nodes.Args;
 import de.fuberlin.projecta.analysis.ast.nodes.Block;
 import de.fuberlin.projecta.analysis.ast.nodes.Declaration;
+import de.fuberlin.projecta.analysis.ast.nodes.Expression;
 import de.fuberlin.projecta.analysis.ast.nodes.FuncCall;
 import de.fuberlin.projecta.analysis.ast.nodes.FuncDef;
 import de.fuberlin.projecta.analysis.ast.nodes.Id;
@@ -79,8 +80,8 @@ public class LLVM {
 		String ret = "";
 		if (args != null) {
 			for (ISyntaxTree child : args.getChildren()) {
-				Type t = (Type) child;
-				ret += loadType(t);
+				Expression expr = (Expression) child;
+				ret += loadType(expr);
 			}
 		}
 		return ret;
@@ -117,17 +118,17 @@ public class LLVM {
 		return null;
 	}
 
-	public static String getMem(Type type) {
+	public static String getMem(Expression expr) {
 		String ret = "";
-		if (type instanceof Id) {
-			Id id = (Id) type;
+		if (expr instanceof Id) {
+			Id id = (Id) expr;
 			if (LLVM.isInParams(id)) {
 				ret = id.getValue();
 			} else {
 				ret = "" + id.getVar();
 			}
 		} else {
-			ret = "" + type.getVar();
+			ret = "" + expr.getVar();
 		}
 
 		return ret;
@@ -148,38 +149,38 @@ public class LLVM {
 	 * a funcCall in order to statically take the valMemory after calling this
 	 * function
 	 * 
-	 * @param type
+	 * @param expr
 	 *            the node to load the value into a new memory
 	 * @return the code for loading it
 	 */
-	public static String loadType(Type type) {
+	public static String loadType(Expression expr) {
 		String ret = "";
 
 		// If getVar is 0 it must be loaded, otherwise it is already loaded
-		if (type != null && type.getVar() == 0) {
-			Block block = type.getHighestBlock();
-			if (type instanceof Literal) {
+		if (expr != null && expr.getVar() == 0) {
+			Block block = expr.getHighestBlock();
+			if (expr instanceof Literal) {
 				int n = block.getNewVar(), m = block.getNewVar();
-				String t = type.genCode().split(" ")[0];
-				String v = type.genCode().split(" ")[1];
+				String t = expr.genCode().split(" ")[0];
+				String v = expr.genCode().split(" ")[1];
 				ret += "%" + n + " = alloca " + t + "\n";
 				ret += "store " + t + " " + v + ", " + t + "* %" + n + "\n";
 				ret += "%" + m + " = load " + t + "* %" + n + "\n";
-				type.setValMemory(m);
-			} else if (type instanceof Id) {
-				ret += loadVar((Id) type);
-			} else if (type instanceof FuncCall) {
-				if (type.getChildrenCount() > 1) {
-					ret += LLVM.loadParams((Args) type.getChild(1));
+				expr.setValMemory(m);
+			} else if (expr instanceof Id) {
+				ret += loadVar((Id) expr);
+			} else if (expr instanceof FuncCall) {
+				if (expr.getChildrenCount() > 1) {
+					ret += LLVM.loadParams((Args) expr.getChild(1));
 				}
 				int n = block.getNewVar();
-				ret += "%" + n + " = " + type.genCode() + "\n";
-				type.setValMemory(n);
-			} else if (type instanceof RecordVarCall) {
+				ret += "%" + n + " = " + expr.genCode() + "\n";
+				expr.setValMemory(n);
+			} else if (expr instanceof RecordVarCall) {
 				int n = block.getNewVar();
-				RecordVarCall recVarCall = (RecordVarCall) type;
+				RecordVarCall recVarCall = (RecordVarCall) expr;
 				Record rec = (Record) SymbolTableHelper.lookup(
-						recVarCall.getRecordId().getValue(), type).getType();
+						recVarCall.getRecordId().getValue(), expr).getType();
 				Id recName = recVarCall.getRecordId();
 				ret += "%"
 						+ n
@@ -188,10 +189,10 @@ public class LLVM {
 						+ "* %" + recName.getValue() + ", i32 0, i32 "
 						+ findNumberOfRecordVar(rec, recVarCall
 								.getVarId().getValue()) + "\n";
-				type.setValMemory(n);
+				expr.setValMemory(n);
 			} else {
 				// TODO: is this already calling setValMemory always?
-				ret += type.genCode();
+				ret += expr.genCode();
 			}
 		}
 

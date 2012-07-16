@@ -15,6 +15,9 @@ import de.fuberlin.projecta.analysis.ast.nodes.Type;
  */
 public class EntryType {
 
+	private String id;
+	private Type type;
+
 	public EntryType(Id id, Type type, List<EntryType> params) {
 		this.id = id.getValue();
 		this.type = type;
@@ -24,10 +27,6 @@ public class EntryType {
 	public EntryType(Id id, Type type) {
 		this(id, type, new ArrayList<EntryType>());
 	}
-
-	private String id;
-
-	private Type type;
 
 	/**
 	 * This may be an empty list of parameters (for declaring functions with

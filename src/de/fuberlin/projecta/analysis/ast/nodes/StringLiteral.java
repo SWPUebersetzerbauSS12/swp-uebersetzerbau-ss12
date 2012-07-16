@@ -1,7 +1,7 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 
-public class StringLiteral extends Literal {
+public class StringLiteral extends Expression {
 
 	private String value;
 
@@ -24,6 +24,6 @@ public class StringLiteral extends Literal {
 	
 	@Override
 	public String toTypeString(){
-		return TYPE_STRING_STRING;
+		return Type.TYPE_STRING_STRING;
 	}
 }

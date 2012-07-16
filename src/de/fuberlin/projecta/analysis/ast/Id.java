@@ -1,4 +1,4 @@
-package de.fuberlin.projecta.analysis.ast.nodes;
+package de.fuberlin.projecta.analysis.ast;
 
 import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;

@@ -1,6 +1,6 @@
 package de.fuberlin.projecta.analysis;
 
-import de.fuberlin.projecta.analysis.ast.nodes.Type;
+import de.fuberlin.projecta.analysis.ast.Type;
 
 public class TypeChecker {
 

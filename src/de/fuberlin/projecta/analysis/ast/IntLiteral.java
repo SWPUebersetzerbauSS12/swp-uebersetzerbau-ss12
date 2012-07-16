@@ -1,4 +1,4 @@
-package de.fuberlin.projecta.analysis.ast.nodes;
+package de.fuberlin.projecta.analysis.ast;
 
 
 public class IntLiteral extends Literal {

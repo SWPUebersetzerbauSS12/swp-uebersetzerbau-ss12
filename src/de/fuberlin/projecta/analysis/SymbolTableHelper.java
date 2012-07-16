@@ -2,7 +2,7 @@ package de.fuberlin.projecta.analysis;
 
 import java.util.List;
 
-import de.fuberlin.projecta.analysis.ast.nodes.AbstractSyntaxTree;
+import de.fuberlin.projecta.analysis.ast.AbstractSyntaxTree;
 
 /**
  * Wrapper class for symbolTables.

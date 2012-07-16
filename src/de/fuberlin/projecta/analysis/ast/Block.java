@@ -1,4 +1,4 @@
-package de.fuberlin.projecta.analysis.ast.nodes;
+package de.fuberlin.projecta.analysis.ast;
 
 import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.commons.parser.ISyntaxTree;

@@ -1,4 +1,4 @@
-package de.fuberlin.projecta.analysis.ast.nodes;
+package de.fuberlin.projecta.analysis.ast;
 
 /**
  * Must have exactly two children of the type Id! First id is the record id,

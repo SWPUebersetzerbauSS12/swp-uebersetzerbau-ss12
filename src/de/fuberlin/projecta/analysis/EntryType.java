@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import de.fuberlin.projecta.analysis.ast.nodes.Id;
-import de.fuberlin.projecta.analysis.ast.nodes.Type;
+import de.fuberlin.projecta.analysis.ast.Id;
+import de.fuberlin.projecta.analysis.ast.Type;
 
 /**
  * This class represents an entry of a symboltable. It has at least an id and a

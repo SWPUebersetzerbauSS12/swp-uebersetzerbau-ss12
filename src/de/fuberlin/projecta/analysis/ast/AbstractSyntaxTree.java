@@ -1,4 +1,4 @@
-package de.fuberlin.projecta.analysis.ast.nodes;
+package de.fuberlin.projecta.analysis.ast;
 
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.SymbolTable;
@@ -6,6 +6,11 @@ import de.fuberlin.projecta.analysis.SymbolTableStack;
 import de.fuberlin.projecta.parser.Symbol;
 import de.fuberlin.projecta.parser.Tree;
 
+/**
+ * This is the superclass of *all* AST nodes
+ * 
+ * It provides the necessary interfaces for all subclasses
+ */
 public abstract class AbstractSyntaxTree extends Tree {
 
 	/**

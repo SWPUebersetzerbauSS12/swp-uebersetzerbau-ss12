@@ -2,19 +2,19 @@ package de.fuberlin.projecta.codegen;
 
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
-import de.fuberlin.projecta.analysis.ast.nodes.AbstractSyntaxTree;
-import de.fuberlin.projecta.analysis.ast.nodes.Args;
-import de.fuberlin.projecta.analysis.ast.nodes.Block;
-import de.fuberlin.projecta.analysis.ast.nodes.Declaration;
-import de.fuberlin.projecta.analysis.ast.nodes.Expression;
-import de.fuberlin.projecta.analysis.ast.nodes.FuncCall;
-import de.fuberlin.projecta.analysis.ast.nodes.FuncDef;
-import de.fuberlin.projecta.analysis.ast.nodes.Id;
-import de.fuberlin.projecta.analysis.ast.nodes.Literal;
-import de.fuberlin.projecta.analysis.ast.nodes.Record;
-import de.fuberlin.projecta.analysis.ast.nodes.RecordVarCall;
-import de.fuberlin.projecta.analysis.ast.nodes.Statement;
-import de.fuberlin.projecta.analysis.ast.nodes.Type;
+import de.fuberlin.projecta.analysis.ast.AbstractSyntaxTree;
+import de.fuberlin.projecta.analysis.ast.Args;
+import de.fuberlin.projecta.analysis.ast.Block;
+import de.fuberlin.projecta.analysis.ast.Declaration;
+import de.fuberlin.projecta.analysis.ast.Expression;
+import de.fuberlin.projecta.analysis.ast.FuncCall;
+import de.fuberlin.projecta.analysis.ast.FuncDef;
+import de.fuberlin.projecta.analysis.ast.Id;
+import de.fuberlin.projecta.analysis.ast.Literal;
+import de.fuberlin.projecta.analysis.ast.Record;
+import de.fuberlin.projecta.analysis.ast.RecordVarCall;
+import de.fuberlin.projecta.analysis.ast.Statement;
+import de.fuberlin.projecta.analysis.ast.Type;
 
 public class LLVM {
 

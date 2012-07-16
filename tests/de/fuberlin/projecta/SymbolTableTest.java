@@ -6,8 +6,8 @@ import org.junit.Test;
 
 import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SymbolTable;
-import de.fuberlin.projecta.analysis.ast.nodes.BasicType;
-import de.fuberlin.projecta.analysis.ast.nodes.Id;
+import de.fuberlin.projecta.analysis.ast.BasicType;
+import de.fuberlin.projecta.analysis.ast.Id;
 import de.fuberlin.projecta.lexer.BasicTokenType;
 
 public class SymbolTableTest {

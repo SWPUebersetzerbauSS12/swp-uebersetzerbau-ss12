@@ -86,6 +86,11 @@ public abstract class AbstractSyntaxTree extends Tree {
 	}
 
 	public boolean checkTypes() {
+		for (ISyntaxTree child : this.getChildren()) {
+			if (!((AbstractSyntaxTree) child).checkTypes()) {
+				return false;
+			}
+		}
 		return true;
 	}
 

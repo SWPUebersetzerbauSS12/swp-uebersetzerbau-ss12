@@ -22,9 +22,7 @@ public class EntryType {
 	}
 
 	public EntryType(Id id, Type type) {
-		this.id = id.getValue();
-		this.type = type;
-		params = new ArrayList<EntryType>();
+		this(id, type, new ArrayList<EntryType>());
 	}
 
 	private String id;

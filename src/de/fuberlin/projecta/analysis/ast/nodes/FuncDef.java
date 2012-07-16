@@ -8,7 +8,6 @@ import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.SymbolTableStack;
 import de.fuberlin.projecta.lexer.BasicTokenType;
-import de.fuberlin.commons.parser.ISyntaxTree;
 
 public class FuncDef extends Type {
 
@@ -149,17 +148,6 @@ public class FuncDef extends Type {
 
 	}
 
-	@Override
-	public boolean checkTypes() {
-		// check all children and we are good
-		for(ISyntaxTree child : this.getChildren()){
-			if(!((AbstractSyntaxTree)child).checkTypes()){
-				return false;
-			}
-		}
-		return true;
-	}
-	
 	@Override
 	public String toTypeString(){
 		return ((Type)getChild(0)).toTypeString();

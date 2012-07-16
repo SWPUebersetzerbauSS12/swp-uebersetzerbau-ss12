@@ -159,14 +159,4 @@ public class IfElse extends Statement {
 		return false;
 	}
 
-	@Override
-	public boolean checkTypes() {
-		// check children and we are good.
-		for (ISyntaxTree child : this.getChildren()) {
-			if (!((AbstractSyntaxTree) child).checkTypes()) {
-				return false;
-			}
-		}
-		return true;
-	}
 }

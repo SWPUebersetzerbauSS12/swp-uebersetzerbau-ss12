@@ -1,7 +1,6 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 import de.fuberlin.commons.lexer.TokenType;
-import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.codegen.LLVM;
 
 public class While extends Statement {
@@ -32,14 +31,4 @@ public class While extends Statement {
 		return ret;
 	}
 
-	@Override
-	public boolean checkTypes() {
-		// check children and we are good.
-		for (ISyntaxTree child : this.getChildren()) {
-			if (!((AbstractSyntaxTree) child).checkTypes()) {
-				return false;
-			}
-		}
-		return true;
-	}
 }

@@ -39,17 +39,6 @@ public class Program extends AbstractSyntaxTree {
 		}
 	}
 
-	@Override
-	public boolean checkTypes() {
-		// check children and we are good.
-		for(ISyntaxTree child : this.getChildren()){
-			if(!((AbstractSyntaxTree)child).checkTypes()){
-				return false;
-			}
-		}
-		return true;
-	}
-	
 	/*
 	 * GenCode already implemented by AbstractSyntaxTree
 	 * - i don't care, we need some declarations

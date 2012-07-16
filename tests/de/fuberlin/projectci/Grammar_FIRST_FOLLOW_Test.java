@@ -1,40 +1,35 @@
-package de.fuberlin.projectci.grammar;
+package de.fuberlin.projectci;
 
-
-import java.io.File;
 import java.util.Map;
 import java.util.Set;
 
-import de.fuberlin.projectci.lrparser.LRParser;
-import de.fuberlin.projectci.parseTable.InvalidGrammarException;
+import de.fuberlin.projectci.grammar.BNFGrammarReader;
+import de.fuberlin.projectci.grammar.BNFParsingErrorException;
+import de.fuberlin.projectci.grammar.Grammar;
+import de.fuberlin.projectci.grammar.GrammarReader;
+import de.fuberlin.projectci.grammar.NonTerminalSymbol;
+import de.fuberlin.projectci.grammar.Symbol;
+import de.fuberlin.projectci.grammar.TerminalSymbol;
 
-public class Test {
+public class Grammar_FIRST_FOLLOW_Test {
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
 		Grammar g = new Grammar();
 
 		try {
-			//g = GrammarReader.readGrammar("./doc/testFirst");
-			//g = GrammarReader.readGrammar("./doc/praefixGrammatik4.28.txt");
-			g = GrammarReader.readGrammar("./doc/quellsprache_bnf.txt");
+			GrammarReader gReader = new BNFGrammarReader();
+			g = gReader.readGrammar("./input/de/fuberlin/projectci/quellsprache_bnf.txt");
 			
 		} catch (BNFParsingErrorException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 		
 		System.out.println("=== Grammatik ===");
 		System.out.println(g);
 		System.out.println();
-		
-//		System.out.println("=== Grammatik erweitert ===");
-//		LRParser.extendGrammar(g);
-//		System.out.println(g);
-//		System.out.println();
 
 		System.out.println("=== FIRST ===");
 		
@@ -61,9 +56,7 @@ public class Test {
 			}
 			System.out.println("}");
 		}
-		
-		
-		
+
 	}
 
 }

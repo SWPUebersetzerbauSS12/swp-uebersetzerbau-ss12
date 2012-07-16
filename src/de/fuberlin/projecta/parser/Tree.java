@@ -1,102 +1,107 @@
 package de.fuberlin.projecta.parser;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map.Entry;
-
 import de.fuberlin.commons.lexer.IToken;
 import de.fuberlin.commons.parser.ISyntaxTree;
-import de.fuberlin.projecta.analysis.ast.nodes.AbstractSyntaxTree;
-import de.fuberlin.projecta.analysis.ast.nodes.BasicType;
-import de.fuberlin.projecta.analysis.ast.nodes.BinaryOp;
-import de.fuberlin.projecta.analysis.ast.nodes.Id;
-import de.fuberlin.projecta.analysis.ast.nodes.IntLiteral;
-import de.fuberlin.projecta.analysis.ast.nodes.UnaryOp;
 import de.fuberlin.projecta.utils.StringUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Tree implements ISyntaxTree {
 
 	private final Symbol symbol;
 
-	private IToken token; // TODO: USE THIS!
-
 	private final ArrayList<ISyntaxTree> children = new ArrayList<ISyntaxTree>();
-	private HashMap<String, Object> attributes;
-
-	ISyntaxTree parent = null;
+	private final HashMap<String, Object> attributes = new HashMap<String, Object>();
+	private IToken token;
+	private ISyntaxTree parent = null;
 
 	/**
 	 * Creates a new empty node for non-terminals.
 	 * 
-	 * @param name
+	 * @param symbol
 	 */
 	public Tree(Symbol symbol) {
 		this.symbol = symbol;
-		attributes = new HashMap<String, Object>();
 	}
 
-	public void addChild(ISyntaxTree tree) {
-		if (tree.getParent() == this)
+	@Override
+	public void addChild(ISyntaxTree child) {
+		if (child.getParent() == this)
 			return;
 
-		children.add(tree);
-		tree.setParent(this);
+		if (children.contains(child))
+			return;
+
+		children.add(child);
+		child.setParent(this);
 	}
 
+	@Override
 	public int getChildrenCount() {
 		return children.size();
 	}
 
+	@Override
 	public ISyntaxTree getChild(int i) {
 		return children.get(i);
 	}
 
-	public Object getAttribute(String name) {
-
-		for (Entry<String, Object> attr : attributes.entrySet()) {
-			if (attr.getKey().equals(name)) {
-				return attr.getValue();
-			}
-		}
-		return null;
+	@Override
+	public Object getAttribute(String key) {
+		return attributes.get(key);
 	}
 
+	@Override
 	public List<ISyntaxTree> getChildrenByName(String name) {
-		return null; // To change body of implemented methods use File |
-						// Settings | File Templates.
-	}
-
-	public boolean setAttribute(String name, Object value) {
-		for (Entry<String, Object> attr : attributes.entrySet()) {
-			if (attr.getKey().equals(name)) {
-				attr.setValue(value);
-				return true;
-			}
+		List<ISyntaxTree> res = new LinkedList<ISyntaxTree>();
+		for (ISyntaxTree child : getChildren()) {
+			if (child.getSymbol().getName().equals(name))
+				res.add(child);
 		}
-		return false;
+		return res;
 	}
 
-	public boolean addAttribute(String name) {
-		if (getAttribute(name) == null) {
-			attributes.put(name, null);
-			return true;
+	@Override
+	public boolean setAttribute(String key, Object value) {
+		if (!attributes.containsKey(key)) {
+			System.out.println("Warning, attribute not declared: " + key);
+			return false;
 		}
-		return false;
+		attributes.put(key, value);
+		return true;
 	}
 
-	public void setParent(ISyntaxTree tree) {
-		if (tree.getParent() == this) {
+	public boolean addAttribute(String key) {
+		if (attributes.containsKey(key)) {
+			System.out.println("Warning: attribute already declared: " + key);
+			return false;
+		}
+		attributes.put(key, null); // declare
+		return true;
+	}
+
+	@Override
+	public void setParent(ISyntaxTree parent) {
+		if (getParent() == parent) {
+			return;
+		}
+
+		if (parent != null && parent.getParent() == this) {
 			System.out.println("Warning: Cyclic link detected.");
 			return;
 		}
 
-		if (getParent() == tree) {
-			return;
+		if (parent != null) {
+			parent.addChild(this);
 		}
-
-		this.parent = tree;
-		tree.addChild(this);
+		else {
+			// remove this instance from old parent
+			removeChild(this.parent, this);
+		}
+		this.parent = parent;
 	}
 
 	public void printTree() {
@@ -104,40 +109,11 @@ public class Tree implements ISyntaxTree {
 	}
 
 	protected void printTree(int depth) {
-		//remove prefix from class name
-		String className = this.getClass().getName().replaceAll("^.*\\.", "");		
+		System.out.print(StringUtils.repeat(' ', depth));
 		if (getSymbol() != null)
-			System.out.println(StringUtils.repeat(' ', depth)
-					+ getSymbol());
+			System.out.println(getSymbol());
 		else {
-			if (this instanceof BinaryOp) {
-				System.out.println(StringUtils.repeat(' ', depth)
-						+ className + ":"
-						+ ((BinaryOp) this).getOp());
-			} else if (this instanceof IntLiteral) {
-				System.out.println(StringUtils.repeat(' ', depth)
-						+ className + ":"
-						+ ((IntLiteral) this).getValue());
-			} else if (this instanceof Id) {
-				System.out.println(StringUtils.repeat(' ', depth)
-						+ className + ":"
-						+ ((Id) this).getValue());
-			} else if (this instanceof UnaryOp) {
-				System.out.println(StringUtils.repeat(' ', depth)
-						+ className + ":"
-						+ ((UnaryOp) this).getOp());
-			} else if (this instanceof BasicType) {
-				System.out.println(StringUtils.repeat(' ', depth)
-						+ className + ":"
-						+ ((BasicType) this).getTokenType());
-			} else {
-				System.out.println(StringUtils.repeat(' ', depth)
-						+ className);
-			}
-			if (((AbstractSyntaxTree) this).getTable() != null) {
-				System.out.println(StringUtils.repeat(' ', depth)
-						+ ((AbstractSyntaxTree) this).getTable());
-			}
+			System.out.println(toString());
 		}
 
 		for (int i = 0; i < getChildrenCount(); ++i) {
@@ -147,39 +123,44 @@ public class Tree implements ISyntaxTree {
 		}
 	}
 
+	@Override
 	public List<ISyntaxTree> getChildren() {
 		return children;
 	}
 
-	@Override
-	public boolean equals(Object object) {
-		// TODO: Review. Is this enough?
-		if (object instanceof ISyntaxTree) {
-			ISyntaxTree tree = ((ISyntaxTree)object);
 
-			String id1 = this.getSymbol().getName();
-			String id2 = ((ISyntaxTree)object).getSymbol().getName();
-			return (id1.equals(id2) && this.getChildren().equals(tree.getChildren()));
-		}
-		return false;
+	private static ISyntaxTree removeChild(ISyntaxTree tree, ISyntaxTree child) {
+		final int index = tree.getChildren().indexOf(child);
+		if (index < 0)
+			return null;
+
+		return tree.removeChild(index);
 	}
 
 	@Override
 	public ISyntaxTree removeChild(int i) {
 		ISyntaxTree child = children.remove(i);
-		child.setParent(child);
+		child.setParent(null);
 		return child;
 	}
 
+	@Override
 	public Symbol getSymbol() {
 		return symbol;
 	}
 
+	public void setToken(IToken token) {
+		this.token = token;
+	}
+
+	@Override
 	public IToken getToken() {
 		return token;
 	}
 
+	@Override
 	public ISyntaxTree getParent() {
 		return parent;
 	}
+
 }

@@ -5,29 +5,19 @@ import static org.junit.Assert.fail;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import de.fuberlin.commons.util.LogFactory;
 import de.fuberlin.commons.lexer.ILexer;
 import de.fuberlin.commons.parser.ISyntaxTree;
-import de.fuberlin.commons.lexer.IToken;
+import de.fuberlin.commons.util.LogFactory;
 import de.fuberlin.projecta.lexer.Lexer;
 import de.fuberlin.projecta.lexer.io.StringCharStream;
+import de.fuberlin.projectci.grammar.BNFGrammarReader;
 import de.fuberlin.projectci.grammar.BNFParsingErrorException;
 import de.fuberlin.projectci.grammar.Grammar;
 import de.fuberlin.projectci.grammar.GrammarReader;
-import de.fuberlin.projectci.grammar.NonTerminalSymbol;
-import de.fuberlin.projectci.grammar.Production;
-import de.fuberlin.projectci.grammar.Symbol;
-import de.fuberlin.projectci.grammar.TerminalSymbol;
-import de.fuberlin.projectci.lrparser.SyntaxTreeNode;
-import de.fuberlin.projectci.parseTable.AcceptAction;
-import de.fuberlin.projectci.parseTable.Goto;
 import de.fuberlin.projectci.parseTable.InvalidGrammarException;
 import de.fuberlin.projectci.parseTable.ParseTable;
 import de.fuberlin.projectci.parseTable.ParseTableBuilder;
-import de.fuberlin.projectci.parseTable.ReduceAction;
 import de.fuberlin.projectci.parseTable.SLRParseTableBuilder;
-import de.fuberlin.projectci.parseTable.ShiftAction;
-import de.fuberlin.projectci.parseTable.State;
 import de.fuberlin.projectci.test.driver.DriverTest.DriverTestDataProvider;
 
 public class DriverTestDataProvider2 implements DriverTestDataProvider{
@@ -98,7 +88,7 @@ public class DriverTestDataProvider2 implements DriverTestDataProvider{
 	}
 
 	private Grammar sourceGrammar(){
-		GrammarReader grammarReader = new GrammarReader();
+		GrammarReader grammarReader = new BNFGrammarReader();
 		Grammar g3 = null;
 		try {
 			g3 = grammarReader.readGrammar("./input/de/fuberlin/projectci/non-ambigous.txt");

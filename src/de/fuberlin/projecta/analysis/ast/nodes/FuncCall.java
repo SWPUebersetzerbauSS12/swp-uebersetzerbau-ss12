@@ -4,6 +4,7 @@ import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
+import de.fuberlin.projecta.codegen.LLVM;
 
 /**
  * This class represents one function call. It has one or two children. The
@@ -16,11 +17,9 @@ import de.fuberlin.projecta.analysis.SymbolTableHelper;
 public class FuncCall extends Type {
 
 	@Override
-	public boolean checkSemantics() {
-		return true;
-	}
-
-	@Override
+	/**
+	 * For this to work properly all parameters MUST be loaded before!
+	 */
 	public String genCode() {
 		String ret = "";
 		EntryType func = null;
@@ -41,24 +40,29 @@ public class FuncCall extends Type {
 		if (func != null) {
 			ret = "call " + func.getType().genCode();
 			if (!func.getParams().isEmpty()) {
-				boolean tmp = false;
+				int counter = 0;
 				ret += " (";
 				for (ISyntaxTree child : getChild(1).getChildren()) {
-					tmp = true;
-					Type node = null;
+					if (!(child instanceof Literal)) {
 
-					if (child instanceof Id)
-						ret += ((Id) child).getType().genCode() + ", ";
-					else if (child instanceof Type) {
-						node = (Type) child;
-						ret += node.genCode() + ", ";
-					} else {
-						// WTF?!
+						Type node = null;
+
+						if (child instanceof Id) {
+							counter++;
+							ret += ((Id) child).getType().genCode() + ", ";
+						} else if (child instanceof BasicType) {
+							counter++;
+							node = (Type) child;
+							ret += node.genCode() + ", ";
+						}
 					}
 				}
-				if (tmp)
+				if (counter > 0) {
 					ret = ret.substring(0, ret.length() - 2);
-				ret += ")*";
+					ret += ")*";
+				} else {
+					ret = ret.substring(0, ret.length() - 1);
+				}
 			}
 
 			ret += " @" + func.getId() + "(";
@@ -66,17 +70,9 @@ public class FuncCall extends Type {
 			if (getChildrenCount() > 1)
 				for (ISyntaxTree child : getChild(1).getChildren()) {
 					tmp = true;
-					Type node = null;
-
-					if (child instanceof Id)
-						ret += ((Id) child).getType().genCode() + " %"
-								+ ((Id) child).getVar() + ", ";
-					else if (child instanceof Type) {
-						node = (Type) child;
-						ret += node.genCode() + ", ";
-					} else {
-						// WTF?!
-					}
+					Type node = (Type) child;
+					ret += node.fromTypeStringToLLVMType() + " %"
+							+ LLVM.getMem(node) + ", ";
 				}
 			if (tmp)
 				ret = ret.substring(0, ret.length() - 2);
@@ -84,7 +80,7 @@ public class FuncCall extends Type {
 
 			// implicit var incrementation
 			if (!searchUpAssign()
-					&& !func.getType().toTypeString().equals("void")) {
+					&& func.getType().toTypeString().equals("void")) {
 				getHighestBlock().getNewVar();
 			}
 		}
@@ -105,7 +101,6 @@ public class FuncCall extends Type {
 				parent = parent.getParent();
 			}
 		}
-
 		return false;
 	}
 

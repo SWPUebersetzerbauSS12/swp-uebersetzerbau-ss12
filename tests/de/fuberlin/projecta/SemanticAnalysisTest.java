@@ -1,80 +1,93 @@
 package de.fuberlin.projecta;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
-
 import org.junit.Test;
 
+import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.SemanticAnalyzer;
 import de.fuberlin.projecta.analysis.SemanticException;
-import de.fuberlin.projecta.lexer.Lexer;
-import de.fuberlin.projecta.lexer.io.StringCharStream;
-import de.fuberlin.projecta.parser.ParseException;
-import de.fuberlin.projecta.parser.Parser;
+import de.fuberlin.projecta.analysis.TypeErrorException;
 
 public class SemanticAnalysisTest {
 
-	static String MAIN_DEF = "def int main() {return 0; }";
+	// "forward declare"
+	static String mainC(String block) {
+		return ParserTest.mainC(block);
+	}
 
 	@Test(expected = IllegalStateException.class)
 	public void testInvalidCode() {
-		final String code = "def int foo() { int a; int a; }";
+		final String code = mainC("int a; int a;");
 		analyze(code);
 	}
 
 	@Test
 	public void testValidFunctionDef() {
-		final String code = MAIN_DEF + "def void foo(int a){int b;} def void foo(real a){int b;}";
+		final String code = mainC("") + 
+				"def void foo(int a){int b;}" + 
+				"def void foo(real a){int b;}";
 		analyze(code);
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void testInvalidFunctionDef() {
-		final String code = MAIN_DEF + "def int foo() {} def real foo() {}";
+		final String code = mainC("") + "def int foo() {} def real foo() {}";
 		analyze(code);
 	}
 
 	@Test
 	public void testDeclarationScope() {
-		final String code = MAIN_DEF + "def int foo() { int a; { int a; } }";
+		final String code = mainC("int a; { int a; }");
 		analyze(code);
 	}
 
-	@Test(expected = ClassCastException.class)
+	@Test(expected = TypeErrorException.class)
 	public void testIncompatibleOperands() {
-		final String code = MAIN_DEF + "def int foo() { int a; a = 0.0; }";
-		assertFalse(analyze(code));
+		final String code = mainC("int a; a = 0.0;");
+		analyze(code);
 	}
 
 	@Test
 	public void testRecordAsReturnType(){
-		final String code = MAIN_DEF + "def record {int real; int imag;} foo(){record {int real; int imag;} myRecord; return myRecord;}";
+		final String code = mainC("") + 
+				"def record {int real; int imag;} foo() {" + 
+					"record {int real; int imag;} myRecord; return myRecord;" + 
+				"}";
+		analyze(code);
+	}
+
+	@Test
+	public void testMultiExpression() {
+		String code = mainC("int a; a = 1 + 2 + 3;");
 		analyze(code);
 	}
 
 	@Test
 	public void testRecordBehaviour(){
-		final String code = MAIN_DEF + "def int foobar(record {int r; int i;} myImaginaire){myImaginaire.r = 1; myImaginaire.i = 0;}";
+		final String code = mainC("") + 
+				"def int foobar(record {int r; int i;} t) {" + 
+				"t.r = 1; t.i = 0;" +
+				"}";
+		analyze(code);
+	}
+
+	@Test
+	public void testReturnRecordElement() { 
+		String code = mainC("record {int r; int i;} r; r.r = 0; return r.r;");
 		analyze(code);
 	}
 
 	@Test(expected = SemanticException.class)
 	public void testMissingMain(){
 		final String code = "def int foobar(){return 0;}";
-		assertFalse(analyze(code));
+		analyze(code);
 	}
 
-	private static boolean analyze(String code) {
-		Lexer lexer = new Lexer(new StringCharStream(code));
-		Parser parser = new Parser();
-		try {
-			parser.parse(lexer, "");
-		} catch (ParseException e) {
-			e.printStackTrace();
-			fail();
-		}
-		SemanticAnalyzer analyzer = new SemanticAnalyzer(parser.getParseTree());
+	static void analyze(String code) {
+		ISyntaxTree parseTree = ParserTest.parse(code);
+		SemanticAnalyzer analyzer = new SemanticAnalyzer(parseTree);
 		analyzer.analyze();
-		return analyzer.getAST().checkSemantics();
+		// TODO: Call the next methods in analyer.analyze()?
+		analyzer.getAST().checkSemantics();
+		analyzer.getAST().checkTypes();
 	}
 }

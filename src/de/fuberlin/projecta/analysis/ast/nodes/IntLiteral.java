@@ -1,17 +1,12 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
 
-public class IntLiteral extends Type {
+public class IntLiteral extends Literal {
 	
 	private int value;
 	
 	public IntLiteral(int value){
 		this.value = value;
-	}
-
-	@Override
-	public boolean checkSemantics() {
-		return true;
 	}
 
 	@Override

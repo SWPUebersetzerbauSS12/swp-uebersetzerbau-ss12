@@ -30,12 +30,29 @@ public class MemoryManager {
 		heap.put(name, tmp);
 	}
 	
+	public void addHeapVar(Variable var) {
+		heap.put(var.name, var);
+	}
+	
+	public boolean inHeap(String name) {
+		if(!heap.containsKey(name)) return false;
+		return true;
+	}
+	
 	public Variable getHeapVar(String name) {
 		return heap.get(name);
 	}
 	
 	public Variable newStackVar(String name, String type) {
 		return current.newStackVar(name, type);
+	}
+	
+	public Variable newStackVar(Variable var) {
+		return current.newStackVar(var);
+	}
+	
+	public Variable newArrayVar(String name, String type, int length) {
+		return current.newArrayVar(name, type, length);
 	}
 	
 	public void regToStack(Variable var) {
@@ -124,6 +141,11 @@ public class MemoryManager {
 		if (heap.containsKey(name)) return false;
 		return current.inMMXReg(name, regNumber);
 	}
+	
+	public boolean inMMXReg(String name) {
+		if (heap.containsKey(name)) return false;
+		return current.inMMXReg(name);
+	}
 
 	public RegisterAddress getFreeRegister(int i) {
 		return current.getFreeRegister(i);
@@ -131,5 +153,13 @@ public class MemoryManager {
 	
 	public MMXRegisterAddress getFreeMMXRegister(int i) {
 		return current.getFreeMMXRegister(i);
+	}
+
+	public void newArrayPtr(String name, String arr, String offset) {
+		current.newArrayPtr(name, arr, offset);
+	}
+
+	public void newRecordPtr(String target, String op1, String op2) {
+		current.newRecordPtr(target, op1, op2);	
 	}
 }

@@ -12,7 +12,7 @@ import de.fuberlin.projectci.lrparser.LRParser;
 
 public class LRParserTest {
 	
-	
+	// TODO alle Testklassen lieber in das "tests" Verzeichnis?
 	
 	@Before
 	public void setUp() throws Exception {

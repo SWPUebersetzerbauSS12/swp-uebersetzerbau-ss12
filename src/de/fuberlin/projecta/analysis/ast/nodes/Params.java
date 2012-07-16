@@ -6,6 +6,7 @@ import de.fuberlin.projecta.analysis.SymbolTableStack;
 import de.fuberlin.projecta.lexer.BasicTokenType;
 
 public class Params extends AbstractSyntaxTree {
+
 	@Override
 	public void buildSymbolTable(SymbolTableStack tables) {
 		for (int i = 0; i < getChildrenCount(); i += 2) {
@@ -17,17 +18,14 @@ public class Params extends AbstractSyntaxTree {
 	}
 
 	@Override
-	public boolean checkSemantics() {
+	public void checkSemantics() {
 		for (int i = 0; i < this.getChildrenCount(); i++) {
 			if (this.getChild(i) instanceof BasicType
 					&& ((BasicType) this.getChild(i)).getTokenType() == BasicTokenType.VOID) {
 				throw new SemanticException("Parameter must have a type. \"void\" is not allowed!");
 			}
-			if (!((AbstractSyntaxTree) this.getChild(i)).checkSemantics()) {
-				return false;
-			}
+			((AbstractSyntaxTree) this.getChild(i)).checkSemantics();
 		}
-		return true;
 	}
 
 	@Override

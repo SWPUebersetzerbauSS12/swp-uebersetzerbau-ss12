@@ -42,6 +42,7 @@ public class LLVM_BranchCommand extends LLVM_GenericCommand{
 	}
 	
 	public String toString() {
+		if (operands == null || (operation == LLVM_Operation.BR && operands.size() < 1) || (operation == LLVM_Operation.BR_CON && operands.size() < 3)) return null;
 		String cmd_output = "br ";
 		
 		switch(operation){

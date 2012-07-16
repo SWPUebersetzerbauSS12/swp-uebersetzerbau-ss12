@@ -18,7 +18,7 @@ public abstract class AbstractSyntaxTree extends Tree {
 	}
 
 	public SymbolTable getHigherTable() {
-		if(getParent() != null){
+		if (getParent() != null) {
 			AbstractSyntaxTree parent = (AbstractSyntaxTree) getParent();
 			while (parent != null) {
 				if (((AbstractSyntaxTree) getParent()).getTable() != null) {
@@ -26,21 +26,21 @@ public abstract class AbstractSyntaxTree extends Tree {
 				}
 				parent = (AbstractSyntaxTree) parent.getParent();
 			}
-		}		
+		}
 		return null;
 	}
-	
-	public Block getHighestBlock(){
+
+	public Block getHighestBlock() {
 		Block block = null;
-		if(getParent() != null){
+		if (getParent() != null) {
 			ISyntaxTree parent = getParent();
-			while(parent != null){
-				if(parent instanceof Block){
-					block = (Block) parent;					
+			while (parent != null) {
+				if (parent instanceof Block) {
+					block = (Block) parent;
 				}
 				parent = parent.getParent();
 			}
-		}		
+		}
 		return block;
 	}
 
@@ -55,8 +55,8 @@ public abstract class AbstractSyntaxTree extends Tree {
 	/**
 	 * Method for building the SymbolTables that the nodes should implement
 	 **/
-	public void buildSymbolTable(SymbolTableStack tables){
-		
+	public void buildSymbolTable(SymbolTableStack tables) {
+
 	}
 
 	/**
@@ -70,46 +70,60 @@ public abstract class AbstractSyntaxTree extends Tree {
 		}
 		return out;
 	}
-	
-	public boolean checkTypes(){
+
+	/**
+	 * We must explicitly go through the whole tree twice, since identified
+	 * records has to be placed in the head!
+	 * 
+	 * @return
+	 */
+	public String genStruct() {
+		String out = "";
+		for (int i = 0; i < getChildrenCount(); i++) {
+			out += ((AbstractSyntaxTree) getChild(i)).genStruct();
+		}
+		return out;
+	}
+
+	public boolean checkTypes() {
 		return true;
 	}
 
 	/**
-	 * 
-	 * @return <code>true</code> if semantic is well in this node and in
-	 *         (recursively) <b><u>all</u></b> child nodes
+	 * Reimplement in subclass if needed!
 	 */
-	public abstract boolean checkSemantics();
-
-	/**
-	 * An ast node equals one another ast node if it has the same type, the same
-	 * amount of children and all children must equal the corresponding child in
-	 * the node to check on equality.
-	 * 
-	 * TODO: Can someone please check this to work properly?
-	 */
-	@Override
-	public boolean equals(Object object) {
-		if (object != null) {
-			if (object.getClass() == this.getClass()) {
-				if (this instanceof BasicType) {
-					if (((BasicType) this).getTokenType() != ((BasicType) object)
-							.getTokenType()) {
-						return false;
-					}
-				}
-				ISyntaxTree ot = (ISyntaxTree) object;
-				if (getChildrenCount() == ot.getChildrenCount()) {
-					for (int i = 0; i < getChildrenCount(); i++) {
-						if (!getChild(i).equals(ot.getChild(i))) {
-							return false;
-						}
-					}
-					return true;
-				}
-			}
+	public void checkSemantics() {
+		for (int i = 0; i < this.getChildrenCount(); i++) {
+			((AbstractSyntaxTree) this.getChild(i)).checkSemantics();
 		}
-		return false;
 	}
+
+	@Override
+	public String toString() {
+		// remove prefix from class name
+		final String className = this.getClass().getName()
+				.replaceAll("^.*\\.", "");
+
+		String value = "";
+		if (this instanceof BinaryOp) {
+			value += ((BinaryOp) this).getOp();
+		} else if (this instanceof IntLiteral) {
+			value += ((IntLiteral) this).getValue();
+		} else if (this instanceof Id) {
+			value += ((Id) this).getValue();
+		} else if (this instanceof UnaryOp) {
+			value += ((UnaryOp) this).getOp();
+		} else if (this instanceof BasicType) {
+			value += ((BasicType) this).getTokenType();
+		}
+
+		if (getTable() != null) {
+			value += "table contents: " + getTable();
+		}
+
+		if (value.isEmpty())
+			return className;
+		return className + " [" + value + "]";
+	}
+
 }

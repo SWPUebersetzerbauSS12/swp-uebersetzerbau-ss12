@@ -11,6 +11,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import de.fuberlin.projectci.grammar.BNFGrammarReader;
 import de.fuberlin.projectci.grammar.BNFParsingErrorException;
 import de.fuberlin.projectci.grammar.Grammar;
 import de.fuberlin.projectci.grammar.GrammarReader;
@@ -35,7 +36,8 @@ public class ParseTableGui {
 	private Set<State> gotoStates;
 
 	ParseTableGui() throws BNFParsingErrorException, InvalidGrammarException {
-		g = GrammarReader.readGrammar("./doc/quellsprache_bnf.txt");
+		GrammarReader gReader = new BNFGrammarReader();
+		g = gReader.readGrammar("./input/de/fuberlin/projectci/quellsprache_bnf.txt");
 
 		// Parsetabelle aufbauen
 		ParseTableBuilder ptb = new SLRParseTableBuilder(g);

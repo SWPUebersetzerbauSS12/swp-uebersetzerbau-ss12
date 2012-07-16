@@ -1,5 +1,6 @@
 package de.fuberlin.projectci.test.grammar;
 
+import de.fuberlin.projectci.grammar.BNFGrammarReader;
 import de.fuberlin.projectci.grammar.BNFParsingErrorException;
 import de.fuberlin.projectci.grammar.Grammar;
 import de.fuberlin.projectci.grammar.GrammarReader;
@@ -10,7 +11,7 @@ public class GrammarReaderTest {
 	 * @throws BNFParsingErrorException 
 	 */
 	public static void main(String[] args){
-		GrammarReader grammarReader= new GrammarReader();
+		GrammarReader grammarReader= new BNFGrammarReader();
 		System.out.println("Ungültige Grammatik:");
 		try {
 			Grammar g = grammarReader.readGrammar("./input/de/fuberlin/projectci/beispielgrammatik1_ungueltig.txt");

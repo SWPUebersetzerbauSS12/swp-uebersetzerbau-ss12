@@ -20,17 +20,6 @@ public class Block extends Statement {
 		table = stack.pop();
 	}
 
-	@Override
-	public boolean checkSemantics() {
-		for(int i = 0; i < this.getChildrenCount(); i++){
-			if(!((AbstractSyntaxTree)this.getChild(i)).checkSemantics()){
-				return false;
-			}
-		}
-		return true;
-	}
-
-
 	// using super implementation for genCode
 	
 	public int getNewVar(){

@@ -9,11 +9,9 @@ import de.fuberlin.projecta.lexer.io.StringCharStream;
 
 public class CompilerTest {
 
+	// "forward declare"
 	static String mainC(String block) {
-		String code = "def int main() { ";
-		code += block;
-		code += "return 0; }";
-		return code;
+		return ParserTest.mainC(block);
 	}
 
 	static String executeCode(String code) {
@@ -84,6 +82,13 @@ public class CompilerTest {
 		String output = executeCode(code);
 		assertEquals(output, "21");
 	}
+	
+	@Test
+	public void testLiteralComparison(){
+		final String code = "def int main(){bool a; bool b; bool c; bool d; a = 3 == 4; b = 3 == 3; c = 3 != 4; d = 3 != 3; print a; print b; print c; print d; return 1;}";
+		String output = executeCode(code);
+		assertEquals(output, "0110");
+	}
 
 	@Test
 	public void testWhile() {
@@ -97,6 +102,71 @@ public class CompilerTest {
 		final String code = "def int foo(int i) { int j; j = i + i; return j;} def int main(){int i; i = 3; i = foo(i); print i; return 0;}";
 		String output = executeCode(code);
 		assertEquals(output, "6");
+	}
+	
+	@Test
+	public void testFuncCallWithLiteralParameter(){
+		final String code = "def int foo(int i){ return i;} def int main(){int i; i = foo(3)*foo(4); print i; return 0;}";
+		String output = executeCode(code);
+		assertEquals("12", output);
+	}
+	
+	@Test
+	public void testReturnWithBinaryOp(){
+		final String code = "def int foo(int i){ return i+1;} def int main(){int i; i = foo(3); print i; return 0;}";
+		String output = executeCode(code);
+		assertEquals("4", output);
+	}
+	
+	@Test
+	public void testFuncCallWithBinaryOp(){
+		final String code = "def int foo(int i){ return i;} def int main(){int i; i = foo(3+4); print i; return 0;}";
+		String output = executeCode(code);
+		assertEquals("7", output);
+	}
+
+	@Test
+	public void testMultiExpression() {
+		String code = mainC("int a; a = 1 + 2 + 3; print a;");
+		String output = executeCode(code);
+		assertEquals("6", output);
+	}
+
+	@Test
+	public void testRecursiveFuncCall(){
+		final String code = "def int foo(int i){if (i==0) {return 1;} return foo(i-1);} def int main(){int i; i = foo(3); print i; return 0;}";
+		String output = executeCode(code);
+		assertEquals("1", output);
+	}
+
+	@Test
+	public void testIfElsePrintStatement() {
+		final String code = mainC("int a; int b;  bool c; a = 1;  b = 2; c = true;\n" +
+				"if (c) { print a; }\n" + 
+				"else { print b; }");
+		String output = executeCode(code);
+		assertEquals("1", output);
+	}
+
+	@Test
+	public void testIfElseReturnStatement() {
+		final String code = "def int foo() { int a; int b;  bool c; a = 1;  b = 2; c = true;\n" +
+					"if (c) { return a; }\n" + 
+					"else { return b; }\n" + 
+				"}\n" +
+				mainC("int a; a = foo(); print a;");
+		System.out.println(code);
+		String output = executeCode(code);
+		assertEquals("1", output);
+	}
+	
+	@Test
+	public void testRecordDeclaration() {
+		final String code = 
+				mainC("record {int i; int j;} myRecord;");
+		System.out.println(code);
+		String output = executeCode(code);
+		assertEquals("", output);
 	}
 
 }

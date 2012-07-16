@@ -1,5 +1,6 @@
 package de.fuberlin.projecta.parser;
 
+import java.util.Set;
 import java.util.Stack;
 
 import de.fuberlin.commons.lexer.ILexer;
@@ -8,11 +9,11 @@ import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.commons.parser.IParser;
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.lexer.SyntaxErrorException;
+import de.fuberlin.projecta.utils.ListComprehension;
 
 public class Parser implements IParser {
 
-	public final static String TOKEN_VALUE = "TokenValue";
-	private ParseTable table;
+	private ParseTable table = new ParseTable();
 	private Stack<Symbol> stack = new Stack<Symbol>();
 
 	private boolean debugEnabled = false;
@@ -20,10 +21,10 @@ public class Parser implements IParser {
 	private ISyntaxTree parseTree;
 
 	public Parser() {
-		table = new ParseTable(NonTerminal.values(), TokenType.values());
 		try {
 			fillParseTable();
 		} catch (IllegalStateException e) {
+			System.out.println("Error: " + e);
 			e.printStackTrace();
 		}
 	}
@@ -34,12 +35,17 @@ public class Parser implements IParser {
 		stack.push(new Symbol(NonTerminal.program));
 	}
 
+	/// Implement the public interface
+	@Override
+	public ISyntaxTree parse(ILexer lexer, String grammar) throws ParseException {
+		// We're not interested in the grammar, we don't implement a generic parser 
+		return parse(lexer);
+	}
+
 	/**
 	 * TODO: Error handling
 	 */
-	@Override
-	public ISyntaxTree parse(ILexer lexer, String grammar) throws ParseException {
-
+	private ISyntaxTree parse(ILexer lexer) throws SyntaxErrorException, ParseException {
 		if (table.isAmbigous()) {
 			throw new ParseException(
 					"Parsing table is ambigous! Won't start syntax analysis", null);
@@ -48,12 +54,8 @@ public class Parser implements IParser {
 		initStack();
 
 		IToken token = null;
-		try {
-			token = lexer.getNextToken();
-		} catch (SyntaxErrorException e) {
-			// TODO: Error handling?
-			e.printStackTrace();
-		}
+
+		token = lexer.getNextToken(); // may throw
 
 		ISyntaxTree currentNode = new Tree(new Symbol(Symbol.Reserved.EPSILON));
 		do {
@@ -75,11 +77,8 @@ public class Parser implements IParser {
 			} else if (peek.isTerminal()) {
 				TokenType terminal = peek.asTerminal();
 				if (terminal == TokenType.valueOf(token.getType())) {
-					ISyntaxTree node = new Tree(new Symbol(terminal));
-					node.addAttribute(TOKEN_VALUE);
-					final boolean success = node.setAttribute(
-							TOKEN_VALUE, token.getAttribute());
-					assert (success);
+					Tree node = new Tree(new Symbol(terminal));
+					node.setToken(token);
 					currentNode.addChild(node);
 					try {
 						token = lexer.getNextToken();
@@ -94,7 +93,22 @@ public class Parser implements IParser {
 			{
 				NonTerminal nonT = peek.asNonTerminal();
 				assert(nonT != null);
+
 				String prod = table.getEntry(nonT, TokenType.valueOf(token.getType()));
+				if (prod == null || prod.trim().equals("")) {
+					Set<String> expectedTokens = ListComprehension.map(table.getEntries(nonT).keySet(),
+							new ListComprehension.Func<TokenType, String>() {
+								public String apply(TokenType in) {
+									return in.terminalSymbol();
+								}
+					});
+
+					throw new ParseException("Didn't expect token",
+							"Syntax error: No rule in parsing table (Stack: "
+									+ peek + ", token: " + token + ")\n" +
+							"Expected: " + expectedTokens
+							, token);
+				}
 
 				ISyntaxTree node = new Tree(new Symbol(nonT));
 				currentNode.addChild(node);
@@ -115,10 +129,6 @@ public class Parser implements IParser {
 							stack.push(symbol);
 						}
 					}
-				} else if (prod.trim().equals("")) {
-					throw new ParseException("Didn't expect token",
-							"Syntax error: No rule in parsing table (Stack: "
-									+ peek + ", token: " + token + ")", token);
 				} else {
 					throw new ParseException(
 							"Internal error",

@@ -37,18 +37,12 @@ public class LLVM_Block{
 	
 	// Kompletter Code des Blocks als String
 	private String blockCode;
-	
-	HashMap<String, LinkedList<LLVM_GenericCommand>> commonex = new HashMap<String, LinkedList<LLVM_GenericCommand>>();
 
-	public LLVM_Block(String blockCode, LLVM_Function function) {
+	public LLVM_Block(String blockCode, LLVM_Function function) throws LLVM_OptimizationException{
 		
 		this.function = function;
 		this.blockCode = blockCode;		
 		this.createCommands();
-		this.optimizeBlock();
-	}
-
-	public void optimizeBlock() {
 	}
 	
 	/**
@@ -56,14 +50,16 @@ public class LLVM_Block{
 	 * Bei Änderungen wird ConstantPropagation aufgerufen
 	 * Doppelte Befehle werden nur überprüft, falls in Whitelist
 	 */
-	public void removeCommonExpressions() {
+	public void removeCommonExpressions() throws LLVM_OptimizationException{
 		List<String> whitelist = new ArrayList<String>();
 		LinkedList<LLVM_GenericCommand> changed = new LinkedList<LLVM_GenericCommand>();
+		HashMap<String, LinkedList<LLVM_GenericCommand>> commonex = new HashMap<String, LinkedList<LLVM_GenericCommand>>();
 		whitelist.add(LLVM_Operation.ADD.toString());
 		whitelist.add(LLVM_Operation.MUL.toString());
 		whitelist.add(LLVM_Operation.DIV.toString());
 		whitelist.add(LLVM_Operation.SUB.toString());
 		whitelist.add(LLVM_Operation.LOAD.toString());
+		whitelist.add(LLVM_Operation.GETELEMENTPTR.toString());
 		
 		for (LLVM_GenericCommand i = this.firstCommand; i != null; i=i.getSuccessor()){
 			// Nur Kommandos aus der Whitelist optimieren
@@ -80,15 +76,19 @@ public class LLVM_Block{
 						matched = true;
 						if (LLVM_Optimization.DEBUG) System.out.println("same command at " + command.getTarget().getName() + ", command replaced : " + i.toString());
 						this.function.getRegisterMap().deleteCommand(i);
-						LLVM_GenericCommand neu = new LLVM_BinaryCommand();
-						neu.setOperation(LLVM_Operation.ADD);
-						LinkedList<LLVM_Parameter> neu2 = new LinkedList<LLVM_Parameter>();
-						neu2.add(new LLVM_Parameter(command.getTarget().getName(), command.getTarget().getTypeString()));
-						neu2.add(new LLVM_Parameter("0", command.getTarget().getTypeString()));
-						neu.setOperands(neu2);
-						i.replaceCommand(neu);
-						this.function.getRegisterMap().addCommand(i);
-						changed.add(i);
+						// neues Kommando generieren mit Parametern
+						LLVM_GenericCommand replacement = new LLVM_BinaryCommand();
+						replacement.setOperation(LLVM_Operation.ADD);
+						replacement.setTarget(new LLVM_Parameter(i.getTarget().getName(), i.getTarget().getTypeString()));
+						LinkedList<LLVM_Parameter> params = new LinkedList<LLVM_Parameter>();
+						params.add(new LLVM_Parameter(command.getTarget().getName(), command.getTarget().getTypeString()));
+						params.add(new LLVM_Parameter("0", command.getTarget().getTypeString()));
+						replacement.setOperands(params);
+						// Kommando ersetzen
+						i.replaceCommand(replacement);
+						this.function.getRegisterMap().addCommand(replacement);
+						changed.add(replacement);
+						//changed.add(i);
 					}
 				}
 				if (!matched){
@@ -105,7 +105,10 @@ public class LLVM_Block{
 				commonex.put(i.getOperation().name(), tmp);
 			}
 		}
-		this.function.constantPropagation(changed);
+		if (changed.size() > 0){
+			this.function.constantPropagation(changed);
+			removeCommonExpressions();
+		}		
 	}
 	
 	private boolean matchCommands(LLVM_GenericCommand com1, LLVM_GenericCommand com2){
@@ -152,6 +155,7 @@ public class LLVM_Block{
 					LLVM_GenericCommand def = this.function.getRegisterMap().
 							getDefinition(registerName);
 					
+					// TODO: was ist mit structs?
 					if(def!=null && def.getOperation()!=LLVM_Operation.GETELEMENTPTR 
 							&& !(def.getOperation()==LLVM_Operation.ALLOCA
 							&& def.getTarget().getTypeString().startsWith("["))) {
@@ -306,10 +310,13 @@ public class LLVM_Block{
 				if(stores==null) {
 					stores = new LinkedList<LLVM_GenericCommand>();
 				}
-				// Fuege ein, falls der Befehl noch nicht enthalten ist
-				if(!stores.contains(c)) {
-					stores.add(c);
+				else {
+					stores.clear();
 				}
+				// Fuege ein, falls der Befehl noch nicht enthalten ist
+				//if(!stores.contains(c)) {
+				stores.add(c);
+				//}
 				
 				reaching.put(registerName, stores);
 			}
@@ -458,7 +465,7 @@ public class LLVM_Block{
 		return false;
 	}
 	
-	private void createCommands() {
+	private void createCommands() throws LLVM_OptimizationException{
 		String commandsArray[] = this.blockCode.split("\n");
 		
 		int i = 0;
@@ -489,7 +496,7 @@ public class LLVM_Block{
 	
 	// Ermittelt Operation und erzeugt Command mit passender Klasse
 	//TODO elegante Methode finden, switch funktioniert auf Strings nicht!
-	private LLVM_GenericCommand mapCommands(String cmdLine, LLVM_GenericCommand predecessor){
+	private LLVM_GenericCommand mapCommands(String cmdLine, LLVM_GenericCommand predecessor) throws LLVM_OptimizationException{
 		
 		// comment handling
 		if (cmdLine.startsWith(";")){
@@ -535,13 +542,11 @@ public class LLVM_Block{
 			return new LLVM_CallCommand(cmdLine, predecessor, this);
 		}else if(cmdLine.contains(" = icmp ")){
 			return new LLVM_IcmpCommand(cmdLine, predecessor, this);
-		}else if(!cmdLine.isEmpty()){
-			return new LLVM_DummyCommand(cmdLine, predecessor, this);
 		}else{
-			return null;
+			throw new LLVM_OptimizationException("Nicht implementiertes LLVM_Kommando: " + cmdLine);
 		}
 	}
-	
+
 	/*
 	 * *********************************************************
 	 * *********** Hilfsfunktionen *****************************

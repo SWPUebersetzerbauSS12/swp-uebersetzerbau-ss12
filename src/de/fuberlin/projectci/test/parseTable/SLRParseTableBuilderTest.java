@@ -20,6 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.fuberlin.commons.util.LogFactory;
+import de.fuberlin.projectci.grammar.BNFGrammarReader;
 import de.fuberlin.projectci.grammar.BNFParsingErrorException;
 import de.fuberlin.projectci.grammar.Grammar;
 import de.fuberlin.projectci.grammar.GrammarReader;
@@ -64,7 +65,7 @@ public class SLRParseTableBuilderTest {
 				"<T>  ::= <T> \"*\" <F> | <F>\n"+
 				"<F>  ::= \"(\" <E> \")\" | \"id\"";
 
-		GrammarReader grammarReader=new GrammarReader();
+		GrammarReader grammarReader=new BNFGrammarReader();
 		
 		try {
 			grammar=grammarReader.readGrammar(new StringReader(strGrammar)); 
@@ -199,7 +200,7 @@ public class SLRParseTableBuilderTest {
 	}
 
 	private Grammar sourceGrammar(){
-		GrammarReader grammarReader = new GrammarReader();
+		GrammarReader grammarReader = new BNFGrammarReader();
 		Grammar g3 = null;
 		try {
 			g3 = grammarReader.readGrammar("./doc/quellsprache_bnf.txt");
@@ -217,7 +218,7 @@ public class SLRParseTableBuilderTest {
 				"<L>  ::= \"*\" <R> | \"id\"\n"+
 				"<R>  ::= <L>\n";
 
-		GrammarReader grammarReader=new GrammarReader();
+		GrammarReader grammarReader=new BNFGrammarReader();
 		Grammar grammar=null;
 		try {
 			grammar=grammarReader.readGrammar(new StringReader(strGrammar)); 
@@ -235,7 +236,7 @@ public class SLRParseTableBuilderTest {
 				"<S0> ::= <S>\n"+
 				"<S>  ::= \"if\" <S> \"else\" <S> | \"if\" <S> | \"a\"\n";
 
-		GrammarReader grammarReader=new GrammarReader();
+		GrammarReader grammarReader=new BNFGrammarReader();
 		Grammar grammar=null;
 		try {
 			grammar=grammarReader.readGrammar(new StringReader(strGrammar)); 

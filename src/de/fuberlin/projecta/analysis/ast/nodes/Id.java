@@ -1,5 +1,6 @@
 package de.fuberlin.projecta.analysis.ast.nodes;
 
+import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
 
 public class Id extends Expression {
@@ -7,7 +8,6 @@ public class Id extends Expression {
 	/**
 	 * Should be set in genCode, when register is allocated
 	 */
-
 	private String value;
 
 	public Id(String value) {
@@ -24,8 +24,9 @@ public class Id extends Expression {
 	}
 
 	public Type getType() {
-		if (SymbolTableHelper.lookup(this.getValue(), this) != null)
-			return SymbolTableHelper.lookup(this.getValue(), this).getType();
+		EntryType entryType = SymbolTableHelper.lookup(this.getValue(), this);
+		if (entryType != null)
+			return entryType.getType();
 		return null;
 	}
 

@@ -7,19 +7,21 @@ import de.fuberlin.projecta.analysis.SymbolTableHelper;
 import de.fuberlin.projecta.codegen.LLVM;
 
 /**
- * This class represents one function call. It has one or two children. The
- * first is id, which represents the functions name, the second is a node of
- * type Args (if existing) and contains all arguments.
+ * This class represents one function call.
  * 
- * @author micha
- * 
+ * It has one or two children. The first is id, which represents the functions name,
+ * the second is a node of type Args (if existing) and contains all arguments. 
  */
 public class FuncCall extends Expression {
 
-	@Override
+	public Id getId() {
+		return (Id)getChild(0);
+	}
+
 	/**
 	 * For this to work properly all parameters MUST be loaded before!
 	 */
+	@Override
 	public String genCode() {
 		String ret = "";
 		EntryType func = null;
@@ -32,10 +34,10 @@ public class FuncCall extends Expression {
 			// TODO: this is currently not working if multiple instances with
 			// this id exist in the symbolTable!!!
 			func = SymbolTableHelper
-					.lookup(((Id) getChild(0)).getValue(), this);
+					.lookup(getId().getValue(), this);
 		} else {
 			func = SymbolTableHelper
-					.lookup(((Id) getChild(0)).getValue(), this);
+					.lookup(getId().getValue(), this);
 		}
 		if (func != null) {
 			ret = "call " + func.getType().genCode();
@@ -88,7 +90,6 @@ public class FuncCall extends Expression {
 	}
 
 	public boolean searchUpAssign() {
-
 		BinaryOp bOp = null;
 		if (getParent() != null) {
 			ISyntaxTree parent = getParent();
@@ -106,7 +107,7 @@ public class FuncCall extends Expression {
 
 	@Override
 	public String toTypeString() {
-		return SymbolTableHelper.lookup(((Id) getChild(0)).getValue(), this)
+		return SymbolTableHelper.lookup(getId().getValue(), this)
 				.getType().toTypeString();
 	}
 

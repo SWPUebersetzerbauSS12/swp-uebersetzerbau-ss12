@@ -37,7 +37,7 @@ public class CodeGenerator {
 		Translator trans = new Translator(asmType);
 
 		// Token durchgehen und übersetzten bis EOF
-		GUI gui = new GUI();
+		GUI gui = guiFlag?new GUI():null;
 		int linecount = 0;
 		ArrayList<Token> tokenStream;
 		// Token einlesen

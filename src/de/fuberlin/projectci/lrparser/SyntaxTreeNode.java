@@ -78,10 +78,6 @@ public class SyntaxTreeNode implements ISyntaxTree{
 				if (name.equals(aChildTree.getToken().getText())){
 					result.add(aChildTree);
 				}
-				else if (aChildTree.getToken().getText()==null && Grammar.EMPTY_STRING.equals(name)){
-					// Hook für die neue Token-Implementtierung, bei der Token.text==null ist für den leeren String
-					result.add(aChildTree);
-				}
 			}
 		}
 		return result;

@@ -3,13 +3,10 @@ package de.fuberlin.projectci.lrparser;
 import java.util.Stack;
 import java.util.logging.Logger;
 
-import de.fuberlin.commons.util.LogFactory;
 import de.fuberlin.commons.lexer.ILexer;
-import de.fuberlin.commons.parser.ISyntaxTree;
-//import de.fuberlin.projectci.extern.IToken;
-//import de.fuberlin.projectci.extern.IToken.TokenType;
 import de.fuberlin.commons.lexer.IToken;
-import de.fuberlin.projectci.extern.lexer.Token;
+import de.fuberlin.commons.parser.ISyntaxTree;
+import de.fuberlin.commons.util.LogFactory;
 import de.fuberlin.projectci.grammar.Grammar;
 import de.fuberlin.projectci.grammar.NonTerminalSymbol;
 import de.fuberlin.projectci.grammar.Production;
@@ -97,8 +94,7 @@ public class Driver {
 					// TODO Prüfen, ob dies die richtige Art und Weise ist um einen ε-Übergang herzustellen
 					// (Der Syntaxbaum für ein einfaches Programm sah jedenfalls richtig aus...)
 					storedToken=currentToken;
-					// FIXME TokenType.EPSILON gibt es nicht mehr, wurde durch null ersetzt
-					currentToken=new Token(null, null, currentToken.getLineNumber(), currentToken.getOffset());
+					currentToken=new EpsilonToken(currentToken.getLineNumber(), currentToken.getOffset());
 					currentTerminalSymbol=Grammar.EPSILON;
 //					if (!tokenStack.isEmpty()){
 //						tokenStack.pop();
@@ -116,6 +112,7 @@ public class Driver {
 				for(TerminalSymbol t : parseTable.getActionTableForState(currentState).getAllLegalTerminals()) {
 					if (i>0)strBufPossibleTokens.append(", ");
 					strBufPossibleTokens.append(t);
+					i++;
 				}
 				logger.warning("Parse Error: Expected Token :"+strBufPossibleTokens);								
 				break;
@@ -137,6 +134,42 @@ public class Driver {
 		return nextToken;
 	}
 	
+	private static class EpsilonToken implements IToken{
+		private int lineNumber;
+		private int offset;
+		
+		public EpsilonToken(int lineNumber, int offset) {
+			this.lineNumber=lineNumber;
+			this.offset=offset;
+		}
+
+		@Override
+		public String getType() {
+			// Wird nur intern verwendet und type brauchen wir nicht...
+			return null;
+		}
+
+		@Override
+		public String getText() {
+			return Grammar.EMPTY_STRING;
+		}
+
+		@Override
+		public Object getAttribute() {			
+			return null;
+		}
+
+		@Override
+		public int getOffset() {
+			return offset;
+		}
+
+		@Override
+		public int getLineNumber() {
+			return lineNumber;
+		}
+		
+	}
 	
 }
  

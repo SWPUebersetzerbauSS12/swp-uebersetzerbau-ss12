@@ -84,7 +84,7 @@ public class Token implements IToken {
 		mapping.put(TokenType.RBRACKET, "]");
 		mapping.put(TokenType.LBRACE, "{");
 		mapping.put(TokenType.RBRACE, "}");
-		mapping.put(TokenType.EOF, "eof");
+		mapping.put(TokenType.EOF, "EOF");
 	}
 
 	public TokenType getInternalType() {

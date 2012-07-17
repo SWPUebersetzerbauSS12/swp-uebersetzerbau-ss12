@@ -56,22 +56,24 @@ public class Record extends Type {
 	@Override
 	public String genStruct() {
 		String ret = "";
-		if (getFuncId() != null) {
-			ret = "%struct." + getFuncId().getValue() + " = type { ";
-			boolean tmp = false;
-			for (int i = 0; i < getChildrenCount(); i++) {
-				String t = ((Type) (getChild(i).getChild(0))).genCode();
-				if (!t.equals("")) {
-					t += ", ";
-					tmp = true;
+		if (!(getParent() instanceof Params)) {
+			if (getFuncId() != null) {
+				ret = "%struct." + getFuncId().getValue() + " = type { ";
+				boolean tmp = false;
+				for (int i = 0; i < getChildrenCount(); i++) {
+					String t = ((Type) (getChild(i).getChild(0))).genCode();
+					if (!t.equals("")) {
+						t += ", ";
+						tmp = true;
+					}
+					ret += t;
 				}
-				ret += t;
+				if (tmp) {
+					ret = ret.substring(0, ret.length() - 2);
+				}
+				ret += " }";
+				return ret + "\n";
 			}
-			if (tmp) {
-				ret = ret.substring(0, ret.length() - 2);
-			}
-			ret += " }";
-			return ret + "\n";
 		}
 		return ret;
 	}
@@ -85,14 +87,14 @@ public class Record extends Type {
 	private Id getFuncId() {
 		return (Id) getParent().getChild(1);
 	}
-	
+
 	@Override
-	public void buildSymbolTable(SymbolTableStack tables){
+	public void buildSymbolTable(SymbolTableStack tables) {
 		tables.push();
-		for(int i = 0; i < getChildrenCount(); i++){
-			((Declaration)getChild(i)).buildSymbolTable(tables);
+		for (int i = 0; i < getChildrenCount(); i++) {
+			((Declaration) getChild(i)).buildSymbolTable(tables);
 		}
-		table = tables.pop();		
+		table = tables.pop();
 	}
 
 }

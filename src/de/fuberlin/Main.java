@@ -13,6 +13,7 @@ import de.fuberlin.commons.parser.IParser;
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.commons.util.LogFactory;
 import de.fuberlin.optimierung.LLVM_Optimization;
+import de.fuberlin.optimierung.LLVM_OptimizationException;
 import de.fuberlin.projectF.CodeGenerator.CodeGenerator;
 import de.fuberlin.projecta.analysis.SemanticAnalyzer;
 import de.fuberlin.projecta.analysis.SemanticException;

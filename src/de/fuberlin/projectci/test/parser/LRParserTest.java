@@ -21,11 +21,11 @@ import de.fuberlin.commons.lexer.ILexer;
 import de.fuberlin.commons.parser.IParser;
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.commons.util.LogFactory;
+import de.fuberlin.optimierung.LLVM_Optimization;
 import de.fuberlin.projecta.analysis.SemanticAnalyzer;
 import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projectci.lrparser.LRParser;
 import de.fuberlin.projectci.lrparser.LRParserException;
-import de.fuberlin.projectcii.ParserGenerator.src.LL1Parser;
 
 public class LRParserTest {
 	private static Logger logger = LogFactory.getLogger(LRParserTest.class);
@@ -108,9 +108,47 @@ public class LRParserTest {
 							semanticAnalyzer.getAST().checkSemantics();
 							try {
 								String generatedLLVMCode = semanticAnalyzer.getAST().genCode();
-								// TODO Gibt es eine einfache Möglichkeit die Güte des LLVM Codes zu beurteilen?
-								numberOfPassedTests++;
-								logger.info("Succeed to generate LLVM code.");
+								String optimized_llvm_code = null;
+								
+								try {
+									LLVM_Optimization llvm_optimizer = new LLVM_Optimization();
+									optimized_llvm_code = llvm_optimizer.optimizeCodeFromString(generatedLLVMCode);
+								} catch (Exception e) {
+									logger.log(Level.WARNING,"LLVM Optimization failed. Use unoptimized code!",e);
+									// Nutze nicht optimierten Code
+									optimized_llvm_code = generatedLLVMCode;
+								}								
+								
+								try {
+									// TODO CodeGenerator kann nicht getestet werden, da Exception in CodeGenerator.generateCode2 gefangen und nicht wieder geworfen wird.
+//									boolean debug = false;
+//									boolean guiFlag = false;								
+//									boolean exec = false;
+//									String asmType = "gnu";
+//										
+//									String machineCode = CodeGenerator.generateCode(optimized_llvm_code, asmType, debug, guiFlag);
+//									// TODO Gibt es eine einfache Möglichkeit die Güte des LLVM Codes zu beurteilen?
+//									if (machineCode==null){
+//										logger.log(Level.SEVERE, "CodeGenerator failed to generate Machine code.");
+//										continue;
+//									}
+//									
+//									
+////									if (outputFile != null) {
+////										CodeGenerator.writeFile(exec, outputFile, machineCode);
+////									}
+////									
+////									if (exec) {
+////										CodeGenerator.exec(outputFile);
+////									}
+									
+									numberOfPassedTests++;
+									logger.info("Succeed to generate LLVM code.");
+//									logger.info("Succeed to generate Machine code.");
+								} catch (RuntimeException e) {
+									logger.log(Level.WARNING,"Machine Code Generation failed.",e);
+								}																								
+								
 							} catch (Exception e) {
 								logger.log(Level.SEVERE, "SemanticAnalyzer failed to generate LLVM code on SyntaxTree.", e);
 							}

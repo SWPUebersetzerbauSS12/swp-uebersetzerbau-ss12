@@ -1,54 +1,134 @@
 package de.fuberlin.projectci.test.parser;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.io.File;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.junit.Before;
 import org.junit.Test;
 
+import de.fuberlin.bii.lexergen.BuilderType;
+import de.fuberlin.bii.lexergen.Lexergen;
+import de.fuberlin.bii.tokenmatcher.errorhandler.ErrorCorrector.CorrectionMode;
 import de.fuberlin.commons.lexer.ILexer;
+import de.fuberlin.commons.parser.IParser;
 import de.fuberlin.commons.parser.ISyntaxTree;
+import de.fuberlin.commons.util.LogFactory;
 import de.fuberlin.projecta.analysis.SemanticAnalyzer;
-import de.fuberlin.projecta.lexer.Lexer;
-import de.fuberlin.projecta.lexer.io.StringCharStream;
+import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projectci.lrparser.LRParser;
+import de.fuberlin.projectci.lrparser.LRParserException;
+import de.fuberlin.projectcii.ParserGenerator.src.LL1Parser;
 
 public class LRParserTest {
-	
-	// TODO alle Testklassen lieber in das "tests" Verzeichnis?
+	private static Logger logger = LogFactory.getLogger(LRParserTest.class);
+	private static final String testSourceFilesDirPath="input/de/fuberlin/projectci/quellprogrammdateien";
+	private static final String DEFAULT_GRAMMAR_FILE = "input/de/fuberlin/projectci/non-ambigous.txt";
+	private static final String DEFAULT_TOKEN_DEFINITION_FILE = "input/de/fuberlin/bii/def/tokendefinition.rd";
 	
 	@Before
 	public void setUp() throws Exception {
+		// Disable System.out to avoid spamming the console output
+		//PrintStream printStreamOriginal=System.out;
+		System.setOut(new PrintStream(new OutputStream(){
+			public void write(int b) {
+			}
+		}));
+		LogFactory.init(Level.INFO, null, null);
 	}
 
 	@Test
 	public void testParse() {
+		boolean rebuildDFA=false;
 		
-		String grammarPath="./input/de/fuberlin/projectci/non-ambigous.txt";
-//		grammarPath="./src/de/fuberlin/projectcii/ParserGenerator/language_mod_new.txt";
-		String strProgram=
-				"def int fib(int n){\n"+
-				"  if (n <= 1) return n;\n"+
-				"  else {\n"+
-				"    int fib;\n"+
-				"    fib=fib(n-1) + fib(n-2);\n"+
-				"    return fib;\n"+
-				"  }\n"+
-				"}\n"+
-				"\n"+
-				"def int main(){\n"+
-				"  int n;\n"+
-				"  int fib;\n"+
-				"  fib=fib(n);\n"+
-				"  print fib;\n"+
-				"  return fib;\n"+
-				"}\n";
-		ILexer lexer=new Lexer(new StringCharStream(strProgram));
-		LRParser parser=new LRParser();
-		ISyntaxTree syntaxTree= parser.parse(lexer, grammarPath);
-		System.out.println(syntaxTree);
-		System.out.println(strProgram);
-		SemanticAnalyzer semanticAnalyzer= new SemanticAnalyzer(syntaxTree);
-		semanticAnalyzer.analyze();
-		semanticAnalyzer.getAST().checkSemantics();
-//		semanticAnalyzer.getAST().printTree();
+		File[] sourceFiles = null;
+		try {
+			File testSourceFilesDir = new File(testSourceFilesDirPath);
+			sourceFiles = testSourceFilesDir.listFiles();
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Failed to access example source files from "+testSourceFilesDirPath, e);
+			fail("Failed to access example source files from "+testSourceFilesDirPath);
+		}
+		if (sourceFiles==null){
+			logger.log(Level.SEVERE, "Failed to access any example source files from "+testSourceFilesDirPath);
+			fail("Failed to access any example source files from "+testSourceFilesDirPath);
+		}
+		
+		if (sourceFiles.length==0){
+			logger.info("No source file found in "+testSourceFilesDirPath);
+			return;
+		}
+		
+		IParser parser=new LRParser();
+		int numberOfTests=0;
+		int numberOfPassedTests=0;
+		
+		for (int i = 0; i < sourceFiles.length; i++) {
+			File aSourceFile = sourceFiles[i];
+						
+			List<ILexer> lexers=new ArrayList<ILexer>();
+			try {
+				lexers.add(new Lexergen(new File(DEFAULT_TOKEN_DEFINITION_FILE), aSourceFile, BuilderType.directBuilder, CorrectionMode.PANIC_MODE, rebuildDFA));
+			} catch (Exception e) {
+				logger.log(Level.SEVERE, "Failed to create Lexer "+BuilderType.directBuilder+" for tokendefinition="+DEFAULT_TOKEN_DEFINITION_FILE+" and sourceFile="+aSourceFile.getAbsolutePath(), e);
+			}
+			try {
+				lexers.add(new Lexergen(new File(DEFAULT_TOKEN_DEFINITION_FILE), aSourceFile, BuilderType.indirectBuilder, CorrectionMode.PANIC_MODE, rebuildDFA));
+			} catch (Exception e) {
+				logger.log(Level.SEVERE, "Failed to create Lexer "+BuilderType.indirectBuilder+" for tokendefinition="+DEFAULT_TOKEN_DEFINITION_FILE+" and sourceFile="+aSourceFile.getAbsolutePath(), e);
+			}
+			
+			for (ILexer aLexer : lexers) {
+				numberOfTests++;
+				try {
+					logger.info("Testing sourceFile: "+aSourceFile.getAbsolutePath()+" with lexer="+((Lexergen)aLexer).getBuilderType()+", tokenDefintion="+DEFAULT_TOKEN_DEFINITION_FILE+" and grammar="+DEFAULT_GRAMMAR_FILE);
+					ISyntaxTree syntaxTree = null;
+					try {
+						syntaxTree = parser.parse(aLexer, DEFAULT_GRAMMAR_FILE);
+						if (syntaxTree==null){
+							logger.log(Level.SEVERE, "Parser failed to create SyntaxTree.");
+							continue;
+						}
+					} catch (RuntimeException e) {
+						logger.log(Level.SEVERE, "Parser failed to create SyntaxTree.", e);
+						continue;
+					}
+					
+					SemanticAnalyzer semanticAnalyzer= new SemanticAnalyzer(syntaxTree);
+					try {
+						semanticAnalyzer.analyze();
+						try {
+							semanticAnalyzer.getAST().checkSemantics();
+							try {
+								String generatedLLVMCode = semanticAnalyzer.getAST().genCode();
+								// TODO Gibt es eine einfache Möglichkeit die Güte des LLVM Codes zu beurteilen?
+								numberOfPassedTests++;
+								logger.info("Succeed to generate LLVM code.");
+							} catch (Exception e) {
+								logger.log(Level.SEVERE, "SemanticAnalyzer failed to generate LLVM code on SyntaxTree.", e);
+							}
+						} catch (RuntimeException e) {
+							logger.log(Level.WARNING, "SemanticAnalyzer failed to check semantics on SyntaxTree.", e);
+						}
+					} catch (SemanticException e) {
+						logger.log(Level.SEVERE, "SemanticAnalyzer failed to analyze SyntaxTree.", e);
+					}
+
+				} catch (LRParserException e) {
+					logger.log(Level.SEVERE, "LRParser failed to create SyntaxTree", e);
+				}
+			}
+		}
+		int numberOfFaildTests=numberOfTests-numberOfPassedTests;
+		assertEquals(numberOfFaildTests+" out of "+numberOfTests+" tests failed", numberOfTests,numberOfPassedTests);
+		
 	}
 
 	

@@ -16,6 +16,12 @@ import de.fuberlin.projecta.lexer.io.StringCharStream;
 import de.fuberlin.projecta.parser.ParseException;
 import de.fuberlin.projecta.parser.Parser;
 
+/**
+ * This tests the following parts:
+ * Lexer -> Parser
+ * 
+ * The focus here are parsing failures
+ */
 public class ParserTest {
 
 	static String mainC(String block) {

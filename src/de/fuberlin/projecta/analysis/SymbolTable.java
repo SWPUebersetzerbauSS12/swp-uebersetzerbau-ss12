@@ -3,8 +3,8 @@ package de.fuberlin.projecta.analysis;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.fuberlin.projecta.analysis.ast.nodes.Id;
-import de.fuberlin.projecta.analysis.ast.nodes.Type;
+import de.fuberlin.projecta.analysis.ast.Id;
+import de.fuberlin.projecta.analysis.ast.Type;
 
 public class SymbolTable {
 

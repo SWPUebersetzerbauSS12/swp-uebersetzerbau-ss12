@@ -12,10 +12,6 @@ public class ParseTable {
 
 	private String[][] table 
 		= new String[NonTerminal.values().length][TokenType.values().length];
-	
-	private static String toKey(NonTerminal nonT, TokenType t) {
-		return nonT.toString() + "/" + t.toString();
-	}
 
 	/**
 	 * Stores the BNF String into the right cell, only if terminals and

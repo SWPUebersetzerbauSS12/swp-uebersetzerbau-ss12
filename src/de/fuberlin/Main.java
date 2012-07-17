@@ -2,6 +2,7 @@ package de.fuberlin;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.logging.Level;
 
 import de.fuberlin.bii.lexergen.BuilderType;
 import de.fuberlin.bii.lexergen.Lexergen;
@@ -10,8 +11,8 @@ import de.fuberlin.bii.tokenmatcher.errorhandler.ErrorCorrector.CorrectionMode;
 import de.fuberlin.commons.lexer.ILexer;
 import de.fuberlin.commons.parser.IParser;
 import de.fuberlin.commons.parser.ISyntaxTree;
+import de.fuberlin.commons.util.LogFactory;
 import de.fuberlin.optimierung.LLVM_Optimization;
-import de.fuberlin.optimierung.LLVM_OptimizationException;
 import de.fuberlin.projectF.CodeGenerator.CodeGenerator;
 import de.fuberlin.projecta.analysis.SemanticAnalyzer;
 import de.fuberlin.projecta.analysis.SemanticException;
@@ -40,6 +41,9 @@ public class Main {
 	static final String PARAM_SOURCE_FILE = "-f"; // Gibt den Pfad zum Quellprogramm an
 	static final String PARAM_OUTPUT_FILE = "-o"; // Gibt den Pfad zur Ausgabedatei an
 	static final String PARAM_LLVM_INPUT_FILE = "-llvm"; // Gibt den Pfad zur LLVM Quelldatei an
+	static final String PARAM_LOG_LEVEL_CONSOLE = "-logLevelConsole"; // Gibt den zu verwendenen LogLevel für die Console an
+	static final String PARAM_LOG_LEVEL_FILE = "-logLevelFile"; // Gibt den zu verwendenen LogLevel für die Console an
+	static final String PARAM_LOG_FILE = "-logFile"; // Gibt den Pfad für eine Logdatei an
 	
 	// Standard Parameter
 	static final String DEFAULT_GRAMMAR_FILE = "input/de/fuberlin/projectci/non-ambigous.txt";
@@ -60,10 +64,44 @@ public class Main {
 	 */
 	public static void main(String args[]) {
 		HashMap<String,String> arguments = readParams(args);
+		initLogging(arguments);
 		runFrontend(arguments);
 		runBackend(arguments);
 	}
 
+	
+	private static void initLogging(HashMap<String,String> arguments){
+		Level logLevelConsole=null;
+		Level logLevelFile=null;
+		File logFile=null;
+		
+		String strLogLevelConsole=arguments.get(PARAM_LOG_LEVEL_CONSOLE);
+		if (strLogLevelConsole!=null){
+			try {
+				logLevelConsole=Level.parse(strLogLevelConsole);
+			} catch (IllegalArgumentException e) {
+				System.err.println("Failed to parse param "+PARAM_LOG_LEVEL_CONSOLE +": "+strLogLevelConsole);				
+			}
+		}
+		String strLogLevelFile=arguments.get(PARAM_LOG_LEVEL_FILE);
+		if (strLogLevelFile!=null){
+			try {
+				logLevelFile=Level.parse(strLogLevelFile);
+			} catch (IllegalArgumentException e) {
+				System.err.println("Failed to parse param "+PARAM_LOG_LEVEL_FILE +": "+strLogLevelFile);				
+			}
+		}
+		String logFilePath=arguments.get(PARAM_LOG_FILE);
+		if (logFilePath!=null){
+			logFile=new File(logFilePath);
+//			if (!logFile.canWrite()){
+//				System.err.println("Cannot write to log file configuted by param "+PARAM_LOG_FILE +": "+logFilePath);	
+//				logFile=null;
+//			}
+		}
+		LogFactory.init(logLevelConsole, logLevelFile, logFile!=null?logFile.getAbsolutePath():null);
+	}
+	
 	/**
 	 * Frontend-Phase
 	 * 
@@ -306,7 +344,18 @@ public class Main {
 			} else if(args[i].equalsIgnoreCase(PARAM_OUTPUT_FILE)) {
 				System.out.println("Schreibe Maschinen Code in Datei: "+args[++i]);
 				arguments.put(PARAM_OUTPUT_FILE, args[i]);
-			} else {
+			} else if(args[i].equalsIgnoreCase(PARAM_LOG_LEVEL_CONSOLE)) {
+				System.out.println("Setze ConsoleLogLevel auf : "+args[++i]);
+				arguments.put(PARAM_LOG_LEVEL_CONSOLE, args[i]);
+			} else if(args[i].equalsIgnoreCase(PARAM_LOG_LEVEL_FILE)) {
+				System.out.println("Setze LogLevel für Logdatei auf : "+args[++i]);
+				arguments.put(PARAM_LOG_LEVEL_FILE, args[i]);
+			} else if(args[i].equalsIgnoreCase(PARAM_LOG_FILE)) {
+				System.out.println("Benutze Logdatei : "+args[++i]);
+				arguments.put(PARAM_LOG_FILE, args[i]);
+			}
+			
+			else {
 				System.err.println("Unbekannte Option: "+args[i]);
 			}
 		}

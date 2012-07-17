@@ -430,7 +430,6 @@ public class LLVM_Block{
 	 * Aktualisiere IN und OUT Mengen fuer Reachinganalyse
 	 * Voraussetzung: gen und kill sind gesetzt
 	 * @return true, falls OUT veraendert wurde
-	 * TODO: not ready
 	 */
 	public boolean updateInOutReaching() {
 		
@@ -469,20 +468,32 @@ public class LLVM_Block{
 
 	private boolean labelCheck(String label) {
 		
-		if(label.charAt(0) == ';') {
-			//String[] splitedLabel = label.split("[:;]");
-			//this.label = "%"+splitedLabel[2].trim();
-			//this.label_line = label;
-			//return true;
+		String _label = label.trim();
+		
+		if(_label.charAt(0) == ';') {
 			return false;
 		}else{
-			if (label.contains(":") && label.contains(";") && label.indexOf(';') < label.indexOf(':')) return false;
-			String[] splitedLabel = label.split(":");
 			
-			if(splitedLabel.length >= 2){
-				this.label = "%"+splitedLabel[0];
-				//this.label_line = label;
-				return true;
+			if(_label.contains(":")){
+				
+				if(_label.indexOf(';') > 0){
+					if(_label.indexOf(';') > _label.indexOf(':')){
+						String[] splitedLabel = label.split(":");
+						
+						if(splitedLabel[0].matches("[a-zA-Z0-9]*")){
+							this.label = "%"+splitedLabel[0];
+							return true;
+						}
+					}
+				}else{
+					String[] splitedLabel = label.split(":");
+					
+					if(splitedLabel[0].matches("[a-zA-Z0-9]*")){
+						this.label = "%"+splitedLabel[0];
+						return true;
+					}
+				}
+				
 			}
 		}
 		
@@ -519,7 +530,6 @@ public class LLVM_Block{
 	}
 	
 	// Ermittelt Operation und erzeugt Command mit passender Klasse
-	//TODO elegante Methode finden, switch funktioniert auf Strings nicht!
 	private LLVM_GenericCommand mapCommands(String cmdLine, LLVM_GenericCommand predecessor) throws LLVM_OptimizationException{
 		
 		// comment handling

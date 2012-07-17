@@ -6,6 +6,8 @@
 \)						{return(")", "")}
 \{						{return("{", "")}
 \}						{return("}", "")}
+\[						{return("[", "")}
+\]						{return("]", "")}
 =						{return("=", "")}
 <						{return("<", "")}
 >						{return(">", "")}
@@ -32,8 +34,8 @@ else					{return("else", "")}
 print					{return("print", "")}
 return					{return("return", "")}
 break					{return("break", "")}
-true					{return("bool", "true")}
-false					{return("bool", "false")}
+true					{return("boolean", parseBoolean())}
+false					{return("boolean", parseBoolean())}
 int						{return("basic", "int")}
 real					{return("basic", "real")}
 string					{return("basic", "string")}

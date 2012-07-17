@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Stack;
 
 import de.fuberlin.bii.tokenmatcher.attributes.Attribute;
+import de.fuberlin.bii.tokenmatcher.attributes.ParseBoolAttribute;
 import de.fuberlin.bii.tokenmatcher.attributes.ParseDoubleAttribute;
 import de.fuberlin.bii.tokenmatcher.attributes.ParseIntAttribute;
 import de.fuberlin.bii.tokenmatcher.attributes.ParseStringAttribute;
@@ -163,6 +164,10 @@ public abstract class ReadTokDefAbstract {
 			}
 			if (tokenAttributes[2].matches(",.*parseString\\(\\s*.*"))
 				return new ParseStringAttribute();
+			
+		    if (tokenAttributes[2].matches(",.*parseBoolean\\(\\s*.*")) {
+		         return new ParseBoolAttribute();
+		     }
 		}
 
 		// something went totally wrong

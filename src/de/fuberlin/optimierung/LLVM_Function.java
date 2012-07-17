@@ -954,7 +954,7 @@ public class LLVM_Function {
 				// Block kann geloescht werden
 				LLVM_Block targetBlock = actualBlock.getNextBlocks().getFirst();
 				String targetBlockLabel = targetBlock.getLabel();
-				//String actualBlockLabel = actualBlock.getLabel();
+				String actualBlockLabel = actualBlock.getLabel();
 				
 				// Gehe Vorgaengerbloecke durch
 				for(LLVM_Block previousBlock : actualBlock.getPreviousBlocks()) {
@@ -965,9 +965,11 @@ public class LLVM_Function {
 					// Befehl aus Registermap austragen
 					this.registerMap.deleteCommand(branchCommand);
 					
-					// Sprung soll zu targetBlock gehen, statt zu actualBlock
-					LLVM_Parameter p = branchCommand.getOperands().getFirst();
-					p.setName(targetBlockLabel);
+					for(LLVM_Parameter p : branchCommand.getOperands()){
+						if(actualBlockLabel.equals(p.getName())){
+							p.setName(targetBlockLabel);
+						}
+					}
 					
 					// Setze Registermapeintrag neu
 					this.registerMap.addCommand(branchCommand);
@@ -985,11 +987,18 @@ public class LLVM_Function {
 					getOperation()==LLVM_Operation.RET || actualBlock.getFirstCommand().
 					getOperation()==LLVM_Operation.RET_CODE)){
 				
+				for(LLVM_Block previousBlock : actualBlock.getPreviousBlocks()) {
+					LLVM_GenericCommand branchCommand = previousBlock.getLastCommand();
+					if(branchCommand.getOperation()==LLVM_Operation.BR_CON)
+						return;
+				}
+
 				// Gehe Vorgaengerbloecke durch
 				for(LLVM_Block previousBlock : actualBlock.getPreviousBlocks()) {
 					// Hole Sprungbefehl des Vorgaengerblocks
 					// Dieser muss ersetzt werden
 					LLVM_GenericCommand branchCommand = previousBlock.getLastCommand();
+					
 					// Befehl aus Registermap austragen
 					this.registerMap.deleteCommand(branchCommand);
 					

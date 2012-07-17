@@ -62,4 +62,14 @@ public class LexergeneratorException extends RuntimeException {
 	public LexergeneratorException(String message) {
 		super(message);
 	}
+
+	public LexergeneratorException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public LexergeneratorException(Throwable cause) {
+		super(cause);
+	}
+	
+	
 }

@@ -227,7 +227,7 @@ public class Lexergen implements ILexer {
 			return _tokenizer.getNextToken();
 		} catch (Exception e) {
 			throw new LexergeneratorException(
-					"Fehler beim Lesen des nächsten Tokens: " + e.getMessage());
+					"Fehler beim Lesen des nächsten Tokens: " + e.getMessage(),e);
 		}
 	}
 

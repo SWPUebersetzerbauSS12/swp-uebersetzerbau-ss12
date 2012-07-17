@@ -195,6 +195,12 @@ public class Main {
 			} else{
 				optimized_llvm_code = llvm_optimizer.optimizeCodeFromString(generatedLLVMCode);
 			}
+		}catch (LLVM_OptimizationException e){
+			// Fehlermeldung anzeigen
+			System.err.println("; OPTIMIZATION-ERROR: " + e.getMessage());
+			
+			// Nutze nicht optimierten Code
+			optimized_llvm_code = generatedLLVMCode;
 		}catch(Exception e){
 			System.err.println(e.getMessage());
 			System.err.println("Optimization not done!\nUse unoptimized code!\n");

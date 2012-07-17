@@ -3,7 +3,9 @@ package de.fuberlin.projecta.analysis.ast;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+
 import de.fuberlin.commons.parser.ISyntaxTree;
+import de.fuberlin.projecta.analysis.SymbolTableStack;
 
 /**
  * Record type
@@ -82,6 +84,15 @@ public class Record extends Type {
 	 */
 	private Id getFuncId() {
 		return (Id) getParent().getChild(1);
+	}
+	
+	@Override
+	public void buildSymbolTable(SymbolTableStack tables){
+		tables.push();
+		for(int i = 0; i < getChildrenCount(); i++){
+			((Declaration)getChild(i)).buildSymbolTable(tables);
+		}
+		table = tables.pop();		
 	}
 
 }

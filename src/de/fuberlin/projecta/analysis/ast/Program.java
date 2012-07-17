@@ -12,8 +12,7 @@ public class Program extends AbstractSyntaxTree {
 		for(int i = 0; i < this.getChildrenCount(); i++){
 			((AbstractSyntaxTree)this.getChild(i)).buildSymbolTable(stack);
 		}
-		table = stack.pop();	
-		
+		table = stack.pop();			
 	}
 
 	@Override

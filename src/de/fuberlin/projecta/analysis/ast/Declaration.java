@@ -13,7 +13,12 @@ public class Declaration extends AbstractSyntaxTree {
 
 	@Override
 	public void buildSymbolTable(SymbolTableStack tables) {
-		tables.top().insertEntry((Id) getChild(1), (Type) getChild(0));
+		Type type = (Type) getChild(0);
+		Id id = (Id) getChild(1);		
+		tables.top().insertEntry(id	, type );
+		if(type instanceof Record){
+			type.buildSymbolTable(tables);
+		}
 	}
 
 	@Override

@@ -5,10 +5,6 @@ import de.fuberlin.optimierung.*;
 
 public abstract class LLVM_GenericCommand{
 	
-	public enum parseTypes{
-		array, struct, vector, i, f, label
-	}
-	
 	protected LLVM_Block block;
 
 	protected LLVM_GenericCommand predecessor = null;
@@ -19,21 +15,10 @@ public abstract class LLVM_GenericCommand{
 	protected LinkedList<LLVM_Parameter> operands = new LinkedList<LLVM_Parameter>();;
 	
 	protected String comment = "";
-	protected String command = "";
 	
 	public LLVM_GenericCommand(LLVM_GenericCommand predecessor, LLVM_Block block, String cmdLine){
 		// Setze die Zeiger
 		this.predecessor = predecessor;
-		
-		String[] com = cmdLine.trim().split(";");
-		
-		if (com.length > 1){
-			for (int i = 1; i < com.length; i++){
-				this.comment += com[i]; 
-			}
-		}
-		
-		this.command = com[0];
 		
 		// Setze den zugehoerigen Basisblock
 		this.setBlock(block);
@@ -88,14 +73,6 @@ public abstract class LLVM_GenericCommand{
 			return "\n";
 		}else{
 			return "; " + comment + "\n";
-		}
-	}
-	
-	public String getCommand(){
-		if (command == ""){
-			return "\n";
-		}else{
-			return command + "\n";
 		}
 	}
 	
@@ -303,8 +280,11 @@ public abstract class LLVM_GenericCommand{
 	protected static void parseEraseComment (StringBuilder cmd){
 		String cmdLine = cmd.toString();
 		// Kommentar entfernen
-		if (cmdLine.contains(";")) cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
-
+		if (cmdLine.contains(";") && !cmdLine.matches("\".*;.*\""))
+			cmdLine = cmdLine.substring(0, cmdLine.indexOf(";"));
+		else if(cmdLine.contains(";"))
+			cmdLine = cmdLine.substring(0, cmdLine.indexOf(";", cmdLine.lastIndexOf("\"")));
+		
 		cmd.delete(0, cmd.length());
 		cmd.append(cmdLine);
 	}
@@ -376,39 +356,6 @@ public abstract class LLVM_GenericCommand{
 		cmd.delete(0, cmd.length());
 		cmd.append(cmdLine);
 		return value;
-	}
-	
-	public static LLVM_Parameter readArrayListToLLVM_Parameter(ArrayList<String> input, parseTypes type, boolean opt){
-		if (type == parseTypes.array){
-			if (!input.get(0).contains("[")) return null;
-			else{
-				// Arrayende finden
-				int count = 0;
-				for (int i = 0; i < input.size(); i++){
-					String str = input.get(i);
-					if (str.contains("[")) count++;
-					if (str.contains("]")) count--;
-					if (count == 0){
-						// Arrayende bei count
-						count = i;
-						break;
-					}
-				}
-				// Arraylist zu String
-				String str = "";
-				for (int i = 0; i <= count; i++){
-					str += input.get(i) + " ";
-				}
-				for (int i = 0; i <= count; i++){
-					input.remove(0);
-				}
-				// name, array
-				LLVM_Parameter tmp = new LLVM_Parameter(input.get(0), str); 
-				input.remove(0);
-				return tmp;
-			}
-		}
-		return null;		
 	}
 	
 	public boolean isFirstCommand() {

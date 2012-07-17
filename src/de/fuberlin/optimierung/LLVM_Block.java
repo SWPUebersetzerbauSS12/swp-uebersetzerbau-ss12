@@ -519,11 +519,13 @@ public class LLVM_Block{
 		LLVM_GenericCommand predecessor = firstCommand;
 		for(i++; i<commandsArray.length; i++) {
 			LLVM_GenericCommand c = mapCommands(commandsArray[i].trim(), predecessor);
-			if(firstCommand == null){
-				firstCommand = c;
-				predecessor = c;
-			}else{
-				predecessor = c;
+			if(c != null){
+				if(firstCommand == null){
+					firstCommand = c;
+					predecessor = c;
+				}else{
+					predecessor = c;
+				}
 			}
 		}
 		this.lastCommand = predecessor;
@@ -533,10 +535,8 @@ public class LLVM_Block{
 	private LLVM_GenericCommand mapCommands(String cmdLine, LLVM_GenericCommand predecessor) throws LLVM_OptimizationException{
 		
 		// comment handling
-		if (cmdLine.startsWith(";")){
-			if (cmdLine.contains("<label>:")) return null;
-			return new LLVM_Comment(cmdLine, predecessor, this);
-		}
+		if (cmdLine.startsWith(";"))
+			return null;
 		
 		// command handling
 		if(cmdLine.startsWith("store ")){

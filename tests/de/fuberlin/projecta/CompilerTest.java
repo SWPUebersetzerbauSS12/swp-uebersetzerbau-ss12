@@ -7,6 +7,12 @@ import org.junit.Test;
 import de.fuberlin.projecta.lexer.io.ICharStream;
 import de.fuberlin.projecta.lexer.io.StringCharStream;
 
+/**
+ * This tests the following parts:
+ * Lexer -> Parser -> Semantic analysis -> Code generation
+ * 
+ * This is a complete test for the whole compiler (frontend+backend)
+ */
 public class CompilerTest {
 
 	// "forward declare"
@@ -158,6 +164,15 @@ public class CompilerTest {
 		System.out.println(code);
 		String output = executeCode(code);
 		assertEquals("1", output);
+	}
+	
+	@Test
+	public void testRecordDeclaration() {
+		final String code = 
+				mainC("record {int i; int j;} myRecord;");
+		System.out.println(code);
+		String output = executeCode(code);
+		assertEquals("", output);
 	}
 
 }

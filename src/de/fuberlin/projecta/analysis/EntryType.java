@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import de.fuberlin.projecta.analysis.ast.nodes.Id;
-import de.fuberlin.projecta.analysis.ast.nodes.Type;
+import de.fuberlin.projecta.analysis.ast.Id;
+import de.fuberlin.projecta.analysis.ast.Type;
 
 /**
  * This class represents an entry of a symboltable. It has at least an id and a
@@ -15,6 +15,9 @@ import de.fuberlin.projecta.analysis.ast.nodes.Type;
  */
 public class EntryType {
 
+	private String id;
+	private Type type;
+
 	public EntryType(Id id, Type type, List<EntryType> params) {
 		this.id = id.getValue();
 		this.type = type;
@@ -22,14 +25,8 @@ public class EntryType {
 	}
 
 	public EntryType(Id id, Type type) {
-		this.id = id.getValue();
-		this.type = type;
-		params = new ArrayList<EntryType>();
+		this(id, type, new ArrayList<EntryType>());
 	}
-
-	private String id;
-
-	private Type type;
 
 	/**
 	 * This may be an empty list of parameters (for declaring functions with

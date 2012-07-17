@@ -5,6 +5,8 @@ import java.util.*;
 import de.fuberlin.optimierung.commands.*;
 
 public class LLVM_Block{
+	// Welche Befehle per RemoveCommonExpressions bearbeitet werden
+	List<String> blacklist = new ArrayList<String>();
 	
 	// Funktion, zu der der Block gehoert
 	private LLVM_Function function = null;
@@ -39,9 +41,19 @@ public class LLVM_Block{
 	private String blockCode;
 
 	public LLVM_Block(String blockCode, LLVM_Function function) throws LLVM_OptimizationException{
-		
 		this.function = function;
-		this.blockCode = blockCode;		
+		this.blockCode = blockCode;	
+	
+		// blacklist für removeCommonExpressions
+		blacklist.add(LLVM_Operation.ALLOCA.toString());
+		blacklist.add(LLVM_Operation.CALL.toString());
+		blacklist.add(LLVM_Operation.BR.toString());
+		blacklist.add(LLVM_Operation.BR_CON.toString());
+		blacklist.add(LLVM_Operation.LOAD.toString());
+		blacklist.add(LLVM_Operation.STORE.toString());
+		blacklist.add(LLVM_Operation.RET.toString());
+		blacklist.add(LLVM_Operation.RET_CODE.toString());
+		
 		this.createCommands();
 	}
 	
@@ -51,19 +63,12 @@ public class LLVM_Block{
 	 * Doppelte Befehle werden nur überprüft, falls in Whitelist
 	 */
 	public void removeCommonExpressions() throws LLVM_OptimizationException{
-		List<String> whitelist = new ArrayList<String>();
 		LinkedList<LLVM_GenericCommand> changed = new LinkedList<LLVM_GenericCommand>();
 		HashMap<String, LinkedList<LLVM_GenericCommand>> commonex = new HashMap<String, LinkedList<LLVM_GenericCommand>>();
-		whitelist.add(LLVM_Operation.ADD.toString());
-		whitelist.add(LLVM_Operation.MUL.toString());
-		whitelist.add(LLVM_Operation.DIV.toString());
-		whitelist.add(LLVM_Operation.SUB.toString());
-		whitelist.add(LLVM_Operation.LOAD.toString());
-		whitelist.add(LLVM_Operation.GETELEMENTPTR.toString());
 		
 		for (LLVM_GenericCommand i = this.firstCommand; i != null; i=i.getSuccessor()){
 			// Nur Kommandos aus der Whitelist optimieren
-			if (!whitelist.contains(i.getOperation().name())) continue;
+			if (blacklist.contains(i.getOperation().name())) continue;
 			
 			if (commonex.containsKey(i.getOperation().name())){
 				// Kommando-Hash existiert
@@ -155,10 +160,14 @@ public class LLVM_Block{
 					LLVM_GenericCommand def = this.function.getRegisterMap().
 							getDefinition(registerName);
 					
-					// TODO: was ist mit structs?
+					// auf Arrays/Structs ist Aktion nicht einfach moeglich,
+					// wird daher ausgeschlossen
+					// bis auf null und getelementptr-abfrage kann der rest wahrscheinlich weg
 					if(def!=null && def.getOperation()!=LLVM_Operation.GETELEMENTPTR 
 							&& !(def.getOperation()==LLVM_Operation.ALLOCA
-							&& def.getTarget().getTypeString().startsWith("["))) {
+							&& def.getTarget().getTypeString().startsWith("["))
+							&& !(def.getOperation()==LLVM_Operation.ALLOCA
+							&& def.getTarget().getTypeString().startsWith("%"))) {
 						
 						// c kann geloescht werden
 						this.function.getRegisterMap().deleteCommand(c);
@@ -328,29 +337,44 @@ public class LLVM_Block{
 				String registerName = c.getOperands().getFirst().getName();
 				LinkedList<LLVM_GenericCommand> stores = reaching.get(registerName);
 				if(stores!=null) {
-					if(stores.size()==1) {
-						LLVM_GenericCommand store = stores.getFirst();
-						// Veraendere Load Befehl, store ist einzige Definition, die Load erreicht
-						this.function.getRegisterMap().deleteCommand(c);
+					if(stores.size()==1) {	// Gibt es nur ein erreichendes Store?
 						
-						// Erstelle  neuen Befehl
-						LLVM_GenericCommand newCommand = new LLVM_BinaryCommand();
-						newCommand.setOperation(LLVM_Operation.ADD);
-						LinkedList<LLVM_Parameter> parameterList = new LinkedList<LLVM_Parameter>();
-						LLVM_Parameter newParameter = store.getOperands().getFirst();
-						parameterList.add(new LLVM_Parameter(newParameter.getName(),
-								newParameter.getTypeString()));
-						parameterList.add(new LLVM_Parameter("0",newParameter.getTypeString()));
-						newCommand.setOperands(parameterList);
-						newCommand.setTarget(c.getTarget());
-						newCommand.setBlock(c.getBlock());
-						newCommand.setPredecessor(c.getPredecessor());
-						newCommand.setSuccessor(c.getSuccessor());
-						c.replaceCommand(newCommand);
+						LLVM_GenericCommand def = this.function.getRegisterMap().
+								getDefinition(registerName);
 						
-						this.function.getRegisterMap().addCommand(newCommand);
+						// auf Arrays/Structs ist Aktion nicht einfach moeglich,
+						// wird daher ausgeschlossen
+						// bis auf null und getelementptr-abfrage kann der rest wahrscheinlich weg
+						if(def!=null && def.getOperation()!=LLVM_Operation.GETELEMENTPTR 
+								&& !(def.getOperation()==LLVM_Operation.ALLOCA
+								&& def.getTarget().getTypeString().startsWith("["))
+								&& !(def.getOperation()==LLVM_Operation.ALLOCA
+								&& def.getTarget().getTypeString().startsWith("%"))) {
 						
-						changed.add(newCommand);
+							LLVM_GenericCommand store = stores.getFirst();
+							// Veraendere Load Befehl, store ist einzige Definition, die Load erreicht
+							this.function.getRegisterMap().deleteCommand(c);
+							
+							// Erstelle  neuen Befehl
+							LLVM_GenericCommand newCommand = new LLVM_BinaryCommand();
+							newCommand.setOperation(LLVM_Operation.ADD);
+							LinkedList<LLVM_Parameter> parameterList = new LinkedList<LLVM_Parameter>();
+							LLVM_Parameter newParameter = store.getOperands().getFirst();
+							parameterList.add(new LLVM_Parameter(newParameter.getName(),
+									newParameter.getTypeString()));
+							parameterList.add(new LLVM_Parameter("0",newParameter.getTypeString()));
+							newCommand.setOperands(parameterList);
+							newCommand.setTarget(c.getTarget());
+							newCommand.setBlock(c.getBlock());
+							newCommand.setPredecessor(c.getPredecessor());
+							newCommand.setSuccessor(c.getSuccessor());
+							c.replaceCommand(newCommand);
+							
+							this.function.getRegisterMap().addCommand(newCommand);
+							
+							changed.add(newCommand);
+							
+						}
 						
 					}
 				}

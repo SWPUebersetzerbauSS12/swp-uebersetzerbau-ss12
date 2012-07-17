@@ -42,7 +42,7 @@ public class Driver {
 			State currentState=stateStack.peek();
 			Action currentAction=parseTable.getAction(currentState, currentTerminalSymbol);
 			// TODO printConfiguration():String und logConfiguration:boolean
-			logger.fine(stateStack+" : " +currentToken+" : "+currentAction);
+			logger.finer(stateStack+" : " +currentToken+" : "+currentAction);
 			if (currentAction instanceof ShiftAction){
 				State targetState=((ShiftAction)currentAction).getTargetState();
 				stateStack.push(targetState);
@@ -81,7 +81,7 @@ public class Driver {
 				nodeStack.push(currentNode);				
 			}
 			else if (currentAction instanceof AcceptAction){
-				logger.fine("Done.");		
+				logger.finer("Done.");		
 				// Wurzel des Parsebaums vom Stack holen 
 				SyntaxTreeNode syntaxTree= nodeStack.pop();				
 				return syntaxTree;

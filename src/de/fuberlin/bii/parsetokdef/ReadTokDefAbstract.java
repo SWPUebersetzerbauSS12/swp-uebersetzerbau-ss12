@@ -53,44 +53,32 @@ public abstract class ReadTokDefAbstract {
 	protected int line = 0;
 
 	/**
-	 * reads a token defintion file. If file is null we take the test token
-	 * definition file definition is taken.
-	 * 
-	 * @param file
-	 * @throws IOException
-	 * @throws TokenDefinitionException
+	 * Liest eine Tokendefintionsdatei.
 	 */
 	public ReadTokDefAbstract(File file) throws IOException,
 			TokenDefinitionException {
 		readFile(file);
 	}
 
-	/**
-	 * reads a token defintion file. If the path is null, the default token
-	 * definition is taken.
-	 * 
-	 * @param path
-	 * @throws FileNotFoundException
-	 * @throws TokenDefinitionException
-	 * @throws IOException
-	 */
 	abstract public void readFile(File file) throws FileNotFoundException,
 			TokenDefinitionException, IOException;
 
 	/**
-	 * Returns all rules.
+	 * Returniert alle gelesenen Regeln
 	 * 
-	 * @return is empty, if you do not execute read() method
+	 * @return wenn die Liste leer ist, ist wahrscheinlich nicht
+	 *         {@link ReadTokDefAbstract#readFile(File)} ausgefuehrt worden
 	 */
 	public List<IRule> getRules() {
 		return rules;
 	}
 
 	/**
-	 * Replaces the definitions in the pattern.
+	 * Ersetzt die Definitionen im linken Musterteil mit regulaeren Ausdruecken
 	 * 
 	 * @param pattern
-	 * @return returns something, which is only including regular expressions
+	 * @return returns Gibt einen String zurueck, der nur noch regulaere
+	 *         Ausdruecke enthaelt
 	 */
 	protected String replaceDef(String pattern) {
 
@@ -162,11 +150,11 @@ public abstract class ReadTokDefAbstract {
 			if (tokenAttributes[2].matches(",.*parseDouble\\(\\s*.*")) {
 				return new ParseDoubleAttribute();
 			}
-			
+
 			if (tokenAttributes[2].matches(",.*parseString\\(\\s*.*")) {
 				return new ParseStringAttribute();
 			}
-			
+
 			if (tokenAttributes[2].matches(",.*parseBoolean\\(\\s*.*")) {
 				return new ParseBoolAttribute();
 			}

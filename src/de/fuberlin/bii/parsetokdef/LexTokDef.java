@@ -42,6 +42,14 @@ import java.util.HashMap;
 import de.fuberlin.bii.utils.IRule;
 import de.fuberlin.bii.utils.Rule;
 
+/**
+ * Liest zeichenweise eine Tokendefinitionsdatei ein. Weitere Information:
+ * {@linkplain https
+ * ://github.com/PascalCase/swp-uebersetzerbau-ss12/wiki/Lexergenerator}
+ * 
+ * @author Benjamin Weißenfels
+ * 
+ */
 public class LexTokDef extends ReadTokDefAbstract {
 
 	private HashMap<String, Boolean> seenPattern;

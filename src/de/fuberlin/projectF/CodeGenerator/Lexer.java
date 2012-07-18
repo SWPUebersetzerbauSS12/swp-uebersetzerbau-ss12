@@ -57,7 +57,6 @@ public abstract class Lexer {
 			p2 = line.indexOf(" ] ",p1 + 1);
 			line = replaceBetween(line, p1, p2, ' ', (char) 1);
 			p1 = line.lastIndexOf(" [ ") + 1;
-			System.out.println("in" + p1);
 		}
 
 		p1 = line.lastIndexOf('{');
@@ -67,9 +66,6 @@ public abstract class Lexer {
 		p1 = line.indexOf('"');
 		p2 = line.indexOf('"', p1 + 1);
 		line = replaceBetween(line, p1, p2, ' ', (char) 1);
-		
-		System.out.println("Bevor:");
-		System.out.println(line);
 		
 		tmpSplitLine = line.split(" ");
 
@@ -124,10 +120,6 @@ public abstract class Lexer {
 				splitLine[count++] = new String(tmpSplitLine[i]);
 			}
 		}
-		
-		for(int i = 0; i < splitLine.length; i++)
-			System.out.print(splitLine[i] + " ");
-		System.out.println();
 		
 		return splitLine;
 	}
@@ -288,7 +280,11 @@ public abstract class Lexer {
 				newToken.setType(TokenType.ExpressionDouble);
 				newToken.setTarget(line[0]);
 				newToken.setTypeTarget(line[2]);
+				if(line[4].contains("e"))
+					line[4] = transformInIEEE(line[4]);
 				newToken.setOp1(line[4]);
+				if(line[5].contains("e"))
+					line[5] = transformInIEEE(line[5]);
 				newToken.setOp2(line[5]);
 			}
 			
@@ -377,11 +373,8 @@ public abstract class Lexer {
 	}
 
 	private String transformInIEEE(String string) {
-		System.out.println("String: " + string);
 		String[] sString = string.split("e");
 		
-		System.out.println(sString[0]);
-		System.out.println(sString[1]);
 		double result = Double.parseDouble(sString[0]);
 		if(sString[1].charAt(0) == '-') {
 			sString[1] = sString[1].substring(1);
@@ -422,16 +415,16 @@ public abstract class Lexer {
 			pair[i] = replaceBetween(pair[i], p1, p2, ' ', (char) 1);
 		}
 		
-		for(String p : pair)
-			System.out.println(p);
-		
 		for(String p : pair) {
 			String[] pairValue = p.split(" ");
 			pairValue[0] = pairValue[0].replace((char)1, ' ');
 			if(pairValue.length > 2)
 				newToken.addParameter(pairValue[2], pairValue[0]);
-			else if(pairValue.length > 1)
+			else if(pairValue.length > 1) {
+				if(!pairValue[1].startsWith("%") && pairValue[1].contains("e"))
+					pairValue[1] = transformInIEEE(pairValue[1]);
 				newToken.addParameter(pairValue[1], pairValue[0]);
+			}
 			else
 				newToken.addParameter("", pairValue[0]);
 		}
@@ -440,26 +433,18 @@ public abstract class Lexer {
 	private void postprocessing() {
 		for (Map.Entry<String, ArrayList<String>> entry : deleteCandidate.entrySet()) {
 			String key = entry.getKey();
-		    System.out.println("Key: " + key);
 		    
 		    int c = 0;
 		    String var = entry.getValue().get(c);
 		    while(var != null) {
 		    	
-			   	for(int i = 0; i < tokenStream.size(); i++) {
-			    	if(tokenStream.get(i).getOp1().equals(var) || tokenStream.get(i).getOp2().equals(var)) {
-			    		System.out.println("add " + tokenStream.get(i).getTarget() + " to delete candidates");
+			   	for(int i = 0; i < tokenStream.size(); i++)
+			    	if(tokenStream.get(i).getOp1().equals(var) || tokenStream.get(i).getOp2().equals(var))
 			    		deleteCandidate.get(key).add(tokenStream.get(i).getTarget());
-			    	}
-			    }
 			   	
-			   	for(int i = 0; i < tokenStream.size(); i++) {
-			    	if(tokenStream.get(i).getTarget().equals(var)) {
-			    		//tokenStream.
-			    		System.out.println("remove token #" + i);
+			   	for(int i = 0; i < tokenStream.size(); i++)
+			    	if(tokenStream.get(i).getTarget().equals(var))
 			    		tokenStream.remove(i);
-			    	}
-			    }
 			   
 			   	try {
 			   		c++;
@@ -470,19 +455,12 @@ public abstract class Lexer {
 			}
 		    
 		    // ersetzen
-		    for(int i = 0; i < tokenStream.size(); i++) {
-		    	if(tokenStream.get(i).getType() == TokenType.Call) {
-		    		for(int j = 0; j < tokenStream.get(i).getParameterCount(); j++) {
-		    			for(int k = 0; k < entry.getValue().size(); k++) {
-			    			if(tokenStream.get(i).getParameter(j).getOperand().equals(entry.getValue().get(k))) {
-			    				System.out.println("var: " + entry.getValue().get(entry.getValue().size() - 1));
+		    for(int i = 0; i < tokenStream.size(); i++)
+		    	if(tokenStream.get(i).getType() == TokenType.Call)
+		    		for(int j = 0; j < tokenStream.get(i).getParameterCount(); j++)
+		    			for(int k = 0; k < entry.getValue().size(); k++)
+			    			if(tokenStream.get(i).getParameter(j).getOperand().equals(entry.getValue().get(k)))
 			    				tokenStream.get(i).getParameter(j).setOperand(key);
-			    			}
-		    			}
-		    		}
-		    	}
-		    }
 		}
-
 	}
 }

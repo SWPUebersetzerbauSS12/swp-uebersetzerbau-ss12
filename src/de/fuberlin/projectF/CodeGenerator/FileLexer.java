@@ -1,8 +1,6 @@
 package de.fuberlin.projectF.CodeGenerator;
 
 import java.io.*;
-import java.lang.Number;
-import java.util.HashMap;
 
 import de.fuberlin.projectF.CodeGenerator.model.Token;
 import de.fuberlin.projectF.CodeGenerator.model.TokenType;

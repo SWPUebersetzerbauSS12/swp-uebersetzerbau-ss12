@@ -278,7 +278,7 @@ public class LLVM {
 	
 	public static String getArrayCallPointer(ArrayCall array){
 		String ret = "";
-		ret += LLVM.loadVar((Id)array.getChild(0));
+		ret += LLVM.loadType((Expression)array.getChild(0));
 		int num = array.getVar();		
 		String index = ", i32 0, i32 " + num;
 		ArrayCall tmp = array;

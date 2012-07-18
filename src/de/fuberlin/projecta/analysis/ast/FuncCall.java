@@ -41,32 +41,6 @@ public class FuncCall extends Expression {
 		}
 		if (func != null) {
 			ret = "call " + func.getType().genCode();
-			if (!func.getParams().isEmpty()) {
-				int counter = 0;
-				ret += " (";
-				for (ISyntaxTree child : getChild(1).getChildren()) {
-					if (!(child instanceof Literal)) {
-
-						Type node = null;
-
-						if (child instanceof Id) {
-							counter++;
-							ret += ((Id) child).getType().genCode() + "*, ";
-						} else if (child instanceof BasicType) {
-							counter++;
-							node = (Type) child;
-							ret += node.genCode() + "*, ";
-						}
-					}
-				}
-				if (counter > 0) {
-					ret = ret.substring(0, ret.length() - 2);
-					ret += ")*";
-				} else {
-					ret = ret.substring(0, ret.length() - 1);
-				}
-			}
-
 			ret += " @" + func.getId() + "(";
 			boolean tmp = false;
 			if (getChildrenCount() > 1)

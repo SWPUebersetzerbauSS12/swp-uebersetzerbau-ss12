@@ -11,11 +11,11 @@
 <type>		::= "basic" <type'> | "record" "{" <decls> "}" <type'>
 <type'>		::= "[" "num" "]" <type'> | "@"
 <stmts>		::= <stmt> <stmts> | "@" 
-<stmt>		::= <assign> ";" | "if" "(" <assign> ")" <stmt> <stmt'> | "while" "(" <assign> ")" <stmt> | "do" <stmt> "while" "(" <assign> ")" ";" | "break" ";" | "return" <stmt''> | "print" <loc> ";" | <block>
+<stmt>		::= <assign> ";" | "if" "(" <assign> ")" <stmt> <stmt'> | "while" "(" <assign> ")" <stmt> | "do" <stmt> "while" "(" <assign> ")" ";" | "break" ";" | "return" <stmt''> | "print" <loc> ";" | <block>struc
 <stmt'>		::= "else" <stmt> | "@" 
 <stmt''>	::= <bool> ";" | ";"
 <loc>		::= "id" <loc''> 
-<loc'>		::= ".""id" | "[" <assign> "]"
+<loc'>		::= "." "id" | "[" <assign> "]"
 <loc''>		::= <loc'> <loc''> | "@" 
 <assign>	::= <bool> <assign'>
 <assign'>	::= "=" <assign> <assign'> | "@" 

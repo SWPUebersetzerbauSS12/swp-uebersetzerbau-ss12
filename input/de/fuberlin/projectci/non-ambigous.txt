@@ -11,7 +11,7 @@
 <type>		::= "basic" <type'> | "record" "{" <decls> "}" <type'>
 <type'>		::= "[" "num" "]" <type'> | "@"
 <stmts>		::= <stmt> <stmts> | "@" 
-<stmt>		::= <assign> ";" | "if" "(" <assign> ")" <stmt> <stmt'> | "while" "(" <assign> ")" <stmt> | "do" <stmt> "while" "(" <assign> ")" ";" | "break" ";" | "return" <stmt''> | "print" <loc> ";" | <block>struc
+<stmt>		::= <assign> ";" | "if" "(" <assign> ")" <stmt> <stmt'> | "while" "(" <assign> ")" <stmt> | "do" <stmt> "while" "(" <assign> ")" ";" | "break" ";" | "return" <stmt''> | "print" <loc> ";" | <block>
 <stmt'>		::= "else" <stmt> | "@" 
 <stmt''>	::= <bool> ";" | ";"
 <loc>		::= "id" <loc''> 

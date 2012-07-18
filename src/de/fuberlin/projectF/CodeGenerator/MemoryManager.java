@@ -6,6 +6,7 @@ import java.util.List;
 import de.fuberlin.projectF.CodeGenerator.model.Array;
 import de.fuberlin.projectF.CodeGenerator.model.ArrayPointer;
 import de.fuberlin.projectF.CodeGenerator.model.MMXRegisterAddress;
+import de.fuberlin.projectF.CodeGenerator.model.Record;
 import de.fuberlin.projectF.CodeGenerator.model.Reference;
 import de.fuberlin.projectF.CodeGenerator.model.RegisterAddress;
 import de.fuberlin.projectF.CodeGenerator.model.Variable;
@@ -66,7 +67,6 @@ public class MemoryManager {
 	}
 
 	public String getAddress(String name) {
-		System.out.println("NAME: " + name);
 		if(current != null) {
 			if(globalReferences.containsKey(current.getName() + "." + name))
 				return globalReferences.get(current.getName() + "." + name).getName();
@@ -153,6 +153,10 @@ public class MemoryManager {
 	public Array newArray(String name, String type, int length) {
 		return current.newArray(name, type, length);
 	}
+	
+	public Record newRecord(Record rec) {
+		return current.newRecord(rec);
+	}
 
 	public ArrayPointer newArrayPtr(String name, String arr, String offset, RegisterAddress reg) {
 		return current.newArrayPtr(name, arr, offset, reg);
@@ -167,11 +171,8 @@ public class MemoryManager {
 	}
 
 	public void newReference(String name, String var) {
-		System.out.println("new Reference");
-		if(globalReferences.containsKey(current.getName() + "." + var)) {
-			System.out.println("Name: " + name + " to: " + current.getName() + "." + var);
+		if(globalReferences.containsKey(current.getName() + "." + var))
 			globalReferences.put(current.getName() + "." + name, globalReferences.get(current.getName() + "." + var));
-		}
 		else
 			current.newReference(name, var);
 	}

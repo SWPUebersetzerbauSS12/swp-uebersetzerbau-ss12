@@ -23,6 +23,7 @@ public class MemoryContext {
 	private HashMap<String, Reference> references;
 	private HashMap<String, Variable> variables;
 	private HashMap<String, Array> arrays;
+	private HashMap<String, Record> records;
 	private HashMap<String, ArrayPointer> arrayPtrs;
 	private HashMap<String, RecordPointer> recordPtrs;
 	private ArrayList<RegisterAddress> freeRegisters;
@@ -36,6 +37,7 @@ public class MemoryContext {
 		references = new HashMap<String, Reference>();
 		variables = new HashMap<String, Variable>();
 		arrays = new HashMap<String, Array>();
+		records = new HashMap<String, Record>();
 		arrayPtrs = new HashMap<String, ArrayPointer>();
 		recordPtrs = new HashMap<String, RecordPointer>();
 		freeRegisters = new ArrayList<RegisterAddress>();
@@ -218,6 +220,12 @@ public class MemoryContext {
 		put(newArr);
 		return newArr;
 	}
+	
+	public Record newRecord(Record rec) {
+		rec.setAddress(stackPointer);
+		put(rec);
+		return rec;
+	}
 
 	public ArrayPointer newArrayPtr(String name, String arrayName, String values, RegisterAddress reg) {
 		Array arr = arrays.get(arrayName);
@@ -235,10 +243,10 @@ public class MemoryContext {
 	public void newRecordPtr(String name, String rec, String offset) {
 		System.out.println("Name: " + name);
 		System.out.println("Record: " + rec);
-		System.out.println("Address " + variables.get(rec).getAddress());
+		System.out.println("Address " + records.get(rec).getAddress(Integer.valueOf(offset)));
 		System.out.println("Offset: " + offset);
 		//TODO cast
-		RecordPointer tmp = new RecordPointer(name, (Record)variables.get(rec),new Integer(offset));
+		RecordPointer tmp = new RecordPointer(name, records.get(rec),new Integer(offset));
 		
 		put(tmp);
 	}
@@ -282,6 +290,12 @@ public class MemoryContext {
 		String name = arr.getName();
 		arrays.put(name, arr);
 		references.put(name, arr);
+	}
+	
+	private void put(Record rec) {
+		String name = rec.getName();
+		records.put(name, rec);
+		references.put(name, rec);
 	}
 
 	private void put(ArrayPointer arrPtr) {

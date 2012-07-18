@@ -198,10 +198,10 @@ public class Translator {
 					
 					for( int i = 0; i < code.get(result).getParameterCount(); i++) {
 						String type = code.get(result).getParameter(i).getType();
-						rec.add(new Variable(String.valueOf(i),type));
+						rec.add(mem.newStackVar(String.valueOf(i),type));
 					}
 					
-					mem.newStackVar(rec);
+					mem.newRecord(rec);
 					asm.sub(String.valueOf(rec.getSize()), "esp",
 							"Allocation " + tok.getTarget());
 				}
@@ -491,12 +491,8 @@ public class Translator {
 			case Getelementptr:
 				if(tok.getTypeTarget().charAt(0) == '%') {
 					//TODO :-)
-					System.out.println("new record pointer");
 					mem.newRecordPtr(tok.getTarget(), tok.getOp1(), tok.getOp2());
 				} else if(tok.getOp1().charAt(0) == '@') {
-					System.out.println("Stringptr");
-					System.out.println("\tTarget: " + tok.getTarget());
-					System.out.println("\tName: " + tok.getOp1());
 					mem.newReference(tok.getTarget(), tok.getOp1().substring(2));
 				} else {
 					// Continue array pointer

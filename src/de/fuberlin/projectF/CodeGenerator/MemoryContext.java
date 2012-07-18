@@ -328,12 +328,14 @@ public class MemoryContext {
 		return usedRegisters.containsKey(i);
 	}
 
-	public void regToStack(Variable var) {
+	public StackAddress regToStack(Variable var) {
 		stackPointer -= var.getSize();
 		RegisterAddress reg = var.getRegAddress();
-		freeRegisters.add(reg);
-		usedRegisters.remove(reg);
-		var.addStackAddress(new StackAddress(stackPointer));
+		StackAddress movedTo = new StackAddress(stackPointer);
+		var.addStackAddress(movedTo);
+		var.freeRegister(reg);
+		freeRegister(reg);
+		return movedTo;
 	}
 
 	public Array getArray(String name) {

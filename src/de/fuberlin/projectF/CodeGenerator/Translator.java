@@ -13,6 +13,7 @@ import de.fuberlin.projectF.CodeGenerator.model.MMXRegisterAddress;
 import de.fuberlin.projectF.CodeGenerator.model.Record;
 import de.fuberlin.projectF.CodeGenerator.model.Reference;
 import de.fuberlin.projectF.CodeGenerator.model.RegisterAddress;
+import de.fuberlin.projectF.CodeGenerator.model.StackAddress;
 import de.fuberlin.projectF.CodeGenerator.model.Token;
 import de.fuberlin.projectF.CodeGenerator.model.TokenType;
 import de.fuberlin.projectF.CodeGenerator.model.Variable;
@@ -105,12 +106,14 @@ public class Translator {
 				// Variablen, die nur in Registern sind, auf dem Stack speichern
 				// TODO: MMX-Register sichern
 				List<Variable> regVars = mem.getRegVariables(true);
+				RegisterAddress movedFrom;
+				StackAddress movedTo;
 				for (Variable var : regVars) {
-					//TODO musste ich auskommentieren NULLPOINTEREXCEPTION bei mathStruct.llvm 
-					System.out.println("Var to stack: " + var.getName());
-					mem.regToStack(var);
+					movedFrom = var.getRegAddress();
+					movedTo = mem.regToStack(var);
 					// Stackpointer verschieben
 					asm.sub(String.valueOf(var.getSize()), "esp", "Move var to stack");
+					asm.mov(movedFrom.getFullName(), movedTo.getFullName(), var.getName());
 				}
 				// Alle Register sind nun frei und werden möglicherweise in der
 				// Aufgerufenen Funktion verwendet.

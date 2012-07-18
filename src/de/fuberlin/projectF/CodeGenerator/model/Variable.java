@@ -90,4 +90,8 @@ public class Variable extends Reference {
 			return getMMXRegAddress().getFullName();
 		return stackAddresses.get(0).getFullName(offset);
 	}
+
+	public void freeRegister(RegisterAddress reg) {
+		regAddresses.remove(reg);		
+	}
 }

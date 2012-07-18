@@ -206,15 +206,15 @@ public class CompilerTest {
 		final String code = mainC("int[10] test; int i; int tmp;" +
 				"i = 0; " +
 				"while (i < 10){" +
-					"i=i+1; " +
-					"test[i] = 1;" +
+					"test[i] = i;" +
 					"tmp = test[i];" +
 					"print tmp;" +
+					"i=i+1; " +
 				"} " +
 				"return 0;");
 		System.out.println(code);
 		String output = executeCode(code);
-		assertEquals("1111111111", output);
+		assertEquals("0123456789", output);
 	}
 
 

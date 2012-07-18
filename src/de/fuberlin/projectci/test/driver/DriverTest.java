@@ -44,7 +44,7 @@ public class DriverTest {
 		Driver driver=new Driver();
 		for (DriverTestDataProvider aTestDataProvider : testDataProviders()) {
 			ISyntaxTree expectedTree=aTestDataProvider.expectedResult();
-			ISyntaxTree tree=driver.parse(aTestDataProvider.getLexer(), aTestDataProvider.getGrammar(), aTestDataProvider.getParseTable());
+			ISyntaxTree tree=driver.parse(aTestDataProvider.getLexer(), aTestDataProvider.getParseTable());
 			// Driver.parse reduziert den Parsebaum nicht mehr automatisch zu einem AST
 			((SyntaxTreeNode)tree).reduceToAbstractSyntaxTree();
 			logger.info("Abstract Syntax Tree:\n"+tree);

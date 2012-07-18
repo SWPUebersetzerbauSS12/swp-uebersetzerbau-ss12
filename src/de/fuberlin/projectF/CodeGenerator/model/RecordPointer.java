@@ -20,11 +20,16 @@ public class RecordPointer extends Reference{
 	}
 
 	public String getAddress() {
-		return rec.getAddress(var);
+		System.out.println("Get Address of " + rec);
+		if(rec != null)
+			return rec.getAddress(var);
+		return pRec.getAddress(var);
 	}
 
 	public String getAddress(int offset) {
-		return rec.getAddress(var, offset);
+		if(rec != null)
+			return rec.getAddress(var, offset);
+		return pRec.getAddress(offset);
 	}
 	
 	public int getSize() {

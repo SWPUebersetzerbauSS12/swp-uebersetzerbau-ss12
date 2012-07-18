@@ -192,16 +192,11 @@ public class Translator {
 				else if(tT.startsWith("%")) {
 					System.out.println("Allocation of a record");
 					int result;
-					result = findToken(tokenNumber, true, TokenType.TypeDefinition, tok.getTypeTarget(), null, null);
-					System.out.println(tok.getTypeTarget() + " found in token #" + result);
-					Record rec = new Record(tok.getTarget());
 					
-					for( int i = 0; i < code.get(result).getParameterCount(); i++) {
-						String type = code.get(result).getParameter(i).getType();
-						rec.add(mem.newStackVar(String.valueOf(i),type));
-					}
+					result = findToken(0, false, TokenType.TypeDefinition, tok.getTypeTarget(), null, null);
 					
-					mem.newRecord(rec);
+					Record rec = createRecord(tok.getTarget(), code.get(result));
+					
 					asm.sub(String.valueOf(rec.getSize()), "esp",
 							"Allocation " + tok.getTarget());
 				}
@@ -217,6 +212,7 @@ public class Translator {
 				break;
 
 			case Assignment:
+				System.out.println("Target: " + tok.getTarget());
 				String target = mem.getAddress(tok.getTarget());
 				String source;
 				// Zuweisung Variable
@@ -491,6 +487,7 @@ public class Translator {
 			case Getelementptr:
 				if(tok.getTypeTarget().charAt(0) == '%') {
 					//TODO :-)
+					System.out.println("New RecordPointer: " + tok.getTarget() + " " + tok.getOp1() + " " + tok.getOp2());
 					mem.newRecordPtr(tok.getTarget(), tok.getOp1(), tok.getOp2());
 				} else if(tok.getOp1().charAt(0) == '@') {
 					mem.newReference(tok.getTarget(), tok.getOp1().substring(2));
@@ -549,6 +546,24 @@ public class Translator {
 	}
 
 	
+
+	private Record createRecord(String name, Token tok) {
+		Record rec = new Record(name);
+		System.out.println("Create Record: " + name);
+		for( int i = 0; i < tok.getParameterCount(); i++) {
+			String type = tok.getParameter(i).getType();
+			if(type.charAt(0) == '%') {
+				int result = findToken(0, false, TokenType.TypeDefinition, type, null, null);
+				Record tmp = createRecord(String.valueOf(i), code.get(result));
+				rec.add(tmp);
+			} else {
+				rec.add(mem.newStackVar(String.valueOf(i),type));
+			}
+		}
+		
+		mem.newRecord(rec);
+		return rec;
+	}
 
 	private boolean freeUnusedRegister(int tokenNumber) {
 		boolean result = false;

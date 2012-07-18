@@ -189,7 +189,7 @@ public class CompilerTest {
 				+ "int d; a.b.c = 3; a.x = 3.14; d = a.b.c; print a.x; return a.x;}";
 		System.out.println(code);
 		String output = executeCode(code);
-		assertEquals("3.14", output);
+		assertEquals("3.140000", output);
 	}
 
 	@Test

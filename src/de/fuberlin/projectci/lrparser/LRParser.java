@@ -99,7 +99,7 @@ public class LRParser implements IParser {
 		}
 		
 		Driver driver=new Driver();
-		ISyntaxTree syntaxTree= driver.parse(lexer, grammar, parseTable);
+		ISyntaxTree syntaxTree= driver.parse(lexer, parseTable);
 		
 		if (syntaxTree==null){
 			logger.warning("LRParser failed.");			

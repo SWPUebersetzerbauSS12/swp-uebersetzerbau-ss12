@@ -2,101 +2,64 @@ package de.fuberlin.projectF.CodeGenerator.model;
 
 import java.util.ArrayList;
 
-public class Variable {
-	public String type;
-	public String name;
+public class Variable extends Reference {
+	ArrayList<StackAddress> stackAddresses;
 	ArrayList<RegisterAddress> regAddresses;
 	ArrayList<MMXRegisterAddress> mmxAddresses;
-	ArrayList<StackAddress> stackAddresses;
-	int size;
 
-	public Variable() {
-		this("undefined", "");
-	}
-
-	public Variable(String type, String name) {
-		this.type = type;
-		this.name = name;
+	public Variable(String name, String type) {
+		super(name, type);
+		stackAddresses = new ArrayList<StackAddress>();
 		regAddresses = new ArrayList<RegisterAddress>();
 		mmxAddresses = new ArrayList<MMXRegisterAddress>();
-		stackAddresses = new ArrayList<StackAddress>();
-		
-		if (this.type.equals("i32"))
-			this.size = 4;
-		else if(this.type.equals("double"))
-			this.size = 8;
 	}
 
-	public Variable(String type, int size, String name) {
-		this(type, name);
-		this.size = size;
-		this.name = name;
+	public Variable(String name, String type, int stackPointer) {
+		this(name, type);
+		stackAddresses.add(new StackAddress(stackPointer - size));
 	}
 
-	// Konstruktor für neue Variable mit impliziter Stackadresse
-	public Variable(String type, int size, int stackAddress, String name) {
-		this(type, name);
-		this.size = size;
-		this.name = name;
-		stackAddresses.add(new StackAddress(stackAddress));
-	}
-
-	// Konstruktor für neue Variable mit Registeradresse
-	public Variable(String type, RegisterAddress reg, String name) {
-		this(type, name);
+	public Variable(String name, String type, RegisterAddress reg) {
+		this(name, type);
 		regAddresses.add(reg);
 	}
-	
-	public Variable(String type, MMXRegisterAddress reg, String name) {
-		this(type, name);
+
+	public Variable(String name, String type, MMXRegisterAddress reg) {
+		this(name, type);
 		mmxAddresses.add(reg);
 	}
 
-	public void addStackAddress(StackAddress stackAddress) {
-		if(stackAddresses.isEmpty()) {
-			System.out.println("is empty");
-		} else {
-			System.out.println("already in: " + stackAddresses.get(0).getFullName());
-		}
-		stackAddresses.add(stackAddress);
+	public Variable(String name, int size) {
+		super(name, "ascii", size);
 	}
 
-	public int getSize() {
-		return size;
-	}
-
-	public void setSize(int size) {
-		this.size = size;
-	}
-
+	@Override
 	public String getAddress() {
 		if (!regAddresses.isEmpty())
 			return getRegAddress().getFullName();
 		else if (!mmxAddresses.isEmpty()) {
-			return getRegAddress().getFullName();
+			return getMMXRegAddress().getFullName();
 		}
 		return stackAddresses.get(0).getFullName();
 	}
 	
-	public String getAddress(int offset) {
-		if (!regAddresses.isEmpty())
-			return getRegAddress().getFullName();
-		else if (!mmxAddresses.isEmpty())
-			return getRegAddress().getFullName();
-		return stackAddresses.get(0).getFullName(offset);
+	public void addStackAddress(StackAddress stackAddress) {
+		stackAddresses.add(stackAddress);
 	}
 
-	public Address getRegAddress() {
-		System.out.println("lffuzfuz" + this.type);
-		if(this.type.equals("double*") || this.type.equals("double"))
-			return mmxAddresses.get(0);
+	public RegisterAddress getRegAddress() {
 		return regAddresses.get(0);
+	}
+	
+	public MMXRegisterAddress getMMXRegAddress() {
+		return mmxAddresses.get(0);
 	}
 
 	public boolean onlyInReg() {
 		return stackAddresses.size() == 0;
 	}
 
+	@Override
 	public boolean onStack() {
 		return !stackAddresses.isEmpty();
 	}
@@ -117,5 +80,14 @@ public class Variable {
 	
 	public boolean inMMXReg() {
 		return !mmxAddresses.isEmpty();
+	}
+
+	
+	public String getAddress(int offset) {
+		if (!regAddresses.isEmpty())
+			return getRegAddress().getFullName();
+		else if (!mmxAddresses.isEmpty())
+			return getMMXRegAddress().getFullName();
+		return stackAddresses.get(0).getFullName(offset);
 	}
 }

@@ -22,14 +22,49 @@ import de.fuberlin.projectci.parseTable.State;
 
 public class Driver {
 	private static Logger logger=LogFactory.getLogger(Driver.class);
-	// Speichert das aktuelle Eingabe-Token, wenn ein ε-Übergang durchgeführt wird
+	/** Speichert das aktuelle Eingabe-Token, wenn ein ε-Übergang durchgeführt wird */
 	private IToken storedToken=null;
 	
-	public ISyntaxTree parse(ILexer lexer, Grammar grammar, ParseTable parseTable) {		
-		// LR-Parse-Algorithmus aus dem Drachenbuch (Algorithmus 4.30/ S. 302 in der 2. deutschen Auflage)
-		// TODO LR-Parse-Algorithmus zitieren
-		// erweitert um die Erzeugung des (vollständigen) Parsebaums und dessen Reduzierung auf den Abstrakten Syntaxbaum.
-		// Speichert die gelesenen Token um sie mit den Terminalknoten zu verknüpfen
+	
+	/**
+	 * Implementiert den LR-Parse-Algorithmus aus dem Drachenbuch (Algorithmus 4.30/ S. 302 in der 2. deutschen Auflage).
+	 * Erweitert um die Erzeugung des (vollständigen) Parsebaums und dessen Reduzierung auf den Abstrakten Syntaxbaum.
+	 * Erweitert um die Behandlung von ε-Übergängen
+	 * Speichert die gelesenen Token um sie mit den Terminalknoten zu verknüpfen.
+	 * LR-Parse-Algorithmus aus dem Drachenbuch :
+	 <code>
+	 	Eingabe: ein Eingabestring w und eine LR-Parsertabelle mit den Funtkionen ACTION und GOTO für eine Grammatik G
+		Ausgabe: wenn w in L(G) ist, die Reduzierungsschritte einer Bottom-Up-Analyse für w, andernfalls eine Fehlermeldung
+		Methode: Zunächst liegt s0, der Ausgangszustand, auf dem Stack und w$ befindet sich im Eingabepuffer. Dann führt der Parser das folgende Programm aus:
+
+		Sei a das erste Symbol von w$;
+		while(1){
+			Sei s der oberste Zustand auf dem Stack;
+			if (ACTION[s,a] = shift t){
+				verschiebe t auf den Stack;
+				Sei a das nächste Eingabesymbol;
+			} 
+			else if (ACTION[s,a] = reduce A → β){
+				Entferne |β| Symbole vom Stack;
+				Zustand t liegt jetzt oben auf dem Stack;
+				verschiebe GOTO[t,A] auf den Stack;
+				gib die Produktion A → β aus; 
+			}
+			else if (ACTION[s,a] = accept){
+				break; // Analyse ist beendet
+			}
+			else{
+				Fehlerbehandlung aufrufen;
+			}
+		}
+	 </code>
+	 * @param lexer ILexer für die Eingabe
+	 * @param parseTable LR-Parsertabelle mit den Funtkionen ACTION und GOTO
+	 * @return den vollständigen (konkreten) Parsebaum
+	 * @throws LRParserException falls kein Parsebaum erzeugt werden konnte.
+	 */
+	public ISyntaxTree parse(ILexer lexer, ParseTable parseTable) {		
+		
 		Stack<IToken> tokenStack= new Stack<IToken>();
 		Stack<SyntaxTreeNode> nodeStack=new Stack<SyntaxTreeNode>();
 		Stack<State> stateStack=new Stack<State>();
@@ -140,7 +175,7 @@ public class Driver {
 
 		@Override
 		public String getType() {
-			// Wird nur intern verwendet und type brauchen wir nicht...
+			// EpsilonToken wird nur intern verwendet und type brauchen wir nicht...
 			return null;
 		}
 

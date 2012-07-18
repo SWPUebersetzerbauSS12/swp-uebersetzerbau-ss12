@@ -3,29 +3,26 @@ package de.fuberlin.projectF.CodeGenerator.model;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-public class Record extends Variable implements Cloneable{
-HashMap<String, Variable> variableList;
+public class Record extends Reference {
+	HashMap<String, Reference> variableList;
+	StackAddress address;
 
 	public Record(String name) {
-		this.name = name;
-		variableList = new HashMap<String,Variable>();
+		super(name, "record");
+		variableList = new HashMap<String,Reference>();
 	}
 	
-	public Object clone() throws CloneNotSupportedException{
-		return super.clone();
-	}
-	
-	public void add(Variable variable) {
-		variableList.put(variable.name, variable);
+	public void add(Reference reference) {
+		variableList.put(reference.name, reference);
 		computeSize();
 	}
 	
-	public void remove(Variable variable) {
-		variableList.remove(variable.name);
+	public void remove(Reference reference) {
+		variableList.remove(reference.name);
 		computeSize();
 	}
 	
-	public Variable get(String name) {
+	public Reference get(String name) {
 		return variableList.get(name);
 	}
 	
@@ -35,9 +32,26 @@ HashMap<String, Variable> variableList;
 	
 	public void computeSize() {
 		int size = 0;
-		for(Entry<String, Variable> v : variableList.entrySet()) {
+		for(Entry<String, Reference> v : variableList.entrySet())
 			size += v.getValue().getSize();
-		}
 		this.size = size;
+	}
+
+	@Override
+	public String getAddress() {
+		return address.getFullName();
+	}
+
+	@Override
+	public String getAddress(int var) {
+		return variableList.get(String.valueOf(var)).getAddress();
+	}
+	
+	public String getAddress(int var, int offset) {
+		return variableList.get(String.valueOf(var)).getAddress(offset);
+	}
+	
+	public void setAddress(int stackAddress) {
+		address = new StackAddress(stackAddress - size);
 	}
 }

@@ -204,6 +204,14 @@ public class GNUAssembler extends Assembler {
 				.append(target).append("\t#").append(comment).append("\n");
 	}
 	
+	@Override
+	protected void lea(String source, String target, String comment) {
+		source = translate(source);
+		target = translate(target);
+		sectionText.append("\tleal ").append(source).append(", ")
+				.append(target).append("\t#").append(comment).append("\n");
+	}
+	
 	protected String translate(String op) {
 		//Wenn Stackaddresse
 		if(op.indexOf(' ') != -1) {

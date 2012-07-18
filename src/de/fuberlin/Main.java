@@ -38,6 +38,8 @@ public class Main {
 	static final String PARAM_BI_LEXER  = "-bi"; // benutzt die indirekte Umwandlung
 	static final String PARAM_BII_LEXER = "-bii"; // benutzt die direkte Umwandlung
 	static final String PARAM_REBUILD_DFA = "-rb"; //Gibt an, dass der DFA neu erstellt werden soll
+	// Codegenerierung
+	static final String PARAM_ASM_TYPE = "-asmType"; // "gnu" oder "intel" w�hlt den Assemblertyp. Standard ist "gnu"
 	// Allgemein
 	static final String PARAM_SOURCE_FILE = "-f"; // Gibt den Pfad zum Quellprogramm an
 	static final String PARAM_OUTPUT_FILE = "-o"; // Gibt den Pfad zur Ausgabedatei an
@@ -50,6 +52,7 @@ public class Main {
 	static final String DEFAULT_GRAMMAR_FILE = "input/de/fuberlin/projectci/non-ambigous.txt";
 	static final String DEFAULT_TOKEN_DEFINITION_FILE = "input/de/fuberlin/bii/def/tokendefinition.rd";
 	static final String DEFAULT_SOURCE_FILE = "input/de/fuberlin/common/default.src";
+	
 	// interne Daten
 	static String generatedLLVMCode = "";
 
@@ -265,6 +268,9 @@ public class Main {
 		}
 		boolean exec = false;
 		String asmType = "gnu";
+		if(arguments.containsKey(PARAM_ASM_TYPE)) {
+			asmType = arguments.get(PARAM_ASM_TYPE);
+		}
 		
 		
 		// TODO Der Assemblertyp ('gnu' oder 'intel') (siehe de.fuberlin.projectF.CodeGenerator.Translator) sollte über die Kommandozeile definierbar sein können		

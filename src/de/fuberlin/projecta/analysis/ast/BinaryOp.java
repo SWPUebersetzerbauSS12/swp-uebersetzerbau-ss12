@@ -24,7 +24,7 @@ public class BinaryOp extends Expression {
 		// TODO: think if you can find other cases, where semantics can be
 		// wrong/ambiguous
 		case OP_ASSIGN:
-			if (!((this.getChild(0) instanceof Id) || this.getChild(0) instanceof RecordVarCall)) {
+			if (!((this.getChild(0) instanceof Id) || this.getChild(0) instanceof RecordVarCall || this.getChild(0) instanceof ArrayCall)) {
 				throw new SemanticException(
 						"Left side of an assignment has to be an identifier, but is "
 								+ this.getChild(0).toString());

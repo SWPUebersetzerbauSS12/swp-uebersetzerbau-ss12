@@ -73,9 +73,10 @@ public class Translator {
 
 			case Return:
 				// Kein Rückgabewert oder bereits in %eax
-				if (tok.getTypeOp1().equals("void")
-						|| mem.inReg(tok.getOp1(), 0))
+				if (tok.getTypeOp1().equals("void") || mem.inReg(tok.getOp1(), 0)) {
+					asm.funcEnd();
 					break;
+				}
 				// Variable zurückgeben
 				if (tok.getOp1().startsWith("%")) {
 					if(tok.getTypeOp1().equals("double"))
@@ -91,6 +92,7 @@ public class Translator {
 					else
 						asm.mov(tok.getOp1(), new RegisterAddress(0).getFullName(), "Return Value");
 				}
+				asm.funcEnd();
 				break;
 
 			case DefinitionEnd:
@@ -105,10 +107,10 @@ public class Translator {
 				List<Variable> regVars = mem.getRegVariables(true);
 				for (Variable var : regVars) {
 					//TODO musste ich auskommentieren NULLPOINTEREXCEPTION bei mathStruct.llvm 
-					//System.out.println("Var to stack: " + var.getName());
-					//mem.regToStack(var);
+					System.out.println("Var to stack: " + var.getName());
+					mem.regToStack(var);
 					// Stackpointer verschieben
-					//asm.sub(String.valueOf(var.getSize()), "esp", "Move var to stack");
+					asm.sub(String.valueOf(var.getSize()), "esp", "Move var to stack");
 				}
 				// Alle Register sind nun frei und werden möglicherweise in der
 				// Aufgerufenen Funktion verwendet.
@@ -265,8 +267,10 @@ public class Translator {
 					res = mem.getFreeRegister();
 				}
 
-				if (tok.getOp1().startsWith("%"))
+				if (tok.getOp1().startsWith("%")) {
+					System.out.println("Op1" + tok.getOp1());
 					op1 = mem.getAddress(tok.getOp1());
+				}
 				else
 					op1 = tok.getOp1();
 				if (tok.getOp2().startsWith("%"))

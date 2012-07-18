@@ -10,7 +10,7 @@ import de.fuberlin.projectF.CodeGenerator.model.TokenType;
 public abstract class Lexer {
 	
 	ArrayList<Token> tokenStream;
-	HashMap<String,ArrayList<String>> deleteCandidate;
+	HashMap<String,ArrayList<String>> renameCandidate;
 	
 	// Diese Methoden sind in den Unterklassen implementiert
 	public abstract int close();
@@ -18,7 +18,7 @@ public abstract class Lexer {
 	
 	protected ArrayList<Token> getTokenStream() {
 		tokenStream = new ArrayList<Token>();
-		deleteCandidate = new HashMap<String,ArrayList<String>> ();
+		renameCandidate = new HashMap<String,ArrayList<String>> ();
 		Token tok;
 		while ((tok = getNextToken()).getType() != TokenType.EOF) {
 			tokenStream.add(tok);
@@ -165,8 +165,8 @@ public abstract class Lexer {
 				newToken.setOp1(line[2].substring(1));
 				newToken.setTarget("@_str" + line[4].substring(1));
 				
-				deleteCandidate.put(newToken.getTarget(),new ArrayList<String>());
-				deleteCandidate.get(newToken.getTarget()).add(line[4]);
+				renameCandidate.put(newToken.getTarget(),new ArrayList<String>());
+				renameCandidate.get(newToken.getTarget()).add(line[4]);
 			}	
 			else {
 				newToken.setType(TokenType.Assignment);
@@ -186,10 +186,36 @@ public abstract class Lexer {
 		}
 
 		else if (line[0].contentEquals("call")) {
-			newToken.setType(TokenType.Call);
-			newToken.setOp1(line[2]);
 			newToken.setTypeTarget(line[1]);
-			fillParameter(newToken, line[3].replace((char) 1, ' '));
+			
+			int i;
+			for(i = 0; i < line.length; i++)
+				if(line[i].charAt(0) == '@')
+					break;
+			
+			newToken.setType(TokenType.Call);
+			
+			newToken.setOp1(line[i]);
+			
+			if(line[i].equals("@printf")) {
+				int j;
+				for(j = i; j < line.length; j++)
+					if(line[j].charAt(0) == '(')
+						break;
+					
+				fillParameter(newToken, line[j].replace((char) 1, ' '));
+				
+				if(line[j].indexOf(')') != line[j].lastIndexOf(')')) {
+					newToken.removeParameters(1);
+					newToken.removeParameters(1);
+				}
+			} else {
+				int j;
+				for(j = i; j < line.length; j++)
+					if(line[j].charAt(0) == '(')
+						break;
+				fillParameter(newToken, line[j].replace((char) 1, ' '));
+			}
 		}
 
 		else if (line[0].contentEquals("br")) {
@@ -431,36 +457,15 @@ public abstract class Lexer {
 	}
 	
 	private void postprocessing() {
-		for (Map.Entry<String, ArrayList<String>> entry : deleteCandidate.entrySet()) {
+		for (Map.Entry<String, ArrayList<String>> entry : renameCandidate.entrySet()) {
 			String key = entry.getKey();
-		    
-		    int c = 0;
-		    String var = entry.getValue().get(c);
-		    while(var != null) {
-		    	
-			   	for(int i = 0; i < tokenStream.size(); i++)
-			    	if(tokenStream.get(i).getOp1().equals(var) || tokenStream.get(i).getOp2().equals(var))
-			    		deleteCandidate.get(key).add(tokenStream.get(i).getTarget());
-			   	
-			   	for(int i = 0; i < tokenStream.size(); i++)
-			    	if(tokenStream.get(i).getTarget().equals(var))
-			    		tokenStream.remove(i);
-			   
-			   	try {
-			   		c++;
-			   		var = entry.getValue().get(c); 
-			   	} catch (IndexOutOfBoundsException e) {
-			   		var = null;
-			   	}
-			}
 		    
 		    // ersetzen
 		    for(int i = 0; i < tokenStream.size(); i++)
-		    	if(tokenStream.get(i).getType() == TokenType.Call)
-		    		for(int j = 0; j < tokenStream.get(i).getParameterCount(); j++)
-		    			for(int k = 0; k < entry.getValue().size(); k++)
-			    			if(tokenStream.get(i).getParameter(j).getOperand().equals(entry.getValue().get(k)))
-			    				tokenStream.get(i).getParameter(j).setOperand(key);
+		    	if(tokenStream.get(i).getType() == TokenType.Getelementptr)
+		    		for(int k = 0; k < entry.getValue().size(); k++)
+			    		if(tokenStream.get(i).getOp1().equals(entry.getValue().get(k)))
+			    			tokenStream.get(i).setOp1(key);
 		}
 	}
 }

@@ -10,9 +10,14 @@ import de.fuberlin.projecta.analysis.TypeErrorException;
  */
 public class RecordVarCall extends Expression {
 
+	/**
+	 * Walks down the whole RecordVarCall trace until an Id is found.
+	 * 
+	 * @return The innermost record id in the possible record chain.
+	 */
 	public Id getRecordId() {
 		ISyntaxTree child = getChild(0);
-		while(child instanceof RecordVarCall){
+		while (child instanceof RecordVarCall) {
 			child = child.getChild(0);
 		}
 		return (Id) child;
@@ -25,7 +30,7 @@ public class RecordVarCall extends Expression {
 	@Override
 	public String toTypeString() {
 		Type a = SymbolTableHelper.lookupRecordVarCall(this);
-		if(a == null){
+		if (a == null) {
 			throw new TypeErrorException("Record not found");
 		}
 		return a.toTypeString();

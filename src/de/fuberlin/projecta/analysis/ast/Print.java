@@ -6,24 +6,26 @@ import java.util.Arrays;
 import de.fuberlin.projecta.analysis.BasicTokenType;
 import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
+import de.fuberlin.projecta.codegen.LLVM;
 
 public class Print extends Statement {
 
 	@Override
 	/*
-	 * we use the puts function to print to screen 
-	 * %forprinting = load i8**
+	 * we use the puts function to print to screen %forprinting = load i8**
 	 * %str3 tail call i32 (i8*)* @puts(i8* %forprinting)
 	 */
 	public String genCode() {
 		String out = "";
 		Block block = getHighestBlock();
 		Type idType = null;
-		if(getChild(0) instanceof RecordVarCall){
-			idType = SymbolTableHelper.lookupRecordVarCall((RecordVarCall) getChild(0));
+		if (getChild(0) instanceof RecordVarCall) {
+			idType = SymbolTableHelper
+					.lookupRecordVarCall((RecordVarCall) getChild(0));
+			idType = (Type) idType.getParent().getChild(0);
 		} else {
 			idType = SymbolTableHelper.lookup(((Id) getChild(0)).getValue(),
-				this).getType();
+					this).getType();
 		}
 		if (idType instanceof BasicType) {
 			if (((BasicType) idType).getTokenType() == BasicTokenType.STRING) {
@@ -42,18 +44,29 @@ public class Print extends Statement {
 				} else if (((BasicType) idType).getTokenType() == BasicTokenType.BOOL) {
 					format = "%d";
 				}
+				
+				
+				
+				// format string
 				int tempReg = block.getNewVar();
-				int tempReg2 = block.getNewVar();
-				int valReg = block.getNewVar();
-				//format string
 				out += "%" + tempReg + " = alloca [4 x i8]\n";
 				out += "store [4 x i8] c\"" + format
-						+ "\\0A\\00\", [4 x i8]* %" + tempReg
-						+ "\n";
-				out += "%" + tempReg2 + " = getelementptr [4 x i8]* %" + tempReg + ", i8 0, i8 0 \n";
-				//now we print
-				out += "%"+valReg+ " = load "+idType.genCode() +"* %"+ ((Id)getChild(0)).getValue()+"\n";
-				out += "call i32 (i8*, ...)* @printf(i8* %"+tempReg2+", "+ idType.genCode() + " %" +valReg+")";
+						+ "\\0A\\00\", [4 x i8]* %" + tempReg + "\n";
+				int tempReg2 = block.getNewVar();
+				out += "%" + tempReg2 + " = getelementptr [4 x i8]* %"
+						+ tempReg + ", i8 0, i8 0 \n";
+				// now we print
+				int valReg = 0;
+				if (getChild(0) instanceof Id){
+					valReg = block.getNewVar(); 
+					out += "%" + valReg + " = load " + idType.genCode() + "* %"
+							+ ((Id) getChild(0)).getValue() + "\n";
+				} else if (getChild(0) instanceof RecordVarCall) {
+					out += LLVM.loadType((RecordVarCall)getChild(0));
+					valReg = block.getCurrentRegister();
+				}
+				out += "call i32 (i8*, ...)* @printf(i8* %" + tempReg2 + ", "
+						+ idType.genCode() + " %" + valReg + ")";
 				// implicit return of printf increments var counter!
 				block.getNewVar();
 			}
@@ -63,15 +76,14 @@ public class Print extends Statement {
 
 	@Override
 	public void checkTypes() {
-		String[] b = {
-				BasicType.TYPE_BOOL_STRING,
-				BasicType.TYPE_STRING_STRING,
-				BasicType.TYPE_INT_STRING,
-				BasicType.TYPE_REAL_STRING
-		};
-		String argumentType = ((Expression)getChild(0)).toTypeString();
+		String[] b = { BasicType.TYPE_BOOL_STRING,
+				BasicType.TYPE_STRING_STRING, BasicType.TYPE_INT_STRING,
+				BasicType.TYPE_REAL_STRING };
+		String argumentType = ((Expression) getChild(0)).toTypeString();
 		ArrayList<String> validTypes = new ArrayList<String>(Arrays.asList(b));
 		if (!validTypes.contains(argumentType))
-			throw new SemanticException("Invalid argument to print-function of type " + argumentType);
+			throw new SemanticException(
+					"Invalid argument to print-function of type "
+							+ argumentType);
 	}
 }

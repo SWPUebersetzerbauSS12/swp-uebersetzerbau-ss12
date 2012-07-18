@@ -199,6 +199,10 @@ public class Driver {
 			return lineNumber;
 		}
 		
+		public String toString(){
+			return "<" + getText() + ", >";
+		}
+		
 	}
 	
 }

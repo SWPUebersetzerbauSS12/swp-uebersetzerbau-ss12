@@ -2,6 +2,7 @@ package de.fuberlin.projecta.codegen;
 
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
+import de.fuberlin.projecta.analysis.TypeErrorException;
 import de.fuberlin.projecta.analysis.ast.AbstractSyntaxTree;
 import de.fuberlin.projecta.analysis.ast.Args;
 import de.fuberlin.projecta.analysis.ast.Block;
@@ -134,6 +135,14 @@ public class LLVM {
 		return ret;
 	}
 
+	/**
+	 * Gets number
+	 * 
+	 * 
+	 * @param rec
+	 * @param recordVar
+	 * @return
+	 */
 	public static int findNumberOfRecordVar(Record rec, String recordVar) {
 		for (int i = 0; i < rec.getChildrenCount(); i++) {
 			Declaration decl = (Declaration) rec.getChild(i);
@@ -141,7 +150,9 @@ public class LLVM {
 				return i;
 			}
 		}
-		return 0;
+		throw new TypeErrorException("Entry " + recordVar
+				+ " not found in record "
+				+ ((Id) rec.getParent().getChild(1)).getValue());
 	}
 
 	/**
@@ -177,26 +188,67 @@ public class LLVM {
 				ret += "%" + n + " = " + expr.genCode() + "\n";
 				expr.setValMemory(n);
 			} else if (expr instanceof RecordVarCall) {
-				int n = block.getNewVar();
+				int n = -1;
 				RecordVarCall recVarCall = (RecordVarCall) expr;
 				Record rec = (Record) SymbolTableHelper.lookup(
 						recVarCall.getRecordId().getValue(), expr).getType();
+				Type type = SymbolTableHelper.lookupRecordVarCall(recVarCall);
 				Id recName = recVarCall.getRecordId();
-				ret += "%"
-						+ n
-						+ " = getelementptr inbounds %struct."
-						+ recName.getValue()
-						+ "* %"
-						+ recName.getValue()
-						+ ", i32 0, i32 "
-						+ findNumberOfRecordVar(rec, recVarCall.getVarId()
-								.getValue()) + "\n";
+				// ret += "%" + n + " = getelementptr inbounds %struct."
+				// + recName.getValue() + "* %" + recName.getValue()
+				// + ", i32 0, i32 ";
+
+				if (recVarCall.getChild(0) instanceof RecordVarCall) {
+					Record tmpRec = rec;
+					String bla = recName.getValue();
+					do {
+						n = block.getNewVar();
+						AbstractSyntaxTree tmp = recVarCall;
+						do {
+							tmp = (AbstractSyntaxTree) tmp.getChild(0);
+						} while (tmp instanceof RecordVarCall);
+						Id innerNode = (Id) tmp.getParent().getChild(1);
+						int index = findNumberOfRecordVar(rec,
+								innerNode.getValue());
+						ret += "%" + n + " = getelementptr inbounds %struct."
+								+ ((Id)tmpRec.getParent().getChild(1)).getValue() + "* %"
+								+ bla + ", i32 0, i32 " + index
+								+ "\n";
+						System.out.println();
+						bla = "" + n;
+						if (tmpRec.getChildrenCount() > index
+								&& tmpRec.getChild(index).getChildrenCount() > 0) {
+							if (tmpRec.getChild(index).getChild(0) instanceof Record)
+								tmpRec = (Record) tmpRec.getChild(index)
+										.getChild(0);
+						} else {
+							break;
+						}
+							
+							
+					} while (tmpRec instanceof Record);
+//					n = block.getNewVar();
+//					ret += "%"
+//							+ n
+//							+ " = getelementptr inbounds %struct."
+//							+ recName.getValue()
+//							+ "* %"
+//							+ (n - 1)
+//							+ ", i32 0, i32 "
+//							+ findNumberOfRecordVar(tmpRec, recVarCall
+//									.getVarId().getValue()) + "\n";
+					recVarCall.setValMemory(n);
+					return ret;
+				} else {
+					ret += findNumberOfRecordVar(rec, recVarCall.getVarId()
+							.getValue())
+							+ "\n";
+				}
 
 				int memory = block.getNewVar();
 				expr.setValMemory(memory);
 				ret += "%" + memory + " = load "
-						+ recVarCall.fromTypeStringToLLVMType() + "* %"
-						+ n + "\n";
+						+ type.fromTypeStringToLLVMType() + "* %" + n + "\n";
 			} else {
 				// TODO: is this already calling setValMemory always?
 				ret += expr.genCode();

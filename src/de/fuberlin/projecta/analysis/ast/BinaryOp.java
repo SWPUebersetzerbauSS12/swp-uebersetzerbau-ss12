@@ -127,7 +127,7 @@ public class BinaryOp extends Expression {
 				ret += LLVM.loadType(t2);
 				String t = t2.fromTypeStringToLLVMType();
 				ret += "store " + t + " %" + LLVM.getMem(t2) + ", " + t + "* "
-						+ "%" + (Integer.parseInt(LLVM.getMem(t1))-1);
+						+ "%" + (Integer.parseInt(LLVM.getMem(t1)));
 			} else {
 				ret += LLVM.loadType(t2);
 				String t = t2.fromTypeStringToLLVMType();

@@ -121,6 +121,13 @@ public class BinaryOp extends Expression {
 				ret += "%" + tmp2 + " = getelementptr [" + strLength
 						+ " x i8]* %" + tmp1 + ", i8 0, i8 0 \n";
 				ret += "store i8* %" + tmp2 + ", i8** %" + id1.getValue();
+			} else if (t1 instanceof RecordVarCall) {
+				
+				ret += LLVM.loadType(t1);
+				ret += LLVM.loadType(t2);
+				String t = t2.fromTypeStringToLLVMType();
+				ret += "store " + t + " %" + LLVM.getMem(t2) + ", " + t + "* "
+						+ "%" + (Integer.parseInt(LLVM.getMem(t1))-1);
 			} else {
 				ret += LLVM.loadType(t2);
 				String t = t2.fromTypeStringToLLVMType();

@@ -12,21 +12,32 @@ import de.fuberlin.projectF.CodeGenerator.model.Variable;
 
 public class MemoryManager {
 	HashMap<String, MemoryContext> contexts;
-	HashMap<String, Variable> heap;
+	HashMap<String, Variable> globalReferences;
 	MemoryContext current;
 
 	public MemoryManager() {
 		contexts = new HashMap<String, MemoryContext>();
-		heap = new HashMap<String, Variable>();
+		globalReferences = new HashMap<String, Variable>();
 	}
 
-	public void addHeapVar(String name, int size) {
-		Variable tmp = new Variable(name, size);
-		heap.put(name, tmp);
+	public void addGlobalVar(String name) {
+		Variable tmp;
+		if(current != null) {
+			tmp = new Variable(current.getName() + "." + name, 0);
+		} else {
+			tmp = new Variable("main." + name, 0);
+		}
+		globalReferences.put(tmp.getName(), tmp);
 	}
 
-	public void addHeapVar(Variable var) {
-		heap.put(var.getName(), var);
+	public void addGlobalVar(Variable var) {
+		globalReferences.put(var.getName(), var);
+	}
+	
+	public String getContextName() {
+		if(current != null)
+			return current.getName();
+		return "main";
 	}
 
 	public void addMMXRegVar(String name, String type, MMXRegisterAddress reg) {
@@ -55,7 +66,16 @@ public class MemoryManager {
 	}
 
 	public String getAddress(String name) {
-		return current.get(name).getAddress();
+		System.out.println("NAME: " + name);
+		if(current != null) {
+			if(globalReferences.containsKey(current.getName() + "." + name))
+				return globalReferences.get(current.getName() + "." + name).getName();
+			return current.get(name).getAddress();
+		} else {
+			if(globalReferences.containsKey("main." + name))
+				return globalReferences.get("main." + name).getName();
+			return null;
+		}
 	}
 
 	public String getAddress(String name, int offset) {
@@ -79,7 +99,7 @@ public class MemoryManager {
 	}
 
 	public Variable getHeapVar(String name) {
-		return heap.get(name);
+		return globalReferences.get(name);
 	}
 
 	public List<Variable> getMMXRegVariables(boolean exclusive) {
@@ -99,25 +119,25 @@ public class MemoryManager {
 	}
 
 	public boolean inHeap(String name) {
-		if (!heap.containsKey(name))
+		if (!globalReferences.containsKey(name))
 			return false;
 		return true;
 	}
 
 	public boolean inMMXReg(String name) {
-		if (heap.containsKey(name))
+		if (globalReferences.containsKey(name))
 			return false;
 		return current.inMMXReg(name);
 	}
 
 	public boolean inMMXReg(String name, int regNumber) {
-		if (heap.containsKey(name))
+		if (globalReferences.containsKey(name))
 			return false;
 		return current.inMMXReg(name, regNumber);
 	}
 
 	public boolean inReg(String name, int regNumber) {
-		if (heap.containsKey(name))
+		if (globalReferences.containsKey(name))
 			return false;
 		return current.inReg(name, regNumber);
 	}
@@ -139,7 +159,7 @@ public class MemoryManager {
 	}
 
 	public void newContext(String name) {
-		contexts.put(name, new MemoryContext());
+		contexts.put(name, new MemoryContext(name));
 	}
 
 	public void newRecordPtr(String target, String op1, String op2) {
@@ -147,7 +167,13 @@ public class MemoryManager {
 	}
 
 	public void newReference(String name, String var) {
-		current.newReference(name, var);
+		System.out.println("new Reference");
+		if(globalReferences.containsKey(current.getName() + "." + var)) {
+			System.out.println("Name: " + name + " to: " + current.getName() + "." + var);
+			globalReferences.put(current.getName() + "." + name, globalReferences.get(current.getName() + "." + var));
+		}
+		else
+			current.newReference(name, var);
 	}
 
 	public Variable newStackVar(String name, String type) {
@@ -159,7 +185,7 @@ public class MemoryManager {
 	}
 
 	public boolean onStack(String name) {
-		if (heap.containsKey(name))
+		if (globalReferences.containsKey(name))
 			return false;
 		return current.onStack(name);
 	}

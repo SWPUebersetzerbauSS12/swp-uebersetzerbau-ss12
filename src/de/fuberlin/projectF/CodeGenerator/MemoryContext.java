@@ -18,6 +18,7 @@ import de.fuberlin.projectF.CodeGenerator.model.Variable;
 
 public class MemoryContext {
 
+	private String name;
 	private int stackPointer;
 	private HashMap<String, Reference> references;
 	private HashMap<String, Variable> variables;
@@ -29,7 +30,8 @@ public class MemoryContext {
 	private ArrayList<MMXRegisterAddress> freeMMXRegisters;
 	private HashMap<MMXRegisterAddress, Variable> usedMMXRegisters;
 
-	public MemoryContext() {
+	public MemoryContext(String name) {
+		this.name = name;
 		stackPointer = 0;
 		references = new HashMap<String, Reference>();
 		variables = new HashMap<String, Variable>();
@@ -47,6 +49,10 @@ public class MemoryContext {
 			freeMMXRegisters.add(new MMXRegisterAddress(i));
 		}
 
+	}
+	
+	public String getName() {
+		return name;
 	}
 
 	public void addMMXRegVar(String name, String type, MMXRegisterAddress reg) {

@@ -123,9 +123,8 @@ public class Translator {
 							operand = p.getOperand();
 						
 						if (operand.charAt(0) == '@')
-							operand = operand.substring(2);
+							operand = mem.getContextName() + "." + operand.substring(2);
 						if(p.getType().equals("double")) {
-							// TODO: Funktioniert nur mir doubles in Variablen, direkt lassen sich keine doubles übergeben
 							if(p.getOperand().startsWith("%")) {
 								asm.push(mem.getAddress(p.getOperand(), 4), "Parameter " + p.getOperand());
 							} else {
@@ -205,40 +204,20 @@ public class Translator {
 					mem.newStackVar(rec);
 					asm.sub(String.valueOf(rec.getSize()), "esp",
 							"Allocation " + tok.getTarget());
-					
-				/*else if(mem.inHeap(tT)) {
-					System.out.println("Allocation of a record");
-					
-					
-					Record tmp = null;
-					System.out.println("Clone " + mem.getHeapVar(tT).name);
-					try {
-						tmp = (Record) ((Record)mem.getHeapVar(tT)).clone();
-					} catch (CloneNotSupportedException e) {
-						e.printStackTrace();
-					}
-					tmp.name = tok.getTarget();
-					System.out.println("to " + tmp.name);
-					mem.newStackVar(tmp);
-					asm.sub(String.valueOf(tmp.getSize()), "esp",
-							"Allocation " + tok.getTarget());*/
-					
 				}
 				// Kein Array kein Record
 				else{
-				// Neue Variable anlegen
-				Variable newVar = mem.newStackVar(tok.getTarget(),
-						tT);
-				// Stackpointer verschieben
-				asm.sub(String.valueOf(newVar.getSize()), "esp",
-						"Allocation " + tok.getTarget());
+					// Neue Variable anlegen
+					Variable newVar = mem.newStackVar(tok.getTarget(),
+							tT);
+					// Stackpointer verschieben
+					asm.sub(String.valueOf(newVar.getSize()), "esp",
+							"Allocation " + tok.getTarget());
 				}
 				break;
 
 			case Assignment:
-				System.out.println("Target: " + tok.getTarget());
 				String target = mem.getAddress(tok.getTarget());
-				System.out.println("TargetAddress: "+ target);
 				String source;
 				// Zuweisung Variable
 					// Zuweisung Zahl
@@ -504,8 +483,9 @@ public class Translator {
 				break;
 
 			case String:
-				asm.data(tok.getTarget().substring(2), ".ascii", tok.getOp1());
-				mem.addHeapVar(tok.getTarget(), 5);
+				mem.addGlobalVar(tok.getTarget().substring(2));
+				String tmp = mem.getAddress(tok.getTarget().substring(2));
+				asm.data(tmp, ".ascii", tok.getOp1());
 				break;
 				
 			case Getelementptr:
@@ -513,6 +493,11 @@ public class Translator {
 					//TODO :-)
 					System.out.println("new record pointer");
 					mem.newRecordPtr(tok.getTarget(), tok.getOp1(), tok.getOp2());
+				} else if(tok.getOp1().charAt(0) == '@') {
+					System.out.println("Stringptr");
+					System.out.println("\tTarget: " + tok.getTarget());
+					System.out.println("\tName: " + tok.getOp1());
+					mem.newReference(tok.getTarget(), tok.getOp1().substring(2));
 				} else {
 					// Continue array pointer
 					if (tok.getOp1().matches("%\\d+")) {

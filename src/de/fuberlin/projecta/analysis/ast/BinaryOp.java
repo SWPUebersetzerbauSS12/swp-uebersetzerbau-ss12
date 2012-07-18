@@ -99,6 +99,8 @@ public class BinaryOp extends Expression {
 			Id id1 = null;
 			if (t1 instanceof RecordVarCall)
 				id1 = ((RecordVarCall) t1).getVarId();
+			else if(t1 instanceof ArrayCall)
+				id1 = ((ArrayCall) t1).getVarId();
 			else
 				id1 = (Id)t1;
 
@@ -122,11 +124,16 @@ public class BinaryOp extends Expression {
 						+ " x i8]* %" + tmp1 + ", i8 0, i8 0 \n";
 				ret += "store i8* %" + tmp2 + ", i8** %" + id1.getValue();
 			} else if (t1 instanceof RecordVarCall) {
-				ret += LLVM.getRecordVarCallPointer((RecordVarCall)t1);
+				ret += LLVM.loadType(t1);
 				ret += LLVM.loadType(t2);
 				String t = t2.fromTypeStringToLLVMType();
 				ret += "store " + t + " %" + LLVM.getMem(t2) + ", " + t + "* "
-						+ "%" + (Integer.parseInt(LLVM.getMem(t1)));
+						+ "%" + LLVM.getMem(t1);
+			} else if(t1 instanceof ArrayCall){
+				ret += LLVM.getArrayCallPointer((ArrayCall) t1);
+				ret += LLVM.loadType(t2);
+				String t = t2.fromTypeStringToLLVMType();
+				ret += "store " + t + " %" + LLVM.getMem(t2) + ", " + t + "* %" + LLVM.getMem(t1);
 			} else {
 				ret += LLVM.loadType(t2);
 				String t = t2.fromTypeStringToLLVMType();

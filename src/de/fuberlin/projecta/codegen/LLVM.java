@@ -192,26 +192,13 @@ public class LLVM {
 				expr.setValMemory(n);
 			} else if(expr instanceof ArrayCall){
 				ArrayCall array = (ArrayCall) expr;
-				int num = ((IntLiteral)array.getChild(0)).getValue();
-				String index = ", i32 0, i32 " + num;
-				ArrayCall tmp = array;
-				// collect all array references
-				while(tmp.getChild(1) instanceof ArrayCall){
-					tmp = (ArrayCall)tmp.getChild(1);
-					index += ", i32 " + ((IntLiteral)tmp.getChild(0)).getValue();
-				}
-				//last ArrayCall contains the id of the array! (weird, but we deal with it)
-				Id id = (Id) tmp.getChild(1);
+				ret += getArrayCallPointer(array);
+				int pointer = array.getVar();
+				Id id = array.getVarId();
 				Type t = SymbolTableHelper.lookup(id.getValue(), array).getType();
-				int pointer[] = new int[2];
-				pointer[0] = block.getNewVar();
-				pointer[1] = block.getNewVar();
-				//%4 = getelementptr inbounds [30 x i8]* %arr, i32 0, i64 0
-				//store i8 7, i8* %4, align 1
-				ret += "%"+pointer[0] + " = getelementptr inbounds "+ t.genCode()+"* %"+ id.getValue();
-				ret += index + "\n";
-				ret += "%"+pointer[1] + " = load "+ ((Array)t).getType().genCode() + "* %"+pointer[0];
-				expr.setValMemory(pointer[1]);
+				int val = block.getNewVar();
+				ret += "%"+val + " = load "+ ((Array)t).getBasicType().fromTypeStringToLLVMType() + "* %"+pointer;
+				expr.setValMemory(val);
 				ret += "\n";
 				
 			} else if (expr instanceof RecordVarCall) {
@@ -286,6 +273,26 @@ public class LLVM {
 			}
 		}
 
+		return ret;
+	}
+	
+	public static String getArrayCallPointer(ArrayCall array){
+		String ret = "";
+		int num = ((IntLiteral)array.getChild(0)).getValue();
+		String index = ", i32 0, i32 " + num;
+		ArrayCall tmp = array;
+		// collect all array references
+		while(tmp.getChild(1) instanceof ArrayCall){
+			tmp = (ArrayCall)tmp.getChild(1);
+			index += ", i32 " + ((IntLiteral)tmp.getChild(0)).getValue();
+		}
+		//last ArrayCall contains the id of the array! (weird, but we deal with it)
+		Id id = (Id) tmp.getChild(1);
+		Type t = SymbolTableHelper.lookup(id.getValue(), array).getType();
+		int pointer = array.getHighestBlock().getNewVar();
+		ret += "%"+ pointer + " = getelementptr inbounds "+ ((Array)t).genCode() +"* %"+ id.getValue();
+		ret += index + "\n";
+		array.setValMemory(pointer);
 		return ret;
 	}
 

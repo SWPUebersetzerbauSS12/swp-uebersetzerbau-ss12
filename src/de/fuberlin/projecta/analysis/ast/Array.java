@@ -13,6 +13,13 @@ public class Array extends Type {
 		return ((IntLiteral)this.getChild(0)).getValue();
 	}
 
+	public Type getBasicType(){
+		Array tmp = this;
+		while(tmp.getChild(1) instanceof Array)
+			tmp = (Array)tmp.getChild(1);
+		return (Type)tmp.getChild(1);
+	}
+
 	public Type getType() {
 		return (Type)this.getChild(1);
 	}
@@ -25,9 +32,8 @@ public class Array extends Type {
 	
 	@Override
 	public String genCode(){
-		int dim = ((IntLiteral)getChild(0)).getValue();
 		Type t = getType();
-		String ret =  "[" + dim + " x "+ t.genCode() +"]";
+		String ret =  "[" + getDimension() + " x "+ t.genCode() +"]";
 		return ret;
 	}
 }

@@ -63,6 +63,14 @@ public class ArrayCall extends Type {
 		return type.toTypeString();
 	}
 	
+	public Id getVarId() {
+		// collect all array references
+		ArrayCall tmp = this;
+		while(tmp.getChild(1) instanceof ArrayCall)
+			tmp = (ArrayCall)tmp.getChild(1);
+		return (Id)tmp.getChild(1);
+	}
+	
 	@Override
 	public String genCode(){
 		//in LLVM class

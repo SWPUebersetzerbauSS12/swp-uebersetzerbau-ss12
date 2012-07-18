@@ -186,10 +186,17 @@ public class LLVM {
 						+ n
 						+ " = getelementptr inbounds %struct."
 						+ recName.getValue()
-						+ "* %" + recName.getValue() + ", i32 0, i32 "
-						+ findNumberOfRecordVar(rec, recVarCall
-								.getVarId().getValue()) + "\n";
-				expr.setValMemory(n);
+						+ "* %"
+						+ recName.getValue()
+						+ ", i32 0, i32 "
+						+ findNumberOfRecordVar(rec, recVarCall.getVarId()
+								.getValue()) + "\n";
+
+				int memory = block.getNewVar();
+				expr.setValMemory(memory);
+				ret += "%" + memory + " = load "
+						+ recVarCall.fromTypeStringToLLVMType() + "* %"
+						+ n + "\n";
 			} else {
 				// TODO: is this already calling setValMemory always?
 				ret += expr.genCode();

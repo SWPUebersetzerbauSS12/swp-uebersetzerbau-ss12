@@ -11,6 +11,14 @@ import de.fuberlin.projecta.analysis.SymbolTableHelper;
  * 
  */
 public class ArrayCall extends Type {
+	
+	public Id getArrayId(){
+		ISyntaxTree child = getChild(1);
+		while (child instanceof ArrayCall) {
+			child = child.getChild(1);
+		}
+		return (Id) child;
+	}
 
 	@Override
 	public void checkSemantics() {

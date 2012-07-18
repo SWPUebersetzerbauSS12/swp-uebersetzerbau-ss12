@@ -5,7 +5,6 @@ import java.util.List;
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.ast.AbstractSyntaxTree;
 import de.fuberlin.projecta.analysis.ast.Id;
-import de.fuberlin.projecta.analysis.ast.Record;
 import de.fuberlin.projecta.analysis.ast.RecordVarCall;
 import de.fuberlin.projecta.analysis.ast.Type;
 
@@ -66,7 +65,7 @@ public class SymbolTableHelper {
 	 *            The record where varName is searched in.
 	 * @param node
 	 *            The node to start searching from.
-	 * @return The corresponding EntryType item for varName
+	 * @return The Type of the corresponding EntryType for varName
 	 */
 	public static Type lookupRecordVarCall(RecordVarCall node) {
 		// recName is name of outer record (e.g: a.b.c => recName = 'a')

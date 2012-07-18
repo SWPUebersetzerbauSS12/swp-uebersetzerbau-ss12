@@ -174,5 +174,15 @@ public class CompilerTest {
 		String output = executeCode(code);
 		assertEquals("", output);
 	}
+	
+	@Test
+	public void testRecordFuncCall() {
+		final String code = "def int foo(record {int i;} a) { int x; x = a.i; print x; return a.i + 1;} " +
+				"def int main(){ record {int i;} a; int bla; a.i = 3; bla = foo(a); print bla; return 0;}";
+		System.out.println(code);
+		String output = executeCode(code);
+		assertEquals("34", output);
+
+	}
 
 }

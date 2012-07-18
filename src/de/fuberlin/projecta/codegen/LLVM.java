@@ -1,6 +1,7 @@
 package de.fuberlin.projecta.codegen;
 
 import de.fuberlin.commons.parser.ISyntaxTree;
+import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
 import de.fuberlin.projecta.analysis.TypeErrorException;
 import de.fuberlin.projecta.analysis.ast.AbstractSyntaxTree;
@@ -192,63 +193,53 @@ public class LLVM {
 				RecordVarCall recVarCall = (RecordVarCall) expr;
 				Record rec = (Record) SymbolTableHelper.lookup(
 						recVarCall.getRecordId().getValue(), expr).getType();
-				Type type = SymbolTableHelper.lookupRecordVarCall(recVarCall);
-				Id recName = recVarCall.getRecordId();
-				// ret += "%" + n + " = getelementptr inbounds %struct."
-				// + recName.getValue() + "* %" + recName.getValue()
-				// + ", i32 0, i32 ";
-
 				if (recVarCall.getChild(0) instanceof RecordVarCall) {
-					Record tmpRec = rec;
-					String bla = recName.getValue();
+					String currentMemory = recVarCall.getRecordId().getValue();
+					// start by searching child 1 of innermost recordVarCall
+					Id currentSearchNode = null;
+					// this is used for searching the correct node in the
+					// record, starting in the innermost node
+					RecordVarCall currentRecVarCall = (RecordVarCall) recVarCall
+							.getRecordId().getParent();
 					do {
 						n = block.getNewVar();
-						AbstractSyntaxTree tmp = recVarCall;
-						do {
-							tmp = (AbstractSyntaxTree) tmp.getChild(0);
-						} while (tmp instanceof RecordVarCall);
-						Id innerNode = (Id) tmp.getParent().getChild(1);
+						// move up in RecordVar-Tree
+						currentSearchNode = (Id) currentRecVarCall.getChild(1);
+
 						int index = findNumberOfRecordVar(rec,
-								innerNode.getValue());
+								currentSearchNode.getValue());
+
 						ret += "%" + n + " = getelementptr inbounds %struct."
-								+ ((Id)tmpRec.getParent().getChild(1)).getValue() + "* %"
-								+ bla + ", i32 0, i32 " + index
-								+ "\n";
-						System.out.println();
-						bla = "" + n;
-						if (tmpRec.getChildrenCount() > index
-								&& tmpRec.getChild(index).getChildrenCount() > 0) {
-							if (tmpRec.getChild(index).getChild(0) instanceof Record)
-								tmpRec = (Record) tmpRec.getChild(index)
-										.getChild(0);
+								+ ((Id) rec.getParent().getChild(1)).getValue()
+								+ "* %" + currentMemory + ", i32 0, i32 "
+								+ index + "\n";
+						currentMemory = "" + n;
+
+						if ((currentRecVarCall.getParent() instanceof RecordVarCall)
+								&& rec.getChildrenCount() > index
+								&& rec.getChild(index).getChildrenCount() > 0) {
+							if (rec.getChild(index).getChild(0) instanceof Record)
+								rec = (Record) rec.getChild(index).getChild(0);
 						} else {
+							// save the memory in the outermost recordVarCall node
+							recVarCall.setValMemory(n);
 							break;
 						}
-							
-							
-					} while (tmpRec instanceof Record);
-//					n = block.getNewVar();
-//					ret += "%"
-//							+ n
-//							+ " = getelementptr inbounds %struct."
-//							+ recName.getValue()
-//							+ "* %"
-//							+ (n - 1)
-//							+ ", i32 0, i32 "
-//							+ findNumberOfRecordVar(tmpRec, recVarCall
-//									.getVarId().getValue()) + "\n";
-					recVarCall.setValMemory(n);
+						currentRecVarCall = (RecordVarCall) currentRecVarCall
+								.getParent();
+					} while (rec instanceof Record);
+					
 					return ret;
 				} else {
-					ret += findNumberOfRecordVar(rec, recVarCall.getVarId()
-							.getValue())
-							+ "\n";
+					int index = findNumberOfRecordVar(rec, recVarCall
+							.getVarId().getValue());
+					n = block.getNewVar();
+					recVarCall.setValMemory(n);
+					ret += "%" + n + " = getelementptr inbounds %struct."
+							+ ((Id) rec.getParent().getChild(1)).getValue()
+							+ "* %" + recVarCall.getRecordId().getValue()
+							+ ", i32 0, i32 " + index + "\n";
 				}
-
-				int memory = block.getNewVar();
-				expr.setValMemory(memory);
-				ret += "%" + memory + " = load "
-						+ type.fromTypeStringToLLVMType() + "* %" + n + "\n";
 			} else {
 				// TODO: is this already calling setValMemory always?
 				ret += expr.genCode();

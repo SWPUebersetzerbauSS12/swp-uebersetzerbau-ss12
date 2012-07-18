@@ -62,4 +62,10 @@ public class ArrayCall extends Type {
 		} while(!(type instanceof BasicType));
 		return type.toTypeString();
 	}
+	
+	@Override
+	public String genCode(){
+		//in LLVM class
+		return "";
+	}
 }

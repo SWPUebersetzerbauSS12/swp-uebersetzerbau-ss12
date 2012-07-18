@@ -5,12 +5,15 @@ import de.fuberlin.projecta.analysis.SymbolTableHelper;
 import de.fuberlin.projecta.analysis.TypeErrorException;
 import de.fuberlin.projecta.analysis.ast.AbstractSyntaxTree;
 import de.fuberlin.projecta.analysis.ast.Args;
+import de.fuberlin.projecta.analysis.ast.Array;
+import de.fuberlin.projecta.analysis.ast.ArrayCall;
 import de.fuberlin.projecta.analysis.ast.Block;
 import de.fuberlin.projecta.analysis.ast.Declaration;
 import de.fuberlin.projecta.analysis.ast.Expression;
 import de.fuberlin.projecta.analysis.ast.FuncCall;
 import de.fuberlin.projecta.analysis.ast.FuncDef;
 import de.fuberlin.projecta.analysis.ast.Id;
+import de.fuberlin.projecta.analysis.ast.IntLiteral;
 import de.fuberlin.projecta.analysis.ast.Literal;
 import de.fuberlin.projecta.analysis.ast.Record;
 import de.fuberlin.projecta.analysis.ast.RecordVarCall;
@@ -187,6 +190,30 @@ public class LLVM {
 				int n = block.getNewVar();
 				ret += "%" + n + " = " + expr.genCode() + "\n";
 				expr.setValMemory(n);
+			} else if(expr instanceof ArrayCall){
+				ArrayCall array = (ArrayCall) expr;
+				int num = ((IntLiteral)array.getChild(0)).getValue();
+				String index = ", i32 0, i32 " + num;
+				ArrayCall tmp = array;
+				// collect all array references
+				while(tmp.getChild(1) instanceof ArrayCall){
+					tmp = (ArrayCall)tmp.getChild(1);
+					index += ", i32 " + ((IntLiteral)tmp.getChild(0)).getValue();
+				}
+				//last ArrayCall contains the id of the array! (weird, but we deal with it)
+				Id id = (Id) tmp.getChild(1);
+				Type t = SymbolTableHelper.lookup(id.getValue(), array).getType();
+				int pointer[] = new int[2];
+				pointer[0] = block.getNewVar();
+				pointer[1] = block.getNewVar();
+				//%4 = getelementptr inbounds [30 x i8]* %arr, i32 0, i64 0
+				//store i8 7, i8* %4, align 1
+				ret += "%"+pointer[0] + " = getelementptr inbounds "+ t.genCode()+"* %"+ id.getValue();
+				ret += index + "\n";
+				ret += "%"+pointer[1] + " = load "+ ((Array)t).getType().genCode() + "* %"+pointer[0];
+				expr.setValMemory(pointer[1]);
+				ret += "\n";
+				
 			} else if (expr instanceof RecordVarCall) {
 				int n = -1;
 				RecordVarCall recVarCall = (RecordVarCall) expr;

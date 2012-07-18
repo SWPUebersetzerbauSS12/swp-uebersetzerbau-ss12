@@ -8,8 +8,8 @@ import de.fuberlin.projecta.lexer.io.ICharStream;
 import de.fuberlin.projecta.lexer.io.StringCharStream;
 
 /**
- * This tests the following parts:
- * Lexer -> Parser -> Semantic analysis -> Code generation
+ * This tests the following parts: Lexer -> Parser -> Semantic analysis -> Code
+ * generation
  * 
  * This is a complete test for the whole compiler (frontend+backend)
  */
@@ -88,9 +88,9 @@ public class CompilerTest {
 		String output = executeCode(code);
 		assertEquals(output, "21");
 	}
-	
+
 	@Test
-	public void testLiteralComparison(){
+	public void testLiteralComparison() {
 		final String code = "def int main(){bool a; bool b; bool c; bool d; a = 3 == 4; b = 3 == 3; c = 3 != 4; d = 3 != 3; print a; print b; print c; print d; return 1;}";
 		String output = executeCode(code);
 		assertEquals(output, "0110");
@@ -109,23 +109,23 @@ public class CompilerTest {
 		String output = executeCode(code);
 		assertEquals(output, "6");
 	}
-	
+
 	@Test
-	public void testFuncCallWithLiteralParameter(){
+	public void testFuncCallWithLiteralParameter() {
 		final String code = "def int foo(int i){ return i;} def int main(){int i; i = foo(3)*foo(4); print i; return 0;}";
 		String output = executeCode(code);
 		assertEquals("12", output);
 	}
-	
+
 	@Test
-	public void testReturnWithBinaryOp(){
+	public void testReturnWithBinaryOp() {
 		final String code = "def int foo(int i){ return i+1;} def int main(){int i; i = foo(3); print i; return 0;}";
 		String output = executeCode(code);
 		assertEquals("4", output);
 	}
-	
+
 	@Test
-	public void testFuncCallWithBinaryOp(){
+	public void testFuncCallWithBinaryOp() {
 		final String code = "def int foo(int i){ return i;} def int main(){int i; i = foo(3+4); print i; return 0;}";
 		String output = executeCode(code);
 		assertEquals("7", output);
@@ -139,7 +139,7 @@ public class CompilerTest {
 	}
 
 	@Test
-	public void testRecursiveFuncCall(){
+	public void testRecursiveFuncCall() {
 		final String code = "def int foo(int i){if (i==0) {return 1;} return foo(i-1);} def int main(){int i; i = foo(3); print i; return 0;}";
 		String output = executeCode(code);
 		assertEquals("1", output);
@@ -147,38 +147,36 @@ public class CompilerTest {
 
 	@Test
 	public void testIfElsePrintStatement() {
-		final String code = mainC("int a; int b;  bool c; a = 1;  b = 2; c = true;\n" +
-				"if (c) { print a; }\n" + 
-				"else { print b; }");
+		final String code = mainC("int a; int b;  bool c; a = 1;  b = 2; c = true;\n"
+				+ "if (c) { print a; }\n" + "else { print b; }");
 		String output = executeCode(code);
 		assertEquals("1", output);
 	}
 
 	@Test
 	public void testIfElseReturnStatement() {
-		final String code = "def int foo() { int a; int b;  bool c; a = 1;  b = 2; c = true;\n" +
-					"if (c) { return a; }\n" + 
-					"else { return b; }\n" + 
-				"}\n" +
-				mainC("int a; a = foo(); print a;");
+		final String code = "def int foo() { int a; int b;  bool c; a = 1;  b = 2; c = true;\n"
+				+ "if (c) { return a; }\n"
+				+ "else { return b; }\n"
+				+ "}\n"
+				+ mainC("int a; a = foo(); print a;");
 		System.out.println(code);
 		String output = executeCode(code);
 		assertEquals("1", output);
 	}
-	
+
 	@Test
 	public void testRecordDeclaration() {
-		final String code = 
-				mainC("record {int i; int j;} myRecord;");
+		final String code = mainC("record {int i; int j;} myRecord;");
 		System.out.println(code);
 		String output = executeCode(code);
 		assertEquals("", output);
 	}
-	
+
 	@Test
 	public void testRecordFuncCall() {
-		final String code = "def int foo(record {int i;} a) { int x; x = a.i; print x; return a.i + 1;} " +
-				"def int main(){ record {int i;} a; int bla; a.i = 3; bla = foo(a); print bla; return 0;}";
+		final String code = "def int foo(record {int i;} a) { int x; x = a.i; print x; return a.i + 1;} "
+				+ "def int main(){ record {int i;} a; int bla; a.i = 3; bla = foo(a); print bla; return 0;}";
 		System.out.println(code);
 		String output = executeCode(code);
 		assertEquals("34", output);
@@ -192,6 +190,15 @@ public class CompilerTest {
 		System.out.println(code);
 		String output = executeCode(code);
 		assertEquals("3.14", output);
+	}
+
+	@Test
+	public void testNestedRecords2() {
+		final String code = mainC("record { real x; record {real x; record { int i;} inner; } middle; } outer;"
+				+ "outer.middle.inner.i=3; print outer.middle.inner.i;");
+		System.out.println(code);
+		String output = executeCode(code);
+		assertEquals("3", output);
 	}
 
 }

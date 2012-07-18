@@ -22,4 +22,12 @@ public class Array extends Type {
 		final int dimension = getDimension();
 		return "array(" + dimension + "," + getType().toTypeString() + ")";
 	}
+	
+	@Override
+	public String genCode(){
+		int dim = ((IntLiteral)getChild(0)).getValue();
+		Type t = getType();
+		String ret =  "[" + dim + " x "+ t.genCode() +"]";
+		return ret;
+	}
 }

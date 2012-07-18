@@ -200,5 +200,22 @@ public class CompilerTest {
 		String output = executeCode(code);
 		assertEquals("3", output);
 	}
+	
+	@Test
+	public void testArray() {
+		final String code = mainC("int[10] test; int i; int tmp;" +
+				"i = 0; " +
+				"while (i < 10){" +
+					"i=i+1; " +
+					"test[i] = 1;" +
+					"tmp = test[i];" +
+					"print tmp;" +
+				"} " +
+				"return 0;");
+		System.out.println(code);
+		String output = executeCode(code);
+		assertEquals("1111111111", output);
+	}
+
 
 }

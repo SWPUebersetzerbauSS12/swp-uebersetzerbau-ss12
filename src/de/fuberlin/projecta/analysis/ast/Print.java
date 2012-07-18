@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import de.fuberlin.projecta.analysis.BasicTokenType;
-import de.fuberlin.projecta.analysis.EntryType;
 import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
 
@@ -19,10 +18,15 @@ public class Print extends Statement {
 	public String genCode() {
 		String out = "";
 		Block block = getHighestBlock();
-		EntryType id = SymbolTableHelper.lookup(((Id) getChild(0)).getValue(),
-				this);
-		if (id.getType() instanceof BasicType) {
-			if (((BasicType) id.getType()).getTokenType() == BasicTokenType.STRING) {
+		Type idType = null;
+		if(getChild(0) instanceof RecordVarCall){
+			idType = SymbolTableHelper.lookupRecordVarCall((RecordVarCall) getChild(0));
+		} else {
+			idType = SymbolTableHelper.lookup(((Id) getChild(0)).getValue(),
+				this).getType();
+		}
+		if (idType instanceof BasicType) {
+			if (((BasicType) idType).getTokenType() == BasicTokenType.STRING) {
 				int reg = block.getNewVar();
 				out += "%" + reg + " = load i8** %"
 						+ ((Id) getChild(0)).getValue() + "\n";
@@ -30,12 +34,12 @@ public class Print extends Statement {
 						+ "tail call i32 (i8*)* @puts(i8* %" + reg + ")";
 			} else {
 				String format = "";
-				if (((BasicType) id.getType()).getTokenType() == BasicTokenType.INT) {
+				if (((BasicType) idType).getTokenType() == BasicTokenType.INT) {
 					format = "%d";
 					out += "";
-				} else if (((BasicType) id.getType()).getTokenType() == BasicTokenType.REAL) {
+				} else if (((BasicType) idType).getTokenType() == BasicTokenType.REAL) {
 					format = "%f";
-				} else if (((BasicType) id.getType()).getTokenType() == BasicTokenType.BOOL) {
+				} else if (((BasicType) idType).getTokenType() == BasicTokenType.BOOL) {
 					format = "%d";
 				}
 				int tempReg = block.getNewVar();
@@ -48,8 +52,8 @@ public class Print extends Statement {
 						+ "\n";
 				out += "%" + tempReg2 + " = getelementptr [4 x i8]* %" + tempReg + ", i8 0, i8 0 \n";
 				//now we print
-				out += "%"+valReg+ " = load "+id.getType().genCode() +"* %"+ ((Id)getChild(0)).getValue()+"\n";
-				out += "call i32 (i8*, ...)* @printf(i8* %"+tempReg2+", "+ id.getType().genCode() + " %" +valReg+")";
+				out += "%"+valReg+ " = load "+idType.genCode() +"* %"+ ((Id)getChild(0)).getValue()+"\n";
+				out += "call i32 (i8*, ...)* @printf(i8* %"+tempReg2+", "+ idType.genCode() + " %" +valReg+")";
 				// implicit return of printf increments var counter!
 				block.getNewVar();
 			}

@@ -1,6 +1,8 @@
 package de.fuberlin.projecta.analysis.ast;
 
+import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
+import de.fuberlin.projecta.analysis.TypeErrorException;
 
 /**
  * Must have exactly two children of the type Id! First id is the record id,
@@ -9,7 +11,11 @@ import de.fuberlin.projecta.analysis.SymbolTableHelper;
 public class RecordVarCall extends Expression {
 
 	public Id getRecordId() {
-		return (Id) getChild(0);
+		ISyntaxTree child = getChild(0);
+		while(child instanceof RecordVarCall){
+			child = child.getChild(0);
+		}
+		return (Id) child;
 	}
 
 	public Id getVarId() {
@@ -18,8 +24,10 @@ public class RecordVarCall extends Expression {
 
 	@Override
 	public String toTypeString() {
-		return SymbolTableHelper
-				.lookup(getRecordId().getValue(), getVarId().getValue(), this)
-				.getType().toTypeString();
+		Type a = SymbolTableHelper.lookupRecordVarCall(this);
+		if(a == null){
+			throw new TypeErrorException("Record not found");
+		}
+		return a.toTypeString();
 	}
 }

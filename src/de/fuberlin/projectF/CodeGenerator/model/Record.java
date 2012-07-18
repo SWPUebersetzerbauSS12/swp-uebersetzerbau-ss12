@@ -12,13 +12,13 @@ public class Record extends Reference {
 		variableList = new HashMap<String,Reference>();
 	}
 	
-	public void add(Variable variable) {
-		variableList.put(variable.name, variable);
+	public void add(Reference reference) {
+		variableList.put(reference.name, reference);
 		computeSize();
 	}
 	
-	public void remove(Variable variable) {
-		variableList.remove(variable.name);
+	public void remove(Reference reference) {
+		variableList.remove(reference.name);
 		computeSize();
 	}
 	

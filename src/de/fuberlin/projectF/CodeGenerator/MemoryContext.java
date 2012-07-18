@@ -240,15 +240,23 @@ public class MemoryContext {
 		return arrPtr;
 	}
 
-	public void newRecordPtr(String name, String rec, String offset) {
+	public RecordPointer newRecordPtr(String name, String rec, String offset) {
 		System.out.println("Name: " + name);
 		System.out.println("Record: " + rec);
-		System.out.println("Address " + records.get(rec).getAddress(Integer.valueOf(offset)));
+		if(isRecordPtr(rec))
+			System.out.println("PointerAddress " + recordPtrs.get(rec).getAddress(Integer.valueOf(offset)));
+		else
+			System.out.println("Address " + records.get(rec).getAddress(Integer.valueOf(offset)));
 		System.out.println("Offset: " + offset);
 		//TODO cast
-		RecordPointer tmp = new RecordPointer(name, records.get(rec),new Integer(offset));
 		
+		RecordPointer tmp;
+		if(isRecordPtr(rec))
+			tmp = new RecordPointer(name, recordPtrs.get(rec),new Integer(offset));
+		else
+			tmp = new RecordPointer(name, records.get(rec),new Integer(offset));
 		put(tmp);
+		return tmp;
 	}
 
 	public void newReference(String name, String var) {
@@ -338,6 +346,14 @@ public class MemoryContext {
 
 	public ArrayPointer getArraPtr(String name) {
 		return arrayPtrs.get(name);
+	}
+	
+	public boolean isRecordPtr(String name) {
+		return recordPtrs.containsKey(name);
+	}
+
+	public RecordPointer getRecordPtr(String name) {
+		return recordPtrs.get(name);
 	}
 
 	public HashMap<RegisterAddress, Reference> getUsedRegisters() {

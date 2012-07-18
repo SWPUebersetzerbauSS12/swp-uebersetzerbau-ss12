@@ -1,0 +1,88 @@
+\documentclass[ngerman]{scrartcl}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{fullpage}
+\usepackage{babel}
+
+\begin{document}
+\title{Maschinencodegenerierung}
+\subtitle{SWP Übersetzerbau SS12 (Gruppe F)}
+\maketitle
+
+\section*{Einleitung}
+
+Ziel unseres Teilprojektes war es aus gegebenem, optimierten LLVM-Code
+ausführbaren Maschinencode zu erzeugen. Hierbei konzentrierten wir
+uns zunächst auf die Erstellung von unter Linux-Systemen funktionierendem
+GNU-Assembler (32 Bit). Später ermöglichten wir auch noch die Ausgabe
+als Intel-Assembler.
+
+
+\section*{Programmablauf}
+
+Der eingegebene LLVM-Code wird durch den Lexer (FileLexer) geparst.
+Dieser speichert die relevanten Informationen in Token. Anschließend
+werden die Token durch den Translator in den jeweils relevanten Maschinencode
+übersetzt.
+
+
+\section*{Hauptkomponenten}
+
+
+\subsection*{CodeGenerator}
+
+
+\subsection*{Lexer}
+
+Da es sich bei LLVM um Drei-Adress-Code handelt lassen sich die relevanten
+Informationen der einzelnen LLVM-Befehle grob aufteilen in: Art des
+Befehls, Ziel und Operanden. Bei Methodendefinitionen werden zusätzlich
+die Parameter gespeichert.
+
+
+\subsection*{Translator}
+
+Der Translator greift auf eine Umsetzung der abstrakten Klasse Assembler
+zu, z.B. GNUAssembler. Mit den dort zur Verfügung stehenden Funktionen
+wird zunächst die Grundstruktur für ein ausführbares Programm in der
+jeweiligen Architektur erstellt. Dann werden die vom Lexer erstellten
+Token durchlaufen, übersetzt und in das Grundgerüst eingefügt. Für
+die Übersetzung von Variablennamen zu Speicheradressen greift der
+Translator auf die Funktionen der Speicherverwaltung (MemoryManager)
+zu.
+
+
+\subsection*{MemoryManager}
+
+Der MemoryManager verwaltet den für ein Programm zur Verfügung stehenden
+Speicher. In den einfachsten Fällen gibt er also bei Anfrage freie
+Speicherbereiche in Form von Registern oder Stack-Adressen zurück
+und ordnet bereits existierenden Variablen ihre aktuellen Adressen
+zu. Natürlich muss dies je nach Art der Variable unterschiedlich behandelt
+werden.
+
+Hierbei wird zwischen dem ,,globalen`` Speicher und den einzelnen
+LLVM-Namespaces, also den Zuordnungen innerhalb der einzelnen Methoden
+(MemoryContext) unterschieden.
+
+Darüber hinaus gibt es noch die Möglichkeit Variablen von Registern
+auf den Stack zu verschieben, um sie z. B. vor einem Funktionsaufruf
+zu sichern.
+
+
+\section*{Probleme}
+
+Da wir für die meiste Zeit des Projektes keinen LLVM-Code zur Verfügung
+hatten, der innerhalb des Projektes aus der Quellsprache erzeugt wurde,
+haben wir uns hauptsächlich an Code orientiert, der mit Standardtools
+(clang) aus C-Code erzeugt wurde.
+
+Natürlich gab es beim intern erzeugten LLVM-Code Unterschiede, auf
+die wir dann kurzfristig reagieren mussten, dies war besonders bei
+der Umsetzung von Strings problematisch.
+
+Da wir also kaum intern erzeugten Code zur Verfügung hatten, waren
+wir auch beim Testen und Debuggen auf externen Code angewiesen, daher
+konnten wir Tests als Teil der gesamten Compilerkette nicht in dem
+Maße ausführen, wie wir es gerne getan hätten.
+\end{document}

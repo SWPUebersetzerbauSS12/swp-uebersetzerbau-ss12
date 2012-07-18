@@ -9,17 +9,19 @@ import de.fuberlin.projecta.codegen.LLVM;
 /**
  * This class represents one function call.
  * 
- * It has one or two children. The first is id, which represents the functions name,
- * the second is a node of type Args (if existing) and contains all arguments. 
+ * It has one or two children. The first is id, which represents the functions
+ * name, the second is a node of type Args (if existing) and contains all
+ * arguments.
  */
 public class FuncCall extends Expression {
 
 	public Id getId() {
-		return (Id)getChild(0);
+		return (Id) getChild(0);
 	}
 
 	/**
-	 * For this to work properly all parameters MUST be loaded before!
+	 * For this to work properly all parameters MUST be loaded before (except
+	 * records!)!
 	 */
 	@Override
 	public String genCode() {
@@ -33,11 +35,9 @@ public class FuncCall extends Expression {
 
 			// TODO: this is currently not working if multiple instances with
 			// this id exist in the symbolTable!!!
-			func = SymbolTableHelper
-					.lookup(getId().getValue(), this);
+			func = SymbolTableHelper.lookup(getId().getValue(), this);
 		} else {
-			func = SymbolTableHelper
-					.lookup(getId().getValue(), this);
+			func = SymbolTableHelper.lookup(getId().getValue(), this);
 		}
 		if (func != null) {
 			ret = "call " + func.getType().genCode();
@@ -51,11 +51,11 @@ public class FuncCall extends Expression {
 
 						if (child instanceof Id) {
 							counter++;
-							ret += ((Id) child).getType().genCode() + ", ";
+							ret += ((Id) child).getType().genCode() + "*, ";
 						} else if (child instanceof BasicType) {
 							counter++;
 							node = (Type) child;
-							ret += node.genCode() + ", ";
+							ret += node.genCode() + "*, ";
 						}
 					}
 				}
@@ -73,8 +73,16 @@ public class FuncCall extends Expression {
 				for (ISyntaxTree child : getChild(1).getChildren()) {
 					tmp = true;
 					Expression node = (Expression) child;
-					ret += node.fromTypeStringToLLVMType() + " %"
-							+ LLVM.getMem(node) + ", ";
+					if (!(node.fromTypeStringToLLVMType().equals(""))) {
+						ret += node.fromTypeStringToLLVMType() + " %"
+								+ LLVM.getMem(node) + ", ";
+					} else if (node instanceof Id
+							&& SymbolTableHelper.lookup(((Id) node).getValue(),
+									node).getType() instanceof Record) {
+						ret += ((Id) node).getType().genCode() + "* %"
+								+ ((Id) node).getValue() + ", ";
+					}
+
 				}
 			if (tmp)
 				ret = ret.substring(0, ret.length() - 2);
@@ -107,8 +115,8 @@ public class FuncCall extends Expression {
 
 	@Override
 	public String toTypeString() {
-		return SymbolTableHelper.lookup(getId().getValue(), this)
-				.getType().toTypeString();
+		return SymbolTableHelper.lookup(getId().getValue(), this).getType()
+				.toTypeString();
 	}
 
 }

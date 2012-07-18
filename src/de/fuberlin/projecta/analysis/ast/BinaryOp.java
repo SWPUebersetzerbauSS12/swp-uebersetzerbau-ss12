@@ -99,6 +99,8 @@ public class BinaryOp extends Expression {
 			Id id1 = null;
 			if (t1 instanceof RecordVarCall)
 				id1 = ((RecordVarCall) t1).getVarId();
+			else if (t1 instanceof ArrayCall)
+				id1 = (Id) ((ArrayCall) t1).getArrayId();
 			else
 				id1 = (Id)t1;
 

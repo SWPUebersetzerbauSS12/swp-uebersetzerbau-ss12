@@ -285,7 +285,8 @@ public class LLVM {
 		// collect all array references
 		while(tmp.getChild(1) instanceof ArrayCall){
 			tmp = (ArrayCall)tmp.getChild(1);
-			index += ", i32 " + ((IntLiteral)tmp.getChild(0)).getValue();
+			ret += LLVM.loadType((Expression)array.getChild(0));
+			index += ", i32 " + array.getVar();	
 		}
 		//last ArrayCall contains the id of the array! (weird, but we deal with it)
 		Id id = (Id) tmp.getChild(1);

@@ -211,10 +211,31 @@ public class CompilerTest {
 					"print tmp;" +
 					"i=i+1; " +
 				"} " +
-				"return 0;");
+				"return 1;");
 		System.out.println(code);
 		String output = executeCode(code);
 		assertEquals("0123456789", output);
+	}
+
+	@Test
+	//TODO nested while loops don't work
+	public void testNestedWhileLoops() {
+		final String code = mainC("int[3][5] test; int i; int j; int tmp;" +
+				"i = 0;" +
+				"while (i < 3){" +
+					"j = 0;" +
+					"while(j < 5){"+
+						"test[i][j] = i+j;" +
+						"tmp = test[i][j];" +
+						"print tmp;" +
+						"j=j+1;"+
+					"}"+
+					"i=i+1; " +
+				"} " +
+				"return 1;");
+		System.out.println(code);
+		String output = executeCode(code);
+		assertEquals("012341234523456", output);
 	}
 
 

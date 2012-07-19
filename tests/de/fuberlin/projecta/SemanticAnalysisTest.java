@@ -1,5 +1,7 @@
 package de.fuberlin.projecta;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
 import de.fuberlin.commons.parser.ISyntaxTree;
@@ -139,6 +141,12 @@ public class SemanticAnalysisTest {
 	@Test(expected = SemanticException.class)
 	public void testVariableDeclaredVoid() {
 		final String code = mainC("void v;");
+		analyze(code);
+	}
+
+	@Test(expected = SemanticException.class)
+	public void testUndefinedVariable(){
+		final String code = mainC("v = 1;");
 		analyze(code);
 	}
 

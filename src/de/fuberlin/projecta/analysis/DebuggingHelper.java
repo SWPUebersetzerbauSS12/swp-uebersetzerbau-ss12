@@ -5,6 +5,13 @@ import de.fuberlin.projecta.analysis.ast.AbstractSyntaxTree;
 
 public class DebuggingHelper {
 
+	/**
+	 * Try to find nearest Token of an AST node
+	 * (recursively searches parent nodes to find next attached Token)
+	 * 
+	 * @param node AST node
+	 * @return  Token
+	 */
 	public static IToken extractPosition(AbstractSyntaxTree node) {
 		while (node != null) {
 			IToken token = node.getToken();

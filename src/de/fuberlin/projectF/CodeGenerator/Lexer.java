@@ -512,6 +512,7 @@ public abstract class Lexer {
 				currentBlock = ++var;
 				Token token = new Token();
 				token.setType(TokenType.Label);
+				debug.println("" + var);
 				token.setTarget(String.valueOf(var));
 				debug.println("\t\t\tinsert Label \"" + token.getTarget() + "\" in token token stream");
 				tokenStream.add(i+1, token);
@@ -522,9 +523,13 @@ public abstract class Lexer {
 			} else {
 				if(!tok.getTarget().isEmpty() && tok.getTarget().length() > 1) {
 					try {
-						var = Integer.valueOf(tok.getTarget().substring(1));
-						debug.println("\t\t\tchange Block: " + currentBlock + " highest variable: " + var);
-						contexts.get(currentContext).put(currentBlock, var);
+						int tmp_var = Integer.valueOf(tok.getTarget().substring(1));
+						debug.println(tok.getTarget() + "Old_var: " + tmp_var + " new var: " + var);
+						if(tmp_var > var) {
+							var = tmp_var;
+							debug.println("\t\t\tchange Block: " + currentBlock + " highest variable: " + var);
+							contexts.get(currentContext).put(currentBlock, var);
+						}
 					} catch(NumberFormatException e) {
 					}
 				}

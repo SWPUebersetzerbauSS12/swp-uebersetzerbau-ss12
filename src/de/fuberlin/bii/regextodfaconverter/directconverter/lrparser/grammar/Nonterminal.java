@@ -36,12 +36,17 @@ import de.fuberlin.bii.utils.Test;
 
 
 /**
+ * Stellt ein Nichtterminal dar. 
  * 
  * @author Johannes Dahlke
  *
  */
 public class Nonterminal extends RuleElement {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6680662147321558406L;
 	private String name = null;
 	
 	
@@ -70,6 +75,17 @@ public class Nonterminal extends RuleElement {
 			return true;
 		
 		return super.equals(theOtherNonterminal);
+	}
+	
+	@Override
+	public int hashCode() {
+		if ( name == null)
+			return super.hashCode();
+		
+		int hashCode = 5;
+		hashCode = 31 * hashCode + name.hashCode(); 	
+		
+		return hashCode;
 	}
 	
 	@Override

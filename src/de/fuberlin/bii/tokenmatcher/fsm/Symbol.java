@@ -37,7 +37,7 @@ package de.fuberlin.bii.tokenmatcher.fsm;
  * Übergangstabelle  Zustandsübergange definiert werden.
  * 
  * @author Johannes Dahlke
- *
+ * @deprecated
  */
 public class Symbol {
 	

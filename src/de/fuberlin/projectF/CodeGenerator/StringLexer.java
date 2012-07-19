@@ -29,7 +29,8 @@ public class StringLexer extends Lexer{
 	String[] code;
 	int cursor;
 
-	public StringLexer(String code) {
+	public StringLexer(String code, Debuginfo debug) {
+		super(debug);
 		this.code = code.split("\n");
 		this.cursor = 0;
 	}

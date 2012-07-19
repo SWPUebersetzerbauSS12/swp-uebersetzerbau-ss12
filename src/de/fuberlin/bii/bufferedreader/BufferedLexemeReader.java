@@ -115,7 +115,7 @@ public class BufferedLexemeReader implements LexemeReader {
 	}   
 			
 	
-	private int getCurrentPosition() throws Exception {
+	private static int getCurrentPosition() throws Exception {
 	  throw new Exception( "Not yet implemented");
 	}   
 	
@@ -167,13 +167,21 @@ public class BufferedLexemeReader implements LexemeReader {
 		return result;	
 	}
 
+	
+	/**
+	 * Setzt den Positionszeiger des Lesers hinter das Ende des 
+	 * zuletzt akzeptierten Lexems. 
+	 * @throws LexemeReaderException 
+	 */
 	public void reset() throws LexemeReaderException {
 	  forwardPosition = lexemeBeginMarker -1;
 	  endOfFileReached = false;       
 	}
 
 	/**
-	 * Accept all yet readed bytes as an lexeme
+	 * Akzeptiert das zuletzt gelesene Lexem, indem es den Marker {@link #lexemeBeginMarker} 
+	 * genau hinter dem zuletzt gelesenen Lexem positioniert. 
+	 * @throws LexemeReaderException 
 	 */
 	public void accept() throws LexemeReaderException {
 		 if ( forwardPosition == NUM_BUFFER_SIZE -2) {
@@ -193,7 +201,11 @@ public class BufferedLexemeReader implements LexemeReader {
 		forwardPosition = Math.max( lexemeBeginMarker-1, forwardPosition -steps);      
 	}
 
-
+	/**
+	 * Öffnet die Eingabedatei erneut. Der nächste Aufruf von {@link #getNextChar()} 
+	 * liefert dann das erste Zeichen aus der Quelldatei.  
+	 * @throws LexemeReaderException 
+	 */
 	public void reopen() throws LexemeReaderException {
 	  try {
 	    // we open the file read only

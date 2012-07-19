@@ -42,6 +42,11 @@ package de.fuberlin.bii.tokenmatcher.attributes;
  */
 public class IntAttribute extends GenericAttribute<Integer> {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8262352534690232677L;
+
 	public IntAttribute( Integer value) {
 	  super( Integer.class, value);
 	}

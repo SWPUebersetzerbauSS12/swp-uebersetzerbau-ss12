@@ -36,6 +36,7 @@ package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionRule;
 
 /**
+ * Handler für ein Reduce-Ereignis. Wird vom Itemautomaten aufgerufen, wenn eine Reduce-Aktion ausgeführt wurde. 
  * 
  * @author Johannes Dahlke
  *

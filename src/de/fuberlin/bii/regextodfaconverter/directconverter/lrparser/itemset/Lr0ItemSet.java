@@ -37,6 +37,7 @@ import java.util.HashSet;
 
 
 /**
+ * Eine Menge an {@link Lr0Item}s.
  * 
  * @author Johannes Dahlke
  *
@@ -44,6 +45,11 @@ import java.util.HashSet;
 public class Lr0ItemSet extends ItemSet<Lr0Item> {
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2350428706693175887L;
+
 	public Lr0ItemSet() {
 		super();
 	}

@@ -51,24 +51,57 @@ import de.fuberlin.bii.utils.Test;
  */
 public abstract class Closure<SpecializedItem extends Item> extends HashMap<SpecializedItem, Boolean> {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7957752941028034850L;
 	private int number = -1;
 	
+	/**
+	 * Test auf Kernel-Item.
+	 * @param item
+	 * @return
+	 */
 	public boolean isKernelItem( SpecializedItem item) {
 		return this.get( item);
 	}
 	
+	/** 
+	 * Fügt ein Item als Kernel-Item zur Closure hinzu. 
+	 * @param item
+	 * @return True, wenn das Item zuvor noch nicht in der Closure war, sonst False.
+	 */
 	public boolean addAsKernelItem( SpecializedItem item) {
 		return this.put( item, true) == null;
 	}
 	
+	/** 
+	 * Fügt ein Item als Nichtkernel-Item zur Closure hinzu. 
+	 * @param item
+	 * @return True, wenn das Item zuvor noch nicht in der Closure war, sonst False.
+	 */
 	public boolean addAsNonkernelItem( SpecializedItem item) {
 		return this.put( item, false) == null;
 	}
-	
+
+	/** 
+	 * Fügt ein Item als Kernel-Item zur Closure hinzu. 
+	 * @param item
+	 * @return True, wenn das Item zuvor schon als KernelItem geführt wurde. 
+	 *         False, falls das Item zuvor als NichtkernelItem geführt wurde.
+	 *         Null, falss das Item zuvor noch nicht zur Closure gehört hat.
+	 */
 	public boolean putAsKernelItem( SpecializedItem item) {
 		return this.put( item, true);
 	}
-	
+
+	/** 
+	 * Fügt ein Item als Nichtkernel-Item zur Closure hinzu. 
+	 * @param item
+	 * @return True, wenn das Item zuvor als KernelItem geführt wurde. 
+	 *         False, falls das Item zuvor schon als NichtkernelItem geführt wurde.
+	 *         Null, falss das Item zuvor noch nicht zur Closure gehört hat.
+	 */
 	public boolean putAsNonkernelItem( SpecializedItem item) {
 		return this.put( item, false);
 	}
@@ -77,7 +110,10 @@ public abstract class Closure<SpecializedItem extends Item> extends HashMap<Spec
 	@Override
 	public abstract boolean containsKey(Object key);
 	
-	
+	/**
+	 * Liefert die Closure als {@link ProductionMap}.
+	 * @return
+	 */
 	public ProductionMap toProductionMap() {
 		ProductionMap result = new ProductionMap();
 		for ( SpecializedItem item : this.keySet()) {
@@ -88,17 +124,36 @@ public abstract class Closure<SpecializedItem extends Item> extends HashMap<Spec
 	
 	@Override
 	public abstract boolean equals( Object theOtherObject);
-		
 	
+	protected boolean superEquals( Object theOtherObject) {
+		return super.equals( theOtherObject);
+	}
+	
+		
+	/**
+	 * Weist der Closure eine Nummer zu.
+	 * 
+	 * @param number
+	 */
 	public void setNumber(int number) {
 		this.number = number;
 	}
 	
 	
+	/**
+	 * Liefert die Kennung der Closure.
+	 * 
+	 * @return
+	 */
 	public Integer getNumber() {
 		return number;
 	}
 	
+	/**
+	 * Liefert den Namen der Closure.
+	 * 
+	 * @return
+	 */
 	public String getName() {
 		return "I" + number;
 	}
@@ -108,6 +163,11 @@ public abstract class Closure<SpecializedItem extends Item> extends HashMap<Spec
 		return number > -1 ? getName() : toItemsString();
 	}
 
+	/**
+	 * Gibt einen String unter Berücksichtigung aller Itemelemente zurück. 
+	 * 
+	 * @return
+	 */
 	public String toItemsString() {
 		return number > -1 ? getName() + ": " + super.toString() : super.toString();
 	}

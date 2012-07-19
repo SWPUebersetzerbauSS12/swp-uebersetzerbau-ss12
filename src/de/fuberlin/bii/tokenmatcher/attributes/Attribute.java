@@ -43,9 +43,18 @@ import java.io.Serializable;
  */
 public interface Attribute  extends Serializable  {
 
+	/**
+	 * Konvertiert ein Lexem in den in den entsprechenden Typ. 
+	 * @param lexem
+	 * @return
+	 */
 	Object lexemToValue( String lexem);
 	
-	Class getValueType();
+	/**
+	 * Liefert den Typ des Wertes.
+	 * @return
+	 */
+	Class<?> getValueType();
 	
 	
 }

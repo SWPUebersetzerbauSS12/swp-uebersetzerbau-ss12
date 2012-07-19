@@ -56,9 +56,11 @@ import de.fuberlin.bii.utils.Notification;
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public class ItemAutomataTest {
 
 
+	@SuppressWarnings({ "unchecked", "static-method"})
 	private void testMatchingOfExpressionWithAutomatAndGrammar( ItemAutomat<Symbol> itemAutomata, String expression, ContextFreeGrammar grammar) throws Exception {
 		
 		List<Symbol> symbols = new ArrayList<Symbol>();
@@ -72,18 +74,18 @@ public class ItemAutomataTest {
 	}
 	
 	
-	private void printAutomataInfo( ItemAutomat<Symbol> itemAutomata) throws Exception {
+	private static void printAutomataInfo( ItemAutomat<Symbol> itemAutomata) throws Exception {
     System.out.println( itemAutomata.toString());
     System.out.println( "---------------");
     System.out.println( "isReduceConflictFree = " + itemAutomata.isReduceConflictFree());
     System.out.println( "---------------");
 	}
 	
-	private void testAutomataToReduceConflict( ItemAutomat<Symbol> itemAutomata, boolean expectedResult) throws Exception {
+	private static void testAutomataToReduceConflict( ItemAutomat<Symbol> itemAutomata, boolean expectedResult) throws Exception {
     Assert.assertEquals( expectedResult, itemAutomata.isReduceConflictFree());
 	}
 		
-	private void printGrammarInfo( ContextFreeGrammar grammar) throws Exception {
+	private static void printGrammarInfo( ContextFreeGrammar grammar) throws Exception {
 		System.out.println( "Grammatik = " + grammar + " mit StartSymbol " + grammar.getStartSymbol());
 		System.out.println( "---------------");
    	System.out.println( "FirstSets: " + grammar.getFirstSets());
@@ -98,6 +100,7 @@ public class ItemAutomataTest {
 	}
 
 	
+	@SuppressWarnings("static-method")
 	@Test
 	public void testLr0AutomataWithRegex() throws Exception {
 		Notification.enableDebugPrinting();

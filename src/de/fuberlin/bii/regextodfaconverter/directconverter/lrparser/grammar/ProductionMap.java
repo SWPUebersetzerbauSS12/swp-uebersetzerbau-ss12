@@ -38,13 +38,26 @@ import java.util.HashSet;
 import de.fuberlin.bii.utils.Test;
 
 /**
- * 
+ * Die ProductionMap ist eine Zuordnung je einer Menge rechter Regelseiten auf das zugehörige Nichtterminal, 
+ * welches jeweils die linke Regelseite darstellt.
+ *    
  * @author Johannes Dahlke
  *
  */
 public class ProductionMap extends HashMap<Nonterminal, HashSet<RuleElementSequenz>> {
 	
 		
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5390987967530104938L;
+
+	/**
+	 * Fügt eine neue Produktion hinzu.
+	 * 
+	 * @param productionRule
+	 * @return
+	 */
 	public boolean addProduction( ProductionRule productionRule) {
 		if ( Test.isUnassigned( productionRule))
 			return false;
@@ -62,6 +75,11 @@ public class ProductionMap extends HashMap<Nonterminal, HashSet<RuleElementSeque
 		return true;
 	}
 	
+	/**
+	 *  Fügt eine Menge neuer Produktionen hinzu. 
+	 * @param productionSetToAdd
+	 * @return
+	 */
 	public boolean addAll( ProductionSet productionSetToAdd) {
 		boolean result = false;
 		for ( ProductionRule productionRule : productionSetToAdd) {

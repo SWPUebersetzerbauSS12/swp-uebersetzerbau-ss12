@@ -45,6 +45,11 @@ package de.fuberlin.bii.tokenmatcher.attributes;
  */
 public class ParseDoubleAttribute extends GenericParseAttribute<Double> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7119038375408271551L;
+
 	public ParseDoubleAttribute() {
 		super( Double.class);
 	}

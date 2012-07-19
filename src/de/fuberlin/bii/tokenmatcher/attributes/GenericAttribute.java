@@ -45,6 +45,10 @@ import de.fuberlin.bii.utils.Test;
  */
 public class GenericAttribute<T> implements Attribute {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7723491797038073403L;
 	private final T value;
 	private final Class<T> valueType;
 	
@@ -59,7 +63,7 @@ public class GenericAttribute<T> implements Attribute {
 	  return value;	
 	}
 
-	public Class getValueType() {
+	public Class<T> getValueType() {
 		return valueType;
 	}
 
@@ -76,6 +80,7 @@ public class GenericAttribute<T> implements Attribute {
 		if ( !( obj instanceof GenericAttribute))
 			return false;
 		
+		@SuppressWarnings("unchecked")
 		GenericAttribute<T> theOtherGenericAttribute = (GenericAttribute<T>) obj;
 		
 		boolean isEqual = theOtherGenericAttribute.valueType.equals( this.valueType) 

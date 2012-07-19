@@ -32,6 +32,10 @@
 
 package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar;
 
+import java.io.Serializable;
+
+import com.sun.org.apache.xpath.internal.operations.Equals;
+
 import de.fuberlin.bii.regextodfaconverter.directconverter.regex.operatortree.RegularExpressionElement;
 import de.fuberlin.bii.tokenmatcher.StatePayload;
 import de.fuberlin.bii.utils.Test;
@@ -46,8 +50,10 @@ import de.fuberlin.bii.utils.Test;
  * @param <Value>
  * @param <Payload>
  */
-public class Symbol<Value extends Comparable<Value>, Payload> implements Comparable<Symbol<Value,Payload>>{
+public class Symbol<Value extends Comparable<Value> & Serializable, Payload extends Serializable> implements Comparable<Symbol<Value,Payload>>, Serializable{
 	
+	private static final long serialVersionUID = -6760212067935299676L;
+
   private Value value;
 	
 	private Payload payload;
@@ -73,11 +79,17 @@ public class Symbol<Value extends Comparable<Value>, Payload> implements Compara
   	return result;
   }
   
+  /**
+   * Vergleicht nicht nur die Gleichheit des gekapselten {@link #value}-Elementes wie {@link Equals}, sondern auch den zugewiesenen {@link #payload}.
+   * @param obj
+   * @return
+   */
   public boolean equalsTotally( Object obj) {
   	if ( !equals( obj))
   		return false;
-  
-  	Symbol<Value,Payload> theOtherSymbol = (Symbol<Value,Payload>) obj;
+  	
+  	@SuppressWarnings("unchecked")
+		final Symbol<Value,Payload> theOtherSymbol = (Symbol<Value,Payload>) obj;
   	
   	return Test.isAssigned( this.payload) 
   			? this.payload.equals( theOtherSymbol.payload)
@@ -93,7 +105,9 @@ public class Symbol<Value extends Comparable<Value>, Payload> implements Compara
   	if ( !( obj instanceof Symbol))
   		return false;
   	
-  	Symbol theOtherSymbol = (Symbol) obj;
+
+		@SuppressWarnings("unchecked")
+		final Symbol<Value,Payload> theOtherSymbol = (Symbol<Value,Payload>) obj;
   	
   	return this.value.equals( theOtherSymbol.value);
   }
@@ -107,16 +121,27 @@ public class Symbol<Value extends Comparable<Value>, Payload> implements Compara
   }
 
   
-	
+	/**
+	 * Liefert den Symbolwert. 
+	 * @return
+	 */
 	public Value getValue() {
 		return value;
 	}
 	
+	/**
+	 * Liefert das beigefügte Payload-Element.
+	 * @return
+	 */
 	public Payload getPayload() {
 		return payload;
 	}
 	
-	
+	/**
+	 * Setzt den Payload.
+	  *
+	 * @param payload
+	 */
 	public void setPayload( Payload payload) {
 		this.payload = payload;
 	}

@@ -32,17 +32,56 @@
 
 package de.fuberlin.bii.bufferedreader;
 
+/**
+ * 
+ * Die Klasse SpecialChars stellt Sonderzeichen als Konstanten mit zugehörigen Testfunktionen bereit.
+ * 
+ * @author Johannes Dahlke
+ *
+ */
 public class SpecialChars {
 
+	/**
+	 * Zeilenende
+	 */
 	public static final char CHAR_EOF = 0x1A;
+	
+	/**
+	 * Leerzeichen
+	 */
 	public static final char CHAR_SPACE = 0x20;
+	
+	/**
+	 * Seitenvorschub
+	 */
 	public static final char CHAR_FORM_FEED = 0x0C;
+	
+	/**
+	 * Zeilenvorschub
+	 */
 	public static final char CHAR_LINE_FEED = 0x0A;
+	
+	/**
+	 * Wagenrücklauf
+	 */
 	public static final char CHAR_CARRIAGE_RETURN = 0x0D;
+	
+	/**
+	 * Hoizontaler Tabulator
+	 */
 	public static final char CHAR_HORIZONTAL_TAB = 0x09;
+	
+	/**
+	 * Vertikaler Tabulator
+	 */
 	public static final char CHAR_VERTICAL_TAB = 0x0B;
 	
 	
+	/**
+	 * Test auf Sonderzeichen.
+	 * @param c Das Zeichen
+	 * @return True, wenn c ein Sonderzeichen ist, sonst False
+	 */
 	public static boolean isSpecialChar( char c) {
 		switch ( c) {
 			case CHAR_EOF :
@@ -59,7 +98,11 @@ public class SpecialChars {
 	}
 	
 	
-
+  /**
+   * Test auf typografischen Weißraum.
+   * @param c Das zu bewertende Zeichen.
+   * @return True, wenn c ein Leeraum darstellt, sonst False.
+   */
 	public static boolean isWhiteSpace( char c) {
 		switch ( c) {
 			case CHAR_SPACE : 
@@ -75,6 +118,11 @@ public class SpecialChars {
 	}
  
 	
+	/**
+	 * Test auf Zeilenumbruch.
+	 * @param c das zu testende Zeichen.
+	 * @return True, wenn c ein Zeileumbruch ist, sonst False.
+	 */
 	public static boolean isNewLine( char c) {
 		switch ( c) {
 			case CHAR_FORM_FEED :
@@ -86,6 +134,12 @@ public class SpecialChars {
 		}
 	}
 	
+	/**
+	 * Test auf Zeilenende.
+	 * @param c Das zu prüfende Zeichen.
+	 *
+	 * @return True, wenn c das Zeilenende markiert, sonst False. 
+	 */
 	public static boolean isEOF( char c) {
 		return CHAR_EOF == c;
 	}

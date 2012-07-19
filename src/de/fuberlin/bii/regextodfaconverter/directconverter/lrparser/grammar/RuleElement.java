@@ -32,12 +32,19 @@
 
 package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar;
 
+import java.io.Serializable;
+
 
 /**
- * 
+ * Ein Regelelement. RuleElement ist die Basisklasse für Terminale und Nichtterminale. 
  * @author Johannes Dahlke
- *
+ * @see Terminal
+ * @see Nonterminal
+ * @see EmptyString
+ * @see Terminator
  */
-public abstract class RuleElement implements Comparable<RuleElement> {
+public abstract class RuleElement implements Comparable<RuleElement>, Serializable {
+
+	private static final long serialVersionUID = 4691013612313548633L;
 
 }

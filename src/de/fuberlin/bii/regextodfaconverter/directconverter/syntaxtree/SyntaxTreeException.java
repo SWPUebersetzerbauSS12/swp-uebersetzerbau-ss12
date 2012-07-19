@@ -33,18 +33,33 @@
 package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
 
 /**
- * 
+ * Die Klasse SyntaxTreeException dient der Behandlung von Fehlern auf dem Syntaxbaum.
+ *
  * @author Johannes Dahlke
  *
  */
 public class SyntaxTreeException extends Exception {
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4534495131206662652L;
+
+	/**
+	 * Erstellt ein neues SyntaxTreeException Objekt.
+	 * 
+	 */
 	public SyntaxTreeException() {
 		super();
 	}
 	
-
+	/**
+	 * Erstellt ein neues SyntaxTreeException Objekt.
+	 * 
+	 * @param message
+	 *            Die genaue Fehlerbeschreibung.
+	 */
 	public SyntaxTreeException( String message) {
 		super( message);
 	}

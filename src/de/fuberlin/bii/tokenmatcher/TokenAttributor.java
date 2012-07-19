@@ -50,7 +50,7 @@ public class TokenAttributor {
 	 * @param tokenType the identified type
 	 * @return an value with common type
 	 */
-	public Object convertLexemToAttributeForTokenWithType( String lexem, TokenType tokenType) {
+	public static Object convertLexemToAttributeForTokenWithType( String lexem, TokenType tokenType) {
 		switch ( tokenType) {
 			/** handle relational operators <(LT), <=(LE), ==(EQ), !=(NE), >(GT), >=(GE) */
 			case OP_LT: 

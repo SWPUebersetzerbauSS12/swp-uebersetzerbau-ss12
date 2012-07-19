@@ -36,10 +36,16 @@ package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
 import java.util.HashMap;
 
 /**
+ * Eine Abbildung von Attributen auf deren Werte.
  * 
  * @author Johannes Dahlke
  *
  */
 public class AttributesMap extends HashMap<String,Object>{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3498982680440762687L;
 
 }

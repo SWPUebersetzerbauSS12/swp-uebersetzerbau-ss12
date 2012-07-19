@@ -255,7 +255,7 @@ public class SyntaxTreeNode implements ISyntaxTree{
 			strBuf.append("  ");
 		}
 		strBuf.append("<node symbol=\"");
-		strBuf.append(symbol.getName());
+		strBuf.append(escape(symbol.getName()));
 		strBuf.append("\"");
 		if (token!=null){
 			strBuf.append(" type=\"");
@@ -282,4 +282,13 @@ public class SyntaxTreeNode implements ISyntaxTree{
 		}				
 	}
 	
+	private String escape( String s){
+		if (s.contains("<")){
+			s=s.replaceAll("<", "&lt;");
+		}
+		if (s.contains(">")){
+			s=s.replaceAll("<", "&gt;");
+		}
+		return s;
+	}
 }

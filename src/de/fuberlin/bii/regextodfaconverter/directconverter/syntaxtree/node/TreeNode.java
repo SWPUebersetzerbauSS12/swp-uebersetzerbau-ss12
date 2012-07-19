@@ -42,11 +42,13 @@ import de.fuberlin.bii.utils.Test;
 
 
 /**
+ * Basistyp für einen Knoten.
  * 
  * @author Johannes Dahlke
  *
  * @param <Value>
  */
+@SuppressWarnings("rawtypes")
 public class TreeNode<Value> implements Cloneable {
 
 	protected List<Value> values;
@@ -69,38 +71,78 @@ public class TreeNode<Value> implements Cloneable {
 		return values.get( 0);
 	}
 	
+	/**
+	 * Attributiert den Knoten.
+	 * @param value
+	 */
 	public void addValue( Value value) {
 		this.values.add( value);
 	}
 
+	/**
+	 * Weist dem Knoten mehrere Attribute zu.
+	 * @param value
+	 */
 	public void addValues( Value ... values) {
 		this.values.addAll( Arrays.asList( values));
 	}
-	
+
+	/**
+	 * Weist dem Knoten eine Liste an Attributen zu.
+	 * @param value
+	 */
 	public void addValues( List<Value> values) {
 		this.values.addAll( values);
 	}
 	
+	/**
+	 * Fügt ein Attribut an gegebener Stelle in Liste der Knoten-Attribute ein.
+	 * @param index
+	 * @param value
+	 */
 	public void insertValue( int index, Value value) {
 		this.values.add( index, value);
 	}
-
+	
+	/**
+	 * Fügt mehrere Attribute an gegebener Stelle in Liste der Knoten-Attribute ein.
+	 * @param index
+	 * @param value
+	 */
 	public void insertValues( int index, Value ... values) {
 		this.values.addAll( index, Arrays.asList( values));
 	}
 	
+	/**
+	 * Fügt eine Liste an Attributen an gegebener Stelle in Liste der Knoten-Attribute ein.
+	 * @param index
+	 * @param value
+	 */
 	public void insertValues( int index, List<Value> values) {
 		this.values.addAll( index, values);
 	}
 	
+	/**
+	 * Liedert die Attribute zu diesem Knoten.
+	 * @return
+	 */
 	public List<Value> getValues() {
 		return values;
 	}
 	
+	/**
+	 * Liefert den Elternknoten.
+	 * @return
+	 */
 	public InnerNode getParentNode() {
 		return parentNode;
 	}
 	
+	/**
+	 * Setzt den Elternknoten.
+	 * @param newParentNode
+	 * @return
+	 */
 	public boolean setParentNode( InnerNode newParentNode) {
 		// case 1: change parent
 		if ( Test.isAssigned(  this.parentNode) 
@@ -121,6 +163,11 @@ public class TreeNode<Value> implements Cloneable {
 		return false;
 	}
 	
+	/**
+	 * Setzt den Elternknoten und fügt sich selbst in die Liste der Kindelemente des Elternknoten an gegebener Stelle ein.
+	 * @param newParentNode
+	 * @param parentIndex
+	 */
 	public void setParentNode( InnerNode newParentNode, int parentIndex) {
 		if ( Test.isAssigned(  this.parentNode))
 			this.parentNode.removeChild( this);
@@ -130,12 +177,17 @@ public class TreeNode<Value> implements Cloneable {
 			parentNode = null;
 	}
 	
+	/**
+	 * Test auf Wurzelelement.
+	 * @return
+	 */
 	public boolean isRootNode() {
 		return Test.isUnassigned( parentNode);
 	}
 	
 	@Override
 	public Object clone() throws CloneNotSupportedException {
+		@SuppressWarnings("unchecked")
 		TreeNode<Value> clonedTreeNode = (TreeNode<Value>) super.clone();
 		clonedTreeNode.parentNode = this.parentNode;
 		clonedTreeNode.values = new ArrayList<Value>( this.values);
@@ -156,6 +208,10 @@ public class TreeNode<Value> implements Cloneable {
 	}
 	
 	
+	/**
+	 * Setzt einen Print-Ereignishandler.
+	 * @param printHandler
+	 */
 	public void setPrintHandler( PrintHandler printHandler) {
 		this.printHandler = printHandler;
 	}

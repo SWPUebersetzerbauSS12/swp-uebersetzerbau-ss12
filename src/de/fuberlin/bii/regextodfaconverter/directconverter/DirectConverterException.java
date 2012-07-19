@@ -33,6 +33,7 @@
 package de.fuberlin.bii.regextodfaconverter.directconverter;
 
 /**
+ * Die Klasse DirectConverterException dient der Behandlung von Fehlern, welche während des Konvertierens regulärer Ausdrücke in einen DEA auf direktem Weg aufgetreten sind. 
  * 
  * @author Johannes Dahlke
  *

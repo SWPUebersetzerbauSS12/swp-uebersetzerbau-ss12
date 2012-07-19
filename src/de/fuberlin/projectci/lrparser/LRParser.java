@@ -18,6 +18,7 @@ import de.fuberlin.projectci.grammar.GrammarReader;
 import de.fuberlin.projectci.grammar.NonTerminalSymbol;
 import de.fuberlin.projectci.grammar.Production;
 import de.fuberlin.projectci.grammar.Symbol;
+import de.fuberlin.projectci.gui.ParseTableGui;
 import de.fuberlin.projectci.parseTable.InvalidGrammarException;
 import de.fuberlin.projectci.parseTable.ParseTable;
 import de.fuberlin.projectci.parseTable.ParseTableBuilder;
@@ -25,10 +26,87 @@ import de.fuberlin.projectci.parseTable.ParseTableBuilder;
 public class LRParser implements IParser {
 	private static Logger logger = LogFactory.getLogger(LRParser.class);
 	
-	
+	// Optionen mit Default-Einstellungen
+	private boolean reduceToAbstractSyntaxTree=false;
+	private boolean removeEpsilonNodes=true; // Der SemanticAnalyzer erwartet einen Parsebaum ohne Epsilon-Knoten
+	private boolean displayParseTableGui=false;
+			
 	public LRParser() {
 	}
 
+	public void setReduceToAbstractSyntaxTree(boolean reduceToAbstractSyntaxTree) {
+		this.reduceToAbstractSyntaxTree = reduceToAbstractSyntaxTree;
+	}
+
+	public void setRemoveEpsilonNodes(boolean removeEpsilonNodes) {
+		this.removeEpsilonNodes = removeEpsilonNodes;
+	}
+
+	public void setDisplayParseTableGui(boolean displayParseTableGui) {
+		this.displayParseTableGui = displayParseTableGui;
+	}
+
+	
+	@Override
+	public ISyntaxTree parse(ILexer lexer, String grammarPath) {
+		File grammarFile = new File(grammarPath);
+		Grammar grammar = null;
+
+		// Grammatik einlesen
+		try {
+			GrammarReader grammarReader=new BNFGrammarReader();
+			grammar=grammarReader.readGrammar(grammarFile.getAbsolutePath());
+		} 
+		catch (BNFParsingErrorException e) {
+			logger.log(Level.WARNING, "Failed to read grammar from file: "+grammarFile.getAbsolutePath(), e);
+			throw new LRParserException("Failed to read grammar from file: "+grammarFile.getAbsolutePath(),e);
+		}
+
+		return parse(lexer, grammar);
+	}
+	
+	public ISyntaxTree parse(ILexer lexer, Grammar grammar) {
+		logger.fine("Start parsing...");
+		
+		ParseTable parseTable = null;
+		
+		// Grammatik erweitern
+		extendGrammar(grammar);
+		
+		// ParseTable erstellen
+		ParseTableBuilder parseTableBuilder=ParseTableBuilder.createParseTableBuilder(grammar);
+		try {
+			parseTable=parseTableBuilder.buildParseTable();
+		} 
+		catch (InvalidGrammarException e) {
+			logger.log(Level.WARNING, "Failed to build ParseTable for grammar.", e);
+			throw new LRParserException("Failed to build ParseTable for grammar.", e);
+		}
+		if (displayParseTableGui){
+			ParseTableGui parseTableGui=new ParseTableGui(grammar, parseTable);
+			parseTableGui.showActionTable();
+			parseTableGui.showGotoTable();
+			// TODO Brauchts hier ein return?
+			
+		}
+		
+		Driver driver=new Driver();
+		ISyntaxTree syntaxTree= driver.parse(lexer, parseTable);
+		
+		if (syntaxTree==null){
+			logger.warning("LRParser failed to create syntax tree.");			
+			throw new LRParserException("LRParser failed to create syntax tree.");
+		}
+		if (reduceToAbstractSyntaxTree){
+			((SyntaxTreeNode)syntaxTree).reduceToAbstractSyntaxTree();
+		}
+		else if (removeEpsilonNodes){			
+			((SyntaxTreeNode)syntaxTree).removeAllEpsilonNodes();
+		}
+		logger.info("Parsing succeed.");
+		return syntaxTree;
+	}
+	
 	/**
 	 * Erweitert die übergebene Grammatik mit einem neuen Startsymbol 
 	 * und einer neuen Produktion vom neuen Startsymbol auf das alte Startsymbol.	
@@ -68,47 +146,6 @@ public class LRParser implements IParser {
 		grammar.addProduction(production);
 		
 		grammar.setStartSymbol(startSymbol);
-	}
-
-	@Override
-	public ISyntaxTree parse(ILexer lexer, String grammarPath) {
-		logger.fine("Start parsing...");
-		File grammarFile = new File(grammarPath);
-		Grammar grammar = null;
-		ParseTable parseTable = null;
-		// Grammatik einlesen
-		try {
-			GrammarReader grammarReader=new BNFGrammarReader();
-			grammar=grammarReader.readGrammar(grammarFile.getAbsolutePath());
-		} 
-		catch (BNFParsingErrorException e) {
-			logger.log(Level.WARNING, "Failed to read grammar from file: "+grammarFile.getAbsolutePath(), e);
-			throw new LRParserException("Failed to read grammar from file: "+grammarFile.getAbsolutePath(),e);
-		}
-		// Grammatik erweitern
-		extendGrammar(grammar);
-		
-		// ParseTable erstellen
-		ParseTableBuilder parseTableBuilder=ParseTableBuilder.createParseTableBuilder(grammar);
-		try {
-			parseTable=parseTableBuilder.buildParseTable();
-		} 
-		catch (InvalidGrammarException e) {
-			logger.log(Level.WARNING, "Failed to build ParseTable for grammar from file: "+grammarFile.getAbsolutePath(), e);
-			throw new LRParserException("Failed to build ParseTable for grammar from file: "+grammarFile.getAbsolutePath(), e);
-		}
-		
-		Driver driver=new Driver();
-		ISyntaxTree syntaxTree= driver.parse(lexer, parseTable);
-		
-		if (syntaxTree==null){
-			logger.warning("LRParser failed.");			
-			throw new LRParserException("LRParser failed.");
-		}
-		// Der SemanticAnalyzer erwartet einen Parsebaum ohne Epsilon-Knoten
-		((SyntaxTreeNode)syntaxTree).removeAllEpsilonNodes();
-		logger.info("Parsing succeed.");
-		return syntaxTree;
-	}
+	}	
 }
  

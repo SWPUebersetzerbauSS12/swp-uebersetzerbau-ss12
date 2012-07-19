@@ -33,12 +33,13 @@
 package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node;
 
 /**
+ * Ereignishandler für das Erzeugen nuer Knoten.
  * 
  * @author Johannes Dahlke
  *
  */
 public interface NewNodeEventHandler {
   
-  void doOnEvent( Object sender, TreeNode node);
+  void doOnEvent( Object sender, @SuppressWarnings("rawtypes") TreeNode node);
   
 }

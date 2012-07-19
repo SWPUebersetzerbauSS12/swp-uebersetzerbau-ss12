@@ -38,12 +38,18 @@ import de.fuberlin.bii.utils.Test;
 
 
 /**
+ * Stellt eine Menge an Produktionsregeln dar.
  * 
  * @author Johannes Dahlke
  *
  */
 public class ProductionSet extends HashSet<ProductionRule> {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6328728451731783224L;
+
 	public boolean IsLeftSideUnique() {
 		Nonterminal lastNonterminal = null;
 		for ( ProductionRule rule : this) {

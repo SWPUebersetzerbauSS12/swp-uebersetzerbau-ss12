@@ -78,6 +78,7 @@ import de.fuberlin.bii.utils.Test;
  *      href="http://kontext.fraunhofer.de/haenelt/kurs/Skripten/FSA-Skript/Haenelt_EA_RegEx2EA.pdf">Überführung
  *      regulärer Ausdrücke in endliche Automaten</a>
  */
+@SuppressWarnings("rawtypes")
 public class RegexToDfaConverter {
 
 	
@@ -103,7 +104,7 @@ public class RegexToDfaConverter {
 	
 	public static FiniteStateMachine<Character, ? extends de.fuberlin.bii.tokenmatcher.StatePayload> convert( RegexToPayloadMap<StatePayload> regexToPayloadMap)
 			throws DirectConverterException {
-				String concatenatedRegex = "";
+		String concatenatedRegex = "";
 		PositionToPayloadMap<StatePayload> positionToPayloadMap = new PositionToPayloadMap<StatePayload>();
 		
 		for ( String regex : regexToPayloadMap.keySet()) {
@@ -125,9 +126,10 @@ public class RegexToDfaConverter {
 		
 		int regexLength = regex.length();
 		
-		RegularExpressionElement[] regularExpression = new RegularExpressionElement[regexLength];
+		@SuppressWarnings("unchecked")
+		RegularExpressionElement<StatePayload>[] regularExpression = new RegularExpressionElement[regexLength];
 		for ( int i = 0; i < regexLength; i++) {
-			regularExpression[i] = new RegularExpressionElement( regex.charAt( i), positionToPayloadMap.get( i));
+			regularExpression[i] = new RegularExpressionElement<StatePayload>( regex.charAt( i), positionToPayloadMap.get( i));
 		}
 		
 		return convert( regularExpression, commonPayload);
@@ -137,7 +139,7 @@ public class RegexToDfaConverter {
 	public static FiniteStateMachine<Character, ? extends de.fuberlin.bii.tokenmatcher.StatePayload> convert( RegularExpressionElement<StatePayload>[] regularExpression, StatePayload commonPayload)
 			throws DirectConverterException {
 		try {
-			RegexOperatorTree regexTree = convertRegexToTree( regularExpression);
+			RegexOperatorTree<StatePayload> regexTree = convertRegexToTree( regularExpression);
 			FiniteStateMachine<Character, StatePayload> dfa = convertRegexTreeToDfa( regexTree, commonPayload);
 		  return dfa;
 		} catch ( Exception e) {
@@ -158,16 +160,18 @@ public class RegexToDfaConverter {
 	 * @return
 	 * @throws Exception 
 	 */
-	private static RegexOperatorTree convertRegexToTree( RegularExpressionElement[] regularExpression) throws Exception {
-		RegexOperatorTree regexTree = new RegexOperatorTree( regularExpression);
+	private static RegexOperatorTree<StatePayload> convertRegexToTree( RegularExpressionElement<StatePayload>[] regularExpression) throws Exception {
+		RegexOperatorTree<StatePayload> regexTree = new RegexOperatorTree<StatePayload>( regularExpression);
 		return regexTree;
 	}
 
 
+	@SuppressWarnings("null")
 	private static StatePayload getBestPayloadFromTreeNodeCollectionForCharacter( TreeNodeCollection collection, Character theCharacter) {
 		StatePayload result = null;
 		for ( TreeNode node : collection) {
 			if ( node instanceof TerminalNode) {
+				@SuppressWarnings("unchecked")
 				RegularExpressionElement<StatePayload> nodeValue = (RegularExpressionElement<StatePayload>)((TerminalNode)node).getValue();
 				if ( nodeValue.getValue().equals( theCharacter)) { 
 					StatePayload currentPayload = nodeValue.getPayload();
@@ -255,6 +259,7 @@ public class RegexToDfaConverter {
 	 * @param theState
 	 * @return
 	 */
+	@SuppressWarnings("null")
 	private static StatePayload getBestPayloadForState( Map<State,Map<State, Map<Character,StatePayload>>> stateToStateMap, State theState) {
 
 	  Map<State, Map<Character,StatePayload>> stateToCharacterPayloadMap = stateToStateMap.get( theState);
@@ -286,6 +291,7 @@ public class RegexToDfaConverter {
 	 * @param theState
 	 * @return
 	 */
+	@SuppressWarnings("null")
 	private static StatePayload getWeakestPayloadForState( Map<State,Map<State, Map<Character,StatePayload>>> stateToStateMap, State theState) {
 
 	  Map<State, Map<Character,StatePayload>> stateToCharacterPayloadMap = stateToStateMap.get( theState);
@@ -323,6 +329,7 @@ public class RegexToDfaConverter {
 	 * @throws DirectConverterException
 	 * @throws Exception
 	 */
+	@SuppressWarnings("unchecked")
 	private static FiniteStateMachine<Character, StatePayload> convertRegexTreeToDfa( RegexOperatorTree<StatePayload> regexTree, StatePayload commonPayload) throws DirectConverterException {
 		try {
 			
@@ -341,6 +348,7 @@ public class RegexToDfaConverter {
 			StatePayload currentStatePayload = null;
 
 			Set<RegularExpressionElement<StatePayload>> alphabetSubset = new HashSet<RegularExpressionElement<StatePayload>>();
+			
 			for ( Leaf leaf : regexTree.getLeafSet()) {
 				alphabetSubset.add( (RegularExpressionElement<StatePayload> ) leaf.getValue());
 			} 

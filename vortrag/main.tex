@@ -25,7 +25,7 @@
 \usepackage{multirow}
 
 \include{fu-beamer-template}  % THIS is the line that includes the FU template!
-\include{algorithmic}
+%\include{algorithmic}
 
 \usepackage{arev,t1enc} % looks nicer than the standard sans-serif font
 % if you experience problems, comment out the line above and change
@@ -85,6 +85,7 @@ stringstyle=\color{brown},frame=single}
 % -------------------------------------------------------------------------------------------
 
 \begin{frame}{Ziele}
+
 \begin{itemize}
 \item Gesucht: Sinnvolles Maß für den Abstand zweier Kurven $f:[a_1,b_1]\rightarrow \mathds{R}^n$ und $g:[a_2,b_2]\rightarrow \mathds{R}^n$
 \vspace{3mm}
@@ -116,17 +117,59 @@ stringstyle=\color{brown},frame=single}
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Beispiele}
-Beispiele
+\begin{frame}{Optimierungen \& Beispiele}
+
+\begin{columns}
+\begin{column}{.48\textwidth}
+
+\begin{enumerate}
+\item <+-| alert@+> Constant folding
+\item <+-| alert@+> Constant propagation
+\item <+-| alert@+> Reaching definition analysis
+\item <+-| alert@+> Eliminate dead registers/blocks
+\item <+-| alert@+> Remove local common subexpressions
+\item <+-| alert@+> Global liveness analysis
+\item <+-| alert@+> Strength reduction
+\end{enumerate}
+
+\end{column}%
+%\hfill%
+\begin{column}{.48\textwidth}
+%\color{green}\rule{\linewidth}{2pt}
+
+{\fbox{\parbox[c][2.9cm]{5cm}{
+\only<1-1>{Test1}
+\only<2-2>{Test2}
+\only<3-3>{Test3}
+\only<4-4>{Test4}
+\only<5-5>{Test5}
+\only<6-6>{Test6}
+\only<7-7>{Test7}
+}}\\
+{\color{red}unoptimierter Code}\\
+\vspace*{0.3cm}
+\fbox{\parbox[c][2.9cm]{5cm}{
+\only<1-1>{Test1}
+\only<2-2>{Test2}
+\only<3-3>{Test3}
+\only<4-4>{Test4}
+\only<5-5>{Test5}
+\only<6-6>{Test6}
+\only<7-7>{Test7}
+
+}}\\
+{\color{green}optimierter Code}}
+
+\end{column}%
+\end{columns}
+
 \end{frame}
 
 \begin{frame}{Fazit / Ausblick}
 \begin{itemize}
-\item Der Fréchet-Abstand zweier Kurven ist kleiner gleich $\epsilon$ gdw. ein monoton steigender Weg durch den Free Space von (1,1) nach (p,q) existiert.
+\item Es wurden mehrere Optimierungsalgorithmen erfolgreich auf einen gegebenen LLVM-Code angewendet. Auch bei natürlichem, aus C-Code über CLANG erzeugten LLVM-Code wurden erfolgreich bedeutende Mengen an Codezeilen entfernt.
 \vspace{3mm}
-\item Der Fréchet-Abstand zweier Kurven ist kleiner gleich $\epsilon$ gdw. der Punkt (p,q) Element des entsprechenden Reachable Free Space ist.
-\vspace{3mm}
-\item Laufzeit für Entscheidungsproblem: $O(p\cdot q)$
+\item Eine Weiterentwicklung des Programms wäre durch die Vielzahl an potentiellen weiteren Optimierungstechniken problemlos möglich. Priorität hätte hierbei die Anwendung von Schleifenoptimierungen.
 \end{itemize}
 \end{frame}
 

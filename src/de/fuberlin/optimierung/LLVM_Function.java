@@ -291,6 +291,9 @@ public class LLVM_Function {
 	 */
 	public void reachingAnalysis() throws LLVM_OptimizationException{
 		for(LLVM_Block b : this.blocks) {
+			b.clearReaching();
+		}
+		for(LLVM_Block b : this.blocks) {
 			b.createGenKillSets();
 		}
 		this.createInOutReaching();
@@ -961,10 +964,13 @@ public class LLVM_Function {
 	 * Entferne Bloecke, die nur unbedingten Sprungbefehl enthalten
 	 */
 	public void deleteEmptyBlocks() throws LLVM_OptimizationException{
+		LLVM_Block nextFirst = null;
+		LLVM_Block lastFirst = null;
+		
 		// Gehe Bloecke durch
 		LinkedList<LLVM_Block> toDelete = new LinkedList<LLVM_Block>();
 		for(LLVM_Block actualBlock : this.blocks) {
-			if(actualBlock!=this.blocks.get(0)) {
+			//if(actualBlock!=this.blocks.get(0)) {
 				// Enthaelt Block nur einen unbedingten Sprungbefehl?
 				if(!actualBlock.isEmpty() && actualBlock.getFirstCommand().
 						getOperation()==LLVM_Operation.BR) {
@@ -972,6 +978,15 @@ public class LLVM_Function {
 					LLVM_Block targetBlock = actualBlock.getNextBlocks().getFirst();
 					String targetBlockLabel = targetBlock.getLabel();
 					String actualBlockLabel = actualBlock.getLabel();
+					
+					if(actualBlock==this.blocks.get(0)) {
+						toDelete.add(actualBlock);
+						targetBlock.removeFromPreviousBlocks(actualBlock);
+						actualBlock.removeFromNextBlocks(targetBlock);
+						nextFirst = targetBlock;
+						lastFirst = actualBlock;
+						break;
+					}
 					
 					// Gehe Vorgaengerbloecke durch
 					for(LLVM_Block previousBlock : actualBlock.getPreviousBlocks()) {
@@ -1005,6 +1020,10 @@ public class LLVM_Function {
 						getOperation()==LLVM_Operation.RET || actualBlock.getFirstCommand().
 						getOperation()==LLVM_Operation.RET_CODE)){
 					
+					if(actualBlock==this.blocks.get(0)) {
+						continue;
+					}
+					
 					for(LLVM_Block previousBlock : actualBlock.getPreviousBlocks()) {
 						LLVM_GenericCommand branchCommand = previousBlock.getLastCommand();
 						if(branchCommand.getOperation()==LLVM_Operation.BR_CON)
@@ -1033,13 +1052,19 @@ public class LLVM_Function {
 					}
 					toDelete.add(actualBlock);
 				}
-			}
+			//}
+		}
+		
+		if(nextFirst!=null) {
+			int index = this.blocks.indexOf(nextFirst);
+			this.blocks.set(0, nextFirst);
+			this.blocks.set(index, lastFirst);
 		}
 
 		// Alle gelöschten Blöcke entfernen
 		for (LLVM_Block del : toDelete){
 			// Entferne zu loeschenden Block aus Flussgraph
-			del.deleteBlock();
+			//del.deleteBlock();
 			
 			// Entferne Befehle aus entferntem Block aus Registermap
 			this.registerMap.deleteCommand(del.getFirstCommand());
@@ -1047,6 +1072,10 @@ public class LLVM_Function {
 			// Entferne zu loeschenden Block aus this.blocks
 			this.blocks.remove(del);
 			this.numberBlocks--;
+		}
+		
+		if(nextFirst!=null) {
+			this.deleteEmptyBlocks();
 		}
 	}
 	
@@ -1177,6 +1206,10 @@ public class LLVM_Function {
 		for(int i=0; i<this.numberBlocks; i++) {
 			
 			LLVM_Block block = this.blocks.get(i);
+			
+			if(i==0) {
+				block.setLabel("");
+			}
 			
 			// Teste ab zweitem Block das Label
 			if(i>0) {

@@ -291,6 +291,13 @@ public class LLVM_Block{
 	 * *********************************************************
 	 */
 	
+	public void clearReaching() {
+		this.inReaching.clear();
+		this.outReaching.clear();
+		this.gen.clear();
+		this.kill.clear();
+	}
+	
 	/**
 	 * Load-Befehle, die nur von einem Store erreicht werden koennen,
 	 * werden zu Registerzuweisung.

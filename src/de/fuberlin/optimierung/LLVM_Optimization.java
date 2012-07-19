@@ -53,12 +53,17 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 			//Constant Folding
 			tmp.constantFolding();
 			
+			// Reaching vor Lebendigkeitsanalyse
+			// Koennen tote Stores entstehen, also vor live variable analysis
+			tmp.reachingAnalysis();
+			
 			// Dead register elimination
+			// Reaching ruft folding/propagtion auf
+			// Dadurch kann neuer unerreichbarer Block entstehen
+			// Also tote Register/Blöcke nach reaching
 			tmp.eliminateDeadRegisters();
 			tmp.eliminateDeadBlocks();
 			
-			// Reaching vor Lebendigkeitsanalyse
-			// Koennen tote Stores entstehen, also vor live variable analysis
 			tmp.reachingAnalysis();
 			
 			// CommonExpressions
@@ -203,20 +208,18 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 				optimization = new LLVM_Optimization();
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_test.llvm");
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_constant_folding1");
-				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_cf_prop_deadb");
+				String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_cf_prop_deadb");
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_lebendigkeit_global1");
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_dag");
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_dead_block");
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_localsub_registerprop");
-				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_array");
-				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_parsertest1");
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_clangdemo");
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/strength_reduction_argv.s");//test_new.ll");
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_maschco");//test_new.ll");
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/srem_test.ll");
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/emptyBlocksTest.s");
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/test.s");
-				String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/doubleTest1.s");
+				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/doubleTest1.s");
 				
 				System.out.println("###########################################################");
 				System.out.println("################## Optimization Input #####################");

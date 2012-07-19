@@ -1,6 +1,7 @@
 package de.fuberlin.projecta.analysis.ast;
 
 import de.fuberlin.commons.parser.ISyntaxTree;
+import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.SymbolTable;
 import de.fuberlin.projecta.analysis.SymbolTableStack;
 import de.fuberlin.projecta.parser.Symbol;
@@ -59,14 +60,18 @@ public abstract class AbstractSyntaxTree extends Tree {
 
 	/**
 	 * Method for building the SymbolTables that the nodes should implement
+	 * 
+	 * Default implementation does nothing
+	 * @note Reimplement in subclass if needed!
 	 **/
-	public void buildSymbolTable(SymbolTableStack tables) {
-	}
+	public void buildSymbolTable(SymbolTableStack tables) {}
 
 	/**
 	 * Code generation
+	 * 
+	 * Default implementation recursively calls this on its children
 	 **/
-	public String genCode() {
+	public String genCode() throws SemanticException {
 		String out = "";
 		for (int i = 0; i < getChildrenCount(); i++) {
 			out += ((AbstractSyntaxTree) getChild(i)).genCode() + "\n";
@@ -78,9 +83,10 @@ public abstract class AbstractSyntaxTree extends Tree {
 	 * We must explicitly go through the whole tree twice, since identified
 	 * records has to be placed in the head!
 	 * 
-	 * @return
+	 * Default implementation recursively calls this on its children
+	 * @return Generated structs (LLVM code)
 	 */
-	protected String genStruct() {
+	protected String genStruct() throws SemanticException {
 		String out = "";
 		for (int i = 0; i < getChildrenCount(); i++) {
 			out += ((AbstractSyntaxTree) getChild(i)).genStruct();
@@ -92,18 +98,21 @@ public abstract class AbstractSyntaxTree extends Tree {
 	 * Check types
 	 * 
 	 * Default implementation recursively checks types
-	 * @return True if types are correct, 
+	 * @note Reimplement in subclass if needed!
 	 */
-	public void checkTypes() {
+	public void checkTypes() throws SemanticException {
 		for (ISyntaxTree child : this.getChildren()) {
 			((AbstractSyntaxTree) child).checkTypes();
 		}
 	}
 
 	/**
-	 * Reimplement in subclass if needed!
+	 * Check semantics (other than type errors)
+	 * 
+	 * Default implementation recursively checks semantics
+	 * @note Reimplement in subclass if needed!
 	 */
-	public void checkSemantics() {
+	public void checkSemantics() throws SemanticException {
 		for (int i = 0; i < this.getChildrenCount(); i++) {
 			((AbstractSyntaxTree) this.getChild(i)).checkSemantics();
 		}

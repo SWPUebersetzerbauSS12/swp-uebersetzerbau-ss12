@@ -6,15 +6,19 @@ import de.fuberlin.projecta.lexer.io.ICharStream;
 
 public class Lexer implements ILexer {
 
+	// denotes the end of any token, hard-coded
+	private static final String DELIMITER_REGEXP = "[\\s(=)+-/;\\*{}\\[]";
+
 	private int line;
+	private ICharStream is;
 
-	// TODO: replace delimiterRegexp with real delimiters
-	private String delimiterRegexp = "[\\s(=)+-/;\\*{}\\[]";
-
-	ICharStream is;
-
+	/**
+	 * Instantiate lexer object
+	 *
+	 * @param is Input character stream
+	 */
 	public Lexer(ICharStream is) {
-		line = 1;
+		this.line = 1; // start at line 1
 		this.is = is;
 	}
 
@@ -45,6 +49,9 @@ public class Lexer implements ILexer {
 				+ " near " + peek);
 	}
 
+	/**
+	 * Go through whitespace and comments, skip them
+	 */
 	private void skipWhiteSpaceAndCommentary() {
 		String peek;
 		if(is.isEmpty())
@@ -85,6 +92,13 @@ public class Lexer implements ILexer {
 
 	}
 
+	/**
+	 * Parser num constants
+	 * - Handles INT/REAL literals
+	 * 
+	 * @return Token (numeric literals)
+	 * @throws SyntaxErrorException
+	 */
 	private Token numConstant() throws SyntaxErrorException {
 		String peek = is.getNextChars(1);
 		String result = "";
@@ -141,6 +155,12 @@ public class Lexer implements ILexer {
 		return new Token(TokenType.REAL_LITERAL, value, this.line, is.getOffset());
 	}
 
+	/**
+	 * Parses identifiers (note: call this after having parsed reserved keywords)
+	 *
+	 * @return Token (ID)
+	 * @throws SyntaxErrorException
+	 */
 	private Token identifier() throws SyntaxErrorException {
 		String peek = is.getNextChars(1);
 		String id = "";
@@ -157,6 +177,12 @@ public class Lexer implements ILexer {
 
 	}
 
+	/**
+	 * Parse string literals
+	 * 
+	 * @return Token
+	 * @throws SyntaxErrorException
+	 */
 	private Token stringConstant() throws SyntaxErrorException {
 		String peek = is.getNextChars(1);
 		String delimiter = "'";
@@ -192,48 +218,53 @@ public class Lexer implements ILexer {
 		}
 	}
 
+	/**
+	 * Parses reserved words
+	 * - Handles keywords: if then else while do break return print
+	 * - Handles all terminals
+	 * 
+	 * @return Token
+	 * @throws SyntaxErrorException
+	 */
 	private Token reservedAndTerminals() throws SyntaxErrorException {
-		/* if then else while do break return print */
 		final int offset = is.getOffset();
 		String s = is.getNextChars(1);
 		if (s.equals("i")) {
-			// TODO: replace delimiterRegexp with real delimiters (there is no
-			// '+' after if!)
-			if (is.getNextChars(3).matches("if" + delimiterRegexp)) {
+			if (is.getNextChars(3).matches("if" + DELIMITER_REGEXP)) {
 				is.consumeChars(2);
 				return new Token(TokenType.IF, null, this.line, offset);
 			}
-			if (is.getNextChars(4).matches("int" + delimiterRegexp)) {
+			if (is.getNextChars(4).matches("int" + DELIMITER_REGEXP)) {
 				is.consumeChars(3);
 				return new Token(TokenType.BASIC, "int", this.line, offset);
 			}
 		}
 		if (s.equals("t")) {
-			if (is.getNextChars(5).matches("then" + delimiterRegexp)) {
+			if (is.getNextChars(5).matches("then" + DELIMITER_REGEXP)) {
 				is.consumeChars(4);
 				return new Token(TokenType.THEN, null, this.line, offset);
 			}
-			if (is.getNextChars(5).matches("true" + delimiterRegexp)) {
+			if (is.getNextChars(5).matches("true" + DELIMITER_REGEXP)) {
 				is.consumeChars(4);
 				return new Token(TokenType.BOOL_LITERAL, true, this.line, offset);
 			}
 		}
 		if (s.equals("e")
-				&& is.getNextChars(5).matches("else" + delimiterRegexp)) {
+				&& is.getNextChars(5).matches("else" + DELIMITER_REGEXP)) {
 			is.consumeChars(4);
 			return new Token(TokenType.ELSE, null, this.line, offset);
 		}
-		if(s.equals("v") && is.getNextChars(5).matches("void" + delimiterRegexp)){
+		if(s.equals("v") && is.getNextChars(5).matches("void" + DELIMITER_REGEXP)){
 			is.consumeChars(4);
 			return new Token(TokenType.BASIC, "void", this.line, offset);
 		}
 		if (s.equals("w")
-				&& is.getNextChars(6).matches("while" + delimiterRegexp)) {
+				&& is.getNextChars(6).matches("while" + DELIMITER_REGEXP)) {
 			is.consumeChars(5);
 			return new Token(TokenType.WHILE, null, this.line, offset);
 		}
 		if (s.equals("d")) {
-			if (is.getNextChars(3).matches("do" + delimiterRegexp)) {
+			if (is.getNextChars(3).matches("do" + DELIMITER_REGEXP)) {
 				is.consumeChars(2);
 				return new Token(TokenType.DO, null, this.line, offset);
 			} else if (is.getNextChars(4).matches("def ")) {
@@ -242,7 +273,7 @@ public class Lexer implements ILexer {
 			}
 		}
 		if (s.equals("r")) {
-			if (is.getNextChars(7).matches("return" + delimiterRegexp)) {
+			if (is.getNextChars(7).matches("return" + DELIMITER_REGEXP)) {
 				is.consumeChars(6);
 				return new Token(TokenType.RETURN, null, this.line, offset);
 			}
@@ -250,34 +281,34 @@ public class Lexer implements ILexer {
 				is.consumeChars(4);
 				return new Token(TokenType.BASIC, "real", this.line, offset);
 			}
-			if (is.getNextChars(7).matches("record" + delimiterRegexp)) {
+			if (is.getNextChars(7).matches("record" + DELIMITER_REGEXP)) {
 				is.consumeChars(6);
 				return new Token(TokenType.RECORD, null, this.line, offset);
 			}
 		}
 		if (s.equals("s")) {
-			if (is.getNextChars(7).matches("string" + delimiterRegexp)) {
+			if (is.getNextChars(7).matches("string" + DELIMITER_REGEXP)) {
 				is.consumeChars(6);
 				return new Token(TokenType.BASIC, "string",  this.line, offset);
 			}
 		}
 		if (s.equals("b")) {
-			if (is.getNextChars(6).matches("break" + delimiterRegexp)) {
+			if (is.getNextChars(6).matches("break" + DELIMITER_REGEXP)) {
 				is.consumeChars(5);
 				return new Token(TokenType.BREAK, null, this.line, offset);
 			}
-			if(is.getNextChars(5).matches("bool" + delimiterRegexp)){
+			if(is.getNextChars(5).matches("bool" + DELIMITER_REGEXP)){
 				is.consumeChars(4);
 				return new Token(TokenType.BASIC, "bool", line, offset);
 			}
 		}
 		if (s.equals("p")
-				&& is.getNextChars(6).matches("print" + delimiterRegexp)) {
+				&& is.getNextChars(6).matches("print" + DELIMITER_REGEXP)) {
 			is.consumeChars(5);
 			return new Token(TokenType.PRINT, null, this.line, offset);
 		}
 		if (s.equals("f")
-				&& is.getNextChars(6).matches("false" + delimiterRegexp)) {
+				&& is.getNextChars(6).matches("false" + DELIMITER_REGEXP)) {
 			is.consumeChars(5);
 			return new Token(TokenType.BOOL_LITERAL, false, this.line, offset);
 		}

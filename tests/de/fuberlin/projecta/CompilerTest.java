@@ -261,7 +261,7 @@ public class CompilerTest {
 			"} while (i < 5);");
 		String output = executeCode(code);
 		System.out.println(output);
-		assertEquals("012345", output);
+		assertEquals("01234", output);
 	}
 
 

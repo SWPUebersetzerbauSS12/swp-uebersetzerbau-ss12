@@ -1,5 +1,7 @@
 package de.fuberlin.projecta;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
 import de.fuberlin.commons.parser.ISyntaxTree;
@@ -142,12 +144,15 @@ public class SemanticAnalysisTest {
 		analyze(code);
 	}
 
+	@Test(expected = SemanticException.class)
+	public void testUndefinedVariable(){
+		final String code = mainC("v = 1;");
+		analyze(code);
+	}
+
 	static void analyze(String code) {
 		ISyntaxTree parseTree = ParserTest.parse(code);
 		SemanticAnalyzer analyzer = new SemanticAnalyzer(parseTree);
 		analyzer.analyze();
-		// TODO: Call the next methods in analyer.analyze()?
-		analyzer.getAST().checkSemantics();
-		analyzer.getAST().checkTypes();
 	}
 }

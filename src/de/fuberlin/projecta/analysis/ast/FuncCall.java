@@ -64,15 +64,20 @@ public class FuncCall extends Expression {
 
 			// implicit var incrementation
 			if (!searchUpAssign()
-					&& func.getType().toTypeString().equals("void")) {
+					&& !func.getType().toTypeString().equals("void")) {
 				getHighestBlock().getNewVar();
+				System.out.println("in funcCall " + getId().getValue()
+						+ " and searchUpAssign() is" + searchUpAssign());
 			}
+
 		}
 		return ret;
 	}
 
 	public boolean searchUpAssign() {
 		BinaryOp bOp = null;
+		if(getParent() instanceof Return)
+			return true;
 		if (getParent() != null) {
 			ISyntaxTree parent = getParent();
 			while (parent != null) {
@@ -80,6 +85,8 @@ public class FuncCall extends Expression {
 					bOp = (BinaryOp) parent;
 					if (bOp.getOp() == TokenType.OP_ASSIGN)
 						return true;
+				} else if (parent instanceof Return){
+					return true;
 				}
 				parent = parent.getParent();
 			}

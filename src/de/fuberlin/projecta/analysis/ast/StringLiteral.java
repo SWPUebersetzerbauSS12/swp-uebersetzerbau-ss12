@@ -1,7 +1,7 @@
 package de.fuberlin.projecta.analysis.ast;
 
 
-public class StringLiteral extends Expression {
+public class StringLiteral extends Literal {
 
 	private String value;
 

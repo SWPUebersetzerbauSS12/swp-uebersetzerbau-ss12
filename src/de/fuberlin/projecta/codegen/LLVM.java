@@ -43,7 +43,6 @@ public class LLVM {
 			if (block2 != null)
 				s2 = block2.genCode();
 			labelBehind = block.getNewVar();
-			current.setEndLabel(labelBehind);
 			if (!not) {
 				ret += "br i1 %" + varDecision + ", label %" + labelTrue
 						+ ", label %" + labelFalse + "\n\n";

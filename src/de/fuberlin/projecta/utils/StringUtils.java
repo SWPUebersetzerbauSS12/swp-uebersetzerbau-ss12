@@ -27,6 +27,9 @@ public class StringUtils {
 		return new FileCharStream(path);
 	}
 
+	/**
+	 * Repeat char n times
+	 */
 	public static String repeat(char c, int times) {
 		StringBuilder b = new StringBuilder();
 

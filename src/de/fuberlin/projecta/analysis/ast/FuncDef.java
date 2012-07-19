@@ -23,7 +23,7 @@ public class FuncDef extends Type {
 						.getChild(this.getChildrenCount() - 1);
 				if (!(block.getChild(block.getChildrenCount() - 1) instanceof Return)) {
 					if (((BasicType) this.getChild(0)).getTokenType() != BasicTokenType.VOID) {
-						if(!canInsertReturn(block)){
+						if (!canInsertReturn(block)) {
 							throw new SemanticException("Methods needs to return a value", this);
 						}
 					} else {
@@ -66,19 +66,32 @@ public class FuncDef extends Type {
 
 	@Override
 	public String genCode() {
+		String ret = "";
 		String blockCode = "";
-		if (getChildrenCount() > 3)
-			blockCode = ((Block)getChild(3)).genCode();
+		if (getChildrenCount() > 3) {
+			ret = "%" + ((Block) getChild(3)).getNewVar() + " = alloca "
+					+ ((Type) getChild(0)).fromTypeStringToLLVMType() + "\n";
+			blockCode = ((Block) getChild(3)).genCode();
+			ret += blockCode;
+			int	n = ((Block) getChild(3)).getNewVar();
+			ret += "br label %return\n";
+			ret += "return:\n" + "%" + n + " = load "
+					+ ((Type) getChild(0)).fromTypeStringToLLVMType()
+					+ "* %1\n" + "ret "
+					+ ((Type) getChild(0)).fromTypeStringToLLVMType() + " %"
+					+ n + "\n";
+		}
 		return "define " + ((Type) getChild(0)).genCode() + " @"
 				+ ((Id) getChild(1)).genCode() + "("
-				+ ((Params) getChild(2)).genCode() + ") nounwind { \n"
-				+ blockCode + "}";
+				+ ((Params) getChild(2)).genCode() + ") nounwind { \n" + ret
+				+ "}";
+
 	}
 
 	/**
 	 * Nodes that should produce an error: break, print Nodes that cannot pop up
 	 * here: BasicType, Declaration, Params, Program, FuncDef, Record, (Return)
-	 *
+	 * 
 	 * @param methodBlock
 	 * @return
 	 */
@@ -92,8 +105,10 @@ public class FuncDef extends Type {
 		ArrayList<Class<? extends Statement>> showStoppers = new ArrayList<Class<? extends Statement>>();
 		showStoppers.add(Break.class);
 		showStoppers.add(Print.class);
-		showStoppers.add(If.class); // It doesn't matter whether 'If'-block has return statement or not. Condition could be 'false' -> no return can be implied 
-		showStoppers.add(While.class); //see above
+		showStoppers.add(If.class); // It doesn't matter whether 'If'-block has
+									// return statement or not. Condition could
+									// be 'false' -> no return can be implied
+		showStoppers.add(While.class); // see above
 		if (showStoppers.contains(lastStatement.getClass())) {
 			// or throw SemanticException...
 			return false;
@@ -130,12 +145,14 @@ public class FuncDef extends Type {
 		if (lastStatement instanceof BinaryOp) {
 			BinaryOp binOp = (BinaryOp) lastStatement;
 			if (binOp.getOp() == TokenType.OP_ASSIGN) {
-				// first child has to be an identifier. This is checked beforehand!
+				// first child has to be an identifier. This is checked
+				// beforehand!
 				Return r = new Return();
 				r.addChild(binOp.getChild(0));
 				methodBlock.addChild(r);
 				return true;
-			} // it is an operation. A return statement will be created with this operation 
+			} // it is an operation. A return statement will be created with
+				// this operation
 		}
 		// last statement is no control structure nor is it a show stopper =>
 		// just hang last statement node under a new return node
@@ -149,7 +166,7 @@ public class FuncDef extends Type {
 	}
 
 	@Override
-	public String toTypeString(){
-		return ((Type)getChild(0)).toTypeString();
+	public String toTypeString() {
+		return ((Type) getChild(0)).toTypeString();
 	}
 }

@@ -45,10 +45,21 @@ public class SemanticAnalyzer {
 	private ISyntaxTree parseTree;
 	private AbstractSyntaxTree AST;
 
+	/**
+	 * Create SemanticAnalyzer instance
+	 * 
+	 * @param tree Parse tree
+	 */
 	public SemanticAnalyzer(ISyntaxTree tree) {
 		this.parseTree = tree;
 	}
 
+	/**
+	 * Analyze the parse tree
+	 * Converts the parse tree to an AST, then semantically analyzes it
+	 *  
+	 * @throws SemanticException
+	 */
 	public void analyze() throws SemanticException {
 		toAST(parseTree);
 
@@ -56,11 +67,25 @@ public class SemanticAnalyzer {
 		AST.checkSemantics();
 		AST.checkTypes();
 	}
-
-	public void toAST(ISyntaxTree tree) {
+	
+	/**
+	 * Start the parse tree to AST conversion
+	 * 
+	 * @param tree Parse tree
+	 */
+	private void toAST(ISyntaxTree tree) {
 		toAST(tree, null);
 	}
 
+	/**
+	 * Translate ISymbol to our internal Symbol class
+	 * 
+	 * This function is there to be able to parse ISymbols from other groups
+	 * Symbol has a much cleaner API, so we try to use this
+	 * 
+	 * @param symbol Generic ISymbol instance
+	 * @return Our symbol representation (Symbol class)
+	 */
 	private Symbol translate(ISymbol symbol) {
 		if (symbol instanceof Symbol)
 			return (Symbol) symbol;
@@ -71,7 +96,7 @@ public class SemanticAnalyzer {
 	}
 
 	/**
-	 * Traverses through the parseTree in depth-first-search and adds new nodes
+	 * Traverses through the parse tree in depth-first-search and adds new nodes
 	 * to the given insertNode. Only l-attributed nodes must be passed through
 	 * node-attributes!
 	 * 
@@ -82,7 +107,7 @@ public class SemanticAnalyzer {
 	 * @param insertNode
 	 *            syntaxTree-Node, in which new nodes get added
 	 */
-	public void toAST(ISyntaxTree tree, AbstractSyntaxTree insertNode) {
+	private void toAST(ISyntaxTree tree, AbstractSyntaxTree insertNode) {
 		Symbol symbol = translate(tree.getSymbol());
 
 		// pass the parse tree token to the AST node if possible.
@@ -264,8 +289,6 @@ public class SemanticAnalyzer {
 			case equality_:
 			case expr_:
 			case term_:
-				// currently it assumes tmp only got one child !!! 
-				// TODO: is this always the case?
 				if(tree.getChildrenCount() == 0){
 					insertNode.addChild(((ISyntaxTree)tree.getAttribute(L_ATTRIBUTE)).getChild(0));
 				} else {
@@ -284,8 +307,6 @@ public class SemanticAnalyzer {
 				}
 				return;
 			case rel_:
-				// currently it assumes tmp only got one child !!! 
-				// TODO: is this always the case?
 				if(tree.getChildrenCount() == 0){
 					insertNode.addChild(((ISyntaxTree)tree.getAttribute(L_ATTRIBUTE)).getChild(0));
 				} else {
@@ -436,15 +457,11 @@ public class SemanticAnalyzer {
 					throw new SemanticException(
 							"Epsilon in other position than head?", null);
 				}
-			case SP:
+			case FP:
 				// this should never occur
 				// throw new SemanticException("Stack pointer in parsetree?");
 			}
 		}
-	}
-
-	public SymbolTableStack getTables() {
-		return tables;
 	}
 
 	public AbstractSyntaxTree getAST() {

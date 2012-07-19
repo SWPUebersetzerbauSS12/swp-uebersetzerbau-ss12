@@ -9,9 +9,7 @@ import java.util.Set;
 /**
  * Python-like list comprehension for Java
  * 
- * @see http
- *      ://stackoverflow.com/questions/899138/python-like-list-comprehension
- *      -in-java
+ * @see http://stackoverflow.com/questions/899138/python-like-list-comprehension-in-java
  */
 public class ListComprehension {
 

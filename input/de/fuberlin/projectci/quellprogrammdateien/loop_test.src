@@ -18,6 +18,7 @@ def int loopDoWhile(int a){
 		j = j + 1;
 		if(j > 10) break; 
 	} while(true);
+	return 0;
 }
 
 def int main(){

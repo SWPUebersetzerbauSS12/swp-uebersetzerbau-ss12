@@ -501,36 +501,51 @@ public class LLVM_Function {
 					boolean hasResult = true;
 					
 					switch(cmd.getOperation()){
-					case ICMP_EQ :
+					case FCMP_OEQ :
 						result = iOP1 == iOP2;
 						break;
-					case ICMP_NE :
+					case FCMP_ONE :
 						result = iOP1 != iOP2;
 						break;
-					case ICMP_UGT :
+					case FCMP_OGT :
 						result = iOP1 > iOP2;
 						break;
-					case ICMP_UGE :
+					case FCMP_OGE :
 						result = iOP1 >= iOP2;
 						break;
-					case ICMP_ULT :
+					case FCMP_OLT :
 						result = iOP1 < iOP2;
 						break;
-					case ICMP_ULE :
+					case FCMP_OLE :
 						result = iOP1 <= iOP2;
 						break;
-					case ICMP_SGT :
+					case FCMP_ORD :
+						hasResult = false;
+						break;
+					case FCMP_UGT :
 						result = iOP1 > iOP2;
 						break;
-					case ICMP_SGE :
+					case FCMP_UGE :
 						result = iOP1 >= iOP2;
 						break;
-					case ICMP_SLT :
+					case FCMP_ULT :
 						result = iOP1 < iOP2;
 						break;
-					case ICMP_SLE :
+					case FCMP_ULE :
 						result = iOP1 <= iOP2;
-						break;	
+						break;
+					case FCMP_UNE :
+						result = iOP1 != iOP2;
+						break;
+					case FCMP_UNO :
+						hasResult = false;
+						break;
+					case FCMP_TRUE :
+						result = true;
+						break;
+					case FCMP_FALSE :
+						result = false;
+						break;
 					default:
 						hasResult = false;
 						break;

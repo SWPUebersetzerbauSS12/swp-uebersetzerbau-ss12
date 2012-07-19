@@ -258,10 +258,10 @@ public class LRParserMain implements IParser{
 		ILexer lexer=null;
 		boolean rebuildDFA=false;
 		if ("bi".equals(strLexer)){
-			lexer = new Lexergen(tokenDefinitionFile, sourceFile, BuilderType.directBuilder, CorrectionMode.PANIC_MODE, rebuildDFA);
+			lexer = new Lexergen(tokenDefinitionFile, sourceFile, BuilderType.indirectBuilder, CorrectionMode.PANIC_MODE, rebuildDFA);
 		}
 		else if ("bii".equals(strLexer)){
-			lexer = new Lexergen(tokenDefinitionFile, sourceFile, BuilderType.indirectBuilder, CorrectionMode.PANIC_MODE, rebuildDFA);
+			lexer = new Lexergen(tokenDefinitionFile, sourceFile, BuilderType.directBuilder, CorrectionMode.PANIC_MODE, rebuildDFA);
 		}
 		else if ("a".equals(strLexer)){
 			ICharStream stream = new FileCharStream(sourceFile.getAbsolutePath());

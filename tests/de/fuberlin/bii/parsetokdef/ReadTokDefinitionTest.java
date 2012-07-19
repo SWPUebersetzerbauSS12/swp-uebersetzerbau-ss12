@@ -18,6 +18,7 @@ public class ReadTokDefinitionTest {
 	/**
 	 * Test of readFile method, of class ReadTokDefinition.
 	 */
+	@SuppressWarnings("static-method")
 	@Test
 	public void testReadFile() throws Exception {
 		File rdFile = new File("tests/resources/de/fuberlin/bii/def/parsetokdef/test.rd");
@@ -25,6 +26,7 @@ public class ReadTokDefinitionTest {
 		instance.readFile(rdFile);
 	}
 
+	@SuppressWarnings("static-method")
 	@Test
 	public void testRegex() throws Exception {
 		File rdFile = new File("tests/resources/de/fuberlin/bii/def/parsetokdef/test.rd");

@@ -45,7 +45,14 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Rule
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public class HandlerMap extends HashMap<RuleElement, AutomatEventHandler> {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -723631411152651892L;
+
 
 	@Override
 	public boolean containsKey( Object key) {

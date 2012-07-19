@@ -40,11 +40,18 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Rule
 
 
 /**
+ * Stellt eine syntaxgerichtete Definition dar.
  * 
  * @author Johannes Dahlke
  *
  */
 public class SyntaxDirectedDefinition extends HashMap<ProductionRule, SemanticRules> {
+
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3386009257284160733L;
 
 
 	@Override

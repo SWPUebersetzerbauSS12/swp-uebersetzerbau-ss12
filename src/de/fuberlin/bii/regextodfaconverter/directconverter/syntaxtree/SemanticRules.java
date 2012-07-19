@@ -35,10 +35,16 @@ package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
 import java.util.ArrayList;
 
 /**
+ * Stellt eine Liste von semantischen Regeln dar.
  * 
  * @author Johannes Dahlke
  *
  */
 public class SemanticRules extends ArrayList<SemanticRule> {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4249205388587573051L;
 
 }

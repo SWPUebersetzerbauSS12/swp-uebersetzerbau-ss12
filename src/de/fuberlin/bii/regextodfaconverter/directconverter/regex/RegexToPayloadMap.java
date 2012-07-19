@@ -46,4 +46,9 @@ import de.fuberlin.bii.tokenmatcher.StatePayload;
  */
 public class RegexToPayloadMap<StatePayloadType extends Serializable>  extends HashMap<String, StatePayloadType>{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6372441327693092089L;
+
 }

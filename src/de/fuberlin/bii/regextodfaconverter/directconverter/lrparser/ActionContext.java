@@ -49,6 +49,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Lr1C
  * @param <Element>
  * @param <SpecializedClosure>
  */
+@SuppressWarnings("rawtypes")
 public class ActionContext<Element extends Symbol, SpecializedClosure extends Closure> {
 	
 	private SpecializedClosure currentClosure;
@@ -71,7 +72,11 @@ public class ActionContext<Element extends Symbol, SpecializedClosure extends Cl
 		this.currentClosure = currentClosure;
 	}
 	
-	
+	/**
+	 * Fertig eine flache Kopie einer Schlange an.
+	 * @param inputQueue
+	 * @return
+	 */
 	public static <Element extends Symbol> Queue<Element> shallowCopyQueue( Queue<Element> inputQueue) {
 		Queue<Element> result = new ArrayBlockingQueue<Element>( Math.max( inputQueue.size(),1));
 		for ( Element element : inputQueue) {
@@ -81,14 +86,23 @@ public class ActionContext<Element extends Symbol, SpecializedClosure extends Cl
 	}
 
 
-	public static void shallowCopyStack( Stack fromStack, Stack toStack) {
+	/**
+	 * Liefert eine flache Kopie eines Stack.
+	 * @param fromStack
+	 * @param toStack
+	 */
+	public static <T> void shallowCopyStack( Stack<T> fromStack, Stack<T> toStack) {
 		toStack.clear();
-		for ( Object fromObject : fromStack) {
+		for ( T fromObject : fromStack) {
 		  toStack.push( fromObject);
 		}
 	}
 
 
+	/**
+	 * Liefert SymbolStack, ClosureStack und InputQueue des Schnappschusses.
+	 * @return
+	 */
 	public ItemAutomatInterior<Element, SpecializedClosure> getItemAutomat() {
 		return new ItemAutomatInterior<Element, SpecializedClosure>() {
 
@@ -107,16 +121,26 @@ public class ActionContext<Element extends Symbol, SpecializedClosure extends Cl
 	}
 	
 	
+	/**
+	 * Liefert die aktuelle Hülle des Schnappschusses.
+	 * @return
+	 */
 	public SpecializedClosure getCurrentClosure() {
 		return currentClosure;
 	}
 	
-	
+	/**
+	 * Liefert die Aktion des Schnappschusses.
+	 * @return
+	 */
 	public Action getAction() {
 		return action;
 	}
 	
-	
+	/**
+	 * Liefert die Sequenznummer des Schnappschusses.
+	 * @return
+	 */
 	public int getSequenceNumber() {
 		return sequenceNumber;
 	}

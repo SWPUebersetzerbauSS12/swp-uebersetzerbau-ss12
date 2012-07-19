@@ -36,13 +36,21 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.regex.RegexCharSet;
 import de.fuberlin.bii.utils.Test;
 
 /**
+ * Das leere Wort als spezielles Terminal.
  * 
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public class EmptyString extends Terminal  {
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6049332912490542794L;
+
+	@SuppressWarnings("unchecked")
 	public EmptyString() {
 		super( new Symbol(RegexCharSet.EMPTY_STRING));
 	}

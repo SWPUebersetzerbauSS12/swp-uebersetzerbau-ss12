@@ -70,6 +70,7 @@ public class DirectMinimalDfaBuilder implements MinimalDfaBuilder {
 	 * @throws MinimalDfaBuilderException
 	 *             Wenn ein Fehler beim Erstellen des DFA's auftritt.
 	 */
+	@SuppressWarnings("unchecked")
 	public MinimalDfa<Character, StatePayload> buildMinimalDfa(
 			File regularDefinitionFile) throws MinimalDfaBuilderException {
 		if (regularDefinitionFile == null) {

@@ -42,6 +42,7 @@ import de.fuberlin.bii.utils.Test;
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public class BinaryInnerNode<Value> extends InnerNode<Value> {
 	
 	private Leaf leftDummyNode = new Leaf<Value>( null);
@@ -55,6 +56,7 @@ public class BinaryInnerNode<Value> extends InnerNode<Value> {
 		this( null, value, leftChildNode, rightChildNode);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public BinaryInnerNode( BinaryInnerNode parentNode, Value value, TreeNode leftChildNode, TreeNode rightChildNode) {
 		super( parentNode, value);
 		setLeftChildNode( leftChildNode);

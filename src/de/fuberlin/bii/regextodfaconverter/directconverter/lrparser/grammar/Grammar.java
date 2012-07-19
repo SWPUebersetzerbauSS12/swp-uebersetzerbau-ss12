@@ -38,24 +38,56 @@ import java.util.Set;
 
 
 /**
+ * Schnittstelle für eine Grammatik. 
  * 
  * @author Johannes Dahlke
  *
  */
 public interface Grammar {
 	
+	/**
+	 * Liefert das Startsymbol.
+	 *  
+	 */
 	public Nonterminal getStartSymbol();
 	
+	/**
+	 * Legt das Startsymbol fest.
+	 * 
+	 * @param startSymbol
+	 */
 	public void setStartSymbol( Nonterminal startSymbol);
 
+	/**
+	 * Fügt eine Produktionsregel zur Grammtik hinzu.
+	 * 
+	 * @param productionRule
+	 * @return
+	 */
 	boolean addProduction(ProductionRule productionRule);
 	
+	/**
+	 * Gibt die Menge der Terminale zurück.
+	 * @return
+	 */
 	TerminalSet getTerminals();
 
+	/**
+	 * Gibt die Menge der Nichterminale zurück.
+	 * @return
+	 */
 	Set<Nonterminal> getNonterminals();
 	
+	/**
+	 * Gibt eine Abbildung der Nichtterminale auf die dazugehörigen FIRST-Mengen zurück.
+	 * @return
+	 */
 	HashMap<Nonterminal, TerminalSet> getFirstSets();
-	
+
+	/**
+	 * Gibt eine Abbildung der Nichtterminale auf die dazugehörigen FOLLOW-Mengen zurück.
+	 * @return
+	 */
 	HashMap<Nonterminal, TerminalSet> getFollowSets();
 	
 }

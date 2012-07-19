@@ -33,8 +33,9 @@
 package de.fuberlin.bii.bufferedreader;
 
 /**
+ * Fehler wird vom {@link LexemeReader} geworfen, wenn ein Fehlern beim Lesen der Eingabe aufgetreten ist.
  * 
- * @author 
+ * @author Johannes Dahlke
  *
  */
 public class LexemeReaderException extends Exception {

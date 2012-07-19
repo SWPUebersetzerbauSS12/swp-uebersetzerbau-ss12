@@ -59,6 +59,7 @@ import de.fuberlin.bii.utils.Notification;
  */
 public class RegexToDfaTest {
 
+	@SuppressWarnings({ "unchecked", "rawtypes", "static-method"})
 	@Test
 	public void testDeterminism() throws Exception {
 		
@@ -82,6 +83,7 @@ public class RegexToDfaTest {
 		
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked", "static-method"})
 	@Test
 	public void testSubTokenRecognition() throws Exception {
 		
@@ -126,6 +128,7 @@ public class RegexToDfaTest {
 	}
 
 
+	@SuppressWarnings({ "unchecked", "rawtypes", "static-method"})
 	@Test
 	public void testTokenRecognition() throws Exception {
 		

@@ -28,6 +28,7 @@ public class TokenizerTest {
 	/**
 	 * Test of getNextToken method, of class Tokenizer.
 	 */
+	@SuppressWarnings("static-method")
 	@Test
 	public void testGetNextToken() throws Exception {
 		String sourceFilename = "tests/resources/de/fuberlin/bii/source/tokenmatcher/testrelop.fun";

@@ -42,9 +42,16 @@ import de.fuberlin.bii.utils.Test;
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public class TerminalSet extends HashSet<Terminal> {
 	
-  @Override
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = -7525530805773817722L;
+
+
+	@Override
   public boolean contains( Object obj) {
   	
   	if ( Test.isUnassigned( obj))

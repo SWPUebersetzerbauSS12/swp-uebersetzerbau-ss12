@@ -23,6 +23,7 @@ public class IndirectMinimalDfaBuilderTest {
 	/**
 	 * Test of buildMinimalDfa method, of class IndirectMinimalDfaBuilder.
 	 */
+	@SuppressWarnings("static-method")
 	@Test
 	public void testBuildMinimalDfa() throws Exception {
 		File rdFile = new File("tests/resources/de/fuberlin/bii/def/dfaprovider/test.rd");

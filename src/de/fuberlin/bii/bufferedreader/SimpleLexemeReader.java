@@ -39,7 +39,12 @@ import java.io.RandomAccessFile;
 import de.fuberlin.bii.utils.Notification;
 import de.fuberlin.bii.utils.Test;
 
-
+/**
+ * Eingabeleser arbeitet direkt auf der Datei. Jedes Zeichen wird einzeln aus der Datei gelesen. 
+ * 
+ * @author Johannes Dahlke
+ *
+ */
 public class SimpleLexemeReader implements LexemeReader {
 	
 	private RandomAccessFile file;

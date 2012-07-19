@@ -17,6 +17,7 @@ public class MinimalDfaProviderTest {
 	/**
 	 * Test of getMinimalDfa method, with false input.
 	 */
+	@SuppressWarnings("static-method")
 	@Test
 	public void testGetMinimalDfaCorrectInput() throws Exception {
 		File failRDFile =  new File("C:\\TEMP\\");
@@ -77,7 +78,7 @@ public class MinimalDfaProviderTest {
 	 * Test of getMinimalDfa method, with 2 parameter.
 	 */
 	@Test
-	public void testGetMinimalDfa2Param() throws Exception {
+	public static void testGetMinimalDfa2Param() throws Exception {
 		File rdInputFile = new File("C:\\TEMP\\dfaprovider.test.rd");
 		MinimalDfaBuilder builder1 = new IndirectMinimalDfaBuilder();
 		MinimalDfaBuilder builder2 = new DirectMinimalDfaBuilder();
@@ -93,7 +94,7 @@ public class MinimalDfaProviderTest {
 	 * Test of getMinimalDfa method, with 3 parameter.
 	 */
 	@Test
-	public void testGetMinimalDfa3Param() throws Exception {
+	public static void testGetMinimalDfa3Param() throws Exception {
 		File rdInputFile = new File("C:\\TEMP\\dfaprovider.test.rd");
 		MinimalDfaBuilder builder1 = new IndirectMinimalDfaBuilder();
 		MinimalDfaBuilder builder2 = new DirectMinimalDfaBuilder();
@@ -113,7 +114,7 @@ public class MinimalDfaProviderTest {
 	 * Test of getMinimalDfa method, with 4 parameter.
 	 */
 	@Test
-	public void testGetMinimalDfa4Param() throws Exception {
+	public static void testGetMinimalDfa4Param() throws Exception {
 		File rdInputFile = new File("C:\\TEMP\\dfaprovider.test.rd");
 		MinimalDfaBuilder builder1 = new IndirectMinimalDfaBuilder();
 		MinimalDfaBuilder builder2 = new DirectMinimalDfaBuilder();
@@ -137,7 +138,7 @@ public class MinimalDfaProviderTest {
 	 * Test of getMinimalDfa method, with 5 parameter.
 	 */
 	@Test
-	public void testGetMinimalDfa5Param() throws Exception {
+	public static void testGetMinimalDfa5Param() throws Exception {
 		File rdInputFile = new File("C:\\TEMP\\dfaprovider.test.rd");
 		File dfaInputFile = new File("C:\\TEMP\\dfaprovider.test.rd.dfa");
 		MinimalDfaBuilder builder1 = new IndirectMinimalDfaBuilder();

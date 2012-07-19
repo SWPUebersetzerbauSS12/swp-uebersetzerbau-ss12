@@ -45,6 +45,10 @@ import de.fuberlin.bii.utils.Test;
  */
 public abstract class GenericParseAttribute<T> implements Attribute {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4152632396959708006L;
 	private String lexem;
 	private final Class<T> valueType;
 	
@@ -60,7 +64,7 @@ public abstract class GenericParseAttribute<T> implements Attribute {
 	
 	protected abstract Object parseLexem( String lexem);
 
-	public Class getValueType() {
+	public Class<Integer> getValueType() {
 		return Integer.class;
 	}
 
@@ -77,7 +81,8 @@ public abstract class GenericParseAttribute<T> implements Attribute {
 		if ( !( obj instanceof GenericParseAttribute))
 			return false;
 		
-		GenericParseAttribute<T> theOtherGenericParseAttribute = (GenericParseAttribute<T>) obj;
+		@SuppressWarnings("unchecked")
+		final GenericParseAttribute<T> theOtherGenericParseAttribute = (GenericParseAttribute<T>) obj;
 		
 		boolean isEqual = theOtherGenericParseAttribute.valueType.equals( this.valueType) 
 				&& theOtherGenericParseAttribute.lexem.equals( this.lexem);

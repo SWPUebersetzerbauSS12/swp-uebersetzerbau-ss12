@@ -34,15 +34,32 @@ package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser;
 
 /**
  * 
+ * ReduceException signalisiert einen Fehler während einer Reduce-Aktion.
+ *
  * @author Johannes Dahlke
  *
  */
 public class ReduceException extends Exception {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5302597894554152044L;
+
+	/**
+	 * Erstellt ein neues ReduceException Objekt.
+	 * 
+	 */
 	public ReduceException() {
 	  super();
 	}
 	
+	/**
+	 * Erstellt ein neues ReduceException Objekt.
+	 * 
+	 * @param message
+	 *            Die genaue Fehlerbeschreibung.
+	 */
 	public ReduceException( String message) {
 	  super( message);
     }

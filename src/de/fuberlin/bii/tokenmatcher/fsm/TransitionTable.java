@@ -43,6 +43,7 @@ import de.fuberlin.bii.utils.Test;
  * @author Johannes Dahlke
  *
  * @param <E>
+ * @deprecated
  */
 public class TransitionTable<E> {
 	
@@ -76,7 +77,7 @@ public class TransitionTable<E> {
 	
 	
 
-	private void checkAndEnsureUniqueStartState( State theState) {
+	private static void checkAndEnsureUniqueStartState( State theState) {
 		if ( theState.isStartState()) {
 			if ( Test.isAssigned( startState)) {
 			  startState.unsetStart();

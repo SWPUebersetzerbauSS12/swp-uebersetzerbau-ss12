@@ -41,12 +41,20 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Term
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Terminator;
 
 /**
+ * Ein spezielles {@link Item} für die {@link Lr1Closure}.
  * 
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public class Lr1Item extends Item {
 
+
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2299113205108459441L;
 	private Terminal lookahead = new Terminator();
 	
 	public Lr1Item( ProductionRule productionRule, int analysePosition, Terminal lookahead) {
@@ -90,6 +98,14 @@ public class Lr1Item extends Item {
 		return theOtherItem.getAnalysePosition() == this.getAnalysePosition()
 				&& lookahead.equals( theOtherItem.lookahead);
 	}
+	
+	public int hashCode() {
+		int hashCode = super.hashCode();
+		hashCode = 31 * hashCode + getAnalysePosition(); 	
+		hashCode = 31 * hashCode + lookahead.hashCode(); 
+		
+		return hashCode;
+	}
 
 	@Override
 	public String toString() {
@@ -105,6 +121,10 @@ public class Lr1Item extends Item {
 		return result;
 	}
 	
+	/**
+	 * Liefert die Sequenz der noch verbleibenden Regelelemente rechts von der aktuellen Analyseposition. 
+	 * @return
+	 */
 	public RuleElementSequenz getSequenzLeftAfterNextRuleElement() {
 	  RuleElementSequenz result = new RuleElementArray();
 	  for ( int i = getAnalysePosition()+1; i < this.rightSideRuleSize(); i++) {
@@ -114,7 +134,10 @@ public class Lr1Item extends Item {
 	}
 	
 	
-	
+	/**
+	 * Liefert das Lookahead-Terminal.
+	 * @return
+	 */
 	public Terminal getLookahead() {
 		return lookahead;
 	}

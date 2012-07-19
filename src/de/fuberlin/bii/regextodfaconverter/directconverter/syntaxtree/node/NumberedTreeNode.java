@@ -3,7 +3,7 @@ package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node;
 
 /**
  * Struktur kapselt einen TreeNode und weist diesem eine Nummer zu. 
- * @author workstation
+ * @author Johannes Dahlke
  *
  * @param <Value>
  */
@@ -19,12 +19,18 @@ public class NumberedTreeNode<Value> {
 		this.number = number;
 	}
 	
-	
+	/**
+	 * Gibt die Nummer zurück.
+	 * @return
+	 */
 	public int getNumber() {
 		return number;
 	}
 	
-	
+	/**
+	 * Liefert den Knoten.
+	 * @return
+	 */
 	public TreeNode<Value> getTreeNode() {
 		return treeNode;
 	}

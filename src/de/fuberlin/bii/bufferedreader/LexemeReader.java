@@ -32,7 +32,12 @@
 
 package de.fuberlin.bii.bufferedreader;
 
-
+/**
+ * Schnittstelle für Eingabeleser. Ein Leser muss die Eingabe zeichenweise liefern, sich die Position nach dem zuletzt akzeptierten Lexem merken, den Lesezeiger dorthin zurücksetzen und das Lesen der Eingabe am Anfang der Datei wieder aufnehmen können.
+ * 
+ * @author Johannes Dahlke
+ *
+ */
 public interface LexemeReader {
 	
 	/**
@@ -61,7 +66,7 @@ public interface LexemeReader {
 	void reopen() throws LexemeReaderException;
 	
 	/**
-	 * Acceptiert das zuletzt gelesene Lexem, indem es den Marker lexemeBegin 
+	 * Akzeptiert das zuletzt gelesene Lexem, indem es den Marker lexemeBegin 
 	 * genau hinter dem zuletzt gelesenen Lexem positioniert. 
 	 * @throws LexemeReaderException 
 	 */

@@ -55,6 +55,10 @@ public class OperatorNode extends BinaryInnerNode<OperatorType> {
 		this.payload = payload;
 	}
 	
+	/**
+	 * Liefert den Operatortyp. 
+	 * @return
+	 */
 	public OperatorType getOperatorType() {
 		return getValue();
 	}

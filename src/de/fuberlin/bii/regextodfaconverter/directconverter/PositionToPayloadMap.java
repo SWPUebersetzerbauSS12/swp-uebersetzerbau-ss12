@@ -45,4 +45,9 @@ import de.fuberlin.bii.tokenmatcher.StatePayload;
  */
 public class PositionToPayloadMap<Payload> extends HashMap<Integer, Payload>{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3091575433684120438L;
+
 }

@@ -36,13 +36,21 @@ import de.fuberlin.bii.utils.Test;
 
 
 /**
+ * Das Terminatorsymbol ist ein spezielles Terminal, welches das Ende einer Eingabe markiert.
  * 
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public class Terminator extends Terminal  {
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8929638685441712256L;
+
+	@SuppressWarnings("unchecked")
 	public Terminator() {
 		super( new Symbol( '$'));
 	}

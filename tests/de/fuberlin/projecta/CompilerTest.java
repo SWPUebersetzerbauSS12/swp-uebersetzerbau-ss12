@@ -225,6 +225,17 @@ public class CompilerTest {
 	}
 
 	@Test
+	public void testDoWhileStatement() {
+		String code = mainC("int i; i = 0; do {" +
+				"print i;" + 
+				"i = i+1;" + 
+			"} while (i < 5);");
+		String output = executeCode(code);
+		System.out.println(output);
+		assertEquals("012345", output);
+	}
+
+	@Test
 	public void testMultiDimensionalArrays() {
 		final String code = mainC("int[3][5] test; int i; int j; int tmp;" +
 				"i = 0;" +

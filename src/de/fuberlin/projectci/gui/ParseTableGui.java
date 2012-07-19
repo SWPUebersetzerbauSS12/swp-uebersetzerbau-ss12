@@ -55,6 +55,21 @@ public class ParseTableGui {
 		gotoStates.addAll(pt.state2GotoTable.keySet());
 	}
 
+	public ParseTableGui(Grammar grammar, ParseTable parseTable){
+		g=grammar;
+		pt=parseTable;
+		// Symbole holen
+		terminals = grammar.getAllTerminalSymols();
+		nonTerminals = grammar.getAllNonTerminals();
+
+		// States holen
+		actionStates = new HashSet<State>();
+		actionStates.addAll(parseTable.state2ActionTable.keySet());
+
+		gotoStates = new HashSet<State>();
+		gotoStates.addAll(parseTable.state2GotoTable.keySet());
+	}
+	
 	private DefaultTableModel getActionTableModel() {
 		DefaultTableModel dtm = new DefaultTableModel();
 

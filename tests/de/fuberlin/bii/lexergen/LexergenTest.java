@@ -24,12 +24,12 @@ public class LexergenTest {
     Notification.enableDebugInfoPrinting();
     Notification.enableDebugPrinting();
 		
-		File rdFile = new File("tests/resources/de/fuberlin/bii/def/lexergen/test.rd");
-		File sourceFile = new File("tests/resources/de/fuberlin/bii/source/lexergen/test.fun");
+		File rdFile = new File("input/de/fuberlin/bii/def/tokendefinition.rd");
+		File sourceFile = new File("input/de/fuberlin/projectci/quellprogrammdateien/simple.src");
 		
 
-		//ILexer lexergen = new Lexergen(rdFile, sourceFile, BuilderType.indirectBuilder, CorrectionMode.PANIC_MODE, true);		
-		ILexer lexergen = new Lexergen(rdFile, sourceFile, BuilderType.directBuilder, CorrectionMode.PANIC_MODE, true);		
+		ILexer lexergen = new Lexergen(rdFile, sourceFile, BuilderType.indirectBuilder, CorrectionMode.PANIC_MODE, true);		
+//		ILexer lexergen = new Lexergen(rdFile, sourceFile, BuilderType.directBuilder, CorrectionMode.PANIC_MODE, true);		
 
 		IToken currentToken = null;
 		String tokenString;

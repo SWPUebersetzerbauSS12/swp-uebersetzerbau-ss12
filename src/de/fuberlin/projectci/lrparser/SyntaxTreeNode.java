@@ -263,7 +263,7 @@ public class SyntaxTreeNode implements ISyntaxTree{
 			strBuf.append("\"");
 			if (token.getAttribute()!=null){
 				strBuf.append(" value=\"");
-				strBuf.append(token.getAttribute());
+				strBuf.append(escape(token.getAttribute().toString()));
 				strBuf.append("\"");
 			}
 		}
@@ -288,6 +288,9 @@ public class SyntaxTreeNode implements ISyntaxTree{
 		}
 		if (s.contains(">")){
 			s=s.replaceAll("<", "&gt;");
+		}
+		if (s.contains("\"")){
+			s=s.replaceAll("\"", "&quot;");
 		}
 		return s;
 	}

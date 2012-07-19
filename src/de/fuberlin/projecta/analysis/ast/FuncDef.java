@@ -24,8 +24,7 @@ public class FuncDef extends Type {
 				if (!(block.getChild(block.getChildrenCount() - 1) instanceof Return)) {
 					if (((BasicType) this.getChild(0)).getTokenType() != BasicTokenType.VOID) {
 						if (!canInsertReturn(block)) {
-							throw new SemanticException(
-									"Methods needs to return a value");
+							throw new SemanticException("Methods needs to return a value", this);
 						}
 					} else {
 						// no return type. so just add empty return

@@ -1,7 +1,9 @@
 def int main(){
   int a;
   real b;
+  real c;
   a=9;
   b = 0.11;
+  c = .063;
   return a;
 }

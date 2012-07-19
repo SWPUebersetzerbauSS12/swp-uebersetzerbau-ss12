@@ -12,6 +12,7 @@
 *.REMOTE.*
 
 # java
+build/*
 bin/*
 *.class
 

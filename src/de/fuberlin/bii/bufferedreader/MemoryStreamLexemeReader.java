@@ -38,6 +38,12 @@ import java.io.IOException;
 
 import de.fuberlin.bii.utils.Notification;
 
+/**
+ * Eingabeleser arbeitet auf einem Memorystream. D.h. die gesamte Eingabe wird zunächst komplet in den Speicher geladen.  
+ * 
+ * @author Johannes Dahlke
+ *
+ */
 public class MemoryStreamLexemeReader implements LexemeReader {
 	
 	private File file;

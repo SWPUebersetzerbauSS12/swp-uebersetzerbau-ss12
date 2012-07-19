@@ -40,6 +40,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Rule
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.RuleElementSequenz;
 
 /**
+ * Ein spezielles {@link Item} für die {@link Lr0Closure}.
  * 
  * @author Johannes Dahlke
  *

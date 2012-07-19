@@ -42,6 +42,7 @@ import de.fuberlin.bii.utils.Sets;
 import de.fuberlin.bii.utils.Test;
 
 /**
+ * Datenstruktur zum Abbilden einer kontextfreien Grammatik.
  * 
  * @author Johannes Dahlke
  *
@@ -62,7 +63,6 @@ public class ContextFreeGrammar extends ProductionMap implements Grammar {
 	public Nonterminal getStartSymbol() {
 		return startSymbol;
 	}
-	
 	
 	public void setStartSymbol( Nonterminal startSymbol) {
 		this.startSymbol = startSymbol;

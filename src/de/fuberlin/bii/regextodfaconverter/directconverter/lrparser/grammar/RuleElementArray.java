@@ -38,6 +38,7 @@ import java.util.List;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Lr0Item;
 
 /**
+ * Implementierung der {@link RuleElementSequenz} als Array von {@link RuleElement}en. 
  * 
  * @author Johannes Dahlke
  *
@@ -70,7 +71,11 @@ public class RuleElementArray extends ArrayList<RuleElement> implements RuleElem
 	
 	
 	
-	
+	/**
+	 * Fasst die übergebenen Regelelemente in ein Array zusammen.
+	 * @param ts
+	 * @return
+	 */
 	public static <T extends Symbol> RuleElementArray toRuleElementArray( T ... ts) {
 		RuleElementArray result = new RuleElementArray();
 		for ( T t : ts) {

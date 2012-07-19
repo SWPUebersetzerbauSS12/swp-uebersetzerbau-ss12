@@ -36,6 +36,7 @@ import de.fuberlin.bii.utils.Test;
 
 
 /**
+ * Das Terminatorsymbol ist ein spezielles Terminal, welches das Ende einer Eingabe markiert.
  * 
  * @author Johannes Dahlke
  *

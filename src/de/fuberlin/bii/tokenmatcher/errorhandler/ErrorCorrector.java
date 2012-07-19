@@ -37,15 +37,16 @@ import java.util.Collection;
 import de.fuberlin.bii.tokenmatcher.DeterministicFiniteAutomata;
 import de.fuberlin.bii.tokenmatcher.LexemIdentificationException;
 import de.fuberlin.bii.tokenmatcher.StatePayload;
+import de.fuberlin.bii.tokenmatcher.Tokenizer;
 import de.fuberlin.bii.utils.Notification;
 import de.fuberlin.bii.bufferedreader.LexemeReader;
 import de.fuberlin.bii.bufferedreader.LexemeReaderException;
 import de.fuberlin.bii.bufferedreader.SpecialChars;
 
 /**
- * 
+ * Die Klasse ErrorCorrector führt die Behandlung von Fehlern, die während des Lexens im {@link Tokenizer} aufgetreten sind, je nach gewähltem Fehlerbehandlungsmodus durch.   
  * @author Johannes Dahlke
- *
+ * @see 
  */
 public class ErrorCorrector {
 

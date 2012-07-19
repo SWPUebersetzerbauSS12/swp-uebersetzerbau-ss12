@@ -44,7 +44,7 @@ import de.fuberlin.bii.utils.Test;
 
 
 /**
- * Bildet die Items auf ihre Eigenschaft Kernelitem (true) oder Nichtkernelitem /false) ab.
+ * Bildet die LR1-Items auf ihre Eigenschaft Kernelitem (true) oder Nichtkernelitem /false) ab.
  * 
  * @author Johannes Dahlke
  *

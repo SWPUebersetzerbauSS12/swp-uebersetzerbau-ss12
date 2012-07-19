@@ -32,18 +32,26 @@
 
 package de.fuberlin.bii.regextodfaconverter.directconverter;
 
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.ItemAutomat;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.ItemAutomatInterior;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symbol;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Closure;
 
 /**
+ * Schnittstelle für Itemautomatenereignisse.
  * 
  * @author Johannes Dahlke
- *
+ * @see ItemAutomat
  */
 @SuppressWarnings("rawtypes")
 public interface AutomatEventHandler<Element extends Symbol, SpecializedClosure extends Closure> {
 
-	
+	/**
+	 * Ereignisbehandlungsroutine.
+	 * 
+	 * @param itemAutomat Der Automat, auf welchem das Ereignis behandelt werden soll.
+	 * @return ggf. ein Ergebnis.
+	 * @throws Exception
+	 */
 	Object handleOnAutomat( ItemAutomatInterior<Element, SpecializedClosure> itemAutomat) throws Exception;
 }

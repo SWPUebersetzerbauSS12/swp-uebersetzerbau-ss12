@@ -42,6 +42,7 @@ import de.fuberlin.bii.utils.Test;
 
 
 /**
+ * Schnittstelle für den Zugriff auf einen Baumes.
  * 
  * @author Johannes Dahlke
  *
@@ -49,11 +50,22 @@ import de.fuberlin.bii.utils.Test;
 @SuppressWarnings("rawtypes")
 public interface Tree extends Iterable<TreeNode> {
 
-	
+	/**
+	 * Liefert den Wurzelknoten eines Baumes.
+	 * @return
+	 */
 	TreeNode getRoot();
 	
+	/**
+	 * Liefert die dem Baum zugrunde liegende Grammatik.
+	 * @return
+	 */
 	Grammar getGrammar();
 	
+	/**
+	 * Liefert die Menge aller Blätter.
+	 * @return
+	 */
 	Collection<Leaf> getLeafSet(); 
 	
 }

@@ -51,6 +51,7 @@ import de.fuberlin.bii.utils.Notification;
 import de.fuberlin.bii.utils.Test;
 
 /**
+ * Stellt einen abstrakten Syntaxbaum dar.
  * 
  * @author Johannes Dahlke
  *
@@ -166,7 +167,10 @@ public class AbstractSyntaxTree<ExpressionElement extends Symbol> extends Concre
 	}
 	
 	
-	
+	/**
+	 * Liefert die Attributierungen des Wurzelknotens.
+	 * @return
+	 */
 	public AttributesMap getRootAttributesMap() {
 		return rootAttributesMap;
 	}

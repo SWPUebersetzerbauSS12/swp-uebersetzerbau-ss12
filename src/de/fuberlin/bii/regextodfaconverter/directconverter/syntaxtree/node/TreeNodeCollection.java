@@ -36,6 +36,7 @@ import java.util.Collection;
 
 
 /**
+ * Stellt eine Sammlung an Knotenelementen dar.
  * 
  * @author Johannes Dahlke
  *

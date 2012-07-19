@@ -36,7 +36,7 @@ import java.util.HashSet;
 
 
 /**
- * 
+ * Stellt eine Menge an Knotenelementen dar.
  * @author Johannes Dahlke
  *
  */

@@ -43,6 +43,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Clos
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Lr0Closure;
 
 /**
+ * Goto-Aktion für Parsertabelle.
  * 
  * @author Johannes Dahlke
  *
@@ -70,10 +71,18 @@ public class Goto<Element extends Symbol, SpecializedClosure extends Closure> im
 		return toClosure;
 	}
 	
+	/**
+	 * Gibt das Nichtterminal, über welches die Closure gewechselt werden soll. 
+	 * @return
+	 */
 	public Nonterminal getNonterminalToHandle() {
 		return nonterminalToHandle;
 	}
 	
+	/**
+	 * Liefert die Ziel-Closure.
+	 * @return
+	 */
 	public SpecializedClosure getToClosure() {
 		return toClosure;
 	}

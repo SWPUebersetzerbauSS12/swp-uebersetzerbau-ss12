@@ -37,6 +37,7 @@ import java.util.HashSet;
 
 
 /**
+ * Eine Menge an {@link Lr0Item}s.
  * 
  * @author Johannes Dahlke
  *

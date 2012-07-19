@@ -36,9 +36,12 @@ import java.io.Serializable;
 
 
 /**
- * 
+ * Ein Regelelement. RuleElement ist die Basisklasse für Terminale und Nichtterminale. 
  * @author Johannes Dahlke
- *
+ * @see Terminal
+ * @see Nonterminal
+ * @see EmptyString
+ * @see Terminator
  */
 public abstract class RuleElement implements Comparable<RuleElement>, Serializable {
 

@@ -40,6 +40,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Rule
 
 
 /**
+ * Stellt eine syntaxgerichtete Definition dar.
  * 
  * @author Johannes Dahlke
  *

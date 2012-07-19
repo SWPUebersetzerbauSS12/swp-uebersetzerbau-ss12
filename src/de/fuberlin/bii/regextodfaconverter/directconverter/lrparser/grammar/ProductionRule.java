@@ -43,6 +43,7 @@ import de.fuberlin.bii.utils.Test;
 
 
 /**
+ * Stellt eine Produktionsregel dar.
  * 
  * @author Johannes Dahlke
  *
@@ -89,6 +90,10 @@ public class ProductionRule implements Iterable<RuleElement>, Serializable {
 		return elementSequenz;
 	}
 
+	/**
+	 * Liefert die linke Regelseite.
+	 * @return
+	 */
 	public Nonterminal getLeftRuleSide() {
 		return leftRuleSide;
 	}
@@ -109,6 +114,11 @@ public class ProductionRule implements Iterable<RuleElement>, Serializable {
 		return result;
 	}
 
+	/**
+	 * Liefert die rechte Regelseite.
+	 * 
+	 * @return
+	 */
 	public RuleElementSequenz getRightRuleSide() {
 		return rightRuleSide;
 	}
@@ -117,6 +127,10 @@ public class ProductionRule implements Iterable<RuleElement>, Serializable {
 		return rightRuleSide.iterator();
 	}
 
+	/**
+	 * Liefert die Menge der Elemente auf der rechten Regelseite.
+	 * @return
+	 */
 	public Set<RuleElement> getRuleElementSet() {
 		Set<RuleElement> result = new HashSet<RuleElement>();
 		result.add(leftRuleSide);
@@ -126,6 +140,10 @@ public class ProductionRule implements Iterable<RuleElement>, Serializable {
 		return result;
 	}
 	
+	/**
+	 * Liefert die Menge aller Terminale der rechten Regelseite.
+	 * @return
+	 */
 	public Set<Terminal> getTerminalSet() {
 		Set<Terminal> result = new HashSet<Terminal>();
 		for (RuleElement ruleElement : this) {
@@ -134,7 +152,11 @@ public class ProductionRule implements Iterable<RuleElement>, Serializable {
 		}
 		return result;
 	}
-	
+
+	/**
+	 * Liefert die Menge aller Nichtterminale der rechten Regelseite sowie der linken Regelseite.
+	 * @return
+	 */
 	public Set<Nonterminal> getNonterminalSet() {
 		Set<Nonterminal> result = new HashSet<Nonterminal>();
 		result.add(leftRuleSide);

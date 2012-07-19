@@ -41,7 +41,8 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Clos
 import de.fuberlin.bii.utils.Test;
 
 /**
- * 
+ * Shift-Aktion für Parsertabelle.
+ *  
  * @author Johannes Dahlke
  *
  * @param <Element>
@@ -71,10 +72,18 @@ public class ShiftAction<Element extends Symbol, SpecializedClosure extends Clos
 		return toClosure;
 	}
 	
+	/**
+	 * Liefert die Ziel-Closure.
+	 * @return
+	 */
 	public SpecializedClosure getToClosure() {
 		return toClosure;
 	}
 	
+	/**
+	 * Liefert das Terminal, welches abgearbeitet wird.
+	 * @return
+	 */
 	public Terminal<Element> getTerminalToHandle() {
 		return terminalToHandle;
 	}

@@ -39,7 +39,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Rule
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeNode;
 
 /**
- * 
+ * Bildet die Knoten eines Baumes auf jeweils eine Sammlung von Attributen ab. 
  * @author Johannes Dahlke
  *
  */

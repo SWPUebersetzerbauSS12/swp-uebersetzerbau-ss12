@@ -36,6 +36,7 @@ package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
 import java.util.HashMap;
 
 /**
+ * Eine Abbildung von Attributen auf deren Werte.
  * 
  * @author Johannes Dahlke
  *

@@ -37,6 +37,7 @@ import java.util.HashSet;
 
 
 /**
+ * Stellt eine Menge an Items dar.  
  * 
  * @author Johannes Dahlke
  *

@@ -74,6 +74,7 @@ import de.fuberlin.bii.regextodfaconverter.fsm.StatePayload;
 import de.fuberlin.bii.utils.Test;
 
 /**
+ * Operatorbaum für reguläre Ausdrücke.
  * 
  * @author Johannes Dahlke
  *
@@ -211,7 +212,10 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 	}
 	
 	
-	
+	/**
+	 * Gibt eine Grammatik für reguläre Ausdrücke zurück.
+	 * @return
+	 */
 	public static ContextFreeGrammar getRegexGrammar() {
 		ContextFreeGrammar grammar = new ContextFreeGrammar();
 
@@ -302,6 +306,10 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 	}
 	
 	
+	/**
+	 * Gibt eine syntaxgerichtete Definition zur Übersetzung regulärer Ausdrücke in einen abstrakten Syntaxbaum an.  
+	 * @return
+	 */
 	public static SyntaxDirectedDefinition getRegexSdd() {
 		SyntaxDirectedDefinition result = new SyntaxDirectedDefinition();
 		
@@ -994,6 +1002,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 		return operatorTreeAttributor.getNullables();
 	}
 	
+
 	public Collection<Leaf> getLeafSet() {
 		Collection<Leaf> leafSet = new HashSet<Leaf>();
 		for ( TreeNode node : this) {
@@ -1007,6 +1016,10 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 
 
 
+	/**
+	 * Gibt den terminalen Knoten zurück.
+	 * @return
+	 */
 	public TreeNode getTerminatorNode() {
 	for ( TreeNode node : this) {
 			if ( Test.isAssigned( node) 

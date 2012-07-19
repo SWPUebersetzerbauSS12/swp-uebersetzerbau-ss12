@@ -43,6 +43,7 @@ import de.fuberlin.bii.utils.Test;
  * @author Johannes Dahlke
  *
  * @param <E>
+ * @deprecated
  */
 public class TransitionTable<E> {
 	

@@ -40,6 +40,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Lr0C
 import de.fuberlin.bii.utils.Test;
 
 /**
+ * Aktion für den Parser
  * 
  * @author Johannes Dahlke
  *
@@ -54,6 +55,12 @@ public abstract class Action<Element extends Symbol, SpecializedClosure extends 
 		super();
 	}
 	
+	/**
+	 * Fügt der Aktion eine alternative Aktion hinzu. Diese wird dann gewählt, wenn der {@link ItemAutomat}
+	 * keine passende Reduce-Regel mehr anwenden kann und einen erneuten Anlauf nimmt. 
+	 * 
+	 * @param theAlternativeAction
+	 */
 	public void addAlternative( Action theAlternativeAction) {
 		if ( Test.isUnassigned( this.alternativeAction))
 			this.alternativeAction = theAlternativeAction;
@@ -62,11 +69,19 @@ public abstract class Action<Element extends Symbol, SpecializedClosure extends 
 			  this.alternativeAction.addAlternative( theAlternativeAction);
 	}
 	
+	/**
+	 * Test auf Vorhandensein einer alternativen Aktion.
+	 * 
+	 * @return
+	 */
 	public boolean hasAlternative() {
 		return Test.isAssigned( alternativeAction);
 	}
 	
-	
+	/**
+	 * Akzessor auf die alternative Aktion
+	 * @return
+	 */
 	public Action getAlternative() {
 		return alternativeAction;
 	}

@@ -38,10 +38,12 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symb
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Closure;
 
 /**
+ * Accept-Aktion für Parsertabelle
  * 
  * @author Johannes Dahlke
  *
  * @param <Element>
+ * 
  */
 @SuppressWarnings("rawtypes")
 public class AcceptAction<Element extends Symbol, SpecializedClosure extends Closure> extends Action<Element, SpecializedClosure> implements Serializable {
@@ -51,6 +53,7 @@ public class AcceptAction<Element extends Symbol, SpecializedClosure extends Clo
 	public AcceptAction() {
 		super();
 	}
+	
 	
 	public Object handleOnAutomat(ItemAutomatInterior<Element, SpecializedClosure> itemAutomata) throws Exception {
 		return true;

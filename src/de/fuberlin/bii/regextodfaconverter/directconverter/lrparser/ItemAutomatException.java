@@ -34,6 +34,8 @@ package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser;
 
 /**
  * 
+ * ItemAutomatException signalisiert Fehler des Itemautomaten.
+ * 
  * @author Johannes Dahlke
  *
  */
@@ -44,10 +46,20 @@ public class ItemAutomatException extends Exception {
 	 */
 	private static final long serialVersionUID = -7434154180305088074L;
 
+	/**
+	 * Erstellt ein neues ItemAutomatException Objekt.
+	 * 
+	 */
 	public ItemAutomatException() {
 	  super();
 	}
 	
+	/**
+	 * Erstellt ein neues ItemAutomatException Objekt.
+	 * 
+	 * @param message
+	 *            Die genaue Fehlerbeschreibung.
+	 */
 	public ItemAutomatException( String message) {
 	  super( message);
     }

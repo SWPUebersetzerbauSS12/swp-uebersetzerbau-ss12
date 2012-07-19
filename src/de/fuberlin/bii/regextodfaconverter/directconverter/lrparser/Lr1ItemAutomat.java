@@ -66,7 +66,7 @@ import de.fuberlin.bii.utils.Notification;
 import de.fuberlin.bii.utils.Test;
 
 /**
- * Ein LR(0)-Parser. Ein LR(0)-Parser arbeitet grundsätzlich ohne Lookahead. 
+ * Implementierung eines LR(1)-Parsers. 
  * 
  * @author Johannes Dahlke
  *
@@ -504,6 +504,10 @@ public class Lr1ItemAutomat<Element extends Symbol> implements ItemAutomat<Eleme
 	}
 
 
+  /**
+   * Gibt die Grammatik zurück, gegen welche Eingaben geprüft werden.
+   * @return
+   */
 	public ContextFreeGrammar getGrammar() {
 		return grammar;
 	}

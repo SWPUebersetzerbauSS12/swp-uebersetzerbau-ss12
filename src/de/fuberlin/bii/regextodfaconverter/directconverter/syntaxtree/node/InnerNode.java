@@ -74,14 +74,30 @@ public abstract class InnerNode<Value> extends TreeNode<Value> implements Iterab
 		return false;
 	}
 	
+	/**
+	 * Entfern ein Kindknoten.
+	 * @param childNode Der Kindknoten, welcher entfernt werden soll.
+	 * @return
+	 */
 	public boolean removeChild( TreeNode childNode) {
 		return childNodes.remove( childNode);
 	}
 	
+	/**
+	 * Entfernt ein Kindknoten. 
+	 * @param index Der Index des Jindknotens, welcher entfernt werden soll.
+	 * @return
+	 */
 	public TreeNode removeChildWithIndex( int index) {
 		return childNodes.remove( index);
 	}
 	
+	/**
+	 * Fügt einen neuen Kindknoten an gegebene Stelle ein.
+	 * @param childNode Der einzufügende Kindknoten.
+	 * @param index Die Stelle, an der Eingefügt werden soll.
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public boolean insertChild( TreeNode childNode, int index) {
 		if ( canAddChild( childNode)) {
@@ -92,18 +108,36 @@ public abstract class InnerNode<Value> extends TreeNode<Value> implements Iterab
 		return false;
 	}
 	
+	/**
+	 * Liefert die Anzahl der Kindelemente.
+	 * @return
+	 */
 	public int childCount() {
 		return childNodes.size();
 	}
 	
+	/**
+	 * Liefert den Knoten mit dem gegebenen Index.
+	 * @param index
+	 * @return
+	 */
 	public TreeNode getNodeWithIndex( int index) {
 		return childNodes.get( index);
 	}
 	
+	/**
+	 * Liefert den Index des gegebenen Kindknotens.
+	 * @param treeNode
+	 * @return
+	 */
 	public int getIndexOf( TreeNode treeNode) {
 		return childNodes.indexOf( treeNode);
 	}
 	
+	/**
+	 * Liefert den gedrucken Baum mit allen Knoten.
+	 * @return
+	 */
 	public String toFullString() {
 		String result = toString() + ": ";
 		String childs = "";

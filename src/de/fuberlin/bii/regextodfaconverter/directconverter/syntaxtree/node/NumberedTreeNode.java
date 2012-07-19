@@ -19,12 +19,18 @@ public class NumberedTreeNode<Value> {
 		this.number = number;
 	}
 	
-	
+	/**
+	 * Gibt die Nummer zurück.
+	 * @return
+	 */
 	public int getNumber() {
 		return number;
 	}
 	
-	
+	/**
+	 * Liefert den Knoten.
+	 * @return
+	 */
 	public TreeNode<Value> getTreeNode() {
 		return treeNode;
 	}

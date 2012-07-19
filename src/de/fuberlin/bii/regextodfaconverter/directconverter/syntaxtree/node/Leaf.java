@@ -35,7 +35,7 @@ package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node;
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.ConcreteSyntaxTree;
 
 /**
- * Liefert den Wert eines Blattes des {@link SyntaxTree Syntaxbaumes}.
+ * Ein Blatt des {@link SyntaxTree Syntaxbaumes}.
  * 
  * @author Johannes Dahlke
  *

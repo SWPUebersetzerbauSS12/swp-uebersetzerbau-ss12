@@ -34,6 +34,8 @@ package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar;
 
 import java.io.Serializable;
 
+import com.sun.org.apache.xpath.internal.operations.Equals;
+
 import de.fuberlin.bii.regextodfaconverter.directconverter.regex.operatortree.RegularExpressionElement;
 import de.fuberlin.bii.tokenmatcher.StatePayload;
 import de.fuberlin.bii.utils.Test;
@@ -77,6 +79,11 @@ public class Symbol<Value extends Comparable<Value> & Serializable, Payload exte
   	return result;
   }
   
+  /**
+   * Vergleicht nicht nur die Gleichheit des gekapselten {@link #value}-Elementes wie {@link Equals}, sondern auch den zugewiesenen {@link #payload}.
+   * @param obj
+   * @return
+   */
   public boolean equalsTotally( Object obj) {
   	if ( !equals( obj))
   		return false;
@@ -114,16 +121,27 @@ public class Symbol<Value extends Comparable<Value> & Serializable, Payload exte
   }
 
   
-	
+	/**
+	 * Liefert den Symbolwert. 
+	 * @return
+	 */
 	public Value getValue() {
 		return value;
 	}
 	
+	/**
+	 * Liefert das beigefügte Payload-Element.
+	 * @return
+	 */
 	public Payload getPayload() {
 		return payload;
 	}
 	
-	
+	/**
+	 * Setzt den Payload.
+	  *
+	 * @param payload
+	 */
 	public void setPayload( Payload payload) {
 		this.payload = payload;
 	}

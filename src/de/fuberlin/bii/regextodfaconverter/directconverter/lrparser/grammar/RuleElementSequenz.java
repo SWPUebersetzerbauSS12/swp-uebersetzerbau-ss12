@@ -36,6 +36,7 @@ import java.util.List;
 
 
 /**
+ * Eine Liste an {@link RuleElement}en.
  * 
  * @author Johannes Dahlke
  *

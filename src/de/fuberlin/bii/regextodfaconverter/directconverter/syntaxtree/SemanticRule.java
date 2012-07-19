@@ -35,12 +35,19 @@ package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionRule;
 
 /**
+ * Stellt eine semantische Regel dar.
  * 
  * @author Johannes Dahlke
  *
  */
 public interface SemanticRule {
 	
+	/**
+	 * Anwendung der semantischen Regel unter Verwendung der übergebenen Attribute.
+	 * 
+	 * @param attributesMaps
+	 * @throws Exception
+	 */
 	void apply( AttributesMap ... attributesMaps) throws Exception;
 	
 

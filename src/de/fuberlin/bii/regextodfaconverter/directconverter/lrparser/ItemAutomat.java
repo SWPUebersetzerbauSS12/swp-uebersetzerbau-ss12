@@ -37,6 +37,7 @@ import java.util.List;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symbol;
 
 /**
+ * Schnittstelle eines Item-Automaten.
  * 
  * @author Johannes Dahlke
  *
@@ -45,6 +46,11 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symb
 @SuppressWarnings("rawtypes")
 public interface ItemAutomat<Element extends Symbol> {
 
+	/**
+	 * Prüft die Eingabe gegen die Grammatik. 
+	 * 
+	 * @return True, wenn die Eingabe konform zur Grammatik ist, sonst false.  
+	 */
 	boolean match( List<Element> input) throws ItemAutomatException;
 		
 	/**
@@ -55,10 +61,16 @@ public interface ItemAutomat<Element extends Symbol> {
 	 */
   boolean isReduceConflictFree();
   
-	
+	/**
+	 * Setzt die Reduce-Ereignisbehandlungsroutine.
+	 * @param reduceEventHandler
+	 */
   void setReduceEventHandler( ReduceEventHandler reduceEventHandler);
 	
-	
+	/**
+	 * Setzt die Shift-Ereignisbehandlungsroutine.
+	 * @param reduceEventHandler
+	 */	
 	void setShiftEventHandler( ShiftEventHandler shiftEventHandler);
 	
 }

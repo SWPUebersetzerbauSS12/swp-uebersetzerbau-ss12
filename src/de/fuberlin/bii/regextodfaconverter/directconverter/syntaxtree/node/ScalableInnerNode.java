@@ -53,7 +53,10 @@ public class ScalableInnerNode<Value> extends InnerNode<Value> {
 		super( value);
 	}
 
-	
+	/**
+	 * Fügt dem Knoten weitere Kindknoten hinzu.
+	 * @param childNodes
+	 */
 	public void addChilds( TreeNode ... childNodes) {
 		for ( TreeNode childNode : childNodes) {
 			addChild( childNode);

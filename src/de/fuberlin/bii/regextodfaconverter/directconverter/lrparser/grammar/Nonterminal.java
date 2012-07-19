@@ -36,6 +36,7 @@ import de.fuberlin.bii.utils.Test;
 
 
 /**
+ * Stellt ein Nichtterminal dar. 
  * 
  * @author Johannes Dahlke
  *

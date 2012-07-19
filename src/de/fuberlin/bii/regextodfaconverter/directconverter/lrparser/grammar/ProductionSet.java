@@ -38,6 +38,7 @@ import de.fuberlin.bii.utils.Test;
 
 
 /**
+ * Stellt eine Menge an Produktionsregeln dar.
  * 
  * @author Johannes Dahlke
  *

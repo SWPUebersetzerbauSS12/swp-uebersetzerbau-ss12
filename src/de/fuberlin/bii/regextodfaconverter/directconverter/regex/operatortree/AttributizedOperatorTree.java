@@ -39,6 +39,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeN
 import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeNodeCollection;
 
 /**
+ * Schnittstelle für einen attributierten Operatorbaum.
  * 
  * @author Johannes Dahlke
  *
@@ -46,15 +47,28 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.node.TreeN
 @SuppressWarnings("rawtypes")
 public interface AttributizedOperatorTree {
 	
+	/**
+	 * Liefert eine Abbildung auf die FIRST-Positionen.
+	 * @return
+	 */
 	HashMap<TreeNode, TreeNodeCollection> getFirstPositions();
 	
-	
+	/**
+	 * Liefert eine Abbildung auf die FOLLOW-Positionen.
+	 * @return
+	 */	
 	HashMap<TreeNode, TreeNodeCollection> getFollowPositions();
 	
-	
+	/**
+	 * Liefert eine Abbildung auf die LAST-Positionen.
+	 * @return
+	 */
 	HashMap<TreeNode, TreeNodeCollection> getLastPositions();
 	
-	
+	/**
+	 * Liefert eine Abbildung auf die NULLABLES.
+	 * @return
+	 */
 	HashMap<TreeNode, Boolean> getNullables();
 
 }

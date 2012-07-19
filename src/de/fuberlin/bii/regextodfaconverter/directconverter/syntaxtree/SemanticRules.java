@@ -35,6 +35,7 @@ package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
 import java.util.ArrayList;
 
 /**
+ * Stellt eine Liste von semantischen Regeln dar.
  * 
  * @author Johannes Dahlke
  *

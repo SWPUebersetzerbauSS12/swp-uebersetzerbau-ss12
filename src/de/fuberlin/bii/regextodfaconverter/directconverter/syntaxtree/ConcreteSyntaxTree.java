@@ -73,6 +73,7 @@ import de.fuberlin.bii.utils.Test;
 
 
 /**
+ * Stellt einen konkreten Syntaxbaum dar.
  * 
  * @author Johannes Dahlke
  * 
@@ -86,6 +87,9 @@ public class ConcreteSyntaxTree<ExpressionElement extends Symbol> implements Tre
 	
 	private HashMap<Integer, Stack> stackSnapshots = new HashMap<Integer, Stack>();
 
+	/**
+	 * Handler für das Ereignis der Erzeugung eines neuen Knoten. 
+	 */
 	public NewNodeEventHandler onNewNodeEvent = null;
 
 	private TreeNode rootNode = null;
@@ -289,6 +293,11 @@ public class ConcreteSyntaxTree<ExpressionElement extends Symbol> implements Tre
 	}
 
 
+	/**
+	 * Kompremiert den Syntaxbaum.
+	 * @param originalTree
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public static ConcreteSyntaxTree compress( ConcreteSyntaxTree originalTree) {
 
@@ -329,7 +338,6 @@ public class ConcreteSyntaxTree<ExpressionElement extends Symbol> implements Tre
 	public String toString() {
 		return Test.isAssigned( rootNode) ? ( ( rootNode instanceof InnerNode) ? ( (InnerNode) rootNode).toFullString() : rootNode.toString()) : super.toString();
 	}
-
 
 	public Grammar getGrammar() {
 		return grammar;

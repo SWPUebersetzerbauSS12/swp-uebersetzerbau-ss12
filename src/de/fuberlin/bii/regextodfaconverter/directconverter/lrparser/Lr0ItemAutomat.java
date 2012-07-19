@@ -499,7 +499,10 @@ public class Lr0ItemAutomat<Element extends Symbol> implements ItemAutomat<Eleme
 		return result;
 	}
 
-
+  /**
+   * Gibt die Grammatik zurück, gegen welche Eingaben geprüft werden.
+   * @return
+   */
 	public ContextFreeGrammar getGrammar() {
 		return grammar;
 	}

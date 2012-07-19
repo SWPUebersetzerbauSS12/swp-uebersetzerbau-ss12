@@ -44,6 +44,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Rule
 import de.fuberlin.bii.utils.Test;
 
 /**
+ * Stellt ein Item einer {@link Closure} dar.
  * 
  * @author Johannes Dahlke
  *
@@ -82,11 +83,20 @@ public abstract class Item extends ProductionRule {
 		this.analysePosition = analysePosition;
 	}
 
+	/**
+	 * Liefert die Position, bis wo die Produktionsregel des Items bereits abgearbeitet wurde. 
+	 * @return
+	 */
 	public int getAnalysePosition() {
 		return analysePosition;
 	}
 	
 	
+	/**
+	 * Setzt die Analyseposition des Items.
+	 * 
+	 * @param analysePosition
+	 */
 	public void setAnalysePosition( int analysePosition) {
 		this.analysePosition = analysePosition;
 	}
@@ -96,11 +106,20 @@ public abstract class Item extends ProductionRule {
 		return getSimplifiedRightRuleSide().iterator();
 	}
 	
-	
+	/**
+	 * Gibt an, ob die Produktionsregel des Items bereits komplett verarbeitet wurde.
+	 * 
+	 * 
+	 * @return
+	 */
 	public boolean IsProcessed() {
 		return this.rightSideRuleSize() <= analysePosition;
 	}
 	
+	/**
+	 * Testet, ob noch ein {@link RuleElement} zur Verarbeitung verblieben ist.
+	 * @return
+	 */
 	public boolean canStepForward() {
 		return this.rightSideRuleSize() > analysePosition;
 	}
@@ -116,18 +135,31 @@ public abstract class Item extends ProductionRule {
 		}
 		return simplifiedRightRuleSide;
 	}
-	
+
+	/**
+	 * Setzt die Analyseposition um ein Element noch vorn.
+	 */
 	public void stepForward() {
 		if ( canStepForward())
 			analysePosition++;
 	}
 	
+	/**
+	 * Fragt das nächste zu bearbeitende Element ab.
+	 * 
+	 * @return
+	 */
 	public RuleElement peekNextRuleElement() {
 		if ( canStepForward())
 		  return this.getSimplifiedRightRuleSide().get( analysePosition);
 		return null;
 	}
 	
+	/**
+	 * Fragt das nächste zu bearbeitende Element ab.
+	 * 
+	 * @return
+	 */
 	public RuleElement getNextRuleElementAndStepForward() {
 		if ( canStepForward())
 		  return this.getSimplifiedRightRuleSide().get( analysePosition++);

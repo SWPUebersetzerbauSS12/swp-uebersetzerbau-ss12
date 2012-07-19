@@ -36,6 +36,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.regex.RegexCharSet;
 import de.fuberlin.bii.utils.Test;
 
 /**
+ * Das leere Wort als spezielles Terminal.
  * 
  * @author Johannes Dahlke
  *

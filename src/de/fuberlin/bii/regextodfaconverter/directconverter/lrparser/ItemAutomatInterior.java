@@ -41,6 +41,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Clos
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Lr0Closure;
 
 /**
+ * Schnittstelle zum Ansprechen des "Innenlebens" des Itemautomaten.
  * 
  * @author Johannes Dahlke
  *
@@ -49,10 +50,23 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Lr0C
 @SuppressWarnings("rawtypes")
 public interface ItemAutomatInterior<Element extends Symbol, SpecializedClosure extends Closure> {
 
+	/**
+	 * Liefert den Symbol-Stack.
+	 *
+	 * @return
+	 */
 	Stack<RuleElement> getSymbolStack();
 	
+	/**
+	 * Liefert den Closure-Stack.
+	 * @return
+	 */
 	Stack<SpecializedClosure> getClosureStack();
 	
+	/**
+	 * Liefert die Schlange mit der abzuarbeitenden Eingabe.
+	 * @return
+	 */
 	Queue<Element> getInputQueue();
 	
 }

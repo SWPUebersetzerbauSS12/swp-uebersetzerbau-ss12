@@ -45,6 +45,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Clos
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Lr0Closure;
 
 /**
+ * Reduce-Aktion für Parsertabelle.
  * 
  * @author Johannes Dahlke
  *
@@ -81,6 +82,10 @@ public class ReduceAction<Element extends Symbol, SpecializedClosure extends Clo
 		return itemAutomat.getSymbolStack().peek();
 	}
 	
+	/**
+	 * Liefert die Regel, die zur Reduktion angewandt wird.
+	 * @return
+	 */
 	public ProductionRule getReduceRule() {
 		return reduceRule;
 	}

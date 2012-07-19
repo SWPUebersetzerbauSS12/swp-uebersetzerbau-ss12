@@ -34,8 +34,15 @@ package de.fuberlin.bii.tokenmatcher;
 
 import java.io.Serializable;
 
+import de.fuberlin.bii.regextodfaconverter.fsm.State;
 import de.fuberlin.bii.tokenmatcher.attributes.Attribute;
 
+/**
+ * Schnittstelle für ein Päckchen, dass einen {@link State} einer FSM zum Transport der Tokentypinformation angeheftet werden kann.
+ * 
+ * @author Johannes Dahlke
+ *
+ */
 public interface StatePayload extends Serializable {
 
 	/**

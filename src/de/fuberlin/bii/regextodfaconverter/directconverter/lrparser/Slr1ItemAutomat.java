@@ -59,9 +59,9 @@ import de.fuberlin.bii.utils.Notification;
 import de.fuberlin.bii.utils.Test;
 
 /**
- * Ein LR(0)-Parser. Ein LR(0)-Parser arbeitet grundsätzlich ohne Lookahead.
- * Dieser LR(0)-Parser reduziert zudem die Wahrscheinlichkeit für das Auftreten
- * von shift-reduce- und reduce-reduce-Konflikten, indem die Followmengen bei
+ * Ein SLR-Parser. Im Gegensatz zum LR(0)-Parser reduziert der SLR-Parser
+ * die Wahrscheinlichkeit für das Auftreten von shift-reduce- und reduce-reduce-Konflikten, 
+ * indem die Followmengen bei
  * der Erzeugung der reduce-Eintrage betrachtet werden. Kommt es so zu keinen
  * Konflikten, dann liefert die Eigenschaftsabfrage mit
  * {@link ItemAutomata#isReduceConflictFree()} den Wert true.

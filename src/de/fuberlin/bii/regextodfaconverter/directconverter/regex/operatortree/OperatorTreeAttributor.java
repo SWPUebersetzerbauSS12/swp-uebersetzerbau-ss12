@@ -51,9 +51,12 @@ import de.fuberlin.bii.utils.Test;
 
 
 /**
+ * Attributiert einen Operatorbaum.
  * 
  * @author Johannes Dahlke
- *
+ * 
+ * @see AttributizedOperatorTree 
+ * @see RegexOperatorTree
  */
 @SuppressWarnings("rawtypes")
 public class OperatorTreeAttributor<StatePayloadType extends Serializable>  {
@@ -292,6 +295,10 @@ public class OperatorTreeAttributor<StatePayloadType extends Serializable>  {
 		return nullables;
 	}
 	
+	/**
+	 * Attributiert den Operatorbaum.
+	 * @param operatorTree
+	 */
 	public void attributizeOperatorTree( RegexOperatorTree operatorTree) {
 		for ( TreeNode treeNode : operatorTree) {
 			if ( treeNode instanceof TerminalNode  // filter empty dummy nodes

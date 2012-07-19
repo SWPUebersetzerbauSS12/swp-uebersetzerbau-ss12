@@ -38,6 +38,7 @@ import de.fuberlin.bii.utils.Test;
 
 
 /**
+ * Stellt ein Terminalsymbol dar.
  * 
  * @author Johannes Dahlke
  *

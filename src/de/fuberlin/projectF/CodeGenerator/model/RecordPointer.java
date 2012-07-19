@@ -20,7 +20,6 @@ public class RecordPointer extends Reference{
 	}
 
 	public String getAddress() {
-		System.out.println("Get Address of " + rec);
 		if(rec != null)
 			return rec.getAddress(var);
 		return pRec.getAddress(var);

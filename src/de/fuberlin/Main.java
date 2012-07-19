@@ -259,9 +259,10 @@ public class Main {
 		 * input : String llvm_code
 		 * output: String machineCode 
 		 */
-		boolean debug = false;
+		boolean debug = true;
 		boolean guiFlag = false;
 		String outputFile = null;
+		String configFile = "mc_config.cfg";
 		if(arguments.containsKey(PARAM_OUTPUT_FILE)) {
 			outputFile = arguments.get(PARAM_OUTPUT_FILE);
 		}
@@ -280,7 +281,7 @@ public class Main {
 		}
 		
 		if (exec) {
-			CodeGenerator.exec(outputFile);
+			CodeGenerator.exec(outputFile, configFile);
 		}
 
 		//--------------------------

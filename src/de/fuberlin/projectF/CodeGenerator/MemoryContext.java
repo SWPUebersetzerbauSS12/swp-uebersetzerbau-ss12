@@ -82,19 +82,14 @@ public class MemoryContext {
 
 	public ArrayPointer contArrayPtr(String name, String lastPtr, String offset,
 			String values) {
-		System.out.println(values);
 		int value = 1;
 		values = values.substring(values.indexOf('x'), values.lastIndexOf('x'));
 		Pattern p = Pattern.compile("\\d+");
 		Matcher m = p.matcher(values);
-		System.out.println(values);
-
+		
 		while (m.find()){
 			value *= new Integer(m.group(0));
 		}
-		
-		System.out.println(value);
-
 		
 		ArrayPointer oldPtr = arrayPtrs.get(lastPtr);
 		ArrayPointer arrPtr = new ArrayPointer(name, oldPtr, value);
@@ -241,15 +236,6 @@ public class MemoryContext {
 	}
 
 	public RecordPointer newRecordPtr(String name, String rec, String offset) {
-		System.out.println("Name: " + name);
-		System.out.println("Record: " + rec);
-		if(isRecordPtr(rec))
-			System.out.println("PointerAddress " + recordPtrs.get(rec).getAddress(Integer.valueOf(offset)));
-		else
-			System.out.println("Address " + records.get(rec).getAddress(Integer.valueOf(offset)));
-		System.out.println("Offset: " + offset);
-		//TODO cast
-		
 		RecordPointer tmp;
 		if(isRecordPtr(rec))
 			tmp = new RecordPointer(name, recordPtrs.get(rec),new Integer(offset));
@@ -277,13 +263,8 @@ public class MemoryContext {
 		int size = var.getSize();
 
 		stackPointer -= size;
-		System.out.println("new Stack var " + var.getName());
-		System.out.println("Stackpointer: " + stackPointer);
 		var.addStackAddress(new StackAddress(stackPointer));
-		System.out.println("Address " + var.getAddress());
 		put(var);
-		System.out.println("Address "
-				+ variables.get(var.getName()).getAddress());
 		return var;
 	}
 
@@ -328,12 +309,14 @@ public class MemoryContext {
 		return usedRegisters.containsKey(i);
 	}
 
-	public void regToStack(Variable var) {
+	public StackAddress regToStack(Variable var) {
 		stackPointer -= var.getSize();
 		RegisterAddress reg = var.getRegAddress();
-		freeRegisters.add(reg);
-		usedRegisters.remove(reg);
-		var.addStackAddress(new StackAddress(stackPointer));
+		StackAddress movedTo = new StackAddress(stackPointer);
+		var.addStackAddress(movedTo);
+		var.freeRegister(reg);
+		freeRegister(reg);
+		return movedTo;
 	}
 
 	public Array getArray(String name) {

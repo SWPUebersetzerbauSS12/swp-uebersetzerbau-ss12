@@ -40,6 +40,7 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Prod
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionSet;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Symbol;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Terminal;
+import de.fuberlin.bii.regextodfaconverter.fsm.StatePayload;
 
 
 /**
@@ -58,14 +59,14 @@ public class Grammars {
 		Nonterminal T = new Nonterminal( "T");
 		Nonterminal U = new Nonterminal( "U");
 		Nonterminal V = new Nonterminal( "V");
-		Terminal<Symbol<Character,Object>> a = new Terminal<Symbol<Character,Object>>( new Symbol<Character, Object>( 'a'));
+		Terminal<Symbol<Character,StatePayload>> a = new Terminal<Symbol<Character,StatePayload>>( new Symbol<Character, StatePayload>( 'a'));
 
 		
-		Terminal<Symbol> leftBracket = new Terminal<Symbol>( new Symbol<Character, Object>('('));
-		Terminal<Symbol> rightBracket = new Terminal<Symbol>( new Symbol<Character, Object>(')'));
-		Terminal<Symbol> opKleeneClosure = new Terminal<Symbol>( new Symbol<Character, Object>('*'));
-		Terminal<Symbol> opAlternative = new Terminal<Symbol>( new Symbol<Character, Object>('+'));
-		Terminal<Symbol> opConcatenation = new Terminal<Symbol>( new Symbol<Character, Object>('.'));
+		Terminal<Symbol> leftBracket = new Terminal<Symbol>( new Symbol<Character, StatePayload>('('));
+		Terminal<Symbol> rightBracket = new Terminal<Symbol>( new Symbol<Character, StatePayload>(')'));
+		Terminal<Symbol> opKleeneClosure = new Terminal<Symbol>( new Symbol<Character, StatePayload>('*'));
+		Terminal<Symbol> opAlternative = new Terminal<Symbol>( new Symbol<Character, StatePayload>('+'));
+		Terminal<Symbol> opConcatenation = new Terminal<Symbol>( new Symbol<Character, StatePayload>('.'));
 		
 		ProductionSet productions = new ProductionSet();
 		productions.add( new ProductionRule(R, R, opAlternative, S));
@@ -94,13 +95,13 @@ public class Grammars {
 		Nonterminal T = new Nonterminal( "T");
 		Nonterminal U = new Nonterminal( "U");
 		Nonterminal V = new Nonterminal( "V");
-		Terminal<Symbol<Character,Object>> a = new Terminal<Symbol<Character,Object>>( new Symbol<Character, Object>( 'a'));
+		Terminal<Symbol<Character,StatePayload>> a = new Terminal<Symbol<Character,StatePayload>>( new Symbol<Character, StatePayload>( 'a'));
 	
-		Terminal<Symbol<Character,Object>> leftBracket = new Terminal<Symbol<Character,Object>>( new Symbol<Character, Object>('('));
-		Terminal<Symbol<Character,Object>> rightBracket = new Terminal<Symbol<Character,Object>>( new Symbol<Character, Object>(')'));
-		Terminal<Symbol<Character,Object>> opKleeneClosure = new Terminal<Symbol<Character,Object>>( new Symbol<Character, Object>('*'));
-		Terminal<Symbol<Character,Object>> opAlternative = new Terminal<Symbol<Character,Object>>( new Symbol<Character, Object>('+'));
-		Terminal<Symbol<Character,Object>> opConcatenation = new Terminal<Symbol<Character,Object>>( new Symbol<Character, Object>('.'));
+		Terminal<Symbol<Character,StatePayload>> leftBracket = new Terminal<Symbol<Character,StatePayload>>( new Symbol<Character, StatePayload>('('));
+		Terminal<Symbol<Character,StatePayload>> rightBracket = new Terminal<Symbol<Character,StatePayload>>( new Symbol<Character, StatePayload>(')'));
+		Terminal<Symbol<Character,StatePayload>> opKleeneClosure = new Terminal<Symbol<Character,StatePayload>>( new Symbol<Character, StatePayload>('*'));
+		Terminal<Symbol<Character,StatePayload>> opAlternative = new Terminal<Symbol<Character,StatePayload>>( new Symbol<Character, StatePayload>('+'));
+		Terminal<Symbol<Character,StatePayload>> opConcatenation = new Terminal<Symbol<Character,StatePayload>>( new Symbol<Character, StatePayload>('.'));
 		
 		ProductionSet productions = new ProductionSet();
 		productions.add( new ProductionRule(R, R, opAlternative, S));
@@ -125,10 +126,10 @@ public class Grammars {
 		ContextFreeGrammar grammar = new ContextFreeGrammar();
 		// we define a simple regex grammar for testing
 		Nonterminal S = new Nonterminal( "S");
-		Terminal<Symbol<Character,Object>> a = new Terminal<Symbol<Character,Object>>( new Symbol<Character, Object>( 'a'));
+		Terminal<Symbol<Character,StatePayload>> a = new Terminal<Symbol<Character,StatePayload>>( new Symbol<Character, StatePayload>( 'a'));
 	
-		Terminal<Symbol<Character,Object>> opStar = new Terminal<Symbol<Character,Object>>( new Symbol<Character, Object>('*'));
-		Terminal<Symbol<Character,Object>> opPlus = new Terminal<Symbol<Character,Object>>( new Symbol<Character, Object>('+'));
+		Terminal<Symbol<Character,StatePayload>> opStar = new Terminal<Symbol<Character,StatePayload>>( new Symbol<Character, StatePayload>('*'));
+		Terminal<Symbol<Character,StatePayload>> opPlus = new Terminal<Symbol<Character,StatePayload>>( new Symbol<Character, StatePayload>('+'));
 		
 		ProductionSet productions = new ProductionSet();
 		productions.add( new ProductionRule(S, S, S, opPlus));
@@ -154,15 +155,15 @@ public class Grammars {
 		Nonterminal USlash = new Nonterminal( "U'");
 		Nonterminal V = new Nonterminal( "V");
 		Nonterminal VSlash = new Nonterminal( "V'");
-		Terminal<Symbol<Character,Object>> a = new Terminal<Symbol<Character,Object>>( new Symbol<Character, Object>( 'a'));
+		Terminal<Symbol<Character,StatePayload>> a = new Terminal<Symbol<Character,StatePayload>>( new Symbol<Character, StatePayload>( 'a'));
 		EmptyString epsilon = new EmptyString();
 		
 	
-		Terminal<Symbol<Character,Object>> leftBracket = new Terminal<Symbol<Character,Object>>( new Symbol<Character, Object>('('));
-		Terminal<Symbol<Character,Object>> rightBracket = new Terminal<Symbol<Character,Object>>( new Symbol<Character, Object>(')'));
-		Terminal<Symbol<Character,Object>> opKleeneClosure = new Terminal<Symbol<Character,Object>>( new Symbol<Character, Object>('*'));
-		Terminal<Symbol<Character,Object>> opAlternative = new Terminal<Symbol<Character,Object>>( new Symbol<Character, Object>('+'));
-		Terminal<Symbol<Character,Object>> opConcatenation = new Terminal<Symbol<Character,Object>>( new Symbol<Character, Object>('.'));
+		Terminal<Symbol<Character,StatePayload>> leftBracket = new Terminal<Symbol<Character,StatePayload>>( new Symbol<Character, StatePayload>('('));
+		Terminal<Symbol<Character,StatePayload>> rightBracket = new Terminal<Symbol<Character,StatePayload>>( new Symbol<Character, StatePayload>(')'));
+		Terminal<Symbol<Character,StatePayload>> opKleeneClosure = new Terminal<Symbol<Character,StatePayload>>( new Symbol<Character, StatePayload>('*'));
+		Terminal<Symbol<Character,StatePayload>> opAlternative = new Terminal<Symbol<Character,StatePayload>>( new Symbol<Character, StatePayload>('+'));
+		Terminal<Symbol<Character,StatePayload>> opConcatenation = new Terminal<Symbol<Character,StatePayload>>( new Symbol<Character, StatePayload>('.'));
 		
 		ProductionSet productions = new ProductionSet();
 		productions.add( new ProductionRule(R, R, opAlternative, S));
@@ -200,15 +201,15 @@ public class Grammars {
 		Nonterminal T = new Nonterminal( "T");
 		Nonterminal U = new Nonterminal( "U");
 		Nonterminal V = new Nonterminal( "V");
-		Terminal<Symbol<Character,Object>> a = new Terminal<Symbol<Character,Object>>( new Symbol<Character, Object>( 'a'));
+		Terminal<Symbol<Character,StatePayload>> a = new Terminal<Symbol<Character,StatePayload>>( new Symbol<Character, StatePayload>( 'a'));
 		EmptyString epsilon = new EmptyString();
 		
 	
-		Terminal<Symbol<Character,Object>> leftBracket = new Terminal<Symbol<Character,Object>>( new Symbol<Character, Object>('('));
-		Terminal<Symbol<Character,Object>> rightBracket = new Terminal<Symbol<Character,Object>>( new Symbol<Character, Object>(')'));
-		Terminal<Symbol<Character,Object>> opKleeneClosure = new Terminal<Symbol<Character,Object>>( new Symbol<Character, Object>('*'));
-		Terminal<Symbol<Character,Object>> opAlternative = new Terminal<Symbol<Character,Object>>( new Symbol<Character, Object>('+'));
-		Terminal<Symbol<Character,Object>> opConcatenation = new Terminal<Symbol<Character,Object>>( new Symbol<Character, Object>('.'));
+		Terminal<Symbol<Character,StatePayload>> leftBracket = new Terminal<Symbol<Character,StatePayload>>( new Symbol<Character, StatePayload>('('));
+		Terminal<Symbol<Character,StatePayload>> rightBracket = new Terminal<Symbol<Character,StatePayload>>( new Symbol<Character, StatePayload>(')'));
+		Terminal<Symbol<Character,StatePayload>> opKleeneClosure = new Terminal<Symbol<Character,StatePayload>>( new Symbol<Character, StatePayload>('*'));
+		Terminal<Symbol<Character,StatePayload>> opAlternative = new Terminal<Symbol<Character,StatePayload>>( new Symbol<Character, StatePayload>('+'));
+		Terminal<Symbol<Character,StatePayload>> opConcatenation = new Terminal<Symbol<Character,StatePayload>>( new Symbol<Character, StatePayload>('.'));
 		
 		ProductionSet productions = new ProductionSet();
 		productions.add( new ProductionRule(R, R, opAlternative, S));

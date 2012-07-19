@@ -44,13 +44,19 @@ import de.fuberlin.bii.utils.Test;
 
 
 /**
- * Bildet die Items auf ihre Eigenschaft Kernelitem (true) oder Nichtkernelitem /false) ab.
+ * Bildet die LR1-Items auf ihre Eigenschaft Kernelitem (true) oder Nichtkernelitem /false) ab.
  * 
  * @author Johannes Dahlke
  *
  */
 public class Lr1Closure extends Closure<Lr1Item> {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5457683124422234780L;
+
+
 	public Lr1ItemSet getItemSet() {
 		Lr1ItemSet itemSet = new Lr1ItemSet();
 		itemSet.addAll( this.keySet());	
@@ -83,20 +89,9 @@ public class Lr1Closure extends Closure<Lr1Item> {
 		
 		Lr1Closure theOtherClosure = (Lr1Closure) theOtherObject;
 		
-		if ( theOtherClosure.size() != this.size())
+		if (!super.superEquals( theOtherClosure))
 			return false;
 		
-		if ( !theOtherClosure.keySet().equals( this.keySet()))
-			return false;
-		
-		for ( Lr1Item thisItem : this.keySet()) {
-			for ( Lr1Item theOtherItem : theOtherClosure.keySet()) {
-				
-				if ( thisItem.equals(theOtherItem) && 
-					 !this.get( thisItem).equals( theOtherClosure.get( theOtherItem)))			
-				return false;
-		    }
-		}
 		
 		// theOtherClosure equals this 
 		if ( this.getNumber() == -1)

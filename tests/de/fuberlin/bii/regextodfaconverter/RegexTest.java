@@ -16,6 +16,7 @@ public class RegexTest {
 	/**
 	 * Test of reduceAndBracketRegex method, of class Regex.
 	 */
+	@SuppressWarnings("static-method")
 	@Test
 	public void testReduceAndBracketRegex() throws Exception {
 		String resultRegex;

@@ -42,32 +42,108 @@ import de.fuberlin.bii.utils.TriState;
 
 
 /**
+ * Zeichensatz für reguläre Ausdrücke.
  * 
  * @author Johannes Dahlke
  *
  */
 public class RegexCharSet {
 
+	/**
+	 * Aternative
+	 */
 	public static final char REGEX_ALTERNATIVE = '|';
+	
+	/**
+	 * Ziechen zum Maskieren von Sonderzeichen.
+	 */
 	public static final char REGEX_MASK = '\\';
+	
+	/**
+	 * Kennzeichnet den Beginn einer Zeichenklasse.
+	 */
 	public static final char REGEX_CLASS_BEGIN = '[';
-	public static final char REGEX_CLASS_END = ']';
-	public static final char REGEX_REPETITION_BEGIN = '{';
+	
+	/**
+	 * Kennzeichnet das Ende einer Zeichenklasse.
+	 */
+  public static final char REGEX_CLASS_END = ']';
+	
+	/**
+	 * Kennzeichnet den Beginn einer Wiederholung.
+	 */
+  public static final char REGEX_REPETITION_BEGIN = '{';
+
+  /**
+	 * Kennzeichnet das Ende einer Wiederholung.
+	 */
 	public static final char REGEX_REPETITION_END = '}';
-	public static final char REGEX_GROUP_BEGIN = '(';
-	public static final char REGEX_GROUP_END = ')';
-	public static final char REGEX_KLEENE_CLOSURE = '*';
-	public static final char REGEX_POSITIVE_CLOSURE = '+';
-	public static final char REGEX_OPTION = '?';
-	public static final char REGEX_JOKER = '.';
-	public static final char REGEX_START_MARKER = '^';
-	public static final char REGEX_CLASS_SIGNUM = '^';
-	public static final char REGEX_END_MARKER = '$';
-	public static final char REGEX_RANGE = '-';
+
+	/**
+	 * Kennzeichnet den Beginn einer Gruppe.
+	 */
+  public static final char REGEX_GROUP_BEGIN = '(';
+	
+	/**
+	 * Kennzeichnet das Ende einer Gruppe.
+	 */
+  public static final char REGEX_GROUP_END = ')';
+	
+	/**
+	 * Kleenesche Hülle.
+	 */
+  public static final char REGEX_KLEENE_CLOSURE = '*';
+	
+  /**
+   * Positive Hülle.
+   */
+  public static final char REGEX_POSITIVE_CLOSURE = '+';
+	
+  /**
+   * Optionales Vorkommen des davor stehenden Zeichens.
+   */
+  public static final char REGEX_OPTION = '?';
+	
+  /**
+   * Ein beliebiges Zeichen.
+   */
+  public static final char REGEX_JOKER = '.';
+	
+  /**
+   * Anfangsmarker.
+   */
+  public static final char REGEX_START_MARKER = '^';
+	
+  /**
+   * Negation einer Zeichenklasse.
+   */
+  public static final char REGEX_CLASS_SIGNUM = '^';
+	
+  /**
+   * Endmarker.
+   */
+  public static final char REGEX_END_MARKER = '$';
+	
+  /**
+   * Zum Notieren eines Wertebereichs innerhalb einer Zeichenklasse. 
+   *    
+   */
+  public static final char REGEX_RANGE = '-';
+  
+  /**
+   * Treener für die Angabe von Wiederholungen.
+   */
 	public static final char REGEX_QUANTIFIER_SEPARATOR = ',';
 	
 
+	/**
+	 * Das leere Wort.
+	 */
 	public static final char EMPTY_STRING = 0x00;
+	
+	/**
+	 * Das Ende der Eingabe.
+	 */
 	public static final char TERMINATOR = 0x03; // ETX = End Of Text
 
 	
@@ -104,7 +180,10 @@ public class RegexCharSet {
 		return LAST_ASCII_CHAR;
 	}
 	
-	
+	/**
+	 * Liefert den gesamten Wertebereich.
+	 * @return
+	 */
 	public static List<Character> getCompleteDomain() {
 		List<Character> result = new ArrayList<Character>();
 		for ( int c = getFirstAsciiChar(); c <= getLastAsciiChar(); c++) {
@@ -113,6 +192,11 @@ public class RegexCharSet {
 		return result;
 	}
 	
+	/**
+	 * Liefert eine Liste der Metazeichen in Abhängigkeit des Kontext.
+	 * @param context
+	 * @return
+	 */
 	public static List<Character> getMetaCharsOfContext( RegexSection context) {
 		List<Character> result = new ArrayList<Character>();
 		for ( int c = getFirstAsciiChar(); c <= getLastAsciiChar(); c++) {
@@ -122,6 +206,11 @@ public class RegexCharSet {
 		return result;
 	}
 	
+	/**
+	 * Liefert eine Liste der Ungeschützten Zeichen bezüglich des angegebenen Kontextes.
+	 * @param context
+	 * @return
+	 */
 	public static List<Character> getUnguardedCharsOfContext( RegexSection context) {
 		List<Character> result = new ArrayList<Character>();
 		for ( int c = getFirstAsciiChar(); c <= getLastAsciiChar(); c++) {
@@ -170,6 +259,11 @@ public class RegexCharSet {
 			return stateOfClassContext;
 	}
 	
+	/**
+	 * Gibt an, ob es sich bei dem gegebenen Zeichen um ein Sonderzeichen bezüglich des {@link RegexSection#MAIN} Kontextes handelt.
+	 * @param theCharacter
+	 * @return
+	 */
   public static TriState isSpecialChar( char theCharacter) {
 	  return isSpecialChar( theCharacter, RegexSection.MAIN);	
 	}
@@ -191,6 +285,11 @@ public class RegexCharSet {
 		}
 	}
 	
+	/**
+	 * Prüft, ob es sich um einen Regex-Operator der nicht erweiterten regulären Ausdrücke handelt.
+	 * @param theChar
+	 * @return
+	 */
 	public static boolean isBasicOperator( char theChar) {
 		switch ( theChar) {
 			case REGEX_ALTERNATIVE:

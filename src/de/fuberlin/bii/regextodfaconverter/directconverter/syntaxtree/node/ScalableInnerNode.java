@@ -46,13 +46,17 @@ import de.fuberlin.bii.utils.Test;
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public class ScalableInnerNode<Value> extends InnerNode<Value> {	
 
 	public ScalableInnerNode( Value value) {
 		super( value);
 	}
 
-	
+	/**
+	 * Fügt dem Knoten weitere Kindknoten hinzu.
+	 * @param childNodes
+	 */
 	public void addChilds( TreeNode ... childNodes) {
 		for ( TreeNode childNode : childNodes) {
 			addChild( childNode);

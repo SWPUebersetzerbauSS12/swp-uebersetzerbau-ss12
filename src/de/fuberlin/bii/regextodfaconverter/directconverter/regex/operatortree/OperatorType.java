@@ -45,7 +45,10 @@ public enum OperatorType {
 	ALTERNATIVE,
 	REPETITION;
 	
-	
+	/**
+	 * Gibt an, ob es sich um einen binären Operator handelt.
+	 * @return
+	 */
 	public boolean isBinary() {
 		return !this.equals( REPETITION);
 	}

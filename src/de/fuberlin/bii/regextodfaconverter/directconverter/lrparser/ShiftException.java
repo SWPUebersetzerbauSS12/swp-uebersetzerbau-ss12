@@ -35,15 +35,32 @@ package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser;
 
 /**
  * 
+ * ShiftException signalisiert einen Fehler während einer Shift-Aktion.
+ *
  * @author Johannes Dahlke
  *
  */
 public class ShiftException extends Exception {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 74628898800008783L;
+
+	/**
+	 * Erstellt ein neues ShiftException Objekt.
+	 * 
+	 */
 	public ShiftException() {
 	  super();
 	}
 	
+	/**
+	 * Erstellt ein neues ShiftException Objekt.
+	 * 
+	 * @param message
+	 *            Die genaue Fehlerbeschreibung.
+	 */
 	public ShiftException( String message) {
 	  super( message);
     }

@@ -33,14 +33,27 @@
 package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Lr0Item;
 
 /**
+ * Implementierung der {@link RuleElementSequenz} als Array von {@link RuleElement}en. 
  * 
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public class RuleElementArray extends ArrayList<RuleElement> implements RuleElementSequenz {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 330334622181950391L;
+
+
+
+
 	public RuleElementArray() {
 	  super();
 	}
@@ -58,7 +71,11 @@ public class RuleElementArray extends ArrayList<RuleElement> implements RuleElem
 	
 	
 	
-	
+	/**
+	 * Fasst die übergebenen Regelelemente in ein Array zusammen.
+	 * @param ts
+	 * @return
+	 */
 	public static <T extends Symbol> RuleElementArray toRuleElementArray( T ... ts) {
 		RuleElementArray result = new RuleElementArray();
 		for ( T t : ts) {
@@ -66,5 +83,41 @@ public class RuleElementArray extends ArrayList<RuleElement> implements RuleElem
 		}
 		return result;
 	}
+	
+	
+	@Override
+	public boolean equals( Object theOtherObject) {
+		
+		if ( !(theOtherObject instanceof RuleElementArray))
+			return false;
+		
+		RuleElementArray theOtherArray = (RuleElementArray) theOtherObject;
+		
+		if (theOtherArray.size() != this.size())
+			return false;
+
+		int length = theOtherArray.size();
+		for (int i = 0; i < length; i++) {
+			if (!theOtherArray.get(i).equals(this.get(i)))
+				return false;
+		}
+		
+		return true;
+	}
+	
+	
+	@Override
+	public int hashCode() {
+		int hashCode = 5;
+		hashCode = 31 * hashCode + this.size();
+		int i = 0;
+		for ( RuleElement ruleElement : this) {
+			hashCode = 31 * hashCode + ruleElement.hashCode();
+			hashCode = 37 * hashCode + i++;		
+		}
+		
+		return hashCode;
+	}
+	
 	
 }

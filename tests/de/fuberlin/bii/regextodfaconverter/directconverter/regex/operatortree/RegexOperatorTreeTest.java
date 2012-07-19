@@ -46,6 +46,7 @@ import org.junit.Test;
  */
 public class RegexOperatorTreeTest {
 
+	@SuppressWarnings({ "rawtypes", "unchecked", "static-method"})
 	@Test
 	public void test() {
 

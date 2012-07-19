@@ -36,10 +36,12 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Term
 
 
 /**
+ * Handler für ein Shift-Ereignis. Wird vom Itemautomaten aufgerufen, wenn eine Shift-Aktion ausgeführt wurde. 
  * 
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public interface ShiftEventHandler {
 
 	

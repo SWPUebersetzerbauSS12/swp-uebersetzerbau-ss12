@@ -41,6 +41,9 @@ import de.fuberlin.bii.bufferedreader.LexemeReaderException;
 import de.fuberlin.bii.bufferedreader.SpecialChars;
 
 /**
+ * Der Tokenizer implementiert die {@link LexerToParserInterface}-Schnittstelle, über welche der Parser Token anfordern kann.
+ * Auf Anforderung eines Token reagiert der Tokenizer seinerseits durch zeichenweises Anfordern der Eingabe und speist damit einen deterministischen endlichen Automaten. 
+ * Akzeptiert der DEA die Eingabe, so liefert der Tokenizer den erkannten Token, anderenfalls leitet der Tokenizer eine Fehlerbahandlung nach gewählten Fehlerkorrekturmodus ein.
  * 
  * @author Johannes Dahlke
  *
@@ -75,8 +78,7 @@ public class Tokenizer implements LexerToParserInterface {
 	}
 	
 	
-
-	public Token getNextToken() throws LexemeReaderException,
+  public Token getNextToken() throws LexemeReaderException,
 			LexemIdentificationException {
 		Character currentChar;
 		String currentLexem = "";
@@ -96,9 +98,12 @@ public class Tokenizer implements LexerToParserInterface {
 					&& SpecialChars.isWhiteSpace( currentChar)) {
 
 				// count newlines
-				// bei windowssystemen muss dann am Ende durch 2 geteilt werden ,
-				// wegen \r\n
 				if( SpecialChars.isNewLine( currentChar)) {
+				  // handle \r\n for windows systems					
+					if ( currentChar == SpecialChars.CHAR_CARRIAGE_RETURN) {
+						if ( lexemeReader.getNextChar() != SpecialChars.CHAR_LINE_FEED)
+							lexemeReader.stepBackward( 1);     
+					}	
 					currentLine++;
 					currentPositionInLine = 0;
 				}
@@ -195,7 +200,6 @@ public class Tokenizer implements LexerToParserInterface {
 		
 		return Token.getEofToken();
 	}
-
 
 
 	public void reset() throws LexemeReaderException {

@@ -40,6 +40,7 @@ package de.fuberlin.bii.tokenmatcher.fsm;
  * und mit einem Objekt assoziert sein.
  * 
  * @author Johannes Dahlke
+ * @deprecated
  *
  */
 public class State {

@@ -40,11 +40,18 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.Rule
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.RuleElementSequenz;
 
 /**
+ * Ein spezielles {@link Item} für die {@link Lr0Closure}.
  * 
  * @author Johannes Dahlke
  *
  */
 public class Lr0Item extends Item {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 365106322353635423L;
+
 
 	public Lr0Item( ProductionRule productionRule, int analysePosition) {
 		super( productionRule, analysePosition);
@@ -79,6 +86,14 @@ public class Lr0Item extends Item {
 		Lr0Item theOtherItem = (Lr0Item) theOtherObject;
 		
 		return theOtherItem.getAnalysePosition() == this.getAnalysePosition();
+	}
+	
+	@Override
+	public int hashCode() {
+		int hashCode = super.hashCode();
+		hashCode = 31 * hashCode + getAnalysePosition(); 	
+		
+		return hashCode;
 	}
 
 

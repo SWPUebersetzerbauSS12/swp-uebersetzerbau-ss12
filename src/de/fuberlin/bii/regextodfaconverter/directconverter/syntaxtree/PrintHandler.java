@@ -35,7 +35,7 @@ package de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree;
 
 
 /**
- * 
+ * Handlerschnittstelle zum Ausgeben einer Parameterliste. 
  * @author Johannes Dahlke
  *
  */

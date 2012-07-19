@@ -34,6 +34,7 @@
 package de.fuberlin.bii.regextodfaconverter.directconverter.regex.operatortree;
 
 /**
+ * Definiert den Intervall des Widerholungsoperators ({}) bei den erweiterten regulären Ausdrücken.   
  * 
  * @author Johannes Dahlke
  *
@@ -58,7 +59,7 @@ public class RepetitionRange {
 		setUpperBound( upperBound);
 	}
 	
-	private int ensureValidRangeValue( Integer value) {
+	private static int ensureValidRangeValue( Integer value) {
 		if ( value < MIN_VALUE)
 			value = MIN_VALUE;
 		if ( value > MAX_VALUE)
@@ -66,21 +67,35 @@ public class RepetitionRange {
 		return value;
 	}
 	
+	/**
+	 * Setzt die minimale Anzahl an Widerholungen.
+	 * @param lowerBound
+	 */
 	public void setLowerBound( int lowerBound) {
 		this.lowerBound = ensureValidRangeValue( lowerBound);
 	}
 	
-	
+	/**
+	 * Setzt die maximale Anzahl an Wiederholungen.
+	 * @param upperBound
+	 */
 	public void setUpperBound( int upperBound) {
 		this.upperBound = ensureValidRangeValue( upperBound);
 	}
 	
 	
+	/**
+	 * Liefert die minimale Anzahl an Wiederholungen.
+	 * @return
+	 */
 	public int getLowerBound() {
 		return lowerBound;
 	}
 	
-	
+	/**
+	 * Liefert die maximale Anzahl an Wiederholungen.
+	 * @return
+	 */	
 	public int getUpperBound() {
 		return upperBound;
 	}

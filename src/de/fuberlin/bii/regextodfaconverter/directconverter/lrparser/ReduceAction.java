@@ -33,6 +33,8 @@
 package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser;
 
 
+import java.io.Serializable;
+
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.EmptyString;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.ProductionRule;
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar.RuleElement;
@@ -43,13 +45,16 @@ import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Clos
 import de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.itemset.Lr0Closure;
 
 /**
+ * Reduce-Aktion für Parsertabelle.
  * 
  * @author Johannes Dahlke
  *
  * @param <Element>
  */
-public class ReduceAction<Element extends Symbol, SpecializedClosure extends Closure> extends Action<Element, SpecializedClosure> {
+@SuppressWarnings("rawtypes")
+public class ReduceAction<Element extends Symbol, SpecializedClosure extends Closure> extends Action<Element, SpecializedClosure> implements Serializable {
 
+	private static final long serialVersionUID = -4843681115817022341L;
 	private ProductionRule reduceRule;
 	
 	public ReduceAction( ProductionRule reduceRule) {
@@ -77,6 +82,10 @@ public class ReduceAction<Element extends Symbol, SpecializedClosure extends Clo
 		return itemAutomat.getSymbolStack().peek();
 	}
 	
+	/**
+	 * Liefert die Regel, die zur Reduktion angewandt wird.
+	 * @return
+	 */
 	public ProductionRule getReduceRule() {
 		return reduceRule;
 	}

@@ -33,6 +33,7 @@
 package de.fuberlin.bii.regextodfaconverter.directconverter.regex.operatortree;
 
 /**
+ * Die Klasse OperatorTreeException dient der Behandlung von Fehlern auf dem Operatorbaum. 
  * 
  * @author Johannes Dahlke
  *
@@ -40,11 +41,25 @@ package de.fuberlin.bii.regextodfaconverter.directconverter.regex.operatortree;
 public class OperatorTreeException extends Exception {
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4651924971345587496L;
+
+	/**
+	 * Erstellt ein neues OperatorTreeException Objekt.
+	 *
+	 */
 	public OperatorTreeException() {
 		super();
 	}
 	
-
+	/**
+	 * Erstellt ein neues OperatorTreeException Objekt.
+	 * 
+	 * @param message
+	 *            Die genaue Fehlerbeschreibung.
+	 */
 	public OperatorTreeException( String message) {
 		super( message);
 	}

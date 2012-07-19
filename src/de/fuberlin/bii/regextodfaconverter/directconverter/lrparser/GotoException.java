@@ -33,16 +33,31 @@
 package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser;
 
 /**
+ * GotoException signalisiert Fehler während einer Goto-Aktion.
  * 
  * @author Johannes Dahlke
  *
  */
 public class GotoException extends Exception {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2054870570864630502L;
+
+	/**
+	 * Erstellt ein neues GotoException Objekt.
+	 */
 	public GotoException() {
 	  super();
 	}
 	
+	/**
+	 * Erstellt ein neues GotoException Objekt.
+	 * 
+	 * @param message
+	 *            Die genaue Fehlerbeschreibung.
+	 */
 	public GotoException( String message) {
 	  super( message);
     }

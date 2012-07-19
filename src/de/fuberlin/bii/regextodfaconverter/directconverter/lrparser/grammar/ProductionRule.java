@@ -32,6 +32,7 @@
 
 package de.fuberlin.bii.regextodfaconverter.directconverter.lrparser.grammar;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -42,11 +43,15 @@ import de.fuberlin.bii.utils.Test;
 
 
 /**
+ * Stellt eine Produktionsregel dar.
  * 
  * @author Johannes Dahlke
  *
  */
-public class ProductionRule implements Iterable<RuleElement> {
+@SuppressWarnings("rawtypes")
+public class ProductionRule implements Iterable<RuleElement>, Serializable {
+
+	private static final long serialVersionUID = 652665932709829362L;
 
 	private Nonterminal leftRuleSide;
 
@@ -65,6 +70,9 @@ public class ProductionRule implements Iterable<RuleElement> {
 
 	public ProductionRule(Nonterminal leftRuleSide, final RuleElement... rightRuleSideElements) {
 		this(leftRuleSide, new RuleElementArray() {
+
+			private static final long serialVersionUID = -8519909723287300646L;
+
 			RuleElementArray getFilledArray() {
 				RuleElementArray ruleElementArray = new RuleElementArray();
 				ruleElementArray.addAll(Arrays.asList(rightRuleSideElements));
@@ -73,7 +81,7 @@ public class ProductionRule implements Iterable<RuleElement> {
 		}.getFilledArray());
 	}
 
-	private RuleElementSequenz filterEmptyStrings(RuleElementSequenz elementSequenz) {
+	private static RuleElementSequenz filterEmptyStrings(RuleElementSequenz elementSequenz) {
 		int len = elementSequenz.size();
 		for (int i = len - 1; i > 0; i--) {
 			if (elementSequenz.get(i) instanceof EmptyString)
@@ -82,6 +90,10 @@ public class ProductionRule implements Iterable<RuleElement> {
 		return elementSequenz;
 	}
 
+	/**
+	 * Liefert die linke Regelseite.
+	 * @return
+	 */
 	public Nonterminal getLeftRuleSide() {
 		return leftRuleSide;
 	}
@@ -102,6 +114,11 @@ public class ProductionRule implements Iterable<RuleElement> {
 		return result;
 	}
 
+	/**
+	 * Liefert die rechte Regelseite.
+	 * 
+	 * @return
+	 */
 	public RuleElementSequenz getRightRuleSide() {
 		return rightRuleSide;
 	}
@@ -110,6 +127,10 @@ public class ProductionRule implements Iterable<RuleElement> {
 		return rightRuleSide.iterator();
 	}
 
+	/**
+	 * Liefert die Menge der Elemente auf der rechten Regelseite.
+	 * @return
+	 */
 	public Set<RuleElement> getRuleElementSet() {
 		Set<RuleElement> result = new HashSet<RuleElement>();
 		result.add(leftRuleSide);
@@ -119,6 +140,10 @@ public class ProductionRule implements Iterable<RuleElement> {
 		return result;
 	}
 	
+	/**
+	 * Liefert die Menge aller Terminale der rechten Regelseite.
+	 * @return
+	 */
 	public Set<Terminal> getTerminalSet() {
 		Set<Terminal> result = new HashSet<Terminal>();
 		for (RuleElement ruleElement : this) {
@@ -127,7 +152,11 @@ public class ProductionRule implements Iterable<RuleElement> {
 		}
 		return result;
 	}
-	
+
+	/**
+	 * Liefert die Menge aller Nichtterminale der rechten Regelseite sowie der linken Regelseite.
+	 * @return
+	 */
 	public Set<Nonterminal> getNonterminalSet() {
 		Set<Nonterminal> result = new HashSet<Nonterminal>();
 		result.add(leftRuleSide);
@@ -152,17 +181,19 @@ public class ProductionRule implements Iterable<RuleElement> {
 		if (!theOtherProductionRule.getLeftRuleSide().equals(this.leftRuleSide))
 			return false;
 
-		if (theOtherProductionRule.getRightRuleSide().size() != this.rightRuleSide.size())
+		if (!theOtherProductionRule.getRightRuleSide().equals( this.rightRuleSide))
 			return false;
 
-		int length = rightRuleSide.size();
-		List<RuleElement> theOtherRightRuleSide = theOtherProductionRule.getRightRuleSide();
-		for (int i = 0; i < length; i++) {
-			if (!theOtherRightRuleSide.get(i).equals(this.rightRuleSide.get(i)))
-				return false;
-		}
-
 		return true;
+	}
+	
+	@Override
+	public int hashCode() {
+		int hashCode = 5;
+		hashCode = 31 * hashCode + leftRuleSide.hashCode();
+		hashCode = 31 * hashCode + rightRuleSide.hashCode();
+		
+		return hashCode;
 	}
 	
 	@Override

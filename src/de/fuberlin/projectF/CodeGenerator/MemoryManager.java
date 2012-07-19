@@ -9,6 +9,7 @@ import de.fuberlin.projectF.CodeGenerator.model.MMXRegisterAddress;
 import de.fuberlin.projectF.CodeGenerator.model.Record;
 import de.fuberlin.projectF.CodeGenerator.model.Reference;
 import de.fuberlin.projectF.CodeGenerator.model.RegisterAddress;
+import de.fuberlin.projectF.CodeGenerator.model.StackAddress;
 import de.fuberlin.projectF.CodeGenerator.model.Variable;
 
 public class MemoryManager {
@@ -195,8 +196,8 @@ public class MemoryManager {
 		return current.registerInUse(i);
 	}
 
-	public void regToStack(Variable var) {
-		current.regToStack(var);
+	public StackAddress regToStack(Variable var) {
+		return current.regToStack(var);
 	}
 
 	public void setContext(String name) {

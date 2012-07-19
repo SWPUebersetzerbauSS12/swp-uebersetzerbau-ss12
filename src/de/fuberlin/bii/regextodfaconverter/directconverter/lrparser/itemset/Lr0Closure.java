@@ -44,7 +44,7 @@ import de.fuberlin.bii.utils.Test;
 
 
 /**
- * Bildet die Items auf ihre Eigenschaft Kernelitem (true) oder Nichtkernelitem /false) ab.
+ * Bildet die LR0-Items auf ihre Eigenschaft Kernelitem (true) oder Nichtkernelitem /false) ab.
  * 
  * @author Johannes Dahlke
  *
@@ -52,11 +52,17 @@ import de.fuberlin.bii.utils.Test;
 public class Lr0Closure extends Closure<Lr0Item> {
 	
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -9139209662535070627L;
+
 	public Lr0ItemSet getItemSet() {
 		Lr0ItemSet itemSet = new Lr0ItemSet();
 		itemSet.addAll( this.keySet());	
 		return itemSet;
 	}
+	
 	
 	@Override
 	public boolean containsKey(Object key) {
@@ -70,6 +76,7 @@ public class Lr0Closure extends Closure<Lr0Item> {
 		}
 		return false;
 	}
+	
 		
 	@Override
 	public boolean equals( Object theOtherObject) {
@@ -83,20 +90,10 @@ public class Lr0Closure extends Closure<Lr0Item> {
 		
 		Lr0Closure theOtherClosure = (Lr0Closure) theOtherObject;
 		
-		if ( theOtherClosure.size() != this.size())
+		
+		if (!super.superEquals( theOtherClosure))
 			return false;
 		
-		if ( !theOtherClosure.keySet().equals( this.keySet()))
-			return false;
-		
-		for ( Lr0Item thisItem : this.keySet()) {
-			for ( Lr0Item theOtherItem : theOtherClosure.keySet()) {
-				
-				if ( thisItem.equals(theOtherItem) && 
-					 !this.get( thisItem).equals( theOtherClosure.get( theOtherItem)))			
-				return false;
-		    }
-		}
 		
 		// theOtherClosure equals this 
 		if ( this.getNumber() == -1)
@@ -107,6 +104,9 @@ public class Lr0Closure extends Closure<Lr0Item> {
 		
 		return true;
 	}
+
+	
+	
 
 
 	

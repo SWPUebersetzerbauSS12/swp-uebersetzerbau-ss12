@@ -51,10 +51,12 @@ import de.fuberlin.bii.utils.Notification;
  * @author Johannes Dahlke
  *
  */
+@SuppressWarnings("rawtypes")
 public class ClosureTest {
 
 	
 	
+	@SuppressWarnings({ "static-method", "unchecked"})
 	@Test
 	public void testClosuresEquality() throws Exception {
 

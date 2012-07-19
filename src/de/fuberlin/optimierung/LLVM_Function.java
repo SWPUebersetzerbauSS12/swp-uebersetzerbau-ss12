@@ -555,6 +555,7 @@ public class LLVM_Function {
 						op1.setName(result?"1":"0");
 						op2.setName("0");
 						op1.setTypeString("i1");
+						op1.setType(LLVM_ParameterType.INTEGER);
 					}
 					
 					return true;

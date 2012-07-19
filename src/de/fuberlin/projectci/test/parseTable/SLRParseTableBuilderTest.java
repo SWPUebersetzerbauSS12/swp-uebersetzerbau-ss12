@@ -203,7 +203,7 @@ public class SLRParseTableBuilderTest {
 		GrammarReader grammarReader = new BNFGrammarReader();
 		Grammar g3 = null;
 		try {
-			g3 = grammarReader.readGrammar("./doc/quellsprache_bnf.txt");
+			g3 = grammarReader.readGrammar("./input/de/fuberlin/projectci/quellsprache_bnf.txt");
 		} catch (BNFParsingErrorException e) {
 			fail(e.getClass()+": "+e.getMessage());
 		}

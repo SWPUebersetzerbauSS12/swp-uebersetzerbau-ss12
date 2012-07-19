@@ -13,27 +13,29 @@ define i32 @main(i32 %argc, i8** %argv) nounwind {
   store i8** %argv, i8*** %3, align 8
   store i32 0, i32* %i, align 4
   store i32 1, i32* %a, align 4
-  br label %4
+  br label %lab
+ ; hhhhhhh
 
+lab:
 ; <label>:4                                       ; preds = %10, %0
-  %5 = load i32* %i, align 4
-  %6 = icmp slt i32 %5, 10
-  br i1 %6, label %7, label %aa
+  %4 = load i32* %i, align 4
+  %5 = icmp slt i32 %4, 10
+  br i1 %5, label %6, label %aa
 
 ; <label>:7                                       ; preds = %4
-  %8 = load i32* %a, align 4
-  %9 = add nsw i32 %8, 1						;Tail-Test
-  store i32 %9, i32* %a, align 4
-  br label %10
+  %7 = load i32* %a, align 4
+  %8 = add nsw i32 %7, 1						;Tail-Test
+  store i32 %8, i32* %a, align 4
+  br label %9
 
 ; <label>:10                                      ; preds = %7
-  %11 = load i32* %i, align 4
-  %12 = add nsw i32 %11, 1
-  store i32 %12, i32* %i, align 4
-  br label %4
+  %10 = load i32* %i, align 4
+  %11 = add nsw i32 %10, 1
+  store i32 %11, i32* %i, align 4
+  br label %lab
 
 aa:                                 ; preds = %4
-  %13 = load i32* %a, align 4
-  %14 = icmp eq i32 4, 5	;EQ-Test
-  ret i32 %13
+  %12 = load i32* %a, align 4
+  %13 = icmp eq i32 4, 5	;EQ-Test
+  ret i32 %12
 }

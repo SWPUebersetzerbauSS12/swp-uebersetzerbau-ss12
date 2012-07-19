@@ -55,7 +55,10 @@ public abstract class LLVM_GenericCommand{
 		c.setSuccessor(this.successor);
 		c.setBlock(this.block);
 		if (this.isSingleCommand()){
-			
+			this.getBlock().setFirstCommand(c);
+			this.getBlock().setLastCommand(c);
+			this.predecessor = null;
+			this.successor = null;
 		} else if(this.isFirstCommand()) {	// Loesche erstes Element
 			this.successor.setPredecessor(c);
 			this.getBlock().setFirstCommand(c);

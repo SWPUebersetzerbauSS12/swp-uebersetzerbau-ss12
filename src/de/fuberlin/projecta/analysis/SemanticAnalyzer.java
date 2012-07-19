@@ -51,10 +51,10 @@ public class SemanticAnalyzer {
 
 	public void analyze() throws SemanticException {
 		toAST(parseTree);
-		parseTreeForRemoval();
-		parseTreeForBuildingSymbolTable();
-		AST.printTree();
-		checkForValidity(AST);
+
+		AST.buildSymbolTable(tables);
+		AST.checkSemantics();
+		AST.checkTypes();
 	}
 
 	public void toAST(ISyntaxTree tree) {
@@ -441,35 +441,6 @@ public class SemanticAnalyzer {
 				// throw new SemanticException("Stack pointer in parsetree?");
 			}
 		}
-	}
-
-	/**
-	 * Should find productions which are semantically nonsense. Like double
-	 * assignment, funcCalls which aren't declared in this scope, assessing
-	 * record members which aren't existing or where the record does not exist,
-	 * ...
-	 * 
-	 * @param tree
-	 * @return
-	 */
-	private boolean checkForValidity(ISyntaxTree tree) {
-		return true;
-	}
-
-	/**
-	 * Runs every nodes run method in depth-first-left-to-right order.
-	 * 
-	 * @param tree
-	 */
-	private void parseTreeForBuildingSymbolTable() {
-		AST.buildSymbolTable(tables);
-	}
-
-	/**
-	 * Checks whether the tree contains disallowed semantic.
-	 */
-	private void parseTreeForRemoval() {
-		// TODO: think about how to smartly encode disallowed trees
 	}
 
 	public SymbolTableStack getTables() {

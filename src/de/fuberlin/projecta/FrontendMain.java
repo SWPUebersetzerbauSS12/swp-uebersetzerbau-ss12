@@ -22,10 +22,8 @@ public class FrontendMain {
 
 		ISyntaxTree tree = parser.getParseTree();
 		SemanticAnalyzer analyzer = new SemanticAnalyzer(tree);
-		analyzer.analyze();
 		try {
-			analyzer.getAST().checkSemantics();
-			analyzer.getAST().checkTypes();
+			analyzer.analyze();
 		} catch (SemanticException e) {
 			System.out.println("Error: Bad Semantics");
 			System.out.println(e.getMessage());

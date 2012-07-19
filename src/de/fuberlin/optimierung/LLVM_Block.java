@@ -518,29 +518,30 @@ public class LLVM_Block{
 	private void createCommands() throws LLVM_OptimizationException{
 		String commandsArray[] = this.blockCode.split("\n");
 		
-		int i = 0;
-		
-		if(commandsArray[0].length() == 0){
-			i++;
-		}
-		
-		// Checking for label
-		if(labelCheck(commandsArray[i])){
-			i++;
-		}
-		
-		this.firstCommand = mapCommands(commandsArray[i].trim(), null);
-		
-		LLVM_GenericCommand predecessor = firstCommand;
-		for(i++; i<commandsArray.length; i++) {
+		LLVM_GenericCommand predecessor = null;
+		for(int i=0; i<commandsArray.length; i++) {
+			// Leerzeilen ignorieren
+			if(commandsArray[i].length() == 0){
+				continue;
+			}
+			
+			// Checking for label
+			if(labelCheck(commandsArray[i])){
+				continue;
+			}
+			
+			// Kommentare ignoriern
+			if (commandsArray[i].trim().startsWith(";")){
+				continue;
+			}
+			
 			LLVM_GenericCommand c = mapCommands(commandsArray[i].trim(), predecessor);
-			if(c != null){
-				if(firstCommand == null){
-					firstCommand = c;
-					predecessor = c;
-				}else{
-					predecessor = c;
-				}
+			
+			if(firstCommand == null){
+				firstCommand = c;
+				predecessor = c;
+			}else{
+				predecessor = c;
 			}
 		}
 		this.lastCommand = predecessor;
@@ -548,10 +549,6 @@ public class LLVM_Block{
 	
 	// Ermittelt Operation und erzeugt Command mit passender Klasse
 	private LLVM_GenericCommand mapCommands(String cmdLine, LLVM_GenericCommand predecessor) throws LLVM_OptimizationException{
-		
-		// comment handling
-		if (cmdLine.startsWith(";"))
-			return null;
 		
 		// command handling
 		if(cmdLine.startsWith("store ")){

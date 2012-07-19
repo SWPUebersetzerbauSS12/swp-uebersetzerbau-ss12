@@ -9,7 +9,7 @@ public class LLVM_Function {
 	String func_define = "";
 	String afterFunc = "";
 	
-	//private LLVM_Block startBlock;
+	private LLVM_Block startBlock;
 	//private LLVM_Block endBlock;
 	private ArrayList<LLVM_Block> blocks;
 	private int numberBlocks;
@@ -50,7 +50,7 @@ public class LLVM_Function {
 		for(int i = 0; i < this.numberBlocks; i++) {
 			this.blocks.add(new LLVM_Block(codeBlocks[i],this));
 		}
-		//this.startBlock = this.blocks.get(0);
+		this.startBlock = this.blocks.get(0);
 		//this.endBlock = this.blocks.get(this.numberBlocks-1);
 	}
 	

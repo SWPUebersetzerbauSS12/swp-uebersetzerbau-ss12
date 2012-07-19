@@ -278,18 +278,23 @@ public class LLVM {
 	
 	public static String getArrayCallPointer(ArrayCall array){
 		String ret = "";
-		ret += LLVM.loadType((Expression)array.getChild(0));
-		int num = array.getVar();		
-		String index = ", i32 0, i32 " + num;
-		ArrayCall tmp = array;
-		// collect all array references
-		while(tmp.getChild(1) instanceof ArrayCall){
-			tmp = (ArrayCall)tmp.getChild(1);
-			ret += LLVM.loadType((Expression)array.getChild(0));
-			index += ", i32 " + array.getVar();	
+		Expression t1 = (Expression)array.getChild(0);
+		ret += LLVM.loadType(t1);
+		int num = t1.getVar();
+		String index = ", i32 %" + num;
+		ArrayCall tmpT2 = array;
+		// collect all array references. unlike declaration we have to go bottom up for arrayCall
+		// thus we build index in reverse order...
+		while(tmpT2.getChild(1) instanceof ArrayCall){
+			tmpT2 = (ArrayCall)tmpT2.getChild(1);
+			Expression tmpT1 = (Expression)tmpT2.getChild(0);
+			ret += LLVM.loadType(tmpT1);
+			index = ", i32 %" + tmpT1.getVar() + index;	
 		}
+		//first resolve the array pointer than append remaining indexes
+		index = ", i32 0" + index;
 		//last ArrayCall contains the id of the array! (weird, but we deal with it)
-		Id id = (Id) tmp.getChild(1);
+		Id id = (Id) tmpT2.getChild(1);
 		Type t = SymbolTableHelper.lookup(id.getValue(), array).getType();
 		int pointer = array.getHighestBlock().getNewVar();
 		ret += "%"+ pointer + " = getelementptr inbounds "+ ((Array)t).genCode() +"* %"+ id.getValue();

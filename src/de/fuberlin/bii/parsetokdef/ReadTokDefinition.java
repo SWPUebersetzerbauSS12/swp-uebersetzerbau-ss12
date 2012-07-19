@@ -45,6 +45,7 @@ import de.fuberlin.bii.utils.Rule;
 /**
  * 
  * @author Benjamin Weißenfels
+ * @deprecated
  */
 public class ReadTokDefinition extends ReadTokDefAbstract {
 

@@ -14,6 +14,10 @@ public class Do extends Statement {
 
 	private Block block;
 	
+	protected boolean hasReturnStatement() {
+		return false;
+	}
+	
 
 	protected boolean couldAmmendReturnStatement() {
 		ISyntaxTree doBody = this.getChild(0);

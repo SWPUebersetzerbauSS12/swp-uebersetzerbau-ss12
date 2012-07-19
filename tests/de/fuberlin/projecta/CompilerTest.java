@@ -218,8 +218,7 @@ public class CompilerTest {
 					"tmp = test[i];" +
 					"print tmp;" +
 					"i=i+1; " +
-				"} " +
-				"return 1;");
+				"}");
 		System.out.println(code);
 		String output = executeCode(code);
 		assertEquals("0123456789", output);
@@ -238,8 +237,7 @@ public class CompilerTest {
 						"j=j+1;"+
 					"}"+
 					"i=i+1; " +
-				"} " +
-				"return 1;");
+				"} ");
 		System.out.println(code);
 		String output = executeCode(code);
 		assertEquals("012341234523456", output);

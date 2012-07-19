@@ -1,10 +1,9 @@
-bla{
-	int a;
-	a = 7;
-}
-
 def int main(){
-  bla bla_object;
-  bla_object = "hallo";
+  record{
+	int x;
+	int y;
+  } coordinate;
+  coordinate.x=5;
+  coordinate.y=7;
   return 0;
 } 

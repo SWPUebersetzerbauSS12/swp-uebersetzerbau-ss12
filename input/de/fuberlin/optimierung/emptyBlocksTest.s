@@ -18,7 +18,10 @@ define i32 @main(i32 %argc, i8** %argv) nounwind {
 ; <label>:4                                       ; preds = %10, %0
   %5 = load i32* %i, align 4
   %6 = icmp slt i32 %5, 10
-  br i1 %6, label %7, label %aa
+  br i1 %6, label %tt, label %aa
+
+tt:
+  br label %7
 
 ; <label>:7                                       ; preds = %4
   %8 = load i32* %a, align 4

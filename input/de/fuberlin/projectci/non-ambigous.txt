@@ -15,7 +15,7 @@
 <stmt'>		::= "else" <stmt> | "@" 
 <stmt''>	::= <bool> ";" | ";"
 <loc>		::= "id" <loc''> 
-<loc'>		::= ".""id" | "[" <assign> "]"
+<loc'>		::= "." "id" | "[" <assign> "]"
 <loc''>		::= <loc'> <loc''> | "@" 
 <assign>	::= <bool> <assign'>
 <assign'>	::= "=" <assign> <assign'> | "@" 

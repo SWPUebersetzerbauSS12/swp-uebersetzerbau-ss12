@@ -1,5 +1,7 @@
 def int main(){
-  int a;
-  a=7;
+  record{
+   int b;
+  } a;
+  a.b=7;
   return a.b;
 } 

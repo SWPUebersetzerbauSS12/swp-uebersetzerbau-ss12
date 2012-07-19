@@ -1,16 +1,13 @@
 package de.fuberlin.projectF.CodeGenerator;
 
-import java.awt.List;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import de.fuberlin.projectF.CodeGenerator.model.Token;
-import de.fuberlin.projectF.CodeGenerator.model.TokenType;
 
 public class CodeGenerator {
 
@@ -37,7 +34,7 @@ public class CodeGenerator {
 		Translator trans = new Translator(asmType);
 
 		// Token durchgehen und übersetzten bis EOF
-		GUI gui = guiFlag?new GUI():null;
+		GUI gui = null;
 		int linecount = 0;
 		ArrayList<Token> tokenStream;
 		// Token einlesen
@@ -58,8 +55,10 @@ public class CodeGenerator {
 		}
 
 		// Token Tabelle in der gui füllen
-		if (guiFlag)
+		if (guiFlag) {
+			gui = new GUI();
 			gui.updateTokenStreamTable(tokenStream);
+		}
 
 		// Token übersetzen
 		try {
@@ -90,15 +89,15 @@ public class CodeGenerator {
 	
 
 	public static void main(String[] args) {
-		boolean debug = true;
-		boolean gui = true;
-		boolean exec = false;
+		boolean debug = false;
+		boolean gui = false;
+		boolean exec = true;
 		String asmType = "gnu";
 
 		ArrayList<String> inputFile = new ArrayList<String>();
 		//Inhalt der inputFiles als String
-		ArrayList<String> inputStrings = new ArrayList<String>();
 		String outputFile = null;
+		String configFile = null;
 
 		// Argumente parsen
 		for (int i = 0; i < args.length; i++) {
@@ -110,12 +109,23 @@ public class CodeGenerator {
 					System.out.println("Option -o needs a second parameter");
 					return;
 				}
-			} else if (args[i].compareTo("-e") == 0) {
-				exec = true;
+			} else if (args[i].compareTo("-C") == 0) {
+				if ((i + 1) <= args.length)
+					configFile = args[++i];
+				else {
+					System.out.println("Option -C needs a second parameter");
+					return;
+				}
+			} else if (args[i].compareTo("-c") == 0) {
+				exec = false;
 			} else if (args[i].compareTo("-intel") == 0) {
 				asmType = "intel";
 			} else if (args[i].compareTo("-gnu") == 0) {
 				asmType = "gnu";
+			} else if (args[i].compareTo("-v") == 0) {
+				debug = true;
+			} else if (args[i].compareTo("-g") == 0) {
+				gui = true;
 			} else
 				inputFile.add(args[i]);
 		}

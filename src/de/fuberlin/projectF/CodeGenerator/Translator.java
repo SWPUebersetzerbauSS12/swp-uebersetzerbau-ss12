@@ -105,16 +105,7 @@ public class Translator {
 				
 				// Variablen, die nur in Registern sind, auf dem Stack speichern
 				// TODO: MMX-Register sichern
-				List<Variable> regVars = mem.getRegVariables(true);
-				RegisterAddress movedFrom;
-				StackAddress movedTo;
-				for (Variable var : regVars) {
-					movedFrom = var.getRegAddress();
-					movedTo = mem.regToStack(var);
-					// Stackpointer verschieben
-					asm.sub(String.valueOf(var.getSize()), "esp", "Move var to stack");
-					asm.mov(movedFrom.getFullName(), movedTo.getFullName(), var.getName());
-				}
+				saveRegisters();
 				// Alle Register sind nun frei und werden möglicherweise in der
 				// Aufgerufenen Funktion verwendet.
 				// Parameter auf den Stack legen
@@ -151,7 +142,8 @@ public class Translator {
 				
 				// Rückgabe speichern
 				if (tok.getTypeTarget().equals("i32")) {
-					mem.addRegVar(tok.getTarget(), tok.getTypeTarget(), mem.getFreeRegister(0));
+					RegisterAddress reg = mem.getFreeRegister();
+					mem.addRegVar(tok.getTarget(), tok.getTypeTarget(), reg);
 				}
 				else if (tok.getTypeTarget().equals("double")) {
 					mmxRes = new MMXRegisterAddress(0);
@@ -514,7 +506,20 @@ public class Translator {
 		//erstelle Einstiegspunkt
 		asm.createEP();
 	}
-
+	
+	private void saveRegisters(){
+		List<Variable> regVars = mem.getRegVariables(true);
+		RegisterAddress movedFrom;
+		StackAddress movedTo;
+		for (Variable var : regVars) {
+			movedFrom = var.getRegAddress();
+			movedTo = mem.regToStack(var);
+			// Stackpointer verschieben
+			asm.sub(String.valueOf(var.getSize()), "esp", "Move var to stack");
+			asm.mov(movedFrom.getFullName(), movedTo.getFullName(), var.getName());
+		}
+	}
+	
 	private Array createArray(String targetType, String target) {
 		// Extrahieren der Array-Größen
 		ArrayList<Integer> numbers = new ArrayList<Integer>();
@@ -589,7 +594,16 @@ public class Translator {
 
 	// TODO
 	private void saveRegisterValue(RegisterAddress res) {
-
+		List<Variable> regVars = mem.getRegVariables(true);
+		RegisterAddress movedFrom;
+		StackAddress movedTo;
+		for (Variable var : regVars) {
+			movedFrom = var.getRegAddress();
+			movedTo = mem.regToStack(var);
+			// Stackpointer verschieben
+			asm.sub(String.valueOf(var.getSize()), "esp", "Move var to stack");
+			asm.mov(movedFrom.getFullName(), movedTo.getFullName(), var.getName());
+		}
 	}
 	
 	private int findToken(int start, boolean backwards, TokenType type,

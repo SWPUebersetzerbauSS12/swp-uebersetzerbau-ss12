@@ -42,9 +42,6 @@ public class Parser implements IParser {
 		return parse(lexer);
 	}
 
-	/**
-	 * TODO: Error handling
-	 */
 	private ISyntaxTree parse(ILexer lexer) throws SyntaxErrorException, ParseException {
 		if (table.isAmbigous()) {
 			throw new ParseException(

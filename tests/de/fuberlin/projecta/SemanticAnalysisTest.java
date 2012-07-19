@@ -146,8 +146,5 @@ public class SemanticAnalysisTest {
 		ISyntaxTree parseTree = ParserTest.parse(code);
 		SemanticAnalyzer analyzer = new SemanticAnalyzer(parseTree);
 		analyzer.analyze();
-		// TODO: Call the next methods in analyer.analyze()?
-		analyzer.getAST().checkSemantics();
-		analyzer.getAST().checkTypes();
 	}
 }

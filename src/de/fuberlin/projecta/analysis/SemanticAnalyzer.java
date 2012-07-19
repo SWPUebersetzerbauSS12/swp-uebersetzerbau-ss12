@@ -264,8 +264,6 @@ public class SemanticAnalyzer {
 			case equality_:
 			case expr_:
 			case term_:
-				// currently it assumes tmp only got one child !!! 
-				// TODO: is this always the case?
 				if(tree.getChildrenCount() == 0){
 					insertNode.addChild(((ISyntaxTree)tree.getAttribute(L_ATTRIBUTE)).getChild(0));
 				} else {
@@ -284,8 +282,6 @@ public class SemanticAnalyzer {
 				}
 				return;
 			case rel_:
-				// currently it assumes tmp only got one child !!! 
-				// TODO: is this always the case?
 				if(tree.getChildrenCount() == 0){
 					insertNode.addChild(((ISyntaxTree)tree.getAttribute(L_ATTRIBUTE)).getChild(0));
 				} else {

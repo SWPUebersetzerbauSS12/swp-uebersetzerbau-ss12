@@ -218,7 +218,7 @@ public class CompilerTest {
 	}
 
 	@Test
-	public void testNestedWhileLoops() {
+	public void testMultiDimensionalArrays() {
 		final String code = mainC("int[3][5] test; int i; int j; int tmp;" +
 				"i = 0;" +
 				"while (i < 3){" +

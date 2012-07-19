@@ -38,7 +38,7 @@ public class SymbolTable {
 		} else {
 			throw new SemanticException(id.getValue()
 					+ " is already registered in this symbolTable. "
-					+ "You may want to update instead.");
+					+ "You may want to update instead.", null);
 		}
 
 	}
@@ -50,7 +50,7 @@ public class SymbolTable {
 			throw new SemanticException(entry.getId()
 					+ " is already registered in this symbolTable. "
 					+ "You may want to update instead. 3"
-					+ lookup(entry.getId(), entry.getParams()) + ":" + entry);
+					+ lookup(entry.getId(), entry.getParams()) + ":" + entry, null);
 		}
 	}
 
@@ -107,7 +107,7 @@ public class SymbolTable {
 				return i;
 			}
 		}
-		throw new SemanticException("No entry found for id " + name);
+		throw new SemanticException("No entry found for id " + name, null);
 	}
 
 	@Override

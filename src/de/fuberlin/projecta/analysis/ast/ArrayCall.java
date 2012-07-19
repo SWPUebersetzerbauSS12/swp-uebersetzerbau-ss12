@@ -45,11 +45,11 @@ public class ArrayCall extends Type {
 		// wrong woth the call
 		if (!(self instanceof Id)) {
 			if(!(def instanceof Array)){
-				throw new SemanticException("More dimensions in array call, than in definition!");
+				throw new SemanticException("More dimensions in array call, than in definition!", this);
 			}
 		} else {
 			if (def instanceof Array){
-				throw new SemanticException("Only full array calls are allowed!");
+				throw new SemanticException("Only full array calls are allowed!", this);
 			}
 		}
 	}

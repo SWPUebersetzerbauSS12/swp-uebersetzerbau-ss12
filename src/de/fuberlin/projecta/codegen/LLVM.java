@@ -1,8 +1,8 @@
 package de.fuberlin.projecta.codegen;
 
 import de.fuberlin.commons.parser.ISyntaxTree;
+import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
-import de.fuberlin.projecta.analysis.TypeErrorException;
 import de.fuberlin.projecta.analysis.ast.AbstractSyntaxTree;
 import de.fuberlin.projecta.analysis.ast.Args;
 import de.fuberlin.projecta.analysis.ast.Array;
@@ -13,7 +13,6 @@ import de.fuberlin.projecta.analysis.ast.Expression;
 import de.fuberlin.projecta.analysis.ast.FuncCall;
 import de.fuberlin.projecta.analysis.ast.FuncDef;
 import de.fuberlin.projecta.analysis.ast.Id;
-import de.fuberlin.projecta.analysis.ast.IntLiteral;
 import de.fuberlin.projecta.analysis.ast.Literal;
 import de.fuberlin.projecta.analysis.ast.Record;
 import de.fuberlin.projecta.analysis.ast.RecordVarCall;
@@ -153,9 +152,9 @@ public class LLVM {
 				return i;
 			}
 		}
-		throw new TypeErrorException("Entry " + recordVar
+		throw new SemanticException("Entry " + recordVar
 				+ " not found in record "
-				+ ((Id) rec.getParent().getChild(1)).getValue());
+				+ ((Id) rec.getParent().getChild(1)).getValue(), null);
 	}
 
 	/**

@@ -25,11 +25,11 @@ public class UnaryOp extends Expression {
 		switch (this.op) {
 		case OP_NOT:
 			if (!(type.equals(BasicType.TYPE_BOOL_STRING)))
-				throw new SemanticException("Invalid operand to NOT: " + type);
+				throw new SemanticException("Invalid operand to NOT: " + type, this);
 			break;
 		case OP_MINUS:
 			if (!type.equals(BasicType.TYPE_INT_STRING) || !type.equals(BasicType.TYPE_REAL_STRING))
-				throw new SemanticException("Invalid operand to MINUS: " + type);
+				throw new SemanticException("Invalid operand to MINUS: " + type, this);
 			break;
 		default:
 			break;

@@ -18,7 +18,7 @@ public class RealWorldTest {
 			"return fib(x-2) + fib(x-1);"+
 		"}\n";
 		String output = CompilerTest.executeCode(source);
-		assertEquals(output, "3");
+		assertEquals("3", output);
 	}
 	
 	@Test
@@ -27,7 +27,7 @@ public class RealWorldTest {
 				"def int foo(int x){return x;}"+
 				"def int main() {int x; x = foo(1) + foo(2); print x; return 0;}";
 		String output = CompilerTest.executeCode(source);
-		assertEquals(output, "3");
+		assertEquals("3", output);
 	}
 	
 	@Test
@@ -36,6 +36,6 @@ public class RealWorldTest {
 			"def int foo(int x){return x;}"+
 			"def int main() {bool x; x = foo(1) <= foo(2); print x; return 0;}";
 		String output = CompilerTest.executeCode(source);
-		assertEquals(output, "1"); // true
+		assertEquals("1", output); // true
 	}
 }

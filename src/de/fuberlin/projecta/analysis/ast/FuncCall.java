@@ -67,7 +67,7 @@ public class FuncCall extends Expression {
 					&& !func.getType().toTypeString().equals("void")) {
 				getHighestBlock().getNewVar();
 				System.out.println("in funcCall " + getId().getValue()
-						+ " and !searchUpAssign() is" + !searchUpAssign());
+						+ " and searchUpAssign() is" + searchUpAssign());
 			}
 
 		}
@@ -85,6 +85,8 @@ public class FuncCall extends Expression {
 					bOp = (BinaryOp) parent;
 					if (bOp.getOp() == TokenType.OP_ASSIGN)
 						return true;
+				} else if (parent instanceof Return){
+					return true;
 				}
 				parent = parent.getParent();
 			}

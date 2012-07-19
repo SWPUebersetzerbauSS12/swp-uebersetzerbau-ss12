@@ -14,8 +14,8 @@ define i32 @main(i32 %argc, i8** %argv) nounwind {
   store i32 0, i32* %1
   store i32 %argc, i32* %2, align 4
   store i8** %argv, i8*** %3, align 4
-  store double 5.000000e-01, double* %a, align 8
-  store double 7.700000e+00, double* %b, align 8
+  store double 5.000000e-01, double* %b, align 8
+  store double 7.700000e+00, double* %a, align 8
   %4 = load double* %a, align 8
   %5 = load double* %b, align 8
   %6 = fcmp olt double %4, %5

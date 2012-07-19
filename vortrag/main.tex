@@ -127,7 +127,12 @@ UML
 %\color{green}\rule{\linewidth}{2pt}
 
 {\fbox{\parbox[c][2.9cm]{5cm}{
-\only<1-1>{Test1}
+\only<1-1>{
+{\color{blue} \%a = add i32 1, 7}\\
+...\\
+\%eq = icmp eq i32 \%a, 8\\
+{\color{gray}br i1 \%eq, label \%j1, label \%j2}
+}
 \only<2-2>{Test2}
 \only<3-3>{Test3}
 \only<4-4>{Test4}
@@ -138,7 +143,12 @@ UML
 {\color{red}unoptimierter Code}\\
 \vspace*{0.3cm}
 \fbox{\parbox[c][2.9cm]{5cm}{
-\only<1-1>{Test1}
+\only<1-1>{
+{\color{blue}\%a = add i32 8, 0}\\
+(bei uns eine Zuweisung)\\
+...\\
+{\color{gray}br label \%j1}
+}
 \only<2-2>{Test2}
 \only<3-3>{Test3}
 \only<4-4>{Test4}

@@ -11,10 +11,15 @@ public abstract class Lexer {
 	
 	ArrayList<Token> tokenStream;
 	HashMap<String,ArrayList<String>> renameCandidate;
+	Debuginfo debug;
 	
 	// Diese Methoden sind in den Unterklassen implementiert
 	public abstract int close();
 	public abstract Token getNextToken();
+	
+	public Lexer(Debuginfo debug) {
+		this.debug = debug;
+	}
 	
 	protected ArrayList<Token> getTokenStream() {
 		tokenStream = new ArrayList<Token>();
@@ -146,6 +151,7 @@ public abstract class Lexer {
 
 		// Definitionen (bei Methodendeklarationen)
 		if (line[0].contentEquals("define")) {
+			debug.println("\t\tFound function definition");
 			newToken.setType(TokenType.Definition);
 			newToken.setTarget(line[2]);
 			newToken.setTypeTarget(line[1]);
@@ -154,6 +160,7 @@ public abstract class Lexer {
 		
 		// Declaration (bei externer Methodendeklarationen)
 		else if (line[0].contentEquals("declare")) {
+			debug.println("\t\tFound extern function declaration");
 			newToken.setType(TokenType.Declare);
 			newToken.setTarget(line[2]);
 		}
@@ -161,6 +168,7 @@ public abstract class Lexer {
 		// Wertzuweisungen
 		else if (line[0].contentEquals("store")) {
 			if(line[2].startsWith("c\"")) {
+				debug.println("\t\tFound inline string definition");
 				newToken.setType(TokenType.String);
 				newToken.setOp1(line[2].substring(1));
 				newToken.setTarget("@_str" + line[4].substring(1));
@@ -169,6 +177,7 @@ public abstract class Lexer {
 				renameCandidate.get(newToken.getTarget()).add(line[4]);
 			}	
 			else {
+				debug.println("\t\tFound Assignment");
 				newToken.setType(TokenType.Assignment);
 				newToken.setTarget(line[4]);
 				newToken.setTypeTarget(line[3].replace((char) 1, ' '));
@@ -186,6 +195,7 @@ public abstract class Lexer {
 		}
 
 		else if (line[0].contentEquals("call")) {
+			debug.print("\t\tFound call of ");
 			newToken.setTypeTarget(line[1]);
 			
 			int i;
@@ -193,6 +203,7 @@ public abstract class Lexer {
 				if(line[i].charAt(0) == '@')
 					break;
 			
+			debug.println(line[i]);
 			newToken.setType(TokenType.Call);
 			
 			newToken.setOp1(line[i]);
@@ -219,6 +230,7 @@ public abstract class Lexer {
 		}
 
 		else if (line[0].contentEquals("br")) {
+			debug.println("\t\tFound branch ");
 			newToken.setType(TokenType.Branch);
 			if(line[1].equals("label")) {
 				newToken.setOp2(line[2]);
@@ -239,6 +251,7 @@ public abstract class Lexer {
 
 		// Return anweisungen
 		else if (line[0].contentEquals("ret")) {
+			debug.println("\t\tFound return ");
 			newToken.setType(TokenType.Return);
 			newToken.setTypeOp1(line[1]);
 			if (line.length > 2) {
@@ -248,10 +261,12 @@ public abstract class Lexer {
 
 		// Ende einer Definition
 		else if (line[0].contentEquals("}")) {
+			debug.println("\t\tFound end of current function ");
 			newToken.setType(TokenType.DefinitionEnd);
 		}
 
 		else if (line[1].contentEquals("<label>")) {
+			debug.println("\t\tFound label ");
 			newToken.setType(TokenType.Label);
 			newToken.setTarget(line[3]);
 		}
@@ -260,12 +275,14 @@ public abstract class Lexer {
 
 			// Typ-Definition (STRUCT, RECORD)
 			if (line[2].contentEquals("type")) {
+				debug.println("\t\tFound a new type definition ");
 				newToken.setType(TokenType.TypeDefinition);
 				newToken.setTarget(line[0]);
 				fillParameter(newToken, line[3].replace((char) 1, ' '));
 			}
 
 			else if (line[0].startsWith("@.str")) {
+				debug.println("\t\tFound a global string definition ");
 				newToken.setType(TokenType.String);
 				newToken.setTarget(line[0]);
 				newToken.setTypeTarget(line[2].replace((char) 1, ' '));
@@ -289,7 +306,7 @@ public abstract class Lexer {
 					|| line[2].contentEquals("or")
 					|| line[2].contentEquals("and")
 					|| line[2].contentEquals("xor")) {
-				// Type: ADDITION
+				debug.println("\t\tFound an integer expression");
 				newToken.setType(TokenType.ExpressionInt);
 				newToken.setTarget(line[0]);
 				newToken.setTypeTarget(line[2]);
@@ -302,7 +319,7 @@ public abstract class Lexer {
 					|| line[2].contentEquals("fsub")
 					|| line[2].contentEquals("fmul")
 					|| line[2].contentEquals("fdiv")) {
-				// Type: ADDITION
+				debug.println("\t\tFound a double expression");
 				newToken.setType(TokenType.ExpressionDouble);
 				newToken.setTarget(line[0]);
 				newToken.setTypeTarget(line[2]);
@@ -316,7 +333,7 @@ public abstract class Lexer {
 			
 			else if (line[2].contentEquals("sitofp")
 					|| line[2].contentEquals("fptosi")) {
-				
+				debug.println("\t\tFound cast from integer to double");
 				newToken.setType(TokenType.Cast);
 				newToken.setTarget(line[0]);
 				newToken.setTypeTarget(line[6]);
@@ -325,6 +342,7 @@ public abstract class Lexer {
 			}
 			
 			else if (line[2].contentEquals("getelementptr")) {
+				debug.println("\t\tFound a pointer declaration");
 				newToken.setType(TokenType.Getelementptr);
 				newToken.setTarget(line[0]);
 				newToken.setTypeTarget(line[3].replace((char) 1, ' '));
@@ -336,6 +354,7 @@ public abstract class Lexer {
 	
 			// Wert aus Speicher lesen
 			else if (line[2].contentEquals("load")) {
+				debug.println("\t\tFound load");
 				newToken.setType(TokenType.Load);
 				newToken.setTarget(line[0]);
 				newToken.setOp1(line[4]);
@@ -344,11 +363,13 @@ public abstract class Lexer {
 
 			// Speicher Allocierungen
 			else if (line[2].contentEquals("alloca")) {
+				debug.println("\t\tFound an allocation");
 				newToken.setType(TokenType.Allocation);
 				newToken.setTarget(line[0]);
 				newToken.setTypeTarget(line[3].replace((char) 1, ' '));
 				
 			} else if (line[2].contentEquals("call")) {
+				debug.print("\t\tFound a call to ");
 				newToken.setTarget(line[0]);
 				newToken.setTypeTarget(line[3]);
 				
@@ -357,6 +378,7 @@ public abstract class Lexer {
 					if(line[i].charAt(0) == '@')
 						break;
 				
+				debug.println(line[i]);
 				newToken.setType(TokenType.Call);
 				
 				newToken.setOp1(line[i]);
@@ -383,6 +405,7 @@ public abstract class Lexer {
 			}
 
 			else if (line[2].contentEquals("icmp")) {
+				debug.println("\t\tFound a comparism");
 				newToken.setType(TokenType.Compare);
 				newToken.setTarget(line[0]);
 				newToken.setTypeTarget(line[3]);
@@ -390,11 +413,14 @@ public abstract class Lexer {
 				newToken.setTypeOp1(line[4]);
 				newToken.setOp2(line[6]);
 
-			} else
+			} else {
+				debug.println("\t\tToken is undefined");
 				newToken.setType(TokenType.Undefined);
-		} else
+			}
+		} else {
+			debug.println("\t\tToken is undefined");
 			newToken.setType(TokenType.Undefined);
-
+		}
 		return newToken;
 	}
 

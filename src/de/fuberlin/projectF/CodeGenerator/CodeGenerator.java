@@ -1,8 +1,12 @@
 package de.fuberlin.projectF.CodeGenerator;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -15,20 +19,28 @@ public class CodeGenerator {
 	public static String generateCode(File llvmFile, String asmType, boolean debug,
 			boolean guiFlag) {
 		
-		Lexer lex = new FileLexer(llvmFile);
-		return generateCode2(debug, asmType, guiFlag, lex);
+		Debuginfo debuginfo = new Debuginfo(debug);
+		try {
+			Lexer lex = new FileLexer(llvmFile, debuginfo);
+			return generateCode2(debuginfo, asmType, guiFlag, lex);
+		} catch (FileNotFoundException e) {
+			System.err.println("Could't find input file " + llvmFile);
+			e.printStackTrace();
+		}
+		return "";
 	}
 	
 	//Variante f�r String-Input
 	public static String generateCode(String llvmCode, String asmType, boolean debug,
-			boolean guiFlag) {
-		Lexer lex = new StringLexer(llvmCode);
+			boolean guiFlag, boolean exec, String configFile) {
 		
-		return generateCode2(debug, asmType, guiFlag, lex);
+		Debuginfo debuginfo = new Debuginfo(debug);
+		Lexer lex = new StringLexer(llvmCode, debuginfo);
+		return generateCode2(debuginfo, asmType, guiFlag, lex);
 	}
 	
 	//extrahiert weil wir jetzt 2 verschiedene Lexer haben
-	private static String generateCode2(boolean debug, String asmType, boolean guiFlag,
+	private static String generateCode2(Debuginfo debuginfo, String asmType, boolean guiFlag,
 			Lexer lex) {
 		// Variablenverwaltung und Übersetzter erstellen
 		Translator trans = new Translator(asmType);
@@ -39,20 +51,23 @@ public class CodeGenerator {
 		ArrayList<Token> tokenStream;
 		// Token einlesen
 		
+		debuginfo.println("---> Start LLVM Code Parser --->\n");
 		tokenStream = lex.getTokenStream();
 		if(tokenStream == null) {
 			System.out.println("Error");
 		}
 		lex.close();
+		debuginfo.println("\n<--- LLVM Code Parser finished <---");
 
 		// Token informationen ausgeben
-		if (debug) {
+		debuginfo.println("---> Print out detailed token information --->\n");
+		if (debuginfo.getDebugflag()) {
 			for (Token t : tokenStream) {
-				
 				System.out.println("Token #" + linecount++);
 				t.print();
 			}
 		}
+		debuginfo.println("\n<--- Print out Token information end <---");
 
 		// Token Tabelle in der gui füllen
 		if (guiFlag) {
@@ -62,6 +77,7 @@ public class CodeGenerator {
 
 		// Token übersetzen
 		try {
+			debuginfo.println("---> Start of translation --->\n");
 			trans.translate(tokenStream);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -74,10 +90,14 @@ public class CodeGenerator {
 							+ errStack.getLineNumber() + ")");
 			}
 		}
+		debuginfo.println("\n<--- Translation finished <---");
+						
 		// Ausgabe des erzeugten Code's
-		if (debug) {
+		debuginfo.println("---> Print out generated assembler code --->\n");
+		if (debuginfo.getDebugflag()) {
 			trans.print();
 		}
+		debuginfo.println("\n<--- End of generated code<---");
 
 		// Ausgabe des erzeugten Code's in die GUI
 		if (guiFlag)
@@ -97,34 +117,34 @@ public class CodeGenerator {
 		ArrayList<String> inputFile = new ArrayList<String>();
 		//Inhalt der inputFiles als String
 		String outputFile = null;
-		String configFile = null;
+		String configFile = "mc_config.cfg";
 
 		// Argumente parsen
 		for (int i = 0; i < args.length; i++) {
 
-			if (args[i].compareTo("-o") == 0) {
+			if (args[i].compareTo("-o") == 0 || args[i].compareTo("--output") == 0) {
 				if ((i + 1) <= args.length)
 					outputFile = args[++i];
 				else {
 					System.out.println("Option -o needs a second parameter");
 					return;
 				}
-			} else if (args[i].compareTo("-C") == 0) {
+			} else if (args[i].compareTo("-C") == 0 || args[i].compareTo("--config") == 0) {
 				if ((i + 1) <= args.length)
 					configFile = args[++i];
 				else {
 					System.out.println("Option -C needs a second parameter");
 					return;
 				}
-			} else if (args[i].compareTo("-c") == 0) {
+			} else if (args[i].compareTo("-c") == 0 || args[i].compareTo("--compile") == 0) {
 				exec = false;
 			} else if (args[i].compareTo("-intel") == 0) {
 				asmType = "intel";
 			} else if (args[i].compareTo("-gnu") == 0) {
 				asmType = "gnu";
-			} else if (args[i].compareTo("-v") == 0) {
+			} else if (args[i].compareTo("-v") == 0 || args[i].compareTo("--verbose") == 0) {
 				debug = true;
-			} else if (args[i].compareTo("-g") == 0) {
+			} else if (args[i].compareTo("-g") == 0 || args[i].compareTo("--gui") == 0) {
 				gui = true;
 			} else
 				inputFile.add(args[i]);
@@ -144,10 +164,11 @@ public class CodeGenerator {
 				writeFile(exec, outputFile, output);
 			}
 		}
-	
+		
 		if (exec == true) {
-			exec(outputFile);
+			exec(outputFile, configFile);
 		}
+		
 	}
 
 	public static void writeFile(boolean exec, String outputFile, String output) {
@@ -161,85 +182,50 @@ public class CodeGenerator {
 		      schreibeStrom.write((byte)output.charAt(i));
 		    }
 		    schreibeStrom.close();
-		}catch(Exception e) {
-			
+		    
+		}catch(IOException e) {
+			System.err.println("Couldn't write output file");
+			e.printStackTrace();
 		}
 	}
 
-	public static void exec(String outputFile) {
+	public static void exec(String outputFile, String configFile) {
 		if(System.getProperty("os.name").toLowerCase().indexOf("windows") >= 0) {
-			System.err.println("The -e option is not applicable for windows systems.");
-			System.err.println("Please change your operating system and do not support such stuff like windows");
+			System.err.println("Creating an executable file is not supported for windows systems.");
+			System.err.println("Please change your operating system. We do not support such stuff like windows :P");
 			return;
 		} else if(System.getProperty("os.name").toLowerCase().indexOf("linux") >= 0) {
 			System.out.println("Yeah LINUX :-)");
 			
-			String libc, ld_linux;
-			//String path = 
+			String line;
+			FileInputStream fstream;
+			DataInputStream in;
+			BufferedReader br;
 			
 			try {
-				String command = "locate lib32/libc.so";
-				System.out.println(command);
-				Process process = Runtime.getRuntime().exec(command);
-				Reader r = new InputStreamReader(process.getInputStream());
-			    BufferedReader in = new BufferedReader(r);
-			    if((libc = in.readLine()) == null) {
-			    	System.err.println("Couldn't find 32bit libc.so library");
-			    	return;
-			    }	
-			    System.out.println("Found libc: " + libc);
-			    
-			    command = "locate lib32/ld-linux.so";
-			    System.out.println(command);
-			    process = Runtime.getRuntime().exec(command);
-				r = new InputStreamReader(process.getInputStream());
-			    in = new BufferedReader(r);
-			    if((ld_linux = in.readLine()) == null) {
-			    	System.err.println("Couldn't find 32bit ld-linux.so library");
-			    	return;
-			    }	
-			    System.out.println("Found ld-linux: " + ld_linux);
-			    
-			    String line;
-			    command = "as -32 -o a.out " + outputFile + ".s";
-			    System.out.println(command);
-			    process = Runtime.getRuntime().exec(command);
-				r = new InputStreamReader(process.getInputStream());
-			    in = new BufferedReader(r);
-			    if((line = in.readLine()) != null) {
-			    	do {
-			    		System.err.println(line);
-			    	}while((line = in.readLine()) != null);
-			    	return;
-			    }
-			    
-			    command = new String("ld -melf_i386 --dynamic-linker " + ld_linux + " " + libc + " -o " + outputFile + " a.out");
-			    System.out.println(command);
-			    process = Runtime.getRuntime().exec(command);
-				r = new InputStreamReader(process.getInputStream());
-			    in = new BufferedReader(r);
-			    if((line = in.readLine()) != null) {
-			    	do {
-			    		System.err.println(line);
-			    	}while((line = in.readLine()) != null);
-			    	return;
-			    }
-			    
-			    command = "rm a.out";
-			    System.out.println(command);
-			    process = Runtime.getRuntime().exec(command);
-				r = new InputStreamReader(process.getInputStream());
-			    in = new BufferedReader(r);
-			    if((line = in.readLine()) != null) {
-			    	do {
-			    		System.err.println(line);
-			    	}while((line = in.readLine()) != null);
-			    	return;
-			    }
-			    
-			    
-			    
-			} catch (Exception e) {
+				fstream = new FileInputStream(configFile);
+				in = new DataInputStream(fstream);
+				br = new BufferedReader(new InputStreamReader(in));
+				
+				while ((line = br.readLine()) != null) {
+					line = line.trim();
+					if (line.length() == 0 || line.charAt(0) == '#') {
+						continue;
+					}
+					
+					line = line.replace("<input>", outputFile + ".s");
+					line = line.replace("<output>", outputFile);
+					System.out.println(line);
+					Process process = Runtime.getRuntime().exec(line);
+					Process sleep = Runtime.getRuntime().exec("sleep 1");
+				}
+				fstream.close();
+
+			} catch (FileNotFoundException e) {
+				System.err.println("Could't found config file");
+				e.printStackTrace();
+			} catch(IOException e) {
+				System.err.println("Failed to read from config file");
 				e.printStackTrace();
 			}
 		} else {

@@ -68,7 +68,6 @@ public class MemoryManager {
 	}
 
 	public String getAddress(String name) {
-		//System.out.println(current.get(name).getName());
 		if(current != null) {
 			if(globalReferences.containsKey(current.getName() + "." + name))
 				return globalReferences.get(current.getName() + "." + name).getName();

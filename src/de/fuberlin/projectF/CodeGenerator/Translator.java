@@ -195,13 +195,9 @@ public class Translator {
 				}
 				//Record
 				else if(tT.startsWith("%")) {
-					System.out.println("Allocation of a record");
 					int result;
-					
 					result = findToken(0, false, TokenType.TypeDefinition, tok.getTypeTarget(), null, null);
-					
 					Record rec = createRecord(tok.getTarget(), code.get(result));
-					
 					asm.sub(String.valueOf(rec.getSize()), "esp",
 							"Allocation " + tok.getTarget());
 				}
@@ -217,7 +213,6 @@ public class Translator {
 				break;
 
 			case Assignment:
-				System.out.println("Target: " + tok.getTarget());
 				String target = mem.getAddress(tok.getTarget());
 				String source;
 				// Zuweisung Variable
@@ -226,9 +221,7 @@ public class Translator {
 						if(tok.getTypeTarget().equals("i32*"))
 							asm.mov(tok.getOp1(), target, "Assignment " + tok.getTarget());
 						else if(tok.getTypeTarget().equals("double*")) {
-							System.out.println("Target: " + tok.getTarget());
 							String target2 = mem.getAddress(tok.getTarget(), +4);
-							System.out.println("Address" + target2);
 							asm.mov(tok.getOp1().substring(0,10), target2, "Assignment " + tok.getTarget());
 							asm.mov("0x" + tok.getOp1().substring(10), target, "Assignment " + tok.getTarget());
 						}
@@ -266,12 +259,11 @@ public class Translator {
 				res = mem.getFreeRegister();
 				if (res == null) {
 					if (!freeUnusedRegister(tokenNumber))
-						System.out.println("Could'nt free register");
+						System.err.println("Could'nt free register");
 					res = mem.getFreeRegister();
 				}
 
 				if (tok.getOp1().startsWith("%")) {
-					System.out.println("Op1" + tok.getOp1());
 					op1 = mem.getAddress(tok.getOp1());
 				}
 				else
@@ -302,11 +294,11 @@ public class Translator {
 				
 				else if (tok.getTypeTarget().equals("sdiv")) {
 					if (!isRegisterFree(new RegisterAddress(0))) {
-						System.out.println("Register eax is not free");
+						System.err.println("Register eax is not free");
 						saveRegisterValue(new RegisterAddress(0));
 					}
 					if (!isRegisterFree(new RegisterAddress(3))) {
-						System.out.println("Register edx is not free");
+						System.err.println("Register edx is not free");
 						saveRegisterValue(new RegisterAddress(3));
 					}
 					asm.mov(op1, new RegisterAddress(0).getFullName(), "");
@@ -350,7 +342,7 @@ public class Translator {
 				mmxRes = mem.getFreeMMXRegister();
 				if (mmxRes == null) {
 					if (!freeUnusedMMXRegister(tokenNumber)) {
-						System.out.println("Could'nt free register");
+						System.err.println("Could'nt free register");
 					}
 					mmxRes = mem.getFreeMMXRegister();
 				}
@@ -360,7 +352,7 @@ public class Translator {
 				mmxRes2 = mem.getFreeMMXRegister();
 				if (mmxRes2 == null) {
 					if (!freeUnusedMMXRegister(tokenNumber)) {
-						System.out.println("Could'nt free register");
+						System.err.println("Could'nt free register");
 					}
 					mmxRes2 = mem.getFreeMMXRegister();
 				}
@@ -396,7 +388,7 @@ public class Translator {
 					res = mem.getFreeRegister();
 					if (res == null) {
 						if (!freeUnusedRegister(tokenNumber)) {
-							System.out.println("Could'nt free register");
+							System.err.println("Could'nt free register");
 						}
 						res = mem.getFreeRegister();
 					}
@@ -411,14 +403,14 @@ public class Translator {
 					mmxRes = mem.getFreeMMXRegister();
 					if (mmxRes == null) {
 						if (!freeUnusedMMXRegister(tokenNumber)) {
-							System.out.println("Could'nt free register");
+							System.err.println("Could'nt free register");
 						}
 						mmxRes = mem.getFreeMMXRegister();
 					}
 					asm.cvtsi2sd(op1, mmxRes.getFullName(), "Cast");
 					mem.addMMXRegVar(tok.getTarget(), "double*", mmxRes);
 				} else {
-					System.out.println("Cast Error");
+					System.err.println("Cast Error");
 				}
 					
 				break;
@@ -430,7 +422,7 @@ public class Translator {
 				res = mem.getFreeRegister();
 				if (res == null) {
 					if (!freeUnusedRegister(tokenNumber)) {
-						System.out.println("Could'nt free register");
+						System.err.println("Could'nt free register");
 					}
 					res = mem.getFreeRegister();
 				}
@@ -493,8 +485,6 @@ public class Translator {
 				
 			case Getelementptr:
 				if(tok.getTypeTarget().charAt(0) == '%') {
-					//TODO :-)
-					System.out.println("New RecordPointer: " + tok.getTarget() + " " + tok.getOp1() + " " + tok.getOp2());
 					mem.newRecordPtr(tok.getTarget(), tok.getOp1(), tok.getOp2());
 				} else if(tok.getOp1().charAt(0) == '@') {
 					mem.newReference(tok.getTarget(), tok.getOp1().substring(2));
@@ -556,7 +546,6 @@ public class Translator {
 
 	private Record createRecord(String name, Token tok) {
 		Record rec = new Record(name);
-		System.out.println("Create Record: " + name);
 		for( int i = 0; i < tok.getParameterCount(); i++) {
 			String type = tok.getParameter(i).getType();
 			if(type.charAt(0) == '%') {
@@ -630,7 +619,6 @@ public class Translator {
 	}
 
 	public void print() {
-		System.out.println("\nGenerated Code:");
 		System.out.print(asm.getSectionHead());
 		System.out.print(asm.getSectionData());
 		System.out.print(asm.getSectionText());

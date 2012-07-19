@@ -1,5 +1,7 @@
 def int main(){
   int a;
-  a=7;
+  real b;
+  a=9;
+  b = 0.11;
   return a;
-} 
+}

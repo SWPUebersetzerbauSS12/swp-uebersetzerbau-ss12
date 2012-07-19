@@ -80,7 +80,7 @@ public abstract class AbstractSyntaxTree extends Tree {
 	 * 
 	 * @return
 	 */
-	public String genStruct() {
+	protected String genStruct() {
 		String out = "";
 		for (int i = 0; i < getChildrenCount(); i++) {
 			out += ((AbstractSyntaxTree) getChild(i)).genStruct();

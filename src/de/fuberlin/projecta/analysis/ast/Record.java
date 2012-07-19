@@ -55,7 +55,7 @@ public class Record extends Type {
 	}
 
 	@Override
-	public String genStruct() {
+	protected String genStruct() {
 		String ret = "";
 		List<String> recordTypes = new ArrayList<String>();
 		if (!(getParent() instanceof Params)) {

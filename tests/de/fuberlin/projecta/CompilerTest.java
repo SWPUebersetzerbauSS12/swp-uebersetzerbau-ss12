@@ -208,7 +208,7 @@ public class CompilerTest {
 		String output = executeCode(code);
 		assertEquals("3", output);
 	}
-	
+
 	@Test
 	public void testArray() {
 		final String code = mainC("int[10] test; int i; int tmp;" +
@@ -253,6 +253,5 @@ public class CompilerTest {
 		String output = executeCode(code);
 		assertEquals("012341234523456", output);
 	}
-
 
 }

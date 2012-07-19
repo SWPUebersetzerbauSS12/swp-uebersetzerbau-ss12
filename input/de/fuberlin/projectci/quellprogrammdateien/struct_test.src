@@ -1,9 +1,0 @@
-def int main(){
-  record{
-	int x;
-	int y;
-  } coordinate;
-  coordinate.x=5;
-  coordinate.y=7;
-  return 0;
-} 

@@ -291,6 +291,9 @@ public class LLVM_Function {
 	 */
 	public void reachingAnalysis() throws LLVM_OptimizationException{
 		for(LLVM_Block b : this.blocks) {
+			b.clearReaching();
+		}
+		for(LLVM_Block b : this.blocks) {
 			b.createGenKillSets();
 		}
 		this.createInOutReaching();

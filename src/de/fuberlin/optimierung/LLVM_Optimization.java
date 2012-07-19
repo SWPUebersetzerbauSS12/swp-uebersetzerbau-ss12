@@ -53,13 +53,16 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 			//Constant Folding
 			tmp.constantFolding();
 			
-			// Dead register elimination
-			tmp.eliminateDeadRegisters();
-			tmp.eliminateDeadBlocks();
-			
 			// Reaching vor Lebendigkeitsanalyse
 			// Koennen tote Stores entstehen, also vor live variable analysis
 			tmp.reachingAnalysis();
+			
+			// Dead register elimination
+			// Reaching ruft folding/propagtion auf
+			// Dadurch kann neuer unerreichbarer Block entstehen
+			// Also tote Register/Blöcke nach reaching
+			tmp.eliminateDeadRegisters();
+			tmp.eliminateDeadBlocks();
 			
 			// CommonExpressions
 			// Store/Load-Paare muessen vorher eliminiert werden, also nach reaching analysis

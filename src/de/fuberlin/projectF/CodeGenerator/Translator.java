@@ -415,7 +415,7 @@ public class Translator {
 					
 				break;
 			case Label:
-				asm.label(tok.getTarget());
+				asm.label(mem.getContextName() + "" + tok.getTarget());
 				break;
 
 			case Compare:
@@ -443,38 +443,30 @@ public class Translator {
 				break;
 
 			case Branch:
-				if (tok.getOp1().isEmpty())
-					asm.jmp("label_" + tok.getOp2().substring(1));
-				else {
+				op2 = "label_" + mem.getContextName() + "" + tok.getOp2().substring(1);
+				
+				if (!tok.getOp1().isEmpty()) {
 					int result;
 					result = findToken(tokenNumber, true, TokenType.Compare,
 							null, null, null);
 
-					if (code.get(result).getTypeTarget().equals("eq")) {
-						asm.je("label_" + tok.getOp1().substring(1));
-						asm.jmp("label_" + tok.getOp2().substring(1));
-					}
-					if (code.get(result).getTypeTarget().equals("ne")) {
-						asm.jne("label_" + tok.getOp1().substring(1));
-						asm.jmp("label_" + tok.getOp2().substring(1));
-					}
-					if (code.get(result).getTypeTarget().equals("slt")) {
-						asm.jl("label_" + tok.getOp1().substring(1));
-						asm.jmp("label_" + tok.getOp2().substring(1));
-					}
-					if (code.get(result).getTypeTarget().equals("sgt")) {
-						asm.jg("label_" + tok.getOp1().substring(1));
-						asm.jmp("label_" + tok.getOp2().substring(1));
-					}
-					if (code.get(result).getTypeTarget().equals("sle")) {
-						asm.jle("label_" + tok.getOp1().substring(1));
-						asm.jmp("label_" + tok.getOp2().substring(1));
-					}
-					if (code.get(result).getTypeTarget().equals("sge")) {
-						asm.jge("label_" + tok.getOp1().substring(1));
-						asm.jmp("label_" + tok.getOp2().substring(1));
-					}
+					op1 = "label_" + mem.getContextName() + "" + tok.getOp1().substring(1);
+					
+					if (code.get(result).getTypeTarget().equals("eq"))
+						asm.je(op1);
+					else if (code.get(result).getTypeTarget().equals("ne"))
+						asm.jne(op1);
+					else if (code.get(result).getTypeTarget().equals("slt"))
+						asm.jl(op1);
+					else if (code.get(result).getTypeTarget().equals("sgt"))
+						asm.jg(op1);
+					else if (code.get(result).getTypeTarget().equals("sle"))
+						asm.jle(op1);
+					else if (code.get(result).getTypeTarget().equals("sge"))
+						asm.jge(op1);
 				}
+				
+				asm.jmp(op2);
 				break;
 
 			case String:

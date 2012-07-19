@@ -28,7 +28,10 @@ public abstract class Lexer {
 		while ((tok = getNextToken()).getType() != TokenType.EOF) {
 			tokenStream.add(tok);
 		}
+		
+		debug.println("\n\tPostprocessing of token stream -->");
 		postprocessing();
+		debug.println("\t<-- end of postprocessing");
 		
 		return tokenStream;
 	}
@@ -483,15 +486,59 @@ public abstract class Lexer {
 	}
 	
 	private void postprocessing() {
+		//inline strings umbenennen 
 		for (Map.Entry<String, ArrayList<String>> entry : renameCandidate.entrySet()) {
 			String key = entry.getKey();
-		    
-		    // ersetzen
+		    // umbenennene
 		    for(int i = 0; i < tokenStream.size(); i++)
 		    	if(tokenStream.get(i).getType() == TokenType.Getelementptr)
 		    		for(int k = 0; k < entry.getValue().size(); k++)
 			    		if(tokenStream.get(i).getOp1().equals(entry.getValue().get(k)))
 			    			tokenStream.get(i).setOp1(key);
 		}
+		
+		//sprünge handhaben
+		HashMap<String,HashMap<Integer, Integer>> contexts = new HashMap<String,HashMap<Integer, Integer>>();
+		String currentContext = "";
+		int currentBlock = 0;
+		int var = 0;
+		//in Blöcke unterteilen und größte Variable im Block ermitteln
+		for(int i = 0; i < tokenStream.size(); i++) {
+			Token tok = tokenStream.get(i);
+			if(tok.getType() == TokenType.Definition) {
+				currentContext = tok.getTarget();
+				currentBlock = 0;
+				var = 0;
+				debug.println("\t\tnew Context: " + currentContext);
+				contexts.put(currentContext, new HashMap<Integer, Integer>());
+				debug.println("\t\t\tadd Block: " + currentBlock + " highest variable: " + var);
+				contexts.get(currentContext).put(currentBlock, var);
+				
+			} else if(tok.getType() == TokenType.Branch || tok.getType() == TokenType.Return) {
+				currentBlock = ++var;
+				Token token = new Token();
+				token.setType(TokenType.Label);
+				token.setTarget(String.valueOf(var));
+				debug.println("\t\t\tinsert Label \"" + token.getTarget() + "\" in token token stream");
+				tokenStream.add(i+1, token);
+				debug.println("\t\t\tadd Block: " + currentBlock + " highest variable: " + var);
+				contexts.get(currentContext).put(currentBlock, var);
+			} else if(tok.getType() == TokenType.Label) {
+		
+			} else {
+				if(!tok.getTarget().isEmpty() && tok.getTarget().length() > 1) {
+					try {
+						var = Integer.valueOf(tok.getTarget().substring(1));
+						debug.println("\t\t\tchange Block: " + currentBlock + " highest variable: " + var);
+						contexts.get(currentContext).put(currentBlock, var);
+					} catch(NumberFormatException e) {
+					}
+				}
+			}
+		}
+		
+		
+		
+		
 	}
 }

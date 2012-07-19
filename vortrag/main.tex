@@ -25,7 +25,7 @@
 \usepackage{multirow}
 
 \include{fu-beamer-template}  % THIS is the line that includes the FU template!
-\include{algorithmic}
+%\include{algorithmic}
 
 \usepackage{arev,t1enc} % looks nicer than the standard sans-serif font
 % if you experience problems, comment out the line above and change
@@ -85,6 +85,7 @@ stringstyle=\color{brown},frame=single}
 % -------------------------------------------------------------------------------------------
 
 \begin{frame}{Ziele}
+
 \begin{itemize}
 \item Gesucht: Sinnvolles Maß für den Abstand zweier Kurven $f:[a_1,b_1]\rightarrow \mathds{R}^n$ und $g:[a_2,b_2]\rightarrow \mathds{R}^n$
 \vspace{3mm}
@@ -116,8 +117,52 @@ UML
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Beispiele}
-Beispiele
+\begin{frame}{Optimierungen \& Beispiele}
+
+\begin{columns}
+\begin{column}{.48\textwidth}
+
+\begin{itemize}
+\item <+-| alert@+> Constant folding
+\item <+-| alert@+> Constant propagation
+\item <+-| alert@+> Store/Load folding
+\item <+-| alert@+> Remove common expressions
+\item <+-| alert@+> Global life time analysis
+\item <+-| alert@+> Strength reduction
+\item <+-| alert@+> Eliminate dead registers/blocks
+\end{itemize}
+
+\end{column}%
+%\hfill%
+\begin{column}{.48\textwidth}
+%\color{green}\rule{\linewidth}{2pt}
+
+{\fbox{\parbox[c][2.9cm]{5cm}{
+\only<1-1>{Test1}
+\only<2-2>{Test2}
+\only<3-3>{Test3}
+\only<4-4>{Test4}
+\only<5-5>{Test5}
+\only<6-6>{Test6}
+\only<7-7>{Test7}
+}}\\
+{\color{red}unoptimierter Code}\\
+\vspace*{0.3cm}
+\fbox{\parbox[c][2.9cm]{5cm}{
+\only<1-1>{Test1}
+\only<2-2>{Test2}
+\only<3-3>{Test3}
+\only<4-4>{Test4}
+\only<5-5>{Test5}
+\only<6-6>{Test6}
+\only<7-7>{Test7}
+
+}}\\
+{\color{green}optimierter Code}}
+
+\end{column}%
+\end{columns}
+
 \end{frame}
 
 \begin{frame}{Fazit / Ausblick}

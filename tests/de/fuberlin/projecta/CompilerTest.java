@@ -208,7 +208,7 @@ public class CompilerTest {
 		String output = executeCode(code);
 		assertEquals("3", output);
 	}
-	
+
 	@Test
 	public void testArray() {
 		final String code = mainC("int[10] test; int i; int tmp;" +
@@ -222,6 +222,17 @@ public class CompilerTest {
 		System.out.println(code);
 		String output = executeCode(code);
 		assertEquals("0123456789", output);
+	}
+
+	@Test
+	public void testDoWhileStatement() {
+		String code = mainC("int i; i = 0; do {" +
+				"print i;" + 
+				"i = i+1;" + 
+			"} while (i < 5);");
+		String output = executeCode(code);
+		System.out.println(output);
+		assertEquals("012345", output);
 	}
 
 	@Test
@@ -252,6 +263,5 @@ public class CompilerTest {
 		String output = executeCode(code);
 		assertEquals("012341234523456", output);
 	}
-
 
 }

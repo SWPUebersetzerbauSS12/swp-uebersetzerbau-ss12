@@ -6,6 +6,7 @@ import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.SemanticAnalyzer;
 import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.TypeErrorException;
+import de.fuberlin.projecta.parser.ParseException;
 
 /**
  * This tests the following parts:

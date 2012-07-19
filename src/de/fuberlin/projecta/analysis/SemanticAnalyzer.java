@@ -457,7 +457,7 @@ public class SemanticAnalyzer {
 					throw new SemanticException(
 							"Epsilon in other position than head?", null);
 				}
-			case SP:
+			case FP:
 				// this should never occur
 				// throw new SemanticException("Stack pointer in parsetree?");
 			}

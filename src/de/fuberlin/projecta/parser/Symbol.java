@@ -14,7 +14,7 @@ public class Symbol implements ISymbol {
 	 */
 	public enum Reserved {
 		EPSILON("ε"), // epsilon production
-		SP("_SP"); // stack pointer
+		FP("_FP"); // frame pointer (internal)
 		
 		private static Map<String,Reserved> terminalSymbol2Reserved
 			= new HashMap<String, Reserved>();

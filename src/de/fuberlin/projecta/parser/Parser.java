@@ -50,22 +50,18 @@ public class Parser implements IParser {
 
 		initStack();
 
-		IToken token = null;
-
-		token = lexer.getNextToken(); // may throw
-
+		IToken token = lexer.getNextToken(); // may throw
 		ISyntaxTree currentNode = new Tree(new Symbol(Symbol.Reserved.EPSILON));
 		do {
 			if (debugEnabled)
 				printStack();
 
 			Symbol peek = stack.pop();
-
 			if (peek.isReservedTerminal()) {
 				Symbol.Reserved reservedTerminal = peek.asReservedTerminal();
 
 				switch (reservedTerminal) {
-				case SP:
+				case FP:
 					currentNode = currentNode.getParent();
 				case EPSILON: // fall-through, do nothing
 				default:
@@ -111,7 +107,7 @@ public class Parser implements IParser {
 				currentNode.addChild(node);
 				currentNode = node;
 
-				stack.push(new Symbol(Symbol.Reserved.SP));
+				stack.push(new Symbol(Symbol.Reserved.FP));
 
 				String[] tmp = prod.split("::=");
 				if (tmp.length == 2) {

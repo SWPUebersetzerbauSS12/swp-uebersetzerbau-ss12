@@ -1,8 +1,10 @@
 package de.fuberlin.projectci.gui;
 
 import java.awt.GridLayout;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.JFrame;
@@ -45,10 +47,17 @@ public class ParseTableGui {
 
 		// Symbole holen
 		terminals = g.getAllTerminalSymols();
+		terminals.add(Grammar.INPUT_ENDMARKER);
 		nonTerminals = g.getAllNonTerminals();
 
 		// States holen
-		actionStates = new HashSet<State>();
+		actionStates = new TreeSet<State>(new Comparator<State>() {
+
+			@Override
+			public int compare(State s1, State s2) {
+				return s1.getId()-s2.getId();
+			}
+		});
 		actionStates.addAll(pt.state2ActionTable.keySet());
 		
 		gotoStates = new HashSet<State>();
@@ -60,10 +69,17 @@ public class ParseTableGui {
 		pt=parseTable;
 		// Symbole holen
 		terminals = grammar.getAllTerminalSymols();
+		terminals.add(Grammar.INPUT_ENDMARKER);
 		nonTerminals = grammar.getAllNonTerminals();
 
 		// States holen
-		actionStates = new HashSet<State>();
+		actionStates = new TreeSet<State>(new Comparator<State>() {
+
+			@Override
+			public int compare(State s1, State s2) {
+				return s1.getId()-s2.getId();
+			}
+		});
 		actionStates.addAll(parseTable.state2ActionTable.keySet());
 
 		gotoStates = new HashSet<State>();

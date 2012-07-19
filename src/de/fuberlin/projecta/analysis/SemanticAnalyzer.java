@@ -51,10 +51,10 @@ public class SemanticAnalyzer {
 
 	public void analyze() throws SemanticException {
 		toAST(parseTree);
-		parseTreeForRemoval();
-		parseTreeForBuildingSymbolTable();
-		AST.printTree();
-		checkForValidity(AST);
+
+		AST.buildSymbolTable(tables);
+		AST.checkSemantics();
+		AST.checkTypes();
 	}
 
 	public void toAST(ISyntaxTree tree) {
@@ -82,8 +82,15 @@ public class SemanticAnalyzer {
 	 * @param insertNode
 	 *            syntaxTree-Node, in which new nodes get added
 	 */
-	public void toAST(ISyntaxTree tree, ISyntaxTree insertNode) {
+	public void toAST(ISyntaxTree tree, AbstractSyntaxTree insertNode) {
 		Symbol symbol = translate(tree.getSymbol());
+
+		// pass the parse tree token to the AST node if possible.
+		// needed for later error reporting!
+		if (insertNode != null) {
+			insertNode.setToken(tree.getToken());
+		}
+
 		if (symbol.isNonTerminal()) {
 			NonTerminal nonT = symbol.asNonTerminal();
 
@@ -115,7 +122,7 @@ public class SemanticAnalyzer {
 						// and is passed to the new array
 						// it doesn't matter which node to take as long as
 						// it is a treenode.
-						ISyntaxTree tmp = new Program();
+						AbstractSyntaxTree tmp = new Program();
 						toAST(tree.getChild(0), tmp);
 
 						array.addAttribute(L_ATTRIBUTE);
@@ -241,7 +248,7 @@ public class SemanticAnalyzer {
 			case expr:
 			case term:
 				if (tree.getChild(1).getChildrenCount() > 0) {
-					ISyntaxTree tmp = new Program();
+					AbstractSyntaxTree tmp = new Program();
 					toAST(tree.getChild(0), tmp);
 					tree.getChild(1).addAttribute(L_ATTRIBUTE);
 					tree.getChild(1).setAttribute(L_ATTRIBUTE, tmp);
@@ -333,7 +340,7 @@ public class SemanticAnalyzer {
 				if (tree.getChild(1).getChildrenCount() == 0) {
 					toAST(tree.getChild(0), insertNode);
 				} else {
-					ISyntaxTree tmp = new Program();
+					AbstractSyntaxTree tmp = new Program();
 					toAST(tree.getChild(0), tmp);
 					tree.getChild(1).addAttribute(L_ATTRIBUTE);
 					// there is only one child (the id itself)!
@@ -348,7 +355,7 @@ public class SemanticAnalyzer {
 				if (tree.getChild(1).getChildrenCount() == 0) {
 					toAST(tree.getChild(0), insertNode);
 				} else {
-					ISyntaxTree tmp = new Program();
+					AbstractSyntaxTree tmp = new Program();
 					toAST(tree.getChild(0), tmp);
 					if (tmp.getChildrenCount() == 1) {
 						tree.getChild(1).addAttribute(L_ATTRIBUTE);
@@ -427,42 +434,13 @@ public class SemanticAnalyzer {
 				} else {
 					// this should never occur
 					throw new SemanticException(
-							"Epsilon in other position than head?");
+							"Epsilon in other position than head?", null);
 				}
 			case SP:
 				// this should never occur
 				// throw new SemanticException("Stack pointer in parsetree?");
 			}
 		}
-	}
-
-	/**
-	 * Should find productions which are semantically nonsense. Like double
-	 * assignment, funcCalls which aren't declared in this scope, assessing
-	 * record members which aren't existing or where the record does not exist,
-	 * ...
-	 * 
-	 * @param tree
-	 * @return
-	 */
-	private boolean checkForValidity(ISyntaxTree tree) {
-		return true;
-	}
-
-	/**
-	 * Runs every nodes run method in depth-first-left-to-right order.
-	 * 
-	 * @param tree
-	 */
-	private void parseTreeForBuildingSymbolTable() {
-		AST.buildSymbolTable(tables);
-	}
-
-	/**
-	 * Checks whether the tree contains disallowed semantic.
-	 */
-	private void parseTreeForRemoval() {
-		// TODO: think about how to smartly encode disallowed trees
 	}
 
 	public SymbolTableStack getTables() {

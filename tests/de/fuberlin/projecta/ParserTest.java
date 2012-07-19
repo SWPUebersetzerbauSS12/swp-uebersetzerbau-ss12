@@ -75,6 +75,18 @@ public class ParserTest {
 		parse(code);
 	}
 
+	@Test(expected = ParseException.class)
+	public void testInvalidArrayDeclaration() {
+		String code = mainC("int[2.5] a;");
+		parse(code);
+	}
+
+	@Test(expected = ParseException.class)
+	public void testInvalidArrayDeclaration2() {
+		String code = mainC("int i; int[i] a;");
+		parse(code);
+	}
+
 	@Test
 	public void testValidProgram() {
 		parse("def int main() {}");

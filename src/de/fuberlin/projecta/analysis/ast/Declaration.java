@@ -1,7 +1,7 @@
 package de.fuberlin.projecta.analysis.ast;
 
+import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.SymbolTableStack;
-import de.fuberlin.projecta.analysis.TypeErrorException;
 
 /**
  * Declaration consists of two child nodes
@@ -24,7 +24,7 @@ public class Declaration extends AbstractSyntaxTree {
 	@Override
 	public void checkTypes() {
 		if (getType().toTypeString().equals(BasicType.TYPE_VOID_STRING)) {
-			throw new TypeErrorException("Variable cannot be from type void");
+			throw new SemanticException("Variable cannot be from type void", this);
 		}
 
 		for (int i = 0; i < getChildrenCount(); ++i)

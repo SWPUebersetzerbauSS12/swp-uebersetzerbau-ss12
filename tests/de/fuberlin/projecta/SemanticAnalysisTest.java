@@ -5,7 +5,6 @@ import org.junit.Test;
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.SemanticAnalyzer;
 import de.fuberlin.projecta.analysis.SemanticException;
-import de.fuberlin.projecta.analysis.TypeErrorException;
 
 /**
  * This tests the following parts:
@@ -46,31 +45,31 @@ public class SemanticAnalysisTest {
 		analyze(code);
 	}
 
-	@Test(expected = TypeErrorException.class)
+	@Test(expected = SemanticException.class)
 	public void testInvalidArtihmeticsOnStrings(){
 		final String code = mainC("\"foo\" + \"foo\";");
 		analyze(code);
 	}
 
-	@Test(expected = TypeErrorException.class)
+	@Test(expected = SemanticException.class)
 	public void testInvalidArtihmeticsOnRecords(){
 		final String code = mainC("record {int a; int b; } r; r + r;");
 		analyze(code);
 	}
 
-	@Test(expected = TypeErrorException.class)
+	@Test(expected = SemanticException.class)
 	public void testInvalidAssignOperand1() {
 		final String code = mainC("bool a; a = !42;");
 		analyze(code);
 	}
 
-	@Test(expected = TypeErrorException.class)
+	@Test(expected = SemanticException.class)
 	public void testInvalidAssignOperand2() {
 		final String code = mainC("bool b; int i; i = b;");
 		analyze(code);
 	}
 
-	@Test(expected = TypeErrorException.class)
+	@Test(expected = SemanticException.class)
 	public void testInvalidAssignOperand3() {
 		final String code = mainC("int a; a = 0.0;");
 		analyze(code);
@@ -127,6 +126,7 @@ public class SemanticAnalysisTest {
 	@Test(expected = SemanticException.class)
 	public void testInvalidPrintArgument() {
 		final String code = mainC("record { int a; int b; } r; print r;");
+		System.out.println(code);
 		analyze(code);
 	}
 
@@ -136,7 +136,7 @@ public class SemanticAnalysisTest {
 		analyze(code);
 	}
 
-	@Test(expected = TypeErrorException.class)
+	@Test(expected = SemanticException.class)
 	public void testVariableDeclaredVoid() {
 		final String code = mainC("void v;");
 		analyze(code);

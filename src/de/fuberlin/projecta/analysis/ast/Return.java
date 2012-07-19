@@ -38,11 +38,11 @@ public class Return extends Statement {
 		if (this.getChildrenCount() == 0) {
 			// return type must be void!
 			if (!funcType.equals(BasicType.TYPE_VOID_STRING))
-				throw new SemanticException("Missing return value in non-void function");
+				throw new SemanticException("Missing return value in non-void function", null);
 		} else {
 			String returnType = getArgument().toTypeString();
 			if (!funcType.equals(returnType))
-				throw new SemanticException("Incompatible arguments: Function declared with return type " + funcType + " but returned " + returnType);
+				throw new SemanticException("Incompatible arguments: Function declared with return type " + funcType + " but returned " + returnType, null);
 		}
 	}
 

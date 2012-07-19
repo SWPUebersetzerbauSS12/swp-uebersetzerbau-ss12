@@ -72,8 +72,8 @@ public class SymbolTableHelper {
 		String recName = node.getRecordId().getValue();
 		EntryType entry = lookup(recName, node);
 		if (entry == null) {
-			throw new TypeErrorException("Record " + recName
-					+ " not defined before!");
+			throw new SemanticException("Record " + recName
+					+ " not defined before!", null);
 		}
 		String route = "";
 

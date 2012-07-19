@@ -86,8 +86,8 @@ public class Parser implements IParser {
 						e.printStackTrace();
 					}
 				} else {
-					throw new ParseException("Wrong token " + token
-							+ " in input", token);
+					throw new ParseException("Wrong token '" + token.getText()
+							+ "' in input, expected type: '" + terminal.terminalSymbol() + "'", token);
 				}
 			} else /** stack symbol is non-terminal */
 			{

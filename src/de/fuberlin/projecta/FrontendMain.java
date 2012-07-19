@@ -1,8 +1,11 @@
 package de.fuberlin.projecta;
 
+import de.fuberlin.commons.lexer.IToken;
 import de.fuberlin.commons.parser.ISyntaxTree;
+import de.fuberlin.projecta.analysis.DebuggingHelper;
 import de.fuberlin.projecta.analysis.SemanticAnalyzer;
 import de.fuberlin.projecta.analysis.SemanticException;
+import de.fuberlin.projecta.analysis.ast.AbstractSyntaxTree;
 import de.fuberlin.projecta.lexer.io.FileCharStream;
 import de.fuberlin.projecta.lexer.io.ICharStream;
 import de.fuberlin.projecta.parser.Parser;
@@ -19,18 +22,22 @@ public class FrontendMain {
 
 		ISyntaxTree tree = parser.getParseTree();
 		SemanticAnalyzer analyzer = new SemanticAnalyzer(tree);
-		analyzer.analyze();
 		try {
-			analyzer.getAST().checkSemantics();
-			System.out.println("Semantics should be correct");
+			analyzer.analyze();
 		} catch (SemanticException e) {
-			System.out.println("Bad Semantics");
+			System.out.println("Error: Bad Semantics");
 			System.out.println(e.getMessage());
+
+			// try to find where it happened
+			AbstractSyntaxTree node = e.getNode();
+			IToken token = DebuggingHelper.extractPosition(node);
+			if (token != null)
+				System.out.println("Error near: '" + token.getText() + "' near line: " + token.getLineNumber() + ", column: " + token.getOffset());
+
 			return null;
 		}
 
 		analyzer.getAST().printTree();
-		analyzer.getAST().checkTypes();
 		return analyzer.getAST().genCode();
 	}
 

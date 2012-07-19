@@ -25,7 +25,7 @@ public class Params extends AbstractSyntaxTree {
 		for (int i = 0; i < this.getChildrenCount(); i++) {
 			if (this.getChild(i) instanceof BasicType
 					&& ((BasicType) this.getChild(i)).getTokenType() == BasicTokenType.VOID) {
-				throw new SemanticException("Parameter must have a type. \"void\" is not allowed!");
+				throw new SemanticException("Parameter must have a type. \"void\" is not allowed!", this);
 			}
 			((AbstractSyntaxTree) this.getChild(i)).checkSemantics();
 		}

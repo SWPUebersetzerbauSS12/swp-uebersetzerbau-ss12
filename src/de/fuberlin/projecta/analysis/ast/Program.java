@@ -33,7 +33,7 @@ public class Program extends AbstractSyntaxTree {
 		if (mains != 1) {
 			throw new SemanticException(
 					"Program needs exactly one main method! Program contains "
-							+ mains + " main methods.");
+							+ mains + " main methods.", this);
 		}
 	}
 

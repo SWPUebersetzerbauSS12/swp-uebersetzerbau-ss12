@@ -193,6 +193,14 @@ public class CompilerTest {
 	}
 
 	@Test
+	public void testUnaryOpInIfStatement() {
+		final String code = mainC("bool b; int i; b = false; if (!b) { i = 1; } else { i = 0; } print i;");
+		System.out.println(code);
+		String output = executeCode(code);
+		assertEquals("1", output);
+	}
+
+	@Test
 	public void testNestedRecords2() {
 		final String code = mainC("record { real x; record {real x; record { int i;} inner; } middle; } outer;"
 				+ "outer.middle.inner.i=3; print outer.middle.inner.i;");
@@ -200,7 +208,7 @@ public class CompilerTest {
 		String output = executeCode(code);
 		assertEquals("3", output);
 	}
-	
+
 	@Test
 	public void testArray() {
 		final String code = mainC("int[10] test; int i; int tmp;" +
@@ -210,31 +218,50 @@ public class CompilerTest {
 					"tmp = test[i];" +
 					"print tmp;" +
 					"i=i+1; " +
-				"} " +
-				"return 1;");
+				"}");
 		System.out.println(code);
 		String output = executeCode(code);
 		assertEquals("0123456789", output);
 	}
-
+	
 	@Test
-	public void testNestedWhileLoops() {
+	public void testMultiDimensionalArrays() {
 		final String code = mainC("int[3][5] test; int i; int j; int tmp;" +
 				"i = 0;" +
 				"while (i < 3){" +
 					"j = 0;" +
 					"while(j < 5){"+
 						"test[i][j] = i+j;" +
+						"j=j+1;"+
+					"}"+
+					"i=i+1; " +
+				"} " +
+				"i = 0;" +
+				"while (i < 3){" +
+					"j = 0;" +
+					"while(j < 5){"+
 						"tmp = test[i][j];" +
 						"print tmp;" +
 						"j=j+1;"+
 					"}"+
 					"i=i+1; " +
-				"} " +
-				"return 1;");
+				"} "
+					
+					);
 		System.out.println(code);
 		String output = executeCode(code);
 		assertEquals("012341234523456", output);
+	}
+
+	@Test
+	public void testDoWhileStatement() {
+		String code = mainC("int i; i = 0; do {" +
+				"print i;" + 
+				"i = i+1;" + 
+			"} while (i < 5);");
+		String output = executeCode(code);
+		System.out.println(output);
+		assertEquals("012345", output);
 	}
 
 

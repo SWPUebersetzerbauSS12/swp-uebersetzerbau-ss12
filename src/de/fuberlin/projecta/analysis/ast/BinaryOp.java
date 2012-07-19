@@ -3,7 +3,6 @@ package de.fuberlin.projecta.analysis.ast;
 import de.fuberlin.commons.lexer.TokenType;
 import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.TypeChecker;
-import de.fuberlin.projecta.analysis.TypeErrorException;
 import de.fuberlin.projecta.codegen.LLVM;
 
 public class BinaryOp extends Expression {
@@ -27,24 +26,24 @@ public class BinaryOp extends Expression {
 			if (!((this.getChild(0) instanceof Id) || this.getChild(0) instanceof RecordVarCall || this.getChild(0) instanceof ArrayCall)) {
 				throw new SemanticException(
 						"Left side of an assignment has to be an identifier, but is "
-								+ this.getChild(0).toString());
+								+ this.getChild(0).toString(), this);
 			}
 			if (this.getChild(1) instanceof BinaryOp
 					&& (((BinaryOp) this.getChild(1)).getOp() == TokenType.OP_ASSIGN)) {
 				throw new SemanticException(
-						"Left side of an assignment cannot be an assignment.");
+						"Left side of an assignment cannot be an assignment.", this);
 			}
 			break;
 		case OP_DIV:
 			if (this.getChild(1) instanceof IntLiteral) {
 				int v = ((IntLiteral) this.getChild(1)).getValue();
 				if (v == 0)
-					throw new SemanticException("Division by Zero!");
+					throw new SemanticException("Division by Zero!", this);
 			}
 			else if (this.getChild(1) instanceof RealLiteral) {
 				double v = ((RealLiteral) this.getChild(1)).getValue();
 				if (v == 0.0)
-					throw new SemanticException("Division by Zero!");
+					throw new SemanticException("Division by Zero!", this);
 			}
 		}
 
@@ -124,7 +123,7 @@ public class BinaryOp extends Expression {
 						+ " x i8]* %" + tmp1 + ", i8 0, i8 0 \n";
 				ret += "store i8* %" + tmp2 + ", i8** %" + id1.getValue();
 			} else if (t1 instanceof RecordVarCall) {
-				ret += LLVM.loadType(t1);
+				ret += LLVM.getRecordVarCallPointer((RecordVarCall)t1);
 				ret += LLVM.loadType(t2);
 				String t = t2.fromTypeStringToLLVMType();
 				ret += "store " + t + " %" + LLVM.getMem(t2) + ", " + t + "* "
@@ -257,8 +256,8 @@ public class BinaryOp extends Expression {
 			case OP_MINUS:
 				if (!TypeChecker.isNumeric(leftTypeString)
 						|| !TypeChecker.isNumeric(rightTypeString)) {
-					throw new TypeErrorException(
-							"Can only perform arithmetics operations on numeric types");
+					throw new SemanticException(
+							"Can only perform arithmetics operations on numeric types", this);
 				}
 			case OP_AND:
 			case OP_OR:
@@ -272,13 +271,13 @@ public class BinaryOp extends Expression {
 			case OP_ASSIGN:
 				return;
 			default:
-				throw new TypeErrorException("Undefined Error in BinaryOp");
+				throw new SemanticException("Undefined error in BinaryOp", this);
 			}
 		}
-		throw new TypeErrorException(
+		throw new SemanticException(
 				"Operands have to be of same type but are:\n Left operand: "
 						+ leftTypeString + "\nRight operand: "
-						+ rightTypeString);
+						+ rightTypeString, this);
 	}
 
 	@Override

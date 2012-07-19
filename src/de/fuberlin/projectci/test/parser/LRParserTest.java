@@ -103,9 +103,9 @@ public class LRParserTest {
 					
 					SemanticAnalyzer semanticAnalyzer= new SemanticAnalyzer(syntaxTree);
 					try {
+						// analyze() now internally calls checkSemantics, etd.
 						semanticAnalyzer.analyze();
 						try {
-							semanticAnalyzer.getAST().checkSemantics();
 							try {
 								String generatedLLVMCode = semanticAnalyzer.getAST().genCode();
 								String optimized_llvm_code = null;

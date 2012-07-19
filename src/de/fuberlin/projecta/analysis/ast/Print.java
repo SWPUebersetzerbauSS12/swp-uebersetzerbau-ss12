@@ -84,6 +84,6 @@ public class Print extends Statement {
 		if (!validTypes.contains(argumentType))
 			throw new SemanticException(
 					"Invalid argument to print-function of type "
-							+ argumentType);
+							+ argumentType, this);
 	}
 }

@@ -1,8 +1,8 @@
 package de.fuberlin.projecta.analysis.ast;
 
 import de.fuberlin.commons.parser.ISyntaxTree;
+import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
-import de.fuberlin.projecta.analysis.TypeErrorException;
 
 /**
  * Must have exactly two children of the type Id! First id is the record id,
@@ -31,7 +31,7 @@ public class RecordVarCall extends Expression {
 	public String toTypeString() {
 		Type a = SymbolTableHelper.lookupRecordVarCall(this);
 		if (a == null) {
-			throw new TypeErrorException("Record not found");
+			throw new SemanticException("Record not found", this);
 		}
 		return a.toTypeString();
 	}

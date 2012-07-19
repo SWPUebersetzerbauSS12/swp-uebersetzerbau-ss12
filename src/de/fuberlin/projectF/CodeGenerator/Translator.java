@@ -170,26 +170,7 @@ public class Translator {
 				// Array
 				String tT = tok.getTypeTarget();
 				if  (tT.startsWith("[")){
-					// Extrahieren der Array-Größen
-					ArrayList<Integer> numbers = new ArrayList<Integer>();
-					Pattern p = Pattern.compile("(\\d+)(\\sx)");
-					Matcher m = p.matcher(tT); 
-					while (m.find()) {
-					   numbers.add(new Integer(m.group(1)));
-					}
-					
-					// Extrahieren des Typs
-					p = Pattern.compile("(i\\d+)|double");
-					m = p.matcher(tT);
-					m.find();
-					String type = m.group();
-					
-					// Länge berechnen
-					int length = 1;
-					for (Integer i : numbers) {
-						length *= i;
-					}
-					Array newArr = mem.newArray(tok.getTarget(), type, length);
+					Array newArr = createArray(tok.getTypeTarget(), tok.getTarget());
 					asm.sub(String.valueOf(newArr.getSize()), "esp",
 							"Allocation " + tok.getTarget());
 				}
@@ -534,7 +515,28 @@ public class Translator {
 		asm.createEP();
 	}
 
-	
+	private Array createArray(String targetType, String target) {
+		// Extrahieren der Array-Größen
+		ArrayList<Integer> numbers = new ArrayList<Integer>();
+		Pattern p = Pattern.compile("(\\d+)(\\sx)");
+		Matcher m = p.matcher(targetType); 
+		while (m.find()) {
+		   numbers.add(new Integer(m.group(1)));
+		}
+		
+		// Extrahieren des Typs
+		p = Pattern.compile("(i\\d+)|double");
+		m = p.matcher(targetType);
+		m.find();
+		String type = m.group();
+		
+		// Länge berechnen
+		int length = 1;
+		for (Integer i : numbers) {
+			length *= i;
+		}
+		return mem.newArray(target, type, length);
+	}
 
 	private Record createRecord(String name, Token tok) {
 		Record rec = new Record(name);

@@ -26,9 +26,13 @@ public class UnaryOp extends Expression {
 		case OP_NOT:
 			if (!(type.equals(BasicType.TYPE_BOOL_STRING)))
 				throw new SemanticException("Invalid operand to NOT: " + type);
+			break;
 		case OP_MINUS:
 			if (!type.equals(BasicType.TYPE_INT_STRING) || !type.equals(BasicType.TYPE_REAL_STRING))
 				throw new SemanticException("Invalid operand to MINUS: " + type);
+			break;
+		default:
+			break;
 		}
 	}
 	

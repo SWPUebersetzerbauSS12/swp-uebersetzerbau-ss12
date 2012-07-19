@@ -72,6 +72,7 @@ public class LRParser implements IParser {
 
 	@Override
 	public ISyntaxTree parse(ILexer lexer, String grammarPath) {
+		logger.fine("Start parsing...");
 		File grammarFile = new File(grammarPath);
 		Grammar grammar = null;
 		ParseTable parseTable = null;
@@ -98,7 +99,7 @@ public class LRParser implements IParser {
 		}
 		
 		Driver driver=new Driver();
-		ISyntaxTree syntaxTree= driver.parse(lexer, grammar, parseTable);
+		ISyntaxTree syntaxTree= driver.parse(lexer, parseTable);
 		
 		if (syntaxTree==null){
 			logger.warning("LRParser failed.");			
@@ -106,6 +107,7 @@ public class LRParser implements IParser {
 		}
 		// Der SemanticAnalyzer erwartet einen Parsebaum ohne Epsilon-Knoten
 		((SyntaxTreeNode)syntaxTree).removeAllEpsilonNodes();
+		logger.info("Parsing succeed.");
 		return syntaxTree;
 	}
 }

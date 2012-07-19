@@ -78,6 +78,8 @@ public class Token implements IToken {
 		mapping.put(TokenType.ID, "id");
 		mapping.put(TokenType.STRING_LITERAL, "string");
 		mapping.put(TokenType.INT_LITERAL, "num");
+		mapping.put(TokenType.REAL_LITERAL, "real");
+		mapping.put(TokenType.BOOL_LITERAL, "boolean");
 		mapping.put(TokenType.LPAREN, "(");
 		mapping.put(TokenType.RPAREN, ")");
 		mapping.put(TokenType.LBRACKET, "[");

@@ -20,10 +20,29 @@ public class LLVM_Function {
 	
 	public LLVM_Function(String code) throws LLVM_OptimizationException{
 		func_define = "define " + code.substring(0, code.indexOf("\n"));
+		
+		// Fix, weil llc uwtable nicht mag
+		if (func_define.contains("uwtable")) func_define = func_define.replace("uwtable", "");
+		
 		code = code.substring(code.indexOf("\n")+1);
 		
 		afterFunc = code.substring(code.lastIndexOf("}")+1);
 		code = code.substring(0, code.lastIndexOf("}"));
+		
+		// remove double newline
+		code = code.replaceAll("\n\n", "\n");
+		
+		// add newline after Branch
+		int searchindex = 0;
+		boolean search = true;
+		while(search){
+			search = code.indexOf("br ", searchindex) >= 0;
+			if (search){
+				searchindex = code.indexOf("br ", searchindex) + 3;
+				int index = code.indexOf('\n', searchindex);
+				code = code.substring(0, index) + "\n" + code.substring(index);
+			}
+		}
 		
 		String codeBlocks[] = code.split("\n\n"); 
 		this.numberBlocks = codeBlocks.length;
@@ -101,6 +120,9 @@ public class LLVM_Function {
 					this.blocks.get(blockPosition2).appendToPreviousBlocks(block);
 				}
 				
+			}
+			else{
+				throw new LLVM_OptimizationException("corrupt block-end");
 			}
 				
 		}
@@ -306,18 +328,11 @@ public class LLVM_Function {
 			LLVM_Parameter op2 = operands.get(1);
 			
 			try{
-				if(op1.getType() == LLVM_ParameterType.INTEGER && op2.getType() == LLVM_ParameterType.INTEGER && 
-						(cmd.getOperation() == LLVM_Operation.ADD ||
-						cmd.getOperation() == LLVM_Operation.SUB ||
-						cmd.getOperation() == LLVM_Operation.MUL ||
-						cmd.getOperation() == LLVM_Operation.DIV ||
-						cmd.getOperation() == LLVM_Operation.AND ||
-						cmd.getOperation() == LLVM_Operation.OR ||
-						cmd.getOperation() == LLVM_Operation.XOR
-						)){
+				if(op1.getType() == LLVM_ParameterType.INTEGER && op2.getType() == LLVM_ParameterType.INTEGER){
 					int iOP1 = Integer.parseInt(op1.getName());
 					int iOP2 = Integer.parseInt(op2.getName());
 					int result = 0;
+					boolean hasResult = true;
 					
 					switch(cmd.getOperation()){
 					case ADD :
@@ -332,6 +347,18 @@ public class LLVM_Function {
 					case DIV :
 						result = iOP1 / iOP2;
 						break;
+					case SDIV :
+						result = iOP1 / iOP2;
+						break;
+					case UDIV :
+						result = iOP1 / iOP2;
+						break;
+					case UREM :
+						result = iOP1 % iOP2;
+						break;
+					case SREM :
+						result = iOP1 % iOP2;
+						break;
 					case AND :
 						result = iOP1 & iOP2;
 						break;
@@ -341,10 +368,24 @@ public class LLVM_Function {
 					case XOR :
 						result = iOP1 ^ iOP2;
 						break;
+					case SHL :
+						result = iOP1 << iOP2;
+						break;
+					case LSHR :
+						result = iOP1 >>> iOP2;
+						break;
+					case ASHR :
+						result = iOP1 >> iOP2;
+						break;
+					default:
+						hasResult = false;
+						break;
 					}
 					
-					op1.setName(""+result);
-					op2.setName("0");
+					if (hasResult){
+						op1.setName(""+result);
+						op2.setName("0");
+					}
 						
 					return true;
 				}else if(op1.getType() == LLVM_ParameterType.REGISTER && op2.getType() == LLVM_ParameterType.INTEGER){
@@ -353,15 +394,11 @@ public class LLVM_Function {
 					if(iOP2 == 0){
 						return true;
 					}
-				}else if(op1.getType() == LLVM_ParameterType.DOUBLE && op2.getType() == LLVM_ParameterType.DOUBLE &&
-						(cmd.getOperation() == LLVM_Operation.FADD ||
-						cmd.getOperation() == LLVM_Operation.FSUB ||
-						cmd.getOperation() == LLVM_Operation.FMUL ||
-						cmd.getOperation() == LLVM_Operation.FDIV
-						)){
+				}else if(op1.getType() == LLVM_ParameterType.DOUBLE && op2.getType() == LLVM_ParameterType.DOUBLE){
 					double iOP1 = Double.parseDouble(op1.getName());
 					double iOP2 = Double.parseDouble(op2.getName());
 					double result = 0;
+					boolean hasResult = true;
 					
 					switch(cmd.getOperation()){
 					case FADD :
@@ -376,10 +413,18 @@ public class LLVM_Function {
 					case FDIV :
 						result = iOP1 / iOP2;
 						break;
+					case FREM :
+						result = iOP1 % iOP2;
+						break;
+					default:
+						hasResult = false;
+						break;
 					}
 					
-					op1.setName(""+result);
-					op2.setName("0");
+					if (hasResult){
+						op1.setName(""+result);
+						op2.setName("0");
+					}
 						
 					return true;
 				}else if(op1.getType() == LLVM_ParameterType.REGISTER && op2.getType() == LLVM_ParameterType.DOUBLE){
@@ -399,21 +444,12 @@ public class LLVM_Function {
 			LLVM_Parameter op2 = operands.get(1);
 			
 			try{
-				if(op1.getType() == LLVM_ParameterType.INTEGER && op2.getType() == LLVM_ParameterType.INTEGER &&
-						(cmd.getOperation() == LLVM_Operation.ICMP_EQ ||
-						cmd.getOperation() == LLVM_Operation.ICMP_NE ||
-						cmd.getOperation() == LLVM_Operation.ICMP_UGT ||
-						cmd.getOperation() == LLVM_Operation.ICMP_UGE ||
-						cmd.getOperation() == LLVM_Operation.ICMP_ULT ||
-						cmd.getOperation() == LLVM_Operation.ICMP_ULE ||
-						cmd.getOperation() == LLVM_Operation.ICMP_SGT ||
-						cmd.getOperation() == LLVM_Operation.ICMP_SGE ||
-						cmd.getOperation() == LLVM_Operation.ICMP_SLT ||
-						cmd.getOperation() == LLVM_Operation.ICMP_SLE
-						)){
+				if(op1.getType() == LLVM_ParameterType.INTEGER && op2.getType() == LLVM_ParameterType.INTEGER){
 					int iOP1 = Integer.parseInt(op1.getName());
 					int iOP2 = Integer.parseInt(op2.getName());
 					boolean result = false;
+					boolean hasResult = true;
+					
 					
 					switch(cmd.getOperation()){
 					case ICMP_EQ :
@@ -445,18 +481,24 @@ public class LLVM_Function {
 						break;
 					case ICMP_SLE :
 						result = iOP1 <= iOP2;
-						break;	
+						break;
+					default:
+						hasResult = false;
+						break;
 					}
 					
-					op1.setName(result?"1":"0");
-					op2.setName("0");
-					op1.setTypeString("i1");
+					if (hasResult){
+						op1.setName(result?"1":"0");
+						op2.setName("0");
+						op1.setTypeString("i1");
+					}
 					
 					return true;
 				}else if(op1.getType() == LLVM_ParameterType.DOUBLE && op2.getType() == LLVM_ParameterType.DOUBLE){
 					double iOP1 = Double.parseDouble(op1.getName());
 					double iOP2 = Double.parseDouble(op2.getName());
 					boolean result = false;
+					boolean hasResult = true;
 					
 					switch(cmd.getOperation()){
 					case ICMP_EQ :
@@ -489,11 +531,16 @@ public class LLVM_Function {
 					case ICMP_SLE :
 						result = iOP1 <= iOP2;
 						break;	
+					default:
+						hasResult = false;
+						break;
 					}
 					
-					op1.setName(result?"1":"0");
-					op2.setName("0");
-					op1.setTypeString("i1");
+					if (hasResult){
+						op1.setName(result?"1":"0");
+						op2.setName("0");
+						op1.setTypeString("i1");
+					}
 					
 					return true;
 				}
@@ -907,7 +954,7 @@ public class LLVM_Function {
 				// Block kann geloescht werden
 				LLVM_Block targetBlock = actualBlock.getNextBlocks().getFirst();
 				String targetBlockLabel = targetBlock.getLabel();
-				//String actualBlockLabel = actualBlock.getLabel();
+				String actualBlockLabel = actualBlock.getLabel();
 				
 				// Gehe Vorgaengerbloecke durch
 				for(LLVM_Block previousBlock : actualBlock.getPreviousBlocks()) {
@@ -918,9 +965,11 @@ public class LLVM_Function {
 					// Befehl aus Registermap austragen
 					this.registerMap.deleteCommand(branchCommand);
 					
-					// Sprung soll zu targetBlock gehen, statt zu actualBlock
-					LLVM_Parameter p = branchCommand.getOperands().getFirst();
-					p.setName(targetBlockLabel);
+					for(LLVM_Parameter p : branchCommand.getOperands()){
+						if(actualBlockLabel.equals(p.getName())){
+							p.setName(targetBlockLabel);
+						}
+					}
 					
 					// Setze Registermapeintrag neu
 					this.registerMap.addCommand(branchCommand);
@@ -938,11 +987,18 @@ public class LLVM_Function {
 					getOperation()==LLVM_Operation.RET || actualBlock.getFirstCommand().
 					getOperation()==LLVM_Operation.RET_CODE)){
 				
+				for(LLVM_Block previousBlock : actualBlock.getPreviousBlocks()) {
+					LLVM_GenericCommand branchCommand = previousBlock.getLastCommand();
+					if(branchCommand.getOperation()==LLVM_Operation.BR_CON)
+						return;
+				}
+
 				// Gehe Vorgaengerbloecke durch
 				for(LLVM_Block previousBlock : actualBlock.getPreviousBlocks()) {
 					// Hole Sprungbefehl des Vorgaengerblocks
 					// Dieser muss ersetzt werden
 					LLVM_GenericCommand branchCommand = previousBlock.getLastCommand();
+					
 					// Befehl aus Registermap austragen
 					this.registerMap.deleteCommand(branchCommand);
 					
@@ -1028,6 +1084,26 @@ public class LLVM_Function {
 					}
 					
 				}
+			}
+		}
+		else if(c.getOperation()==LLVM_Operation.UDIV) {
+			// Division gefunden
+			LinkedList<LLVM_Parameter> operands = c.getOperands();
+			
+			LLVM_Parameter o = operands.get(1);
+			if(o.getType()==LLVM_ParameterType.INTEGER) {
+				
+				// Im zweiten Operanden koennte eine Zweierpotenz stehen 	
+				int powerOfTwo = 1;
+				for(int i=1; i<32; i++) {
+					powerOfTwo = powerOfTwo * 2;
+					if ( (new Integer(powerOfTwo)).toString().equals(o.getName()) ) {
+						// Passende Zweierpotenz wurde gefunden
+						c.setOperation(LLVM_Operation.LSHR);
+						o.setName((new Integer(i)).toString());
+					}
+				}
+				
 			}
 		}
 	}

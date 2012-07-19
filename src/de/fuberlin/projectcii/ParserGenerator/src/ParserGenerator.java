@@ -494,4 +494,14 @@ public class ParserGenerator {
 
 	}
 
+    public Map<String, HashMap<String, Vector<Integer>>> getFirstSetsProductions() {
+        // TODO Auto-generated method stub
+        return firstSetsProductions;
+    }
+
+    public Map<String, Set<String>> getFollowSets() {
+        // TODO Auto-generated method stub
+        return followSets;
+    }
+
 }

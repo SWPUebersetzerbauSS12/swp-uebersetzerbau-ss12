@@ -193,6 +193,14 @@ public class CompilerTest {
 	}
 
 	@Test
+	public void testUnaryOpInIfStatement() {
+		final String code = mainC("bool b; int i; b = false; if (!b) { i = 1; } else { i = 0; } print i;");
+		System.out.println(code);
+		String output = executeCode(code);
+		assertEquals("1", output);
+	}
+
+	@Test
 	public void testNestedRecords2() {
 		final String code = mainC("record { real x; record {real x; record { int i;} inner; } middle; } outer;"
 				+ "outer.middle.inner.i=3; print outer.middle.inner.i;");

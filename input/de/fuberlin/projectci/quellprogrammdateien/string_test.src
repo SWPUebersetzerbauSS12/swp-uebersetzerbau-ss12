@@ -1,0 +1,16 @@
+def string emptyString(string a){
+	string s;
+	s = "";
+	a = s;
+	return a; 
+}
+
+
+def int main(){
+  string a;
+  a="hello world";
+  print a;
+  a = emptyString(a);
+  print a;
+  return 1;
+} 

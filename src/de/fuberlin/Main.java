@@ -21,7 +21,7 @@ import de.fuberlin.projecta.lexer.Lexer;
 import de.fuberlin.projecta.lexer.io.FileCharStream;
 import de.fuberlin.projecta.lexer.io.ICharStream;
 import de.fuberlin.projecta.parser.Parser;
-import de.fuberlin.projectci.lrparser.LRParser;
+import de.fuberlin.projectci.lrparser.LRParserMain;
 import de.fuberlin.projectcii.ParserGenerator.src.LL1Parser;
 
 public class Main {
@@ -171,7 +171,7 @@ public class Main {
 		String grammarFile = "";
 		// LR-Parser, -lr "/path/to/bnfGrammar"
 		if( arguments.get(PARAM_LR_PARSER) != null ){
-			parser = new LRParser();
+			parser = new LRParserMain();
 			grammarFile = arguments.get(PARAM_LR_PARSER);
 		// LL-Parser, -ll ["/path/to/bnfGrammar"]
 		} else if( arguments.containsKey(PARAM_LL_PARSER) ) {

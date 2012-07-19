@@ -232,12 +232,22 @@ public class CompilerTest {
 					"j = 0;" +
 					"while(j < 5){"+
 						"test[i][j] = i+j;" +
+						"j=j+1;"+
+					"}"+
+					"i=i+1; " +
+				"} " +
+				"i = 0;" +
+				"while (i < 3){" +
+					"j = 0;" +
+					"while(j < 5){"+
 						"tmp = test[i][j];" +
 						"print tmp;" +
 						"j=j+1;"+
 					"}"+
 					"i=i+1; " +
-				"} ");
+				"} "
+					
+					);
 		System.out.println(code);
 		String output = executeCode(code);
 		assertEquals("012341234523456", output);

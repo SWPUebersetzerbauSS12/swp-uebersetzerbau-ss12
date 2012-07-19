@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.4.27)  17 JUL 2012 13:54
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.4.27)  19 JUL 2012 20:04
 entering extended mode
  %&-line parsing enabled.
 **main.tex
@@ -728,10 +728,6 @@ Package: beamercolorthemelily 2010/06/17  (rcs-revision d02a7cf4d8ae)
 (/usr/share/texmf-texlive/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2004/09/05 1.3 listings language file
 ))
-\@input{algorithmic.aux}
-\openout2 = `algorithmic.aux'.
-
-No file algorithmic.tex.
 (/usr/share/texmf-texlive/tex/latex/arev/arev.sty
 Package: arev 2005/06/14 0.1 Arev Sans package
 
@@ -1365,8 +1361,6 @@ Underfull \hbox (badness 10000) in paragraph at lines 76--76
 
 
 
-
-
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./FULogo_RGB.pdf> <./fu_50
 0.jpg>] (/usr/share/texmf-texlive/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2004/09/05 1.3 listings language file
@@ -1375,10 +1369,10 @@ File: lstlang1.sty 2004/09/05 1.3 listings language file
 File: lstmisc.sty 2007/02/22 1.4 (Carsten Heinz)
 )
 LaTeX Font Info:    Font shape `OMX/mdbch/m/n' will be
-(Font)              scaled to size 5.76004pt on input line 93.
+(Font)              scaled to size 5.76004pt on input line 94.
 LaTeX Font Info:    Font shape `MDA/mdbch/b/n' will be
-(Font)              scaled to size 5.76004pt on input line 93.
-LaTeX Font Info:    Try loading font information for U+dsrom on input line 93.
+(Font)              scaled to size 5.76004pt on input line 94.
+LaTeX Font Info:    Try loading font information for U+dsrom on input line 94.
 
 (/usr/share/texmf-texlive/tex/latex/doublestroke/Udsrom.fd
 File: Udsrom.fd 1995/08/01 v0.1 Double stroke roman font definitions
@@ -1439,6 +1433,48 @@ Overfull \hbox (1.58499pt too wide) has occurred while \output is active
 [9
 
 ]
+Overfull \hbox (1.58499pt too wide) has occurred while \output is active
+[][]\T1/fav/m/n/5 , 
+ []
+
+[10
+
+]
+Overfull \hbox (1.58499pt too wide) has occurred while \output is active
+[][]\T1/fav/m/n/5 , 
+ []
+
+[11
+
+]
+Overfull \hbox (1.58499pt too wide) has occurred while \output is active
+[][]\T1/fav/m/n/5 , 
+ []
+
+[12
+
+]
+Overfull \hbox (1.58499pt too wide) has occurred while \output is active
+[][]\T1/fav/m/n/5 , 
+ []
+
+[13
+
+]
+Overfull \hbox (1.58499pt too wide) has occurred while \output is active
+[][]\T1/fav/m/n/5 , 
+ []
+
+[14
+
+]
+Overfull \hbox (1.58499pt too wide) has occurred while \output is active
+[][]\T1/fav/m/n/5 , 
+ []
+
+[15
+
+]
 \tf@nav=\write6
 \openout6 = `main.nav'.
 
@@ -1450,13 +1486,13 @@ Overfull \hbox (1.58499pt too wide) has occurred while \output is active
 
  (./main.aux) ) 
 Here is how much of TeX's memory you used:
- 19556 strings out of 493848
- 334554 string characters out of 1152823
- 403516 words of memory out of 3000000
- 22278 multiletter control sequences out of 15000+50000
+ 19580 strings out of 493848
+ 334957 string characters out of 1152823
+ 407516 words of memory out of 3000000
+ 22291 multiletter control sequences out of 15000+50000
  54443 words of font info for 83 fonts, out of 3000000 for 9000
  714 hyphenation exceptions out of 8191
- 49i,12n,53p,393b,557s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 49i,12n,53p,393b,685s stack positions out of 5000i,500n,10000p,200000b,50000s
 {/usr/share/texmf-texlive/fonts/enc/dvips/arev/arevoms.enc}{/usr
 /share/texmf-texlive/fonts/enc/dvips/arev/arevoml.enc}{/usr/share/texmf-texlive
 /fonts/enc/dvips/base/8r.enc}</usr/share/texmf-texlive/fonts/type1/public/arev/
@@ -1465,9 +1501,9 @@ ArevSans-Oblique.pfb></usr/share/texmf-texlive/fonts/type1/public/arev/ArevSans
 /usr/share/texmf-texlive/fonts/type1/public/doublestroke/dsrom8.pfb></usr/share
 /texmf-texlive/fonts/type1/mathdesign/mdbch/md-chb7y.pfb></usr/share/texmf-texl
 ive/fonts/type1/mathdesign/mdbch/md-chbma.pfb>
-Output written on main.pdf (9 pages, 364924 bytes).
+Output written on main.pdf (15 pages, 376936 bytes).
 PDF statistics:
- 108 PDF objects out of 1000 (max. 8388607)
- 18 named destinations out of 1000 (max. 500000)
+ 147 PDF objects out of 1000 (max. 8388607)
+ 30 named destinations out of 1000 (max. 500000)
  48 words of extra memory for PDF output out of 10000 (max. 10000000)
 

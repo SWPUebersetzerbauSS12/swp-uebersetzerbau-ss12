@@ -6,18 +6,18 @@ import de.fuberlin.optimierung.*;
  * Syntax:
 
   <result> = icmp <cond> <ty> <op1>, <op2>   ; yields {i1} or {<N x i1>}:result
-
+  <result> = fcmp <cond> <ty> <op1>, <op2>     ; yields {i1} or {<N x i1>}:result
  */
 
-public class LLVM_IcmpCommand extends LLVM_GenericCommand{
+public class LLVM_XcmpCommand extends LLVM_GenericCommand{
 	
-	public LLVM_IcmpCommand(String cmdLine, LLVM_GenericCommand predecessor, LLVM_Block block){
+	public LLVM_XcmpCommand(String cmdLine, LLVM_GenericCommand predecessor, LLVM_Block block){
 		super(predecessor, block, cmdLine);
 		
 		StringBuilder cmd = new StringBuilder(cmdLine);
 		parseEraseComment(cmd);
 		String result = parseReadResult(cmd);
-		parseReadValue(cmd); // ICMP löschen
+		String command = parseReadValue(cmd);
 		target = new LLVM_Parameter(result, "i1");
 		
 		String cond = parseReadValue(cmd);
@@ -28,13 +28,29 @@ public class LLVM_IcmpCommand extends LLVM_GenericCommand{
 		}else if (cond.startsWith("ne")){
 			setOperation(LLVM_Operation.ICMP_NE);
 		}else if (cond.startsWith("ugt")){
-			setOperation(LLVM_Operation.ICMP_UGT);
+			if (command.equals("icmp")){
+				setOperation(LLVM_Operation.ICMP_UGT);
+			}else if (command.equals("fcmp")){
+				setOperation(LLVM_Operation.FCMP_UGT);
+			}
 		}else if (cond.startsWith("uge")){
-			setOperation(LLVM_Operation.ICMP_UGE);
+			if (command.equals("icmp")){
+				setOperation(LLVM_Operation.ICMP_UGE);
+			}else if (command.equals("fcmp")){
+				setOperation(LLVM_Operation.FCMP_UGE);
+			}
 		}else if (cond.startsWith("ult")){
-			setOperation(LLVM_Operation.ICMP_ULT);
+			if (command.equals("icmp")){
+				setOperation(LLVM_Operation.ICMP_ULT);
+			}else if (command.equals("fcmp")){
+				setOperation(LLVM_Operation.FCMP_ULT);
+			}
 		}else if (cond.startsWith("ule")){
-			setOperation(LLVM_Operation.ICMP_ULE);
+			if (command.equals("icmp")){
+				setOperation(LLVM_Operation.ICMP_ULE);
+			}else if (command.equals("fcmp")){
+				setOperation(LLVM_Operation.FCMP_ULE);
+			}
 		}else if (cond.startsWith("sgt")){
 			setOperation(LLVM_Operation.ICMP_SGT);
 		}else if (cond.startsWith("sge")){
@@ -43,6 +59,30 @@ public class LLVM_IcmpCommand extends LLVM_GenericCommand{
 			setOperation(LLVM_Operation.ICMP_SLT);
 		}else if (cond.startsWith("sle")){
 			setOperation(LLVM_Operation.ICMP_SLE);
+		}else if (cond.startsWith("false")){
+			setOperation(LLVM_Operation.FCMP_FALSE);
+		}else if (cond.startsWith("oeq")){
+			setOperation(LLVM_Operation.FCMP_OEQ);
+		}else if (cond.startsWith("ogt")){
+			setOperation(LLVM_Operation.FCMP_OGT);
+		}else if (cond.startsWith("oge")){
+			setOperation(LLVM_Operation.FCMP_OGE);
+		}else if (cond.startsWith("olt")){
+			setOperation(LLVM_Operation.FCMP_OLT);
+		}else if (cond.startsWith("ole")){
+			setOperation(LLVM_Operation.FCMP_OLE);
+		}else if (cond.startsWith("one")){
+			setOperation(LLVM_Operation.FCMP_ONE);
+		}else if (cond.startsWith("ord")){
+			setOperation(LLVM_Operation.FCMP_ORD);
+		}else if (cond.startsWith("ueq")){
+			setOperation(LLVM_Operation.FCMP_UEQ);			
+		}else if (cond.startsWith("une")){
+			setOperation(LLVM_Operation.FCMP_UNE);
+		}else if (cond.startsWith("uno")){
+			setOperation(LLVM_Operation.FCMP_UNO);
+		}else if (cond.startsWith("true")){
+			setOperation(LLVM_Operation.FCMP_TRUE);
 		}
 		
 		String ty = parseReadType(cmd);

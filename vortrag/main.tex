@@ -84,13 +84,8 @@ stringstyle=\color{brown},frame=single}
 % -------------------------------------------------------------------------------------------
 % -------------------------------------------------------------------------------------------
 
-\begin{frame}{Ziele}
-
-\begin{itemize}
-\item Gesucht: Sinnvolles Maß für den Abstand zweier Kurven $f:[a_1,b_1]\rightarrow \mathds{R}^n$ und $g:[a_2,b_2]\rightarrow \mathds{R}^n$
-\vspace{3mm}
-\item Lösung: Einführung des Fréchet-Abstandes
-\end{itemize}
+\begin{frame}{Einführung}
+\includegraphics[scale=1]{bilder/einfuehrung}
 \end{frame}
 
 \begin{frame}{Programmstruktur}
@@ -98,13 +93,7 @@ UML
 \end{frame}
 
 \begin{frame}{Implementierung}
-\begin{itemize}
-\item LLVM ist SSA
-\vspace{3mm}
-\item f ist Kurve mit p Punkten $p_1,\dots ,p_p$, so dass $f:[1,p]\rightarrow \mathds{R}^n$ mit $f(1) = p_1,\dots ,f(p) = p_p$ gilt und dazwischen linear interpoliert wird
-\vspace{3mm}
-\item g ist Kurve mit q Punkten $q_1,\dots ,q_q$, so dass $f:[1,q]\rightarrow \mathds{R}^n$ mit $g(1) = q_1,\dots ,g(q) = q_q$ gilt und dazwischen linear interpoliert wird
-\end{itemize}
+\includegraphics[scale=0.8]{bilder/ssa}
 \end{frame}
 
 \begin{frame}{Eingesetzte Optimierungsalgorithmen}

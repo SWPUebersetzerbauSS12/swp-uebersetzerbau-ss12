@@ -512,7 +512,6 @@ public abstract class Lexer {
 				currentBlock = ++var;
 				Token token = new Token();
 				token.setType(TokenType.Label);
-				debug.println("" + var);
 				token.setTarget(String.valueOf(var));
 				debug.println("\t\t\tinsert Label \"" + token.getTarget() + "\" in token token stream");
 				tokenStream.add(i+1, token);
@@ -524,7 +523,6 @@ public abstract class Lexer {
 				if(!tok.getTarget().isEmpty() && tok.getTarget().length() > 1) {
 					try {
 						int tmp_var = Integer.valueOf(tok.getTarget().substring(1));
-						debug.println(tok.getTarget() + "Old_var: " + tmp_var + " new var: " + var);
 						if(tmp_var > var) {
 							var = tmp_var;
 							debug.println("\t\t\tchange Block: " + currentBlock + " highest variable: " + var);

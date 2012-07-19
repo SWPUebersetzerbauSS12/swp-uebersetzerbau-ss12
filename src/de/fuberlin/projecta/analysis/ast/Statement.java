@@ -14,10 +14,5 @@ public abstract class Statement extends AbstractSyntaxTree {
 	
 	public int getEndLabel() {
 		return endLabel;
-	}
-
-	public void setEndLabel(int label) {
-		this.endLabel = label;
-	}
-	
+	}	
 }

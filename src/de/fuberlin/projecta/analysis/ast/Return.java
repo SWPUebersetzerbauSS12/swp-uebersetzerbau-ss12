@@ -9,26 +9,35 @@ public class Return extends Statement {
 	public Expression getArgument() {
 		if (getChildrenCount() == 0)
 			return null;
-		return (Expression)getChild(0);
+		return (Expression) getChild(0);
 	}
 
 	@Override
 	public String genCode() {
-		Block block = getHighestBlock();
 		String ret = "";
+
 		Expression argument = getArgument();
+
 		if (argument == null) {
 			return "ret void";
-		} else if (argument instanceof Literal) {
-			ret += "ret " + argument.genCode() + "\n";
 		} else {
 			ret += LLVM.loadType(argument);
-			ret += "ret " + argument.fromTypeStringToLLVMType() + " %"
-					+ LLVM.getMem(argument) + "\n";
+			ret += "store " + getParentFunction().fromTypeStringToLLVMType()
+					+ " %" + LLVM.getMem(argument) + ", "
+					+ getParentFunction().fromTypeStringToLLVMType() + "* %1\n"
+					+ "br label %return;\n";
+			getHighestBlock().getNewVar();
 		}
-		if (!ret.equals("")) {
-			ret += "\n; <label>:" + block.getNewVar();
-		}
+		// } else if (argument instanceof Literal) {
+		// ret += "ret " + argument.genCode() + "\n";
+		// } else {
+		// ret += LLVM.loadType(argument);
+		// ret += "ret " + argument.fromTypeStringToLLVMType() + " %"
+		// + LLVM.getMem(argument) + "\n";
+		// }
+		// if (!ret.equals("")) {
+		// ret += "\n; <label>:" + block.getNewVar();
+		// }
 		return ret;
 	}
 
@@ -38,11 +47,14 @@ public class Return extends Statement {
 		if (this.getChildrenCount() == 0) {
 			// return type must be void!
 			if (!funcType.equals(BasicType.TYPE_VOID_STRING))
-				throw new SemanticException("Missing return value in non-void function", null);
+				throw new SemanticException(
+						"Missing return value in non-void function");
 		} else {
 			String returnType = getArgument().toTypeString();
 			if (!funcType.equals(returnType))
-				throw new SemanticException("Incompatible arguments: Function declared with return type " + funcType + " but returned " + returnType, null);
+				throw new SemanticException(
+						"Incompatible arguments: Function declared with return type "
+								+ funcType + " but returned " + returnType);
 		}
 	}
 

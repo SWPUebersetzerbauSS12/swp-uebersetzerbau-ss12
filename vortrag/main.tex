@@ -107,16 +107,6 @@ UML
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Eingesetzte Optimierungsalgorithmen}
-\begin{itemize}
-\item Entscheidungsproblem: Ist der Fréchet-Abstand zweier Kurven kleiner gleich einem gegebenen $\epsilon$?
-\vspace{3mm}
-\item Lösung mit Hilfe des Free Space Diagram
-\vspace{3mm}
-\item Definition: $$F_\epsilon (f,g) = \{(s,t)\in [1,p] \times [1,q] : \|f(s) - g(t)\| \leq \epsilon \}$$
-\end{itemize}
-\end{frame}
-
 \begin{frame}{Optimierungen \& Beispiele}
 
 \begin{columns}
@@ -139,34 +129,64 @@ UML
 
 {\fbox{\parbox[c][2.9cm]{5cm}{
 \only<1-1>{
-{\color{blue} \%a = add i32 1, 7}\\
-...\\
-\%eq = icmp eq i32 \%a, 8\\
-{\color{gray}br i1 \%eq, label \%j1, label \%j2}
+{\color{blue} \%a = add i32 1, 7}}
+\only<2-2>{
+{\color{blue}\%a = add i32 8, 0\\
+\%b = sub i32 \%a, 5}
 }
-\only<2-2>{Test2}
-\only<3-3>{Test3}
-\only<4-4>{Test4}
-\only<5-5>{Test5}
-\only<6-6>{Test6}
-\only<7-7>{Test7}
+\only<3-3>{
+{\color{blue}
+  store i32 5, i32* \%a, align 4\\
+  \%2 = load i32* \%a, align 4
+}}
+\only<4-4>{
+{\color{blue}br i1  1, label \%j1, label \%j2\\
+
+j1: \%a = add i32 1, 7\\
+j2: \%b = add i32 8, 0}
+}
+\only<5-5>{
+{\color{blue}	\%q = load i32* \%x, align 4\\
+\%w = load i32* \%x, align 4
+}}
+\only<6-6>{
+{\color{blue}	\%a = alloca i32, align 4\\
+	store i32 1, i32* \%a, align 4\\
+	ret i32 0
+}}
+\only<7-7>{
+{\color{blue}	\%a = mul i32 4, \%b
+}}
 }}\\
 {\color{red}unoptimierter Code}\\
 \vspace*{0.3cm}
 \fbox{\parbox[c][2.9cm]{5cm}{
 \only<1-1>{
 {\color{blue}\%a = add i32 8, 0}\\
-(bei uns eine Zuweisung)\\
-...\\
-{\color{gray}br label \%j1}
-}
-\only<2-2>{Test2}
-\only<3-3>{Test3}
-\only<4-4>{Test4}
-\only<5-5>{Test5}
-\only<6-6>{Test6}
-\only<7-7>{Test7}
+(bei uns eine Zuweisung)\\}
+\only<2-2>{
+{\color{blue}\%b = sub i32 8, 5}}
+\only<3-3>{
+{\color{blue}
+  \%2 = add i32 5, 0
+}}
+\only<4-4>{
+{\color{blue}br label \%j1\\
 
+j1: \%a = add i32 1, 7
+}}
+\only<5-5>{
+{\color{blue}	\%q = load i32* \%x, align 4\\
+\%w = add i32 \%q, 0
+}}
+\only<6-6>{
+{\color{blue}
+	ret i32 0
+}}
+\only<7-7>{
+{\color{blue}
+\%a = shl i32 \%b, 2
+}}
 }}\\
 {\color{green}optimierter Code}}
 

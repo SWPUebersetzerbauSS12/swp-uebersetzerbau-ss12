@@ -42,5 +42,5 @@ string					{return("basic", "string")}
 bool					{return("basic", "bool")}
 {num}					{return("num", parseInt())}
 {num}?\.{num}			{return("real", parseDouble())}
-\"[\w\sßäöü]*\"			{return("string", parseString())}
-[a-z]+[a-zA-Z0-9]*		{return("id", parseString())}
+"[a-zA-Z0-9 ßäöü]*"			{return("string", parseString())}
+[a-z]+([a-z]|[A-Z]|[0-9])*		{return("id", parseString())}

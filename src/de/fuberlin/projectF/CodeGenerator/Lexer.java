@@ -268,12 +268,6 @@ public abstract class Lexer {
 			newToken.setType(TokenType.DefinitionEnd);
 		}
 
-		else if (line[1].contentEquals("<label>")) {
-			debug.println("\t\tFound label ");
-			newToken.setType(TokenType.Label);
-			newToken.setTarget(line[3]);
-		}
-
 		else if (line[1].contentEquals("=")) {
 
 			// Typ-Definition (STRUCT, RECORD)

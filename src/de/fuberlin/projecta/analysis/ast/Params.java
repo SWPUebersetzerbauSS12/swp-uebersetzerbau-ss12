@@ -14,6 +14,9 @@ public class Params extends AbstractSyntaxTree {
 			Id id = (Id) getChild(i + 1);
 			EntryType entry = new EntryType(id, type);
 			tables.top().insertEntry(entry);
+			if(type instanceof Record){
+				type.buildSymbolTable(tables);
+			}
 		}
 	}
 

@@ -3,7 +3,10 @@ package de.fuberlin.projecta.analysis.ast;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
+
 import de.fuberlin.commons.parser.ISyntaxTree;
+import de.fuberlin.projecta.analysis.SymbolTableStack;
 
 /**
  * Record type
@@ -54,22 +57,42 @@ public class Record extends Type {
 	@Override
 	public String genStruct() {
 		String ret = "";
-		if (getFuncId() != null) {
-			ret = "%struct." + getFuncId().getValue() + " = type { ";
-			boolean tmp = false;
-			for (int i = 0; i < getChildrenCount(); i++) {
-				String t = ((Type) (getChild(i).getChild(0))).genCode();
-				if (!t.equals("")) {
-					t += ", ";
-					tmp = true;
+		List<String> recordTypes = new ArrayList<String>();
+		if (!(getParent() instanceof Params)) {
+			if (getFuncId() != null) {
+				ret = "%struct." + getFuncId().getValue() + " = type { ";
+
+				boolean tmp = false;
+				for (int i = 0; i < getChildrenCount(); i++) {
+					if (getChild(i).getChild(0) instanceof Record) {
+						recordTypes.add(((Record) (getChild(i).getChild(0)))
+								.genStruct());
+						String t = ((Type) (getChild(i).getChild(0))).genCode();
+						if (!t.equals("")) {
+							t += ", ";
+							tmp = true;
+
+						}
+						ret += t;
+					} else {
+						String t = ((Type) (getChild(i).getChild(0))).genCode();
+						if (!t.equals("")) {
+							t += ", ";
+							tmp = true;
+
+						}
+						ret += t;
+					}
 				}
-				ret += t;
+				if (tmp) {
+					ret = ret.substring(0, ret.length() - 2);
+				}
+				ret += " }\n";
+				for (String struct : recordTypes) {
+					ret += struct + "\n";
+				}
+				return ret;
 			}
-			if (tmp) {
-				ret = ret.substring(0, ret.length() - 2);
-			}
-			ret += " }";
-			return ret + "\n";
 		}
 		return ret;
 	}
@@ -82,6 +105,15 @@ public class Record extends Type {
 	 */
 	private Id getFuncId() {
 		return (Id) getParent().getChild(1);
+	}
+
+	@Override
+	public void buildSymbolTable(SymbolTableStack tables) {
+		tables.push();
+		for (int i = 0; i < getChildrenCount(); i++) {
+			((Declaration) getChild(i)).buildSymbolTable(tables);
+		}
+		table = tables.pop();
 	}
 
 }

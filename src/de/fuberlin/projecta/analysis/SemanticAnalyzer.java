@@ -40,7 +40,7 @@ public class SemanticAnalyzer {
 
 	private static final String L_ATTRIBUTE = "L_ATTRIBUTE";
 
-	private final SymbolTableStack tables = new SymbolTableStack();;
+	private final SymbolTableStack tables = new SymbolTableStack();
 
 	private ISyntaxTree parseTree;
 	private AbstractSyntaxTree AST;

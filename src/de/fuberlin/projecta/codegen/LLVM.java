@@ -2,14 +2,18 @@ package de.fuberlin.projecta.codegen;
 
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.projecta.analysis.SymbolTableHelper;
+import de.fuberlin.projecta.analysis.TypeErrorException;
 import de.fuberlin.projecta.analysis.ast.AbstractSyntaxTree;
 import de.fuberlin.projecta.analysis.ast.Args;
+import de.fuberlin.projecta.analysis.ast.Array;
+import de.fuberlin.projecta.analysis.ast.ArrayCall;
 import de.fuberlin.projecta.analysis.ast.Block;
 import de.fuberlin.projecta.analysis.ast.Declaration;
 import de.fuberlin.projecta.analysis.ast.Expression;
 import de.fuberlin.projecta.analysis.ast.FuncCall;
 import de.fuberlin.projecta.analysis.ast.FuncDef;
 import de.fuberlin.projecta.analysis.ast.Id;
+import de.fuberlin.projecta.analysis.ast.IntLiteral;
 import de.fuberlin.projecta.analysis.ast.Literal;
 import de.fuberlin.projecta.analysis.ast.Record;
 import de.fuberlin.projecta.analysis.ast.RecordVarCall;
@@ -134,6 +138,14 @@ public class LLVM {
 		return ret;
 	}
 
+	/**
+	 * Gets number
+	 * 
+	 * 
+	 * @param rec
+	 * @param recordVar
+	 * @return
+	 */
 	public static int findNumberOfRecordVar(Record rec, String recordVar) {
 		for (int i = 0; i < rec.getChildrenCount(); i++) {
 			Declaration decl = (Declaration) rec.getChild(i);
@@ -141,7 +153,9 @@ public class LLVM {
 				return i;
 			}
 		}
-		return 0;
+		throw new TypeErrorException("Entry " + recordVar
+				+ " not found in record "
+				+ ((Id) rec.getParent().getChild(1)).getValue());
 	}
 
 	/**
@@ -176,26 +190,167 @@ public class LLVM {
 				int n = block.getNewVar();
 				ret += "%" + n + " = " + expr.genCode() + "\n";
 				expr.setValMemory(n);
+			} else if(expr instanceof ArrayCall){
+				ArrayCall array = (ArrayCall) expr;
+				ret += getArrayCallPointer(array);
+				int pointer = array.getVar();
+				Id id = array.getVarId();
+				Type t = SymbolTableHelper.lookup(id.getValue(), array).getType();
+				int val = block.getNewVar();
+				ret += "%"+val + " = load "+ ((Array)t).getBasicType().fromTypeStringToLLVMType() + "* %"+pointer;
+				expr.setValMemory(val);
+				ret += "\n";
+				
 			} else if (expr instanceof RecordVarCall) {
-				int n = block.getNewVar();
+				int n = -1;
 				RecordVarCall recVarCall = (RecordVarCall) expr;
 				Record rec = (Record) SymbolTableHelper.lookup(
 						recVarCall.getRecordId().getValue(), expr).getType();
-				Id recName = recVarCall.getRecordId();
-				ret += "%"
-						+ n
-						+ " = getelementptr inbounds %struct."
-						+ recName.getValue()
-						+ "* %" + recName.getValue() + ", i32 0, i32 "
-						+ findNumberOfRecordVar(rec, recVarCall
-								.getVarId().getValue()) + "\n";
-				expr.setValMemory(n);
+				if (recVarCall.getChild(0) instanceof RecordVarCall) {
+					String currentMemory = recVarCall.getRecordId().getValue();
+					// start by searching child 1 of innermost recordVarCall
+					Id currentSearchNode = null;
+					// this is used for searching the correct node in the
+					// record, starting in the innermost node
+					RecordVarCall currentRecVarCall = (RecordVarCall) recVarCall
+							.getRecordId().getParent();
+					Type retType = null;
+					do {
+						n = block.getNewVar();
+						// move up in RecordVar-Tree
+						currentSearchNode = (Id) currentRecVarCall.getChild(1);
+
+						int index = findNumberOfRecordVar(rec,
+								currentSearchNode.getValue());
+						retType = ((Type) rec.getChild(index).getChild(0));
+						ret += "%" + n + " = getelementptr inbounds %struct."
+								+ ((Id) rec.getParent().getChild(1)).getValue()
+								+ "* %" + currentMemory + ", i32 0, i32 "
+								+ index + "\n";
+						currentMemory = "" + n;
+
+						if ((currentRecVarCall.getParent() instanceof RecordVarCall)
+								&& rec.getChildrenCount() > index
+								&& rec.getChild(index).getChildrenCount() > 0) {
+							if (rec.getChild(index).getChild(0) instanceof Record)
+								rec = (Record) rec.getChild(index).getChild(0);
+						} else {
+
+							break;
+						}
+						currentRecVarCall = (RecordVarCall) currentRecVarCall
+								.getParent();
+					} while (rec instanceof Record);
+
+					// before returning, load the actual value into new memory
+					n = block.getNewVar();
+					ret += "%" + n + " = load "
+							+ retType.fromTypeStringToLLVMType() + "* %"
+							+ (n - 1) + "\n";
+
+					// save the memory in the outermost recordVarCall node
+					recVarCall.setValMemory(n);
+					return ret;
+				} else {
+					int index = findNumberOfRecordVar(rec, recVarCall
+							.getVarId().getValue());
+					n = block.getNewVar();
+					recVarCall.setValMemory(n);
+					ret += "%" + n + " = getelementptr inbounds %struct."
+							+ ((Id) rec.getParent().getChild(1)).getValue()
+							+ "* %" + recVarCall.getRecordId().getValue()
+							+ ", i32 0, i32 " + index + "\n";
+					n = block.getNewVar();
+					Type retType = ((Type) rec.getChild(index).getChild(0));
+					ret += "%" + n + " = load "
+							+ retType.fromTypeStringToLLVMType() + "* %"
+							+ (n - 1) + "\n";
+					expr.setValMemory(n);
+				}
 			} else {
 				// TODO: is this already calling setValMemory always?
 				ret += expr.genCode();
 			}
 		}
 
+		return ret;
+	}
+	
+	public static String getArrayCallPointer(ArrayCall array){
+		String ret = "";
+		ret += LLVM.loadType((Expression)array.getChild(0));
+		int num = array.getVar();		
+		String index = ", i32 0, i32 " + num;
+		ArrayCall tmp = array;
+		// collect all array references
+		while(tmp.getChild(1) instanceof ArrayCall){
+			tmp = (ArrayCall)tmp.getChild(1);
+			ret += LLVM.loadType((Expression)array.getChild(0));
+			index += ", i32 " + array.getVar();	
+		}
+		//last ArrayCall contains the id of the array! (weird, but we deal with it)
+		Id id = (Id) tmp.getChild(1);
+		Type t = SymbolTableHelper.lookup(id.getValue(), array).getType();
+		int pointer = array.getHighestBlock().getNewVar();
+		ret += "%"+ pointer + " = getelementptr inbounds "+ ((Array)t).genCode() +"* %"+ id.getValue();
+		ret += index + "\n";
+		array.setValMemory(pointer);
+		return ret;
+	}
+
+	public static String getRecordVarCallPointer(RecordVarCall expr) {
+		String ret = "";
+		Block block = expr.getHighestBlock();
+		int n = -1;
+		RecordVarCall recVarCall = (RecordVarCall) expr;
+		Record rec = (Record) SymbolTableHelper.lookup(
+				recVarCall.getRecordId().getValue(), expr).getType();
+		if (recVarCall.getChild(0) instanceof RecordVarCall) {
+			String currentMemory = recVarCall.getRecordId().getValue();
+			// start by searching child 1 of innermost recordVarCall
+			Id currentSearchNode = null;
+			// this is used for searching the correct node in the
+			// record, starting in the innermost node
+			RecordVarCall currentRecVarCall = (RecordVarCall) recVarCall
+					.getRecordId().getParent();
+
+			do {
+				n = block.getNewVar();
+				// move up in RecordVar-Tree
+				currentSearchNode = (Id) currentRecVarCall.getChild(1);
+
+				int index = findNumberOfRecordVar(rec,
+						currentSearchNode.getValue());
+
+				ret += "%" + n + " = getelementptr inbounds %struct."
+						+ ((Id) rec.getParent().getChild(1)).getValue() + "* %"
+						+ currentMemory + ", i32 0, i32 " + index + "\n";
+				currentMemory = "" + n;
+
+				if ((currentRecVarCall.getParent() instanceof RecordVarCall)
+						&& rec.getChildrenCount() > index
+						&& rec.getChild(index).getChildrenCount() > 0) {
+					if (rec.getChild(index).getChild(0) instanceof Record)
+						rec = (Record) rec.getChild(index).getChild(0);
+				} else {
+					break;
+				}
+				currentRecVarCall = (RecordVarCall) currentRecVarCall
+						.getParent();
+			} while (rec instanceof Record);
+			// save the memory in the outermost recordVarCall node
+			recVarCall.setValMemory(n);
+			return ret;
+		} else {
+			int index = findNumberOfRecordVar(rec, recVarCall.getVarId()
+					.getValue());
+			n = block.getNewVar();
+			recVarCall.setValMemory(n);
+			ret += "%" + n + " = getelementptr inbounds %struct."
+					+ ((Id) rec.getParent().getChild(1)).getValue() + "* %"
+					+ recVarCall.getRecordId().getValue() + ", i32 0, i32 "
+					+ index + "\n";
+		}
 		return ret;
 	}
 }

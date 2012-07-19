@@ -1,6 +1,6 @@
 package de.fuberlin.projecta.analysis.ast;
 
-public abstract class Type extends AbstractSyntaxTree {
+public abstract class Type extends Expression {
 
 	public String toTypeString() {
 		return "";

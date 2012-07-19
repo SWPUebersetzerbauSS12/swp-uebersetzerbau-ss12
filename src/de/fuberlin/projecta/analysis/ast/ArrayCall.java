@@ -11,6 +11,14 @@ import de.fuberlin.projecta.analysis.SymbolTableHelper;
  * 
  */
 public class ArrayCall extends Type {
+	
+	public Id getArrayId(){
+		ISyntaxTree child = getChild(1);
+		while (child instanceof ArrayCall) {
+			child = child.getChild(1);
+		}
+		return (Id) child;
+	}
 
 	@Override
 	public void checkSemantics() {
@@ -61,5 +69,19 @@ public class ArrayCall extends Type {
 			type = (Type) type.getChild(1);
 		} while(!(type instanceof BasicType));
 		return type.toTypeString();
+	}
+	
+	public Id getVarId() {
+		// collect all array references
+		ArrayCall tmp = this;
+		while(tmp.getChild(1) instanceof ArrayCall)
+			tmp = (ArrayCall)tmp.getChild(1);
+		return (Id)tmp.getChild(1);
+	}
+	
+	@Override
+	public String genCode(){
+		//in LLVM class
+		return "";
 	}
 }

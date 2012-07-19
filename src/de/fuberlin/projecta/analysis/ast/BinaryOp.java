@@ -24,7 +24,7 @@ public class BinaryOp extends Expression {
 		// TODO: think if you can find other cases, where semantics can be
 		// wrong/ambiguous
 		case OP_ASSIGN:
-			if (!((this.getChild(0) instanceof Id) || this.getChild(0) instanceof RecordVarCall)) {
+			if (!((this.getChild(0) instanceof Id) || this.getChild(0) instanceof RecordVarCall || this.getChild(0) instanceof ArrayCall)) {
 				throw new SemanticException(
 						"Left side of an assignment has to be an identifier, but is "
 								+ this.getChild(0).toString());
@@ -99,6 +99,8 @@ public class BinaryOp extends Expression {
 			Id id1 = null;
 			if (t1 instanceof RecordVarCall)
 				id1 = ((RecordVarCall) t1).getVarId();
+			else if(t1 instanceof ArrayCall)
+				id1 = ((ArrayCall) t1).getVarId();
 			else
 				id1 = (Id)t1;
 
@@ -121,6 +123,17 @@ public class BinaryOp extends Expression {
 				ret += "%" + tmp2 + " = getelementptr [" + strLength
 						+ " x i8]* %" + tmp1 + ", i8 0, i8 0 \n";
 				ret += "store i8* %" + tmp2 + ", i8** %" + id1.getValue();
+			} else if (t1 instanceof RecordVarCall) {
+				ret += LLVM.loadType(t1);
+				ret += LLVM.loadType(t2);
+				String t = t2.fromTypeStringToLLVMType();
+				ret += "store " + t + " %" + LLVM.getMem(t2) + ", " + t + "* "
+						+ "%" + LLVM.getMem(t1);
+			} else if(t1 instanceof ArrayCall){
+				ret += LLVM.getArrayCallPointer((ArrayCall) t1);
+				ret += LLVM.loadType(t2);
+				String t = t2.fromTypeStringToLLVMType();
+				ret += "store " + t + " %" + LLVM.getMem(t2) + ", " + t + "* %" + LLVM.getMem(t1);
 			} else {
 				ret += LLVM.loadType(t2);
 				String t = t2.fromTypeStringToLLVMType();

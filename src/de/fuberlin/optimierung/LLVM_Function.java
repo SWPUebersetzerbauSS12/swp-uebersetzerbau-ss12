@@ -967,75 +967,77 @@ public class LLVM_Function {
 		// Gehe Bloecke durch
 		LinkedList<LLVM_Block> toDelete = new LinkedList<LLVM_Block>();
 		for(LLVM_Block actualBlock : this.blocks) {
-			if(actualBlock!=this.blocks.get(0)) {
-				// Enthaelt Block nur einen unbedingten Sprungbefehl?
-				if(!actualBlock.isEmpty() && actualBlock.getFirstCommand().
-						getOperation()==LLVM_Operation.BR) {
-					// Block kann geloescht werden
-					LLVM_Block targetBlock = actualBlock.getNextBlocks().getFirst();
-					String targetBlockLabel = targetBlock.getLabel();
-					String actualBlockLabel = actualBlock.getLabel();
-					
-					// Gehe Vorgaengerbloecke durch
-					for(LLVM_Block previousBlock : actualBlock.getPreviousBlocks()) {
-						// Hole Sprungbefehl des Vorgaengerblocks
-						// Dieser muss angepasst werden
-						LLVM_GenericCommand branchCommand = previousBlock.getLastCommand();
-						
-						// Befehl aus Registermap austragen
-						this.registerMap.deleteCommand(branchCommand);
-						
-						for(LLVM_Parameter p : branchCommand.getOperands()){
-							if(actualBlockLabel.equals(p.getName())){
-								p.setName(targetBlockLabel);
-							}
-						}
-						
-						// Setze Registermapeintrag neu
-						this.registerMap.addCommand(branchCommand);
-						
-						// Passe Flussgraph an:
-						// previousBlock hat actualBlock nicht mehr als Nachfolger,
-						// sondern targetBlock
-						// targetBlock hat previousBlock als Vorgaenger
-						targetBlock.appendToPreviousBlocks(previousBlock);
-						targetBlock.removeFromPreviousBlocks(actualBlock);
-						previousBlock.appendToNextBlocks(targetBlock);
-						previousBlock.removeFromNextBlocks(actualBlock);
-					}
-					toDelete.add(actualBlock);
-				}else if (!actualBlock.isEmpty() && actualBlock.getPreviousBlocks().size() > 0 && (actualBlock.getFirstCommand().
-						getOperation()==LLVM_Operation.RET || actualBlock.getFirstCommand().
-						getOperation()==LLVM_Operation.RET_CODE)){
-					
-					for(LLVM_Block previousBlock : actualBlock.getPreviousBlocks()) {
-						LLVM_GenericCommand branchCommand = previousBlock.getLastCommand();
-						if(branchCommand.getOperation()==LLVM_Operation.BR_CON)
-							return;
-					}
-	
-					// Gehe Vorgaengerbloecke durch
-					for(LLVM_Block previousBlock : actualBlock.getPreviousBlocks()) {
-						// Hole Sprungbefehl des Vorgaengerblocks
-						// Dieser muss ersetzt werden
-						LLVM_GenericCommand branchCommand = previousBlock.getLastCommand();
-						
-						// Befehl aus Registermap austragen
-						this.registerMap.deleteCommand(branchCommand);
-						
-						// Clone für Registermap erstellen
-						LLVM_GenericCommand tmp = new LLVM_ReturnCommand(actualBlock.getFirstCommand().toString(), branchCommand.getPredecessor(), previousBlock);
-						branchCommand.replaceCommand(tmp);
-						
-						// Setze Registermapeintrag neu
-						this.registerMap.addCommand(tmp);
-						
-						// Passe Flussgraph an:
-						// previousBlock hat actualBlock nicht mehr als Nachfolger,
-						previousBlock.removeFromNextBlocks(actualBlock);
-					}
-					toDelete.add(actualBlock);
+			// Enthaelt Block nur einen unbedingten Sprungbefehl?
+			if(!actualBlock.isEmpty() && actualBlock.getFirstCommand().
+					getOperation()==LLVM_Operation.BR) {
+				// Block kann geloescht werden
+				LLVM_Block targetBlock = actualBlock.getNextBlocks().getFirst();
+				String targetBlockLabel = targetBlock.getLabel();
+				String actualBlockLabel = actualBlock.getLabel();
+				
+				if(actualBlock.getPreviousBlocks().size() == 0 ){
+					targetBlock.removeFromPreviousBlocks(actualBlock);
 				}
+				
+				// Gehe Vorgaengerbloecke durch
+				for(LLVM_Block previousBlock : actualBlock.getPreviousBlocks()) {
+					// Hole Sprungbefehl des Vorgaengerblocks
+					// Dieser muss angepasst werden
+					LLVM_GenericCommand branchCommand = previousBlock.getLastCommand();
+					
+					// Befehl aus Registermap austragen
+					this.registerMap.deleteCommand(branchCommand);
+					
+					for(LLVM_Parameter p : branchCommand.getOperands()){
+						if(actualBlockLabel.equals(p.getName())){
+							p.setName(targetBlockLabel);
+						}
+					}
+					
+					// Setze Registermapeintrag neu
+					this.registerMap.addCommand(branchCommand);
+					
+					// Passe Flussgraph an:
+					// previousBlock hat actualBlock nicht mehr als Nachfolger,
+					// sondern targetBlock
+					// targetBlock hat previousBlock als Vorgaenger
+					targetBlock.appendToPreviousBlocks(previousBlock);
+					targetBlock.removeFromPreviousBlocks(actualBlock);
+					previousBlock.appendToNextBlocks(targetBlock);
+					previousBlock.removeFromNextBlocks(actualBlock);
+				}
+				toDelete.add(actualBlock);
+			}else if (!actualBlock.isEmpty() && actualBlock.getPreviousBlocks().size() > 0 && (actualBlock.getFirstCommand().
+					getOperation()==LLVM_Operation.RET || actualBlock.getFirstCommand().
+					getOperation()==LLVM_Operation.RET_CODE)){
+				
+				for(LLVM_Block previousBlock : actualBlock.getPreviousBlocks()) {
+					LLVM_GenericCommand branchCommand = previousBlock.getLastCommand();
+					if(branchCommand.getOperation()==LLVM_Operation.BR_CON)
+						return;
+				}
+
+				// Gehe Vorgaengerbloecke durch
+				for(LLVM_Block previousBlock : actualBlock.getPreviousBlocks()) {
+					// Hole Sprungbefehl des Vorgaengerblocks
+					// Dieser muss ersetzt werden
+					LLVM_GenericCommand branchCommand = previousBlock.getLastCommand();
+					
+					// Befehl aus Registermap austragen
+					this.registerMap.deleteCommand(branchCommand);
+					
+					// Clone für Registermap erstellen
+					LLVM_GenericCommand tmp = new LLVM_ReturnCommand(actualBlock.getFirstCommand().toString(), branchCommand.getPredecessor(), previousBlock);
+					branchCommand.replaceCommand(tmp);
+					
+					// Setze Registermapeintrag neu
+					this.registerMap.addCommand(tmp);
+					
+					// Passe Flussgraph an:
+					// previousBlock hat actualBlock nicht mehr als Nachfolger,
+					previousBlock.removeFromNextBlocks(actualBlock);
+				}
+				toDelete.add(actualBlock);
 			}
 		}
 

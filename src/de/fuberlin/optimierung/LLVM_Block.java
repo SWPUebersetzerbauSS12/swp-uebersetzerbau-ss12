@@ -586,7 +586,7 @@ public class LLVM_Block{
 			return new LLVM_GetElementPtrCommand(cmdLine, predecessor, this);
 		}else if(cmdLine.contains(" = call ") || cmdLine.contains(" = tail call ") || cmdLine.startsWith("call ")){
 			return new LLVM_CallCommand(cmdLine, predecessor, this);
-		}else if(cmdLine.contains(" = icmp ")){
+		}else if(cmdLine.contains(" = icmp ") || cmdLine.contains(" = fcmp ")){
 			return new LLVM_XcmpCommand(cmdLine, predecessor, this);
 		}else{
 			throw new LLVM_OptimizationException("Nicht implementiertes LLVM_Kommando: " + cmdLine);

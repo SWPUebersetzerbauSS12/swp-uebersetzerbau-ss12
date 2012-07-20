@@ -31,8 +31,8 @@ public class CompilerMain {
 		}
 	}
 
-	public static String execute(ICharStream stream) {
-		final String code = FrontendMain.genCode(stream);
+	public static String execute(ICharStream stream, boolean failSafe) {
+		final String code = FrontendMain.genCode(stream, failSafe);
 		if (code == null) {
 			System.err.println("Code generation failed.");
 			return null;
@@ -103,10 +103,8 @@ public class CompilerMain {
 	}
 
 	static void run(ICharStream stream) {
-		String output = execute(stream);
+		String output = execute(stream, true);
 		System.out.println(output);
 	}
-
-	
 
 }

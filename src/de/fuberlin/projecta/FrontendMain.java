@@ -13,7 +13,7 @@ import de.fuberlin.projecta.utils.StringUtils;
 
 public class FrontendMain {
 
-	static String genCode(ICharStream stream) {
+	static String genCode(ICharStream stream, boolean failSafe) {
 		Parser parser = ParserMain.parse(stream);
 		if (parser == null) {
 			System.err.println("Parsing failed.");
@@ -34,6 +34,9 @@ public class FrontendMain {
 			if (token != null)
 				System.out.println("Error near: '" + token.getText() + "' near line: " + token.getLineNumber() + ", column: " + token.getOffset());
 
+			if (!failSafe)
+				throw e;
+
 			return null;
 		}
 
@@ -42,7 +45,7 @@ public class FrontendMain {
 	}
 
 	private static void run(ICharStream stream) {
-		final String code = genCode(stream);
+		final String code = genCode(stream, true);
 		System.out.println("Generated code:");
 		System.out.flush();
 		System.out.println(code);

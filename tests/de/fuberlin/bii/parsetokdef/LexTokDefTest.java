@@ -22,7 +22,8 @@ public class LexTokDefTest {
 	@SuppressWarnings("static-method")
 	@Test
 	public void testReadFile() throws Exception {
-		File rdFile = new File("input/de/fuberlin/bii/def/tokendefinition.rd");
+		File rdFile = new File(
+				"tests/resources/de/fuberlin/bii/def/parsetokdef/test.rd");
 		ReadTokDefAbstract instance = new LexTokDef(rdFile);
 		instance.readFile(rdFile);
 	}
@@ -30,20 +31,22 @@ public class LexTokDefTest {
 	@SuppressWarnings("static-method")
 	@Test
 	public void testRegex() throws Exception {
-		File rdFile = new File("input/de/fuberlin/bii/def/tokendefinition.rd");
+		File rdFile = new File(
+				"tests/resources/de/fuberlin/bii/def/parsetokdef/test.rd");
 		List<IRule> rules = new LexTokDef(rdFile).getRules();
 		System.out.println(rules);
-		
-		String tokenType = rules.get(0).getTokenType();
-		Attribute tokenValue = rules.get(0).getTokenValue();
-		String tokenRegex = rules.get(0).getRegexp();
-		Assert.assertEquals("BRACKET", tokenType);
-		Assert.assertEquals("(", tokenValue.toString());
-		Assert.assertEquals("\\(", tokenRegex);
 
+		String tokenType = rules.get(0).getTokenType();
+		String tokenRegex = rules.get(0).getRegexp();
+		Assert.assertEquals("(", tokenType);
+
+		Assert.assertEquals("\\(", tokenRegex);
 		tokenType = rules.get(5).getTokenType();
-		tokenValue = rules.get(5).getTokenValue();
-		Assert.assertEquals("OP", tokenType);
-		Assert.assertEquals("L", tokenValue.toString());
+		Assert.assertEquals("]", tokenType);
+
+		tokenType = rules.get(rules.size() - 3).getTokenType();
+		tokenRegex = rules.get(rules.size() - 3).getRegexp();
+		Assert.assertEquals("num", tokenType);
+		Assert.assertEquals("0|([1-9]+[0-9]*)", tokenRegex);
 	}
 }

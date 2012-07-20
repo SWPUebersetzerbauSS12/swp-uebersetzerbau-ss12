@@ -13,11 +13,13 @@ public class RealWorldTest {
 	public void fib() {
 		String source = "def int main(){int x; x = fib(4); print x; return 0;}\n" +
 		"def int fib(int x){" +
-			"if(x <= 1) return 1;"+
+			"if(x == 0) return 0;"+
+			"if(x == 1) return 1;"+
 			"return fib(x-2) + fib(x-1);"+
 		"}\n";
+		System.out.println(source);
 		String output = CompilerTest.executeCode(source);
-		assertEquals("5", output);
+		assertEquals("3", output);
 	}
 	
 	@Test

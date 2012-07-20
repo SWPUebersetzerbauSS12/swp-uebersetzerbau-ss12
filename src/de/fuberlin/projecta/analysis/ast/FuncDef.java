@@ -74,10 +74,7 @@ public class FuncDef extends Type {
 						+ this.fromTypeStringToLLVMType() + "\n";
 			}
 			blockCode = ((Block) getChild(3)).genCode();
-			System.out.println(ret);
-			System.out.println("------------------");
 			ret += blockCode;
-			System.out.println(ret);
 			ret += "br label %return\nreturn:\n";
 			if (!this.toTypeString().equals(BasicType.TYPE_VOID_STRING)) {
 			int	n = ((Block) getChild(3)).getNewVar();

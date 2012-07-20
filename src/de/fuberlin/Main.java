@@ -236,6 +236,7 @@ public class Main {
 			} else{
 				optimized_llvm_code = llvm_optimizer.optimizeCodeFromString(generatedLLVMCode);
 			}
+			System.out.println(optimized_llvm_code);
 		}catch (LLVM_OptimizationException e){
 			// Fehlermeldung anzeigen
 			System.err.println("; OPTIMIZATION-ERROR: " + e.getMessage());

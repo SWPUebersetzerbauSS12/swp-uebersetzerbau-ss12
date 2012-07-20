@@ -208,7 +208,7 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 				optimization = new LLVM_Optimization();
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_test.llvm");
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_constant_folding1");
-				String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_cf_prop_deadb");
+				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_cf_prop_deadb");
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_lebendigkeit_global1");
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_dag");
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_dead_block");
@@ -219,7 +219,7 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/srem_test.ll");
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/emptyBlocksTest.s");
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/test.s");
-				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/doubleTest1.s");
+				String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/doubleTest1.s");
 				
 				System.out.println("###########################################################");
 				System.out.println("################## Optimization Input #####################");

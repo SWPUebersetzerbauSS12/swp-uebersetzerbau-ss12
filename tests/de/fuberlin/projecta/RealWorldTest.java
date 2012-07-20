@@ -10,7 +10,7 @@ import org.junit.Test;
 public class RealWorldTest {
 
 	@Test
-	public void fib() {
+	public void testFibonacciFunction() {
 		String source = "def int main(){int x; x = fib(4); print x; return 0;}\n" +
 		"def int fib(int x){" +
 			"if(x == 0) return 0;"+
@@ -21,22 +21,23 @@ public class RealWorldTest {
 		String output = CompilerTest.executeCode(source);
 		assertEquals("3", output);
 	}
-	
+
 	@Test
-	public void addTwoFunctions(){
+	public void testAddTwoFunctionReturnValues(){
 		String source = ""+
 				"def int foo(int x){return x;}"+
 				"def int main() {int x; x = foo(1) + foo(2); print x; return 0;}";
 		String output = CompilerTest.executeCode(source);
 		assertEquals("3", output);
 	}
-	
+
 	@Test
-	public void compareTwoFunctions(){
+	public void testCompareTwoFunctionReturnValues(){
 		String source = ""+
 			"def int foo(int x){return x;}"+
 			"def int main() {bool x; x = foo(1) <= foo(2); print x; return 0;}";
 		String output = CompilerTest.executeCode(source);
 		assertEquals("1", output); // true
 	}
+
 }

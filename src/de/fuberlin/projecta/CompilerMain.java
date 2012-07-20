@@ -70,18 +70,19 @@ public class CompilerMain {
 	 * Run the compiler frontend + backend
 	 * @param stream Character stream
 	 * @param verbose If true, print out debugging output
-	 * @param failSafe If true, do not throw RuntimeException
 	 * @return Output from running the binary
 	 */
-	public static String execute(ICharStream stream, boolean verbose, boolean failSafe) {
-		final String code = FrontendMain.genCode(stream, failSafe);
+	public static String execute(ICharStream stream, boolean verbose) {
+		final String code = FrontendMain.genCode(stream, verbose);
 		if (code == null) {
 			System.err.println("Code generation failed.");
 			return null;
 		}
 
-		System.err.println("Generated code:");
-		System.err.println(code);
+		if (verbose) {
+			System.err.println("\nGenerated code:");
+			System.err.println(code);
+		}
 
 		try {
 			// write LLVM code to file
@@ -145,8 +146,12 @@ public class CompilerMain {
 	}
 
 	static void run(ICharStream stream, boolean verbose) {
-		String output = execute(stream, verbose, true);
-		System.out.println(output);
+		String output = execute(stream, verbose);
+		
+		if (output != null) {
+			System.out.println("\nOutput:");
+			System.out.println(output);
+		}
 	}
 
 }

@@ -112,7 +112,9 @@ public class Tree implements ISyntaxTree {
 		System.out.print(StringUtils.repeat(' ', depth));
 		if (getSymbol() != null)
 			System.out.println(getSymbol());
-		else {
+		else if (getToken() != null) {
+			System.out.println(toString() + " (Token: " + getToken() + ")");
+		} else {
 			System.out.println(toString());
 		}
 

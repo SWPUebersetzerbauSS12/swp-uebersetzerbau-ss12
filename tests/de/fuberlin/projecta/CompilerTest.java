@@ -22,7 +22,7 @@ public class CompilerTest {
 
 	static String executeCode(String code) {
 		ICharStream stream = new StringCharStream(code);
-		String output = CompilerMain.execute(stream, /*verbose =*/ true, /*failSafe = */ false );
+		String output = CompilerMain.execute(stream, /*verbose =*/ true);
 		return output;
 	}
 

@@ -18,8 +18,8 @@ import de.fuberlin.projecta.utils.StringUtils;
  */
 public class FrontendMain {
 
-	static String genCode(ICharStream stream, boolean failSafe) {
-		Parser parser = ParserMain.parse(stream);
+	static String genCode(ICharStream stream, boolean verbose) {
+		Parser parser = ParserMain.parse(stream, verbose);
 		if (parser == null) {
 			System.err.println("Parsing failed.");
 			return null;
@@ -30,22 +30,32 @@ public class FrontendMain {
 		try {
 			analyzer.analyze();
 		} catch (SemanticException e) {
-			System.out.println("Error: Bad Semantics");
+			System.out.println("\nError: Failed to parse.");
 			System.out.println(e.getMessage());
 
 			// try to find where it happened
 			AbstractSyntaxTree node = e.getNode();
+			if (verbose) {
+				System.out.println("Node that threw the exception: " + e.getNode());
+			}
+
 			IToken token = DebuggingHelper.extractPosition(node);
 			if (token != null)
 				System.out.println("Error near: '" + token.getText() + "' near line: " + token.getLineNumber() + ", column: " + token.getOffset());
 
-			if (!failSafe)
+			if (verbose) {
+				if (analyzer.getAST() != null) {
+					analyzer.getAST().printTree();
+				}
 				throw e;
-
+			}
 			return null;
 		}
 
-		analyzer.getAST().printTree();
+		if (verbose) {
+			analyzer.getAST().printTree();
+		}
+
 		return analyzer.getAST().genCode();
 	}
 

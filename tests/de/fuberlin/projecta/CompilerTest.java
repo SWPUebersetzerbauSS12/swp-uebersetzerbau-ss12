@@ -34,6 +34,13 @@ public class CompilerTest {
 	}
 
 	@Test
+	public void testImplicitReturnValueOnIntegerAssignment() {
+		String code = "def int foo() { int i; i = 1; }" + mainC("int j; j = foo(); print j; return 0;");
+		String output = executeCode(code);
+		assertEquals("1", output);
+	}
+
+	@Test
 	public void testAdd() {
 		final String code = mainC("int a; a = 1 + 1; print a;");
 		String output = executeCode(code);

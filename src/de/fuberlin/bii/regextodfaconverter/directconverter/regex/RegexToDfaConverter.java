@@ -86,7 +86,7 @@ public class RegexToDfaConverter {
 	
 	
 	/**
-	 * Wandelt einen vereinfachten regulären Ausdruck in einen DFA um.
+	 * Wandelt einen regulären Ausdruck in einen DFA um.
 	 * 
 	 * @param Regex
 	 *          der reguläre Ausdruck in vereinfachter Form.

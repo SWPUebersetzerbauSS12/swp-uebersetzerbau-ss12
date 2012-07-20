@@ -265,6 +265,13 @@ public class CompilerTest {
 	}
 
 	@Test
+	public void testVoidMain() {
+		String code = "def void main() { string s; s = \"foo\"; print s; return; }";
+		String output = executeCode(code);
+		assertEquals(null, output);
+	}
+
+	@Test
 	public void testDoWhileStatement() {
 		String code = mainC("int i; i = 0; do {" +
 				"print i;" + 

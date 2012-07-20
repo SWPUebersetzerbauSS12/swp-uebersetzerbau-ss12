@@ -1,0 +1,43 @@
+@.str = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
+
+define i32 @factorial(i32 %X) nounwind {
+	%1 = alloca i32, align 4 
+	%2 = icmp eq i32 %X, 0 
+	br i1 %2, label %3, label %4  
+
+	store i32 1, i32* %1 
+	br label %8  
+
+	%5 = sub nsw i32 %X, 1 
+	%6 = call i32 @factorial(i32 %5)  
+	%7 = mul nsw i32 %X, %6 
+	store i32 %7, i32* %1 
+	br label %8  
+
+	%9 = load i32* %1 
+	ret i32 %9  
+}
+
+
+define i32 @init(i32 %i) nounwind {
+	ret i32 48  
+}
+
+
+define i32 @main(i32 %argc, i8** %argv) nounwind {
+	%1 = call i32 @init(i32 5)  
+	%2 = call i32 @init(i32 7)  
+	%3 = getelementptr inbounds i8** %argv, i32 1 
+	%4 = load i8** %3 
+	%5 = call i32 @atoi(i8* %4) nounwind readonly  
+	%6 = call i32 @factorial(i32 %5)  
+	%7 = getelementptr inbounds [4 x i8]* @.str, i32 0, i32 0 
+	%8 = call i32 (i8*, ...)* @printf(i8* %7, i32 %6)  
+	%9 = call i32 (i8*, ...)* @printf(i8* %7, i32 %1)  
+	%10 = call i32 (i8*, ...)* @printf(i8* %7, i32 %2)  
+	ret i32 0  
+}
+
+
+declare i32 @printf(i8*, ...)
+declare i32 @atoi(i8*) nounwind readonly

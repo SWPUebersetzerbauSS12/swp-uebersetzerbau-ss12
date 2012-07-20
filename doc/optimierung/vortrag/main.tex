@@ -1,0 +1,203 @@
+\documentclass[ucs,9pt]{beamer}
+% frueher mal:
+% \documentclass[hyperref={pdfpagelabels=false},ucs,9pt]{beamer}
+
+% Copyright 2004 by Till Tantau <tantau@users.sourceforge.net>.
+%
+% In principle, this file can be redistributed and/or modified under
+% the terms of the GNU Public License, version 2.
+%
+% However, this file is supposed to be a template to be modified
+% for your own needs. For this reason, if you use this file as a
+% template and not specifically distribute it as part of a another
+% package/program, I grant the extra permission to freely copy and
+% modify this file as you see fit and even to delete this copyright
+% notice.
+%
+% Modified by Tobias G. Pfeiffer <tobias.pfeiffer@math.fu-berlin.de>
+% to show usage of some features specific to the FU Berlin template.
+
+% remove this line and the "ucs" option to the documentclass when your editor is not utf8-capable
+\usepackage[utf8x]{inputenc}    % to make utf-8 input possible
+\usepackage[ngerman]{babel}     % hyphenation etc., alternatively use 'german' as parameter
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{multirow}
+
+\include{fu-beamer-template}  % THIS is the line that includes the FU template!
+%\include{algorithmic}
+
+\usepackage{arev,t1enc} % looks nicer than the standard sans-serif font
+% if you experience problems, comment out the line above and change
+% the documentclass option "9pt" to "10pt"
+
+% image to be shown on the title page (without file extension, should be pdf or png)
+\titleimage{fu_500}
+
+\title[Softwareprojekt Übersetzerbau]
+{Softwareprojekt Übersetzerbau}
+
+\subtitle{Optimierungstechniken}
+
+\author[Knötel, Karger, Marzin] % (optional, use only with lots of authors)
+{David~Knötel, Björn~Karger, Daniel Marzin}
+% - Give the names in the same order as the appear in the paper.
+
+\institute[FU Berlin] % (optional, but mostly needed)
+{Freie Universität Berlin, Institut für Informatik}
+% - Keep it simple, no one is interested in your street address.
+
+\date[20.07.2012] % (optional, should be abbreviation of conference name)
+{}
+% - Either use conference name or its abbreviation.
+% - Not really informative to the audience, more for people (including
+%   yourself) who are reading the slides online
+
+%\subject{Verteidigung der Bachelorarbeit}
+% This is only inserted into the PDF information catalog. Can be left
+% out.
+
+% you can redefine the text shown in the footline. use a combination of
+% \insertshortauthor, \insertshortinstitute, \insertshorttitle, \insertshortdate, ...
+\renewcommand{\footlinetext}{\insertshorttitle, \insertshortdate}
+
+\setbeamertemplate{navigation symbols}{}
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+\AtBeginSection[] {
+	\begin{frame}<beamer>{Leitfaden}
+		\tableofcontents[currentsection,currentsubsection]
+	\end{frame}
+}
+
+\begin{document}
+
+\frame[plain]{\titlepage}
+%\begin{frame}[plain]
+%	\titlepage
+%\end{frame}
+
+\lstset{language=C,showstringspaces=false,tabsize=4,keywordstyle=\color{red},commentstyle=\color{blue},
+stringstyle=\color{brown},frame=single}
+
+% -------------------------------------------------------------------------------------------
+% -------------------------------------------------------------------------------------------
+
+\begin{frame}{Einführung}
+\includegraphics[scale=1]{bilder/einfuehrung}
+\end{frame}
+
+\begin{frame}{Programmstruktur}
+	\includegraphics[scale=0.63]{bilder/klassendiagramm.png}
+\end{frame}
+
+\begin{frame}{Implementierung}
+\includegraphics[scale=0.8]{bilder/ssa}
+\end{frame}
+
+\begin{frame}{Optimierungen \& Beispiele}
+
+\begin{columns}
+\begin{column}{.48\textwidth}
+
+\begin{enumerate}
+\item <+-| alert@+> Constant folding
+\item <+-| alert@+> Constant propagation
+\item <+-| alert@+> Reaching definition analysis
+\item <+-| alert@+> Eliminate dead registers/blocks
+\item <+-| alert@+> Remove local common subexpressions
+\item <+-| alert@+> Global liveness analysis
+\item <+-| alert@+> Strength reduction
+\end{enumerate}
+
+\end{column}%
+%\hfill%
+\begin{column}{.48\textwidth}
+%\color{green}\rule{\linewidth}{2pt}
+
+{\fbox{\parbox[c][2.9cm]{5cm}{
+\only<1-1>{
+{\color{blue} \%a = add i32 1, 7}}
+\only<2-2>{
+{\color{blue}\%a = add i32 8, 0\\
+\%b = sub i32 \%a, 5}
+}
+\only<3-3>{
+{\color{blue}
+  store i32 5, i32* \%a, align 4\\
+  \%2 = load i32* \%a, align 4
+}}
+\only<4-4>{
+{\color{blue}br i1  1, label \%j1, label \%j2\\
+
+j1: \%a = add i32 1, 7\\
+j2: \%b = add i32 8, 0}
+}
+\only<5-5>{
+{\color{blue}	\%q = load i32* \%x, align 4\\
+\%w = load i32* \%x, align 4
+}}
+\only<6-6>{
+{\color{blue}	\%a = alloca i32, align 4\\
+	store i32 1, i32* \%a, align 4\\
+	ret i32 0
+}}
+\only<7-7>{
+{\color{blue}	\%a = mul i32 4, \%b
+}}
+}}\\
+{\color{red}unoptimierter Code}\\
+\vspace*{0.3cm}
+\fbox{\parbox[c][2.9cm]{5cm}{
+\only<1-1>{
+{\color{blue}\%a = add i32 8, 0}\\
+(bei uns eine Zuweisung)\\}
+\only<2-2>{
+{\color{blue}\%b = sub i32 8, 5}}
+\only<3-3>{
+{\color{blue}
+  \%2 = add i32 5, 0
+}}
+\only<4-4>{
+{\color{blue}br label \%j1\\
+
+j1: \%a = add i32 1, 7
+}}
+\only<5-5>{
+{\color{blue}	\%q = load i32* \%x, align 4\\
+\%w = add i32 \%q, 0
+}}
+\only<6-6>{
+{\color{blue}
+	ret i32 0
+}}
+\only<7-7>{
+{\color{blue}
+\%a = shl i32 \%b, 2
+}}
+}}\\
+{\color{green}optimierter Code}}
+
+\end{column}%
+\end{columns}
+
+\end{frame}
+
+\begin{frame}{Fazit / Ausblick}
+\begin{itemize}
+\item Es wurden mehrere Optimierungsalgorithmen erfolgreich auf einen gegebenen LLVM-Code angewendet. Auch bei natürlichem, aus C-Code über CLANG erzeugten LLVM-Code wurden erfolgreich bedeutende Mengen an Codezeilen entfernt.
+\vspace{3mm}
+\item Eine Weiterentwicklung des Programms wäre durch die Vielzahl an potentiellen weiteren Optimierungstechniken problemlos möglich. Priorität hätte hierbei die Anwendung von Schleifenoptimierungen.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Danke}
+	\begin{center}
+		\begin{Large}Vielen Dank für Ihre Aufmerksamkeit.\end{Large}
+	\end{center}
+\end{frame}
+
+% -------------------------------------------------------------------------------------------
+% -------------------------------------------------------------------------------------------
+\end{document}

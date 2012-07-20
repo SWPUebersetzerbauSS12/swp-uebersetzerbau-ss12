@@ -1,0 +1,93 @@
+@.str = private unnamed_addr constant [4 x i8] c"%d\0A\00", align 1
+
+define i32 @factorial(i32 %X) nounwind {
+  %1 = alloca i32, align 4
+  %2 = alloca i32, align 4
+  store i32 %X, i32* %2, align 4
+  %3 = load i32* %2, align 4
+  %4 = icmp eq i32 %3, 0
+  br i1 %4, label %5, label %6
+
+; <label>:5                                       ; preds = %0
+  store i32 1, i32* %1
+  br label %12
+
+; <label>:6                                       ; preds = %0
+  %7 = load i32* %2, align 4
+  %8 = load i32* %2, align 4
+  %9 = sub nsw i32 %8, 1
+  %10 = call i32 @factorial(i32 %9)
+  %11 = mul nsw i32 %7, %10
+  store i32 %11, i32* %1
+  br label %12
+
+; <label>:12                                      ; preds = %6, %5
+  %13 = load i32* %1
+  ret i32 %13
+}
+
+define i32 @init(i32 %i) nounwind {
+  %1 = alloca i32, align 4
+  %a = alloca i32, align 4
+  %b = alloca i32, align 4
+  %c = alloca i32, align 4
+  %d = alloca i32, align 4
+  %f = alloca i32, align 4
+  %g = alloca i32, align 4
+  store i32 %i, i32* %1, align 4
+  store i32 5, i32* %a, align 4
+  store i32 7, i32* %b, align 4
+  %2 = load i32* %a, align 4
+  %3 = load i32* %b, align 4
+  %4 = add nsw i32 %2, %3
+  store i32 %4, i32* %c, align 4
+  %5 = load i32* %a, align 4
+  %6 = load i32* %b, align 4
+  %7 = add nsw i32 %5, %6
+  store i32 %7, i32* %d, align 4
+  %8 = load i32* %c, align 4
+  %9 = load i32* %d, align 4
+  %10 = add nsw i32 %8, %9
+  store i32 %10, i32* %f, align 4
+  %11 = load i32* %f, align 4
+  %12 = mul nsw i32 %11, 2
+  store i32 %12, i32* %g, align 4
+  %13 = load i32* %g, align 4
+  ret i32 %13
+}
+
+define i32 @main(i32 %argc, i8** %argv) nounwind {
+  %1 = alloca i32, align 4
+  %2 = alloca i32, align 4
+  %3 = alloca i8**, align 8
+  %a = alloca i32, align 4
+  %b = alloca i32, align 4
+  %c = alloca i32, align 4
+  store i32 0, i32* %1
+  store i32 %argc, i32* %2, align 4
+  store i8** %argv, i8*** %3, align 8
+  %4 = call i32 @init(i32 5)
+  store i32 %4, i32* %a, align 4
+  %5 = call i32 @init(i32 7)
+  store i32 %5, i32* %b, align 4
+  %6 = load i32* %a, align 4
+  %7 = load i32* %b, align 4
+  %8 = add nsw i32 %6, %7
+  store i32 %8, i32* %c, align 4
+  %9 = load i8*** %3, align 8
+  %10 = getelementptr inbounds i8** %9, i32 1
+  %11 = load i8** %10
+  %12 = call i32 @atoi(i8* %11) nounwind readonly
+  %13 = call i32 @factorial(i32 %12)
+  %14 = getelementptr inbounds [4 x i8]* @.str, i32 0, i32 0
+  %15 = call i32 (i8*, ...)* @printf(i8* %14, i32 %13)
+  %qqq = getelementptr inbounds [4 x i8]* @.str, i32 0, i32 0
+  %16 = call i32 (i8*, ...)* @printf(i8* %qqq, i32 %4)
+  %qqqq = getelementptr inbounds [4 x i8]* @.str, i32 0, i32 0
+  %17 = call i32 (i8*, ...)* @printf(i8* %qqqq, i32 %5)
+  %18 = load i32* %1
+  ret i32 %18
+}
+
+declare i32 @printf(i8*, ...)
+declare i32 @atoi(i8*) nounwind readonly

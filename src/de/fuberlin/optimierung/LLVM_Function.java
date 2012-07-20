@@ -44,6 +44,18 @@ public class LLVM_Function {
 			}
 		}
 		
+		// add newline after Return
+		searchindex = 0;
+		search = true;
+		while(search){
+			search = code.indexOf("ret ", searchindex) >= 0;
+			if (search){
+				searchindex = code.indexOf("ret ", searchindex) + 4;
+				int index = code.indexOf('\n', searchindex);
+				code = code.substring(0, index) + "\n" + code.substring(index);
+			}
+		}
+		
 		String codeBlocks[] = code.split("\n\n"); 
 		this.numberBlocks = codeBlocks.length;
 		this.blocks = new ArrayList<LLVM_Block>(this.numberBlocks);

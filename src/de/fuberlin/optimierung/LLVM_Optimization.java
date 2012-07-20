@@ -218,8 +218,8 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_maschco");//test_new.ll");
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/srem_test.ll");
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/emptyBlocksTest.s");
-				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/test.s");
-				String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/doubleTest1.s");
+				String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/test.s");
+				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/doubleTest1.s");
 				
 				System.out.println("###########################################################");
 				System.out.println("################## Optimization Input #####################");

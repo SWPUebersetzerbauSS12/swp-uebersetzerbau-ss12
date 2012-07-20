@@ -105,16 +105,7 @@ public class Translator {
 				
 				// Variablen, die nur in Registern sind, auf dem Stack speichern
 				// TODO: MMX-Register sichern
-				List<Variable> regVars = mem.getRegVariables(true);
-				RegisterAddress movedFrom;
-				StackAddress movedTo;
-				for (Variable var : regVars) {
-					movedFrom = var.getRegAddress();
-					movedTo = mem.regToStack(var);
-					// Stackpointer verschieben
-					asm.sub(String.valueOf(var.getSize()), "esp", "Move var to stack");
-					asm.mov(movedFrom.getFullName(), movedTo.getFullName(), var.getName());
-				}
+				saveRegisters();
 				// Alle Register sind nun frei und werden möglicherweise in der
 				// Aufgerufenen Funktion verwendet.
 				// Parameter auf den Stack legen
@@ -151,7 +142,8 @@ public class Translator {
 				
 				// Rückgabe speichern
 				if (tok.getTypeTarget().equals("i32")) {
-					mem.addRegVar(tok.getTarget(), tok.getTypeTarget(), mem.getFreeRegister(0));
+					RegisterAddress reg = mem.getFreeRegister();
+					mem.addRegVar(tok.getTarget(), tok.getTypeTarget(), reg);
 				}
 				else if (tok.getTypeTarget().equals("double")) {
 					mmxRes = new MMXRegisterAddress(0);
@@ -170,26 +162,7 @@ public class Translator {
 				// Array
 				String tT = tok.getTypeTarget();
 				if  (tT.startsWith("[")){
-					// Extrahieren der Array-Größen
-					ArrayList<Integer> numbers = new ArrayList<Integer>();
-					Pattern p = Pattern.compile("(\\d+)(\\sx)");
-					Matcher m = p.matcher(tT); 
-					while (m.find()) {
-					   numbers.add(new Integer(m.group(1)));
-					}
-					
-					// Extrahieren des Typs
-					p = Pattern.compile("(i\\d+)|double");
-					m = p.matcher(tT);
-					m.find();
-					String type = m.group();
-					
-					// Länge berechnen
-					int length = 1;
-					for (Integer i : numbers) {
-						length *= i;
-					}
-					Array newArr = mem.newArray(tok.getTarget(), type, length);
+					Array newArr = createArray(tok.getTypeTarget(), tok.getTarget());
 					asm.sub(String.valueOf(newArr.getSize()), "esp",
 							"Allocation " + tok.getTarget());
 				}
@@ -418,7 +391,7 @@ public class Translator {
 				asm.label(mem.getContextName() + "" + tok.getTarget());
 				break;
 
-			case Compare:
+			case CompareInteger:
 				res = mem.getFreeRegister();
 				if (res == null) {
 					if (!freeUnusedRegister(tokenNumber)) {
@@ -437,9 +410,33 @@ public class Translator {
 					op2 = tok.getOp2();
 
 				asm.mov(op1, res.getFullName(), "Compare");
-				asm.cmp(op2, res.getFullName());
+				asm.icmp(op2, res.getFullName());
 
 				mem.addRegVar(tok.getOp1(), tok.getTypeOp1(), res);
+				break;
+				
+			case CompareDouble:
+				mmxRes2 = mem.getFreeMMXRegister();
+				if (mmxRes2 == null) {
+					if (!freeUnusedRegister(tokenNumber)) {
+						System.err.println("Could'nt free register");
+					}
+					mmxRes2 = mem.getFreeMMXRegister();
+				}
+
+				if (tok.getOp1().startsWith("%"))
+					op1 = mem.getAddress(tok.getOp1());
+				else
+					op1 = tok.getOp1();
+				if (tok.getOp2().startsWith("%"))
+					op2 = mem.getAddress(tok.getOp2());
+				else
+					op2 = tok.getOp2();
+
+				asm.movsd(op1, mmxRes2.getFullName(), "Compare");
+				asm.fcmp(op2, mmxRes2.getFullName());
+
+				mem.addMMXRegVar(tok.getOp1(), tok.getTypeOp1(), mmxRes2);
 				break;
 
 			case Branch:
@@ -447,23 +444,40 @@ public class Translator {
 				
 				if (!tok.getOp1().isEmpty()) {
 					int result;
-					result = findToken(tokenNumber, true, TokenType.Compare,
+					result = findToken(tokenNumber, true, TokenType.CompareInteger,
 							null, null, null);
-
-					op1 = "label_" + mem.getContextName() + "" + tok.getOp1().substring(1);
 					
-					if (code.get(result).getTypeTarget().equals("eq"))
-						asm.je(op1);
-					else if (code.get(result).getTypeTarget().equals("ne"))
-						asm.jne(op1);
-					else if (code.get(result).getTypeTarget().equals("slt"))
-						asm.jl(op1);
-					else if (code.get(result).getTypeTarget().equals("sgt"))
-						asm.jg(op1);
-					else if (code.get(result).getTypeTarget().equals("sle"))
-						asm.jle(op1);
-					else if (code.get(result).getTypeTarget().equals("sge"))
-						asm.jge(op1);
+					op1 = "label_" + mem.getContextName() + "" + tok.getOp1().substring(1);
+					if(result != 0) {
+						
+						if (code.get(result).getTypeTarget().equals("eq"))
+							asm.je(op1);
+						else if (code.get(result).getTypeTarget().equals("ne"))
+							asm.jne(op1);
+						else if (code.get(result).getTypeTarget().equals("slt"))
+							asm.jl(op1);
+						else if (code.get(result).getTypeTarget().equals("sgt"))
+							asm.jg(op1);
+						else if (code.get(result).getTypeTarget().equals("sle"))
+							asm.jle(op1);
+						else if (code.get(result).getTypeTarget().equals("sge"))
+							asm.jge(op1);
+					} else {
+						result = findToken(tokenNumber, true, TokenType.CompareDouble,
+								null, null, null);
+						if (code.get(result).getTypeTarget().equals("oeq"))
+							asm.je(op1);
+						else if (code.get(result).getTypeTarget().equals("une"))
+							asm.jne(op1);
+						else if (code.get(result).getTypeTarget().equals("olt"))
+							asm.jb(op1);
+						else if (code.get(result).getTypeTarget().equals("ogt"))
+							asm.ja(op1);
+						else if (code.get(result).getTypeTarget().equals("ole"))
+							asm.jbe(op1);
+						else if (code.get(result).getTypeTarget().equals("oge"))
+							asm.jae(op1);
+					}
 				}
 				
 				asm.jmp(op2);
@@ -533,8 +547,42 @@ public class Translator {
 		//erstelle Einstiegspunkt
 		asm.createEP();
 	}
-
 	
+	private void saveRegisters(){
+		List<Variable> regVars = mem.getRegVariables(true);
+		RegisterAddress movedFrom;
+		StackAddress movedTo;
+		for (Variable var : regVars) {
+			movedFrom = var.getRegAddress();
+			movedTo = mem.regToStack(var);
+			// Stackpointer verschieben
+			asm.sub(String.valueOf(var.getSize()), "esp", "Move var to stack");
+			asm.mov(movedFrom.getFullName(), movedTo.getFullName(), var.getName());
+		}
+	}
+	
+	private Array createArray(String targetType, String target) {
+		// Extrahieren der Array-Größen
+		ArrayList<Integer> numbers = new ArrayList<Integer>();
+		Pattern p = Pattern.compile("(\\d+)(\\sx)");
+		Matcher m = p.matcher(targetType); 
+		while (m.find()) {
+		   numbers.add(new Integer(m.group(1)));
+		}
+		
+		// Extrahieren des Typs
+		p = Pattern.compile("(i\\d+)|double");
+		m = p.matcher(targetType);
+		m.find();
+		String type = m.group();
+		
+		// Länge berechnen
+		int length = 1;
+		for (Integer i : numbers) {
+			length *= i;
+		}
+		return mem.newArray(target, type, length);
+	}
 
 	private Record createRecord(String name, Token tok) {
 		Record rec = new Record(name);
@@ -587,7 +635,16 @@ public class Translator {
 
 	// TODO
 	private void saveRegisterValue(RegisterAddress res) {
-
+		List<Variable> regVars = mem.getRegVariables(true);
+		RegisterAddress movedFrom;
+		StackAddress movedTo;
+		for (Variable var : regVars) {
+			movedFrom = var.getRegAddress();
+			movedTo = mem.regToStack(var);
+			// Stackpointer verschieben
+			asm.sub(String.valueOf(var.getSize()), "esp", "Move var to stack");
+			asm.mov(movedFrom.getFullName(), movedTo.getFullName(), var.getName());
+		}
 	}
 	
 	private int findToken(int start, boolean backwards, TokenType type,

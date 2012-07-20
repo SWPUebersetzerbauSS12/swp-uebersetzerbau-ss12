@@ -25,21 +25,55 @@ public class CompilerMain {
 	static final String GCC_EXE = "gcc";
 	
 	public static void main(String[] args) {
-		if (args.length == 0) {
+		// action
+		boolean printHelp = false;
+		boolean readFromStdin = true; // read from stdin by default
+		// parameters
+		boolean verbose = false;
+		String filePath = "";
+
+		for(int i = 0; i < args.length; i++) {
+			if (args[i].equals("-f")) {
+				filePath = args[i++];
+			} else if (args[i].equals("-v")) {
+				verbose = true;
+			} else if (args[i].equals("-h")) {
+				printHelp = true;
+			}
+		}
+
+		// run
+		if (printHelp) {
+			printHelp();
+			return;
+		} else if (readFromStdin) {
 			System.out
 					.println("Reading from stdin. Exit with new line and Ctrl+D.");
 			ICharStream stream = StringUtils.readFromStdin();
-			run(stream);
-		} else if (args.length == 1) {
-			final String path = args[0];
-			FileCharStream stream = StringUtils.readFromFile(path);
-			run(stream);
+			run(stream, verbose);
+		} else if (filePath.isEmpty()) {
+			FileCharStream stream = StringUtils.readFromFile(filePath);
+			run(stream, verbose);
 		} else {
-			System.out.println("Wrong number of parameters.");
+			System.out.println("Wrong parameters.");
 		}
 	}
 
-	public static String execute(ICharStream stream, boolean failSafe) {
+	private static void printHelp() {
+		System.out.println("CompilerMain:");
+		System.out.println("  -h        Show this help");
+		System.out.println("  -v        Turn on debugging");
+		System.out.println("  -f FILE   Read from file FILE");
+	}
+
+	/**
+	 * Run the compiler frontend + backend
+	 * @param stream Character stream
+	 * @param verbose If true, print out debugging output
+	 * @param failSafe If true, do not throw RuntimeException
+	 * @return Output from running the binary
+	 */
+	public static String execute(ICharStream stream, boolean verbose, boolean failSafe) {
 		final String code = FrontendMain.genCode(stream, failSafe);
 		if (code == null) {
 			System.err.println("Code generation failed.");
@@ -110,8 +144,8 @@ public class CompilerMain {
 		return null;
 	}
 
-	static void run(ICharStream stream) {
-		String output = execute(stream, true);
+	static void run(ICharStream stream, boolean verbose) {
+		String output = execute(stream, verbose, true);
 		System.out.println(output);
 	}
 

@@ -403,7 +403,16 @@ public abstract class Lexer {
 
 			else if (line[2].contentEquals("icmp")) {
 				debug.println("\t\tFound a comparism");
-				newToken.setType(TokenType.Compare);
+				newToken.setType(TokenType.CompareInteger);
+				newToken.setTarget(line[0]);
+				newToken.setTypeTarget(line[3]);
+				newToken.setOp1(line[5]);
+				newToken.setTypeOp1(line[4]);
+				newToken.setOp2(line[6]);
+				
+			} else if (line[2].contentEquals("fcmp")) {
+				debug.println("\t\tFound a comparism");
+				newToken.setType(TokenType.CompareDouble);
 				newToken.setTarget(line[0]);
 				newToken.setTypeTarget(line[3]);
 				newToken.setOp1(line[5]);

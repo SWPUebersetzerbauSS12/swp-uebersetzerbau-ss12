@@ -399,7 +399,7 @@ public class Translator {
 				asm.label(mem.getContextName() + "" + tok.getTarget());
 				break;
 
-			case Compare:
+			case CompareInteger:
 				res = mem.getFreeRegister();
 				if (res == null) {
 					if (!freeUnusedRegister(tokenNumber)) {
@@ -418,9 +418,33 @@ public class Translator {
 					op2 = tok.getOp2();
 
 				asm.mov(op1, res.getFullName(), "Compare");
-				asm.cmp(op2, res.getFullName());
+				asm.icmp(op2, res.getFullName());
 
 				mem.addRegVar(tok.getOp1(), tok.getTypeOp1(), res);
+				break;
+				
+			case CompareDouble:
+				mmxRes2 = mem.getFreeMMXRegister();
+				if (mmxRes2 == null) {
+					if (!freeUnusedRegister(tokenNumber)) {
+						System.err.println("Could'nt free register");
+					}
+					mmxRes2 = mem.getFreeMMXRegister();
+				}
+
+				if (tok.getOp1().startsWith("%"))
+					op1 = mem.getAddress(tok.getOp1());
+				else
+					op1 = tok.getOp1();
+				if (tok.getOp2().startsWith("%"))
+					op2 = mem.getAddress(tok.getOp2());
+				else
+					op2 = tok.getOp2();
+
+				asm.movsd(op1, mmxRes2.getFullName(), "Compare");
+				asm.fcmp(op2, mmxRes2.getFullName());
+
+				mem.addMMXRegVar(tok.getOp1(), tok.getTypeOp1(), mmxRes2);
 				break;
 
 			case Branch:
@@ -428,23 +452,40 @@ public class Translator {
 				
 				if (!tok.getOp1().isEmpty()) {
 					int result;
-					result = findToken(tokenNumber, true, TokenType.Compare,
+					result = findToken(tokenNumber, true, TokenType.CompareInteger,
 							null, null, null);
-
-					op1 = "label_" + mem.getContextName() + "" + tok.getOp1().substring(1);
 					
-					if (code.get(result).getTypeTarget().equals("eq"))
-						asm.je(op1);
-					else if (code.get(result).getTypeTarget().equals("ne"))
-						asm.jne(op1);
-					else if (code.get(result).getTypeTarget().equals("slt"))
-						asm.jl(op1);
-					else if (code.get(result).getTypeTarget().equals("sgt"))
-						asm.jg(op1);
-					else if (code.get(result).getTypeTarget().equals("sle"))
-						asm.jle(op1);
-					else if (code.get(result).getTypeTarget().equals("sge"))
-						asm.jge(op1);
+					op1 = "label_" + mem.getContextName() + "" + tok.getOp1().substring(1);
+					if(result != 0) {
+						
+						if (code.get(result).getTypeTarget().equals("eq"))
+							asm.je(op1);
+						else if (code.get(result).getTypeTarget().equals("ne"))
+							asm.jne(op1);
+						else if (code.get(result).getTypeTarget().equals("slt"))
+							asm.jl(op1);
+						else if (code.get(result).getTypeTarget().equals("sgt"))
+							asm.jg(op1);
+						else if (code.get(result).getTypeTarget().equals("sle"))
+							asm.jle(op1);
+						else if (code.get(result).getTypeTarget().equals("sge"))
+							asm.jge(op1);
+					} else {
+						result = findToken(tokenNumber, true, TokenType.CompareDouble,
+								null, null, null);
+						if (code.get(result).getTypeTarget().equals("oeq"))
+							asm.je(op1);
+						else if (code.get(result).getTypeTarget().equals("une"))
+							asm.jne(op1);
+						else if (code.get(result).getTypeTarget().equals("olt"))
+							asm.jb(op1);
+						else if (code.get(result).getTypeTarget().equals("ogt"))
+							asm.ja(op1);
+						else if (code.get(result).getTypeTarget().equals("ole"))
+							asm.jbe(op1);
+						else if (code.get(result).getTypeTarget().equals("oge"))
+							asm.jae(op1);
+					}
 				}
 				
 				asm.jmp(op2);

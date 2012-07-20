@@ -7,7 +7,6 @@ import java.util.logging.Level;
 import de.fuberlin.bii.lexergen.BuilderType;
 import de.fuberlin.bii.lexergen.Lexergen;
 import de.fuberlin.bii.lexergen.LexergeneratorException;
-import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.AbstractSyntaxTree;
 import de.fuberlin.bii.tokenmatcher.errorhandler.ErrorCorrector.CorrectionMode;
 import de.fuberlin.commons.lexer.ILexer;
 import de.fuberlin.commons.lexer.IToken;

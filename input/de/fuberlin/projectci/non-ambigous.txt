@@ -31,7 +31,7 @@
 <expr'>		::= "+" <term> <expr'> | "-" <term> <expr'> | "@"
 <term>		::= <unary> <term'>
 <term'>		::= "*" <unary> <term'> | "/" <unary> <term'> | "@"
-<unary>		::= "!" <unary> | "−" <unary> | <factor> 		
+<unary>		::= "!" <unary> | "-" <unary> | <factor> 		
 <factor>	::= "(" <assign> ")" | <loc> <factor'> | "num" | "real" | "boolean" | "string"	
 <factor'>	::= "(" <optargs> ")" | "@"
 <optargs>	::= <args> | "@" 

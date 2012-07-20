@@ -51,6 +51,14 @@ public class GNUAssembler extends Assembler {
 	protected void jg(String label) {
 		sectionText.append("\tjg ").append(label).append("\n");
 	}
+	
+	protected void jb(String label) {
+		sectionText.append("\tjb ").append(label).append("\n");
+	}
+	
+	protected void ja(String label) {
+		sectionText.append("\tja ").append(label).append("\n");
+	}
 
 	protected void jle(String label) {
 		sectionText.append("\tjle ").append(label).append("\n");
@@ -59,15 +67,30 @@ public class GNUAssembler extends Assembler {
 	protected void jge(String label) {
 		sectionText.append("\tjge ").append(label).append("\n");
 	}
+	
+	protected void jbe(String label) {
+		sectionText.append("\tjbe ").append(label).append("\n");
+	}
+	
+	protected void jae(String label) {
+		sectionText.append("\tjae ").append(label).append("\n");
+	}
 
 	protected void jmp(String label) {
 		sectionText.append("\tjmp ").append(label).append("\n");
 	}
 
-	protected void cmp(String source, String target) {
+	protected void icmp(String source, String target) {
 		source = translate(source);
 		target = translate(target);
 		sectionText.append("\tcmpl ").append(source).append(", ")
+				.append(target).append("\t\t\t#Label ").append("\n");
+	}
+	
+	protected void fcmp(String source, String target) {
+		source = translate(source);
+		target = translate(target);
+		sectionText.append("\tucomisd ").append(source).append(", ")
 				.append(target).append("\t\t\t#Label ").append("\n");
 	}
 

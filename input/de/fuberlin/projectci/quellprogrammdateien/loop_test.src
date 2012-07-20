@@ -1,0 +1,30 @@
+def int loopWhile(int a){
+	int i;
+	i=0;
+	while(i<10) {
+		print a;
+		a = a + 1;
+		i = i + 1; 
+	}
+	return a;
+}
+
+def int loopDoWhile(int a){
+	int j;
+	j = 0;
+	do {
+		print a;
+		a = a + 1;
+		j = j + 1;
+		if(j > 10) break; 
+	} while(true);
+	return 0;
+}
+
+def int main(){
+  int a;
+  a = 10;
+  a = loopWhile(a);
+  a = loopDoWhile(a);
+  return 1;
+} 

@@ -49,7 +49,7 @@ public class LLVM_Block{
 		blacklist.add(LLVM_Operation.CALL.toString());
 		blacklist.add(LLVM_Operation.BR.toString());
 		blacklist.add(LLVM_Operation.BR_CON.toString());
-		blacklist.add(LLVM_Operation.LOAD.toString());
+		//blacklist.add(LLVM_Operation.LOAD.toString());
 		blacklist.add(LLVM_Operation.STORE.toString());
 		blacklist.add(LLVM_Operation.RET.toString());
 		blacklist.add(LLVM_Operation.RET_CODE.toString());
@@ -70,11 +70,26 @@ public class LLVM_Block{
 			// Nur Kommandos aus der Whitelist optimieren
 			if (blacklist.contains(i.getOperation().name())) continue;
 			
+			// Spezialbehandlung für Load
+			if(i.getOperation() == LLVM_Operation.LOAD) {
+				String registerName = i.getOperands().getFirst().getName();
+				LLVM_GenericCommand def = this.function.getRegisterMap().getDefinition(registerName);
+				if(!(def!=null && def.getOperation()!=LLVM_Operation.GETELEMENTPTR 
+						&& !(def.getOperation()==LLVM_Operation.ALLOCA
+						&& def.getTarget().getTypeString().startsWith("["))
+						&& !(def.getOperation()==LLVM_Operation.ALLOCA
+						&& def.getTarget().getTypeString().startsWith("%")))) {
+					// Ignoriere Load, falls komplexe Strukturen benutzt werden
+					continue;
+				}
+			}
+			
 			if (commonex.containsKey(i.getOperation().name())){
 				// Kommando-Hash existiert
 				boolean matched = false;
 				LinkedList<LLVM_GenericCommand> commands = commonex.get(i.getOperation().name());
 				for (LLVM_GenericCommand command : commands){
+					
 					if (matchCommands(i, command)){
 						// gleiches Kommando gefunden
 						// ersetze aktuelles Kommando mit Bestehendem
@@ -275,6 +290,13 @@ public class LLVM_Block{
 	 * *********** Reaching Analysis ***************************
 	 * *********************************************************
 	 */
+	
+	public void clearReaching() {
+		this.inReaching.clear();
+		this.outReaching.clear();
+		this.gen.clear();
+		this.kill.clear();
+	}
 	
 	/**
 	 * Load-Befehle, die nur von einem Store erreicht werden koennen,
@@ -503,22 +525,25 @@ public class LLVM_Block{
 	private void createCommands() throws LLVM_OptimizationException{
 		String commandsArray[] = this.blockCode.split("\n");
 		
-		int i = 0;
-		
-		if(commandsArray[0].length() == 0){
-			i++;
-		}
-		
-		// Checking for label
-		if(labelCheck(commandsArray[i])){
-			i++;
-		}
-		
-		this.firstCommand = mapCommands(commandsArray[i].trim(), null);
-		
-		LLVM_GenericCommand predecessor = firstCommand;
-		for(i++; i<commandsArray.length; i++) {
+		LLVM_GenericCommand predecessor = null;
+		for(int i=0; i<commandsArray.length; i++) {
+			// Leerzeilen ignorieren
+			if(commandsArray[i].length() == 0){
+				continue;
+			}
+			
+			// Checking for label
+			if(labelCheck(commandsArray[i])){
+				continue;
+			}
+			
+			// Kommentare ignoriern
+			if (commandsArray[i].trim().startsWith(";")){
+				continue;
+			}
+			
 			LLVM_GenericCommand c = mapCommands(commandsArray[i].trim(), predecessor);
+			
 			if(firstCommand == null){
 				firstCommand = c;
 				predecessor = c;
@@ -531,12 +556,6 @@ public class LLVM_Block{
 	
 	// Ermittelt Operation und erzeugt Command mit passender Klasse
 	private LLVM_GenericCommand mapCommands(String cmdLine, LLVM_GenericCommand predecessor) throws LLVM_OptimizationException{
-		
-		// comment handling
-		if (cmdLine.startsWith(";")){
-			if (cmdLine.contains("<label>:")) return null;
-			return new LLVM_Comment(cmdLine, predecessor, this);
-		}
 		
 		// command handling
 		if(cmdLine.startsWith("store ")){
@@ -574,8 +593,8 @@ public class LLVM_Block{
 			return new LLVM_GetElementPtrCommand(cmdLine, predecessor, this);
 		}else if(cmdLine.contains(" = call ") || cmdLine.contains(" = tail call ") || cmdLine.startsWith("call ")){
 			return new LLVM_CallCommand(cmdLine, predecessor, this);
-		}else if(cmdLine.contains(" = icmp ")){
-			return new LLVM_IcmpCommand(cmdLine, predecessor, this);
+		}else if(cmdLine.contains(" = icmp ") || cmdLine.contains(" = fcmp ")){
+			return new LLVM_XcmpCommand(cmdLine, predecessor, this);
 		}else{
 			throw new LLVM_OptimizationException("Nicht implementiertes LLVM_Kommando: " + cmdLine);
 		}

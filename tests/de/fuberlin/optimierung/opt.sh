@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Bedienung:
+# in java-code muessen DEBUG und STATISTIC flags auf false sein
+# aufruf aus gleichem ordner mit z.B.: ./opt.sh /home/dakn/Studium/swp_compiler/swp-uebersetzerbau-ss12/tests/de/fuberlin/optimierung/test.c
+
 # $1 enthaelt zu verarbeitende C-Datei
 c_file=$1
 llvm_ir_file=$(echo $c_file | sed 's/^\(.*\).$/\1/')

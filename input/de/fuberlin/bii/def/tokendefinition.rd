@@ -19,11 +19,13 @@
 \|\|					{return("||", "")}
 !						{return("!", "")}
 \+						{return("+", "")}
-\-						{return("-", "")}
+-						{return("-", "")}
 \*						{return("*", "")}
 /						{return("/", "")}
 ;						{return(";", "")}
 ,						{return(",", "")}
+(0|([1-9]+[0-9]*))?\.(([0-9])[0-9]*)		{return("real", parseDouble())}
+(0|([1-9]+[0-9]*))					{return("num", parseInt())}
 \.						{return(".", "")}
 record					{return("record", "")}
 def						{return("def", "")}
@@ -40,7 +42,5 @@ int						{return("basic", "int")}
 real					{return("basic", "real")}
 string					{return("basic", "string")}
 bool					{return("basic", "bool")}
-{num}					{return("num", parseInt())}
-{num}?\.{num}			{return("real", parseDouble())}
-\"[\w\sßäöü]*\"			{return("string", parseString())}
-[a-z]+[a-zA-Z0-9]*		{return("id", parseString())}
+"[a-zA-Z0-9 ßäöü]*"			{return("string", parseString())}
+[a-z]+([a-z]|[A-Z]|[0-9])*		{return("id", parseString())}

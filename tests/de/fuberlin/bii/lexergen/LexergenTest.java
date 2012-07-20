@@ -28,8 +28,8 @@ public class LexergenTest {
 		File sourceFile = new File("input/de/fuberlin/projectci/quellprogrammdateien/simple.src");
 		
 
-		ILexer lexergen = new Lexergen(rdFile, sourceFile, BuilderType.indirectBuilder, CorrectionMode.PANIC_MODE, true);		
-//		ILexer lexergen = new Lexergen(rdFile, sourceFile, BuilderType.directBuilder, CorrectionMode.PANIC_MODE, true);		
+//		ILexer lexergen = new Lexergen(rdFile, sourceFile, BuilderType.indirectBuilder, CorrectionMode.PANIC_MODE, true);		
+		ILexer lexergen = new Lexergen(rdFile, sourceFile, BuilderType.directBuilder, CorrectionMode.PANIC_MODE, true);		
 
 		IToken currentToken = null;
 		String tokenString;

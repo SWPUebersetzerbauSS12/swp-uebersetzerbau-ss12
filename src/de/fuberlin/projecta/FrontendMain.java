@@ -11,6 +11,11 @@ import de.fuberlin.projecta.lexer.io.ICharStream;
 import de.fuberlin.projecta.parser.Parser;
 import de.fuberlin.projecta.utils.StringUtils;
 
+/**
+ * Runnable class for executing the complete frontend
+ * 
+ * Prints out LLVM-Code only
+ */
 public class FrontendMain {
 
 	static String genCode(ICharStream stream, boolean failSafe) {

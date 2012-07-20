@@ -8,6 +8,11 @@ import de.fuberlin.projecta.parser.ParseException;
 import de.fuberlin.projecta.parser.Parser;
 import de.fuberlin.projecta.utils.StringUtils;
 
+/**
+ * Runnable class for executing lexer+parser
+ * 
+ * Output is a syntax tree
+ */
 public class ParserMain {
 
 	static Parser parse(ICharStream stream) {

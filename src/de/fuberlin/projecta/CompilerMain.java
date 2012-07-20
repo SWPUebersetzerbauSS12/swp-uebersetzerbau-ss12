@@ -11,6 +11,14 @@ import de.fuberlin.projecta.lexer.io.FileCharStream;
 import de.fuberlin.projecta.lexer.io.ICharStream;
 import de.fuberlin.projecta.utils.StringUtils;
 
+/**
+ * Runnable class for executing the complete frontend + LLC + GCC
+ * 
+ * Main testing tool for projecta!
+ * 
+ * Results in a runnable binary, which is executed immediately
+ * @note You need to have 'llc' + 'gcc' in PATH
+ */
 public class CompilerMain {
 
 	static final String LLC_EXE = "llc";

@@ -1,7 +1,5 @@
 package de.fuberlin.projecta;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
 
 import de.fuberlin.commons.parser.ISyntaxTree;
@@ -128,7 +126,6 @@ public class SemanticAnalysisTest {
 	@Test(expected = SemanticException.class)
 	public void testInvalidPrintArgument() {
 		final String code = mainC("record { int a; int b; } r; print r;");
-		System.out.println(code);
 		analyze(code);
 	}
 

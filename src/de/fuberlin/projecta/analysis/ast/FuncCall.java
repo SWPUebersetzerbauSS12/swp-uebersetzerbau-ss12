@@ -55,6 +55,10 @@ public class FuncCall extends Expression {
 									node).getType() instanceof Record) {
 						ret += ((Id) node).getType().genCode() + "* %"
 								+ ((Id) node).getValue() + ", ";
+					} else if (node instanceof Id
+							&& SymbolTableHelper.lookup(((Id) node).getValue(),
+									node).getType() instanceof Array) {
+						ret += ((Id) node).getType().genCode() + "* %" + ((Id) node).getValue() + ", ";
 					}
 
 				}

@@ -41,14 +41,24 @@ public abstract class Assembler {
 	protected abstract void jl(String label);
 
 	protected abstract void jg(String label);
+	
+	protected abstract void jb(String label);
+	
+	protected abstract void ja(String label);
 
 	protected abstract void jle(String label);
 
 	protected abstract void jge(String label);
+	
+	protected abstract void jbe(String label);
+	
+	protected abstract void jae(String label);
 
 	protected abstract void jmp(String label);
 
-	protected abstract void cmp(String source, String target);
+	protected abstract void icmp(String source, String target);
+	
+	protected abstract void fcmp(String source, String target);
 
 	protected abstract void label(String name);
 

@@ -403,7 +403,16 @@ public abstract class Lexer {
 
 			else if (line[2].contentEquals("icmp")) {
 				debug.println("\t\tFound a comparism");
-				newToken.setType(TokenType.Compare);
+				newToken.setType(TokenType.CompareInteger);
+				newToken.setTarget(line[0]);
+				newToken.setTypeTarget(line[3]);
+				newToken.setOp1(line[5]);
+				newToken.setTypeOp1(line[4]);
+				newToken.setOp2(line[6]);
+				
+			} else if (line[2].contentEquals("fcmp")) {
+				debug.println("\t\tFound a comparism");
+				newToken.setType(TokenType.CompareDouble);
 				newToken.setTarget(line[0]);
 				newToken.setTypeTarget(line[3]);
 				newToken.setOp1(line[5]);
@@ -522,9 +531,12 @@ public abstract class Lexer {
 			} else {
 				if(!tok.getTarget().isEmpty() && tok.getTarget().length() > 1) {
 					try {
-						var = Integer.valueOf(tok.getTarget().substring(1));
-						debug.println("\t\t\tchange Block: " + currentBlock + " highest variable: " + var);
-						contexts.get(currentContext).put(currentBlock, var);
+						int tmp_var = Integer.valueOf(tok.getTarget().substring(1));
+						if(tmp_var > var) {
+							var = tmp_var;
+							debug.println("\t\t\tchange Block: " + currentBlock + " highest variable: " + var);
+							contexts.get(currentContext).put(currentBlock, var);
+						}
 					} catch(NumberFormatException e) {
 					}
 				}

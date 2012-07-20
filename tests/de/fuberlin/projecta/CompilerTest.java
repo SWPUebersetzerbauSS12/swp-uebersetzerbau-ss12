@@ -225,6 +225,15 @@ public class CompilerTest {
 	}
 	
 	@Test
+	public void testArrayFuncCall() {
+		final String code = "def int fun(int[30] x) { return x[1]; } " +
+				"def int main(){int[30] x; int i; x[1] = 1; i = fun(x); print i; return 0;}";
+		System.out.println(code);
+		String output = executeCode(code);
+		assertEquals("1", output);
+	}
+	
+	@Test
 	public void testMultiDimensionalArrays() {
 		final String code = mainC("int[3][5] test; int i; int j; int tmp;" +
 				"i = 0;" +

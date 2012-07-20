@@ -7,19 +7,23 @@ import java.util.logging.Level;
 import de.fuberlin.bii.lexergen.BuilderType;
 import de.fuberlin.bii.lexergen.Lexergen;
 import de.fuberlin.bii.lexergen.LexergeneratorException;
+import de.fuberlin.bii.regextodfaconverter.directconverter.syntaxtree.AbstractSyntaxTree;
 import de.fuberlin.bii.tokenmatcher.errorhandler.ErrorCorrector.CorrectionMode;
 import de.fuberlin.commons.lexer.ILexer;
+import de.fuberlin.commons.lexer.IToken;
 import de.fuberlin.commons.parser.IParser;
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.commons.util.LogFactory;
 import de.fuberlin.optimierung.LLVM_Optimization;
 import de.fuberlin.optimierung.LLVM_OptimizationException;
 import de.fuberlin.projectF.CodeGenerator.CodeGenerator;
+import de.fuberlin.projecta.analysis.DebuggingHelper;
 import de.fuberlin.projecta.analysis.SemanticAnalyzer;
 import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.lexer.Lexer;
 import de.fuberlin.projecta.lexer.io.FileCharStream;
 import de.fuberlin.projecta.lexer.io.ICharStream;
+import de.fuberlin.projecta.parser.ParseException;
 import de.fuberlin.projecta.parser.Parser;
 import de.fuberlin.projectci.lrparser.LRParserMain;
 import de.fuberlin.projectcii.ParserGenerator.src.LL1Parser;
@@ -69,8 +73,17 @@ public class Main {
 	public static void main(String args[]) {
 		HashMap<String,String> arguments = readParams(args);
 		initLogging(arguments);
-		runFrontend(arguments);
-		runBackend(arguments);
+
+		boolean success = runFrontend(arguments);
+		if (!success) {
+			System.out.println("Failed to run frontend. Stop.");
+			return;
+		}
+		
+		success = runBackend(arguments);
+		if (!success) {
+			System.out.println("Failed to run backend. Stop.");
+		}
 	}
 
 	
@@ -114,8 +127,8 @@ public class Main {
 	 * 
 	 * @see generatedLLVMCode
 	 */
-	public static void runFrontend(HashMap<String,String> arguments) {
-		System.out.println("Frontend Phase");
+	public static boolean runFrontend(HashMap<String,String> arguments) {
+		System.out.println("Starting frontend Phase");
 
 		// -d "/path/to/definitionFile"
 		String defFile = arguments.get(PARAM_DEF_FILE);
@@ -135,24 +148,34 @@ public class Main {
 		 *	input: Pfad zu der Datei mit den regulären Definitionen und Pfad zu der Programmdatei
 		 *	output: IToken-Objekt beim aufruf von getNextToken
 		 */
+		File file = new File(inputFile);
+		if (!file.canRead()) {
+			System.out.println("Error: Invalid file: " + file.getAbsolutePath());
+			return false;
+		}
+
 		ILexer lexer = null;
 		final boolean rebuildDFA = arguments.containsKey(PARAM_REBUILD_DFA);
 		
 		// Lexer from bii
 		if( arguments.containsKey(PARAM_BII_LEXER) ) {
 			try {
-				lexer = new Lexergen(new File(defFile), new File(inputFile), BuilderType.directBuilder, CorrectionMode.PANIC_MODE, rebuildDFA);
+				lexer = new Lexergen(new File(defFile), file, BuilderType.directBuilder, CorrectionMode.PANIC_MODE, rebuildDFA);
 			} catch (LexergeneratorException e) {
 				e.printStackTrace();
+				return false;
 			}
+
 		// Lexer from bi
 		} else if (arguments.containsKey(PARAM_BI_LEXER)) {
 			try {
-				lexer = new Lexergen(new File(defFile), new File(inputFile), BuilderType.indirectBuilder, CorrectionMode.PANIC_MODE, rebuildDFA);
+				lexer = new Lexergen(new File(defFile), file, BuilderType.indirectBuilder, CorrectionMode.PANIC_MODE, rebuildDFA);
 			} catch (LexergeneratorException e) {
 				e.printStackTrace();
+				return false;
 			}			
 		}
+
 		// Lexer from projecta, default
 		else {
 			ICharStream stream = new FileCharStream(inputFile);
@@ -183,8 +206,22 @@ public class Main {
 		}
 
 		ISyntaxTree parseTree = null;
-		if (parser != null)
+		try {
 			parseTree = parser.parse(lexer, grammarFile);
+		} catch (ParseException e) { 
+			System.out.println(e.getMessage() +
+					" (error at line: " + e.getLineNumber() +
+					", column: " + e.getOffset() +
+					", token: \"" + e.getText() + "\")"
+			);
+			System.out.println("Details:");
+			System.out.println(e.getDetails());
+		}
+
+		if (parseTree == null) {
+			System.out.println("Failed to parse!");
+			return false;
+		}
 		//--------------------------
 
 		//--------------------------
@@ -199,15 +236,24 @@ public class Main {
 		try {
 			analyzer.analyze();
 		} catch (SemanticException e) {
-			System.out.println("Bad Semantics");
+			System.out.println("\nError: Failed to parse.");
 			System.out.println(e.getMessage());
+
+			IToken token = DebuggingHelper.extractPosition(e.getNode());
+			if (token != null)
+				System.out.println("Error near: '" + token.getText() + "' near line: " + token.getLineNumber() + ", column: " + token.getOffset());
+
+			// abort
+			return false;
 		}
 
 		// debug
+		System.out.println();
 		analyzer.getAST().printTree();
 
 		// Generate LLVM-Code
 		generatedLLVMCode = analyzer.getAST().genCode();
+		return true;
 	}
 
 	/**
@@ -216,8 +262,8 @@ public class Main {
 	 * Eingabe: Generierte LLVM Code
 	 * Ausgabe: Maschinencode
 	 */
-	public static void runBackend(HashMap<String,String> arguments) {
-		System.out.println("Backend Phase");
+	public static boolean runBackend(HashMap<String,String> arguments) {
+		System.out.println("Starting backend Phase");
 
 		//--------------------------
 		/*
@@ -286,6 +332,7 @@ public class Main {
 		}
 
 		//--------------------------
+		return true;
 	}
 	
 	
@@ -298,9 +345,7 @@ public class Main {
 		for(int i = 0; i < args.length; i++) {
 			if(args[i].equalsIgnoreCase(PARAM_SOURCE_FILE)) {
 				// Es wurde ein -f gelesen, erwarte nun Quelldatei
-				System.out.println("Para: -f");
 				if(i+1 < args.length && !args[i+1].trim().startsWith("-")) { // Eine Quelldatei wurde angegeben
-					System.out.println("-f Option: "+args[i+1].trim());
 					arguments.put(PARAM_SOURCE_FILE, args[i+1].trim());
 					i++;
 				} else {

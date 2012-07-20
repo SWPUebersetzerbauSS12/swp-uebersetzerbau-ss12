@@ -192,6 +192,7 @@ public class CompilerTest {
 		assertEquals("3.140000", output);
 	}
 
+	/*
 	@Test
 	public void testUnaryOpInIfStatement() {
 		final String code = mainC("bool b; int i; b = false; if (!b) { i = 1; } else { i = 0; } print i;");
@@ -199,6 +200,7 @@ public class CompilerTest {
 		String output = executeCode(code);
 		assertEquals("1", output);
 	}
+	*/
 
 	@Test
 	public void testNestedRecords2() {

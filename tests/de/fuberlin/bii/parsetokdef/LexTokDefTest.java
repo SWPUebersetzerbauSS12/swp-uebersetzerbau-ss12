@@ -32,7 +32,8 @@ public class LexTokDefTest {
 	public void testRegex() throws Exception {
 		File rdFile = new File("input/de/fuberlin/bii/def/tokendefinition.rd");
 		List<IRule> rules = new LexTokDef(rdFile).getRules();
-
+		System.out.println(rules);
+		
 		String tokenType = rules.get(0).getTokenType();
 		Attribute tokenValue = rules.get(0).getTokenValue();
 		String tokenRegex = rules.get(0).getRegexp();

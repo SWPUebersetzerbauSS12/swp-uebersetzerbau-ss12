@@ -21,7 +21,7 @@ public class ReadTokDefinitionTest {
 	@SuppressWarnings("static-method")
 	@Test
 	public void testReadFile() throws Exception {
-		File rdFile = new File("tests/resources/de/fuberlin/bii/def/parsetokdef/test.rd");
+		File rdFile = new File("input/de/fuberlin/bii/def/tokendefinition.rd");
 		ReadTokDefinition instance = new ReadTokDefinition(rdFile);
 		instance.readFile(rdFile);
 	}
@@ -29,8 +29,9 @@ public class ReadTokDefinitionTest {
 	@SuppressWarnings("static-method")
 	@Test
 	public void testRegex() throws Exception {
-		File rdFile = new File("tests/resources/de/fuberlin/bii/def/parsetokdef/test.rd");
+		File rdFile = new File("input/de/fuberlin/bii/def/tokendefinition.rd");
 		List<IRule> rules = new ReadTokDefinition(rdFile).getRules();
+		System.out.println(rules);
 		
 		String tokenType = rules.get(0).getTokenType();
 		Attribute tokenValue = rules.get(0).getTokenValue();

@@ -37,8 +37,11 @@ public class Params extends AbstractSyntaxTree {
 		boolean atLeastOne = false;
 		for (int i = 0; i < getChildrenCount(); i += 2) {
 			atLeastOne = true;
-			ret += ((Type) getChild(i)).genCode() + " %"
-					+ ((Id) getChild(i + 1)).genCode() + ", ";
+			ret += ((Type) getChild(i)).genCode();
+			// hack for arrays...
+			if(getChild(i) instanceof Array)
+				ret+="* byval";
+			ret +=  " %" + ((Id) getChild(i + 1)).genCode() + ", ";
 		}
 		if (atLeastOne) {
 			// strip trailing comma

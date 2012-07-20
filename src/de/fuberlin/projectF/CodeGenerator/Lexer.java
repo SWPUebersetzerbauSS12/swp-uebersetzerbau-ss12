@@ -267,6 +267,12 @@ public abstract class Lexer {
 			debug.println("\t\tFound end of current function ");
 			newToken.setType(TokenType.DefinitionEnd);
 		}
+		
+		else if (line[1].contentEquals(":")) {
+			debug.println("\t\tFound label " + line[0]);
+			newToken.setType(TokenType.Label);
+			newToken.setTarget(line[0]);
+		}
 
 		else if (line[1].contentEquals("=")) {
 

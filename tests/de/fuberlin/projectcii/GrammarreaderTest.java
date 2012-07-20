@@ -41,20 +41,16 @@ public class GrammarreaderTest {
              * 
              */
 
-            Map<String, Vector<Vector<String>>> grammer = reader.createGrammar(5, false,
-                    filePath, false);
+            Map<String, Vector<Vector<String>>> grammer = reader.createGrammar(5, false, filePath, false);
 
             String startSymbol = reader.getStartSymbol();
             assertNotNull(startSymbol);
-            for (String leftsight: grammer.keySet()){
-                System.out.println("Head = '" + leftsight+"'");
+            for (String leftsight: grammer.keySet()){ 
                 if (leftsight.equals("E")){
                     for (int i=0; i<grammer.get(leftsight).size();i++){
                         if(i==0)
                         {
                             Vector<String> production = grammer.get(leftsight).elementAt(i);
-                            System.out.println("Productions:" + production.elementAt(0)
-                                    +","+production.elementAt(1)+","+ production.elementAt(2) );
 
                             boolean correct=true;
                             if (!(production.elementAt(0).equals("E")))
@@ -73,7 +69,6 @@ public class GrammarreaderTest {
                         }
                         else if(i==1){
                             Vector<String> production = grammer.get(leftsight).elementAt(i);
-                            System.out.println("Productions:" + production.elementAt(0)  );
                             boolean correct = true;
                             if (!(production.elementAt(0).equals("T"))){
                                 correct = false;
@@ -86,8 +81,6 @@ public class GrammarreaderTest {
                     for (int i=0; i<grammer.get(leftsight).size();i++){
                         if(i==0){
                             Vector<String> production = grammer.get(leftsight).elementAt(i);
-                            System.out.println("Productions:" + production.elementAt(0)
-                                    +","+production.elementAt(1)+","+ production.elementAt(2) );
                             boolean correct=true;
                             if (!(production.elementAt(0).equals("T"))){
                                 correct = false;
@@ -125,8 +118,6 @@ public class GrammarreaderTest {
                         }
                         if(i==1){
                             Vector<String> production = grammer.get(leftsight).elementAt(i);
-                            System.out.println("Productions:" + production.elementAt(0)
-                                    +","+production.elementAt(1)+","+ production.elementAt(2) );
 
                             boolean correct = true;
                             if (!(production.elementAt(0).equals("("))){
@@ -313,6 +304,93 @@ public class GrammarreaderTest {
                 }
             } catch (IOException e){
                 fail("Incorrect Grammarhead" + e.getMessage());
+            }        
+
+        }
+        
+        @Test
+        public void testGrammarModifiedLeftFactorization() {
+
+
+            /**
+             * Test if Grammer Reader turn 
+             * our Grammatik
+             * 
+             */
+            try{
+                Map<String, Vector<Vector<String>>> grammer1 = reader.createGrammar(5,true, 
+                        "tests/resources/de/fuberlin/projectcii/testLanguageFactorisation.txt", true);
+
+                String startSymbol1 = reader.getStartSymbol();
+                assertNotNull(startSymbol1);
+
+                for (String leftsight: grammer1.keySet()){
+                    if (leftsight.equals("A")){
+                        for (int i=0; i<grammer1.get(leftsight).size();i++){
+                            if(i==0){
+                                Vector<String> production = grammer1.get(leftsight).elementAt(i);
+                                boolean correct=true;
+                                if (!(production.elementAt(0).equals("a"))){
+                                    correct = false;
+
+                                }
+                                if (!(production.elementAt(1).equals("A0"))){
+                                    correct = false;
+
+                                }
+
+                                assertTrue("Incorrect Production", correct);
+                            }
+                            
+                            
+                        }
+                    }
+                    else if (leftsight.equals("A0")){
+                        for (int i=0; i<grammer1.get(leftsight).size();i++){
+                            if(i==0){
+                                Vector<String> production = grammer1.get(leftsight).elementAt(i);
+                                boolean correct=true;
+                                if (!(production.elementAt(0).equals("b"))){
+                                    correct = false;
+
+                                }
+                                if (!(production.elementAt(1).equals("B"))){
+                                    correct = false;
+                                }
+                                
+                                assertTrue("Incorrect Production", correct);
+                            }
+                            if(i==1){
+                                Vector<String> production = grammer1.get(leftsight).elementAt(i);
+                                boolean correct = true;
+                                if (!(production.elementAt(0).equals("c"))){
+                                    correct = false;
+                                }
+                                assertTrue("Incorrect Production", correct);
+                            }
+                        }
+                    }
+                    else if (leftsight.equals("B")){
+                        for (int i=0; i<grammer1.get(leftsight).size();i++){
+                            if(i==0){
+                                Vector<String> production = grammer1.get(leftsight).elementAt(i);
+                                boolean correct=true;
+                                if (!(production.elementAt(0).equals("d"))){
+                                    correct = false;
+
+                                }
+
+                                assertTrue("Incorrect Production", correct);
+                            }
+                        }
+                    }
+ 
+                    else{
+                        fail("Incorrect Grammarhead, head '" + leftsight +"'" );
+                    }
+                }
+            } catch (IOException e){
+               fail("Incorrect Grammarhead" + e.getMessage());
             }        
 
         }

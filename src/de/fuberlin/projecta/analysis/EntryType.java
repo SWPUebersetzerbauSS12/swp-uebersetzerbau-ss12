@@ -8,9 +8,10 @@ import de.fuberlin.projecta.analysis.ast.Id;
 import de.fuberlin.projecta.analysis.ast.Type;
 
 /**
- * This class represents an entry of a symboltable. It has at least an id and a
- * type. Optionally it has a list of EntryTypes, which correspond to parameters
- * which are defined by declaring functions.
+ * This class represents an entry of a symbol table.
+ * 
+ * It has at least an id and a type. Optionally it has a list of EntryTypes,
+ * which correspond to parameters which are defined by declaring functions.
  * 
  */
 public class EntryType {

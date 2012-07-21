@@ -36,6 +36,12 @@ public abstract class AbstractSyntaxTree extends Tree {
 		return null;
 	}
 
+	/**
+	 * Every block in LLVM has it's own memory counter, so does ours.
+	 * 
+	 * @return
+	 * 		The highest node above this, which is instance of Block.
+	 */
 	public Block getHighestBlock() {
 		Block block = null;
 		if (getParent() != null) {

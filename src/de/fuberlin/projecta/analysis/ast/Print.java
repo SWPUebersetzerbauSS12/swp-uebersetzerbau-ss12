@@ -33,7 +33,7 @@ public class Print extends Statement {
 				out += "%" + reg + " = load i8** %"
 						+ ((Id) getChild(0)).getValue() + "\n";
 				out += "%" + getHighestBlock().getNewVar() + " = "
-						+ "tail call i32 (i8*)* @puts(i8* %" + reg + ")";
+						+ "call i32 (i8*)* @puts(i8* %" + reg + ")";
 			} else {
 				String format = "";
 				if (((BasicType) idType).getTokenType() == BasicTokenType.INT) {

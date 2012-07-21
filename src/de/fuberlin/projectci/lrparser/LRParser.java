@@ -110,7 +110,6 @@ public class LRParser implements IParser {
 			ParseTableGui parseTableGui=new ParseTableGui(grammar, parseTable);
 			parseTableGui.showActionTable();
 			parseTableGui.showGotoTable();
-			// TODO Brauchts hier ein return?
 			
 		}
 		

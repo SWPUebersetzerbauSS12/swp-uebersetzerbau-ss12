@@ -162,7 +162,7 @@ public class LRParserMain implements IParser{
 	private static String usage(){
 		StringBuffer strBuf=new StringBuffer();
 		strBuf.append("NAME");
-		strBuf.append("\n\tLRParser - parses a source file using the LR-parse-algorithm.");
+		strBuf.append("\n\tLRParserMain - parses a source file using the LR-parse-algorithm.");
 		strBuf.append("\nSYNOPSIS");
 		strBuf.append("\n\tLRParserMain [OPTIONS] <source_file>");
 		strBuf.append("\nOPTIONS");
@@ -170,8 +170,8 @@ public class LRParserMain implements IParser{
 		strBuf.append("\n\t\tPrint version and exit.");
 		strBuf.append("\n\t-h --help");
 		strBuf.append("\n\t\tPrint usage and exit");
-		strBuf.append("\n\t-o --print-parse-tree [<target_file>|--]");
-		strBuf.append("\n\t\tPrint the resulting parse tree to a file or to stdout. Defaults to don't print parse tree.");
+		strBuf.append("\n\t-o --print-parse-tree <target_file>");
+		strBuf.append("\n\t\tPrint the resulting parse tree to <target_file>.");
 		strBuf.append("\n\t-l --lexer bi|bii|a");
 		strBuf.append("\n\t\tUse lexer bi, bii or a. Defaults to "+DEFAULT_LEXER);
 		strBuf.append("\n\t-t --token-definitions <token_definitions_file>");
@@ -353,10 +353,13 @@ public class LRParserMain implements IParser{
 					else{
 						if (i<args.length-1){ // nicht das letzte Argument
 							String value=args[++i];
-							if ((value.startsWith("-") || value.startsWith("--")) && !value.equals("--")){
+							if ((value.startsWith("-") || value.startsWith("--"))){
 								throw new CommandLineParseException("Illegal value ('"+value+"' for option "+option);
 							}
 							option2Value.put(option,value);
+						}
+						else{
+							throw new CommandLineParseException("Missing value for option "+option);
 						}
 					}
 				}

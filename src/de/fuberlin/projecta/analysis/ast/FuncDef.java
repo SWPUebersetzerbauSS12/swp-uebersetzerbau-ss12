@@ -69,17 +69,23 @@ public class FuncDef extends Type {
 		String ret = "";
 		String blockCode = "";
 		if (getChildrenCount() > 3) {
-			ret = "%" + ((Block) getChild(3)).getNewVar() + " = alloca "
-					+ ((Type) getChild(0)).fromTypeStringToLLVMType() + "\n";
+			if (!this.toTypeString().equals(BasicType.TYPE_VOID_STRING)) {
+				ret = "%" + ((Block) getChild(3)).getNewVar() + " = alloca "
+						+ this.fromTypeStringToLLVMType() + "\n";
+			}
 			blockCode = ((Block) getChild(3)).genCode();
 			ret += blockCode;
+			ret += "br label %return\nreturn:\n";
+			if (!this.toTypeString().equals(BasicType.TYPE_VOID_STRING)) {
 			int	n = ((Block) getChild(3)).getNewVar();
-			ret += "br label %return\n";
-			ret += "return:\n" + "%" + n + " = load "
-					+ ((Type) getChild(0)).fromTypeStringToLLVMType()
+			ret += "%" + n + " = load "
+					+ this.fromTypeStringToLLVMType()
 					+ "* %1\n" + "ret "
-					+ ((Type) getChild(0)).fromTypeStringToLLVMType() + " %"
+					+ this.fromTypeStringToLLVMType() + " %"
 					+ n + "\n";
+			} else {
+				ret += "ret " + this.fromTypeStringToLLVMType();
+			}
 		}
 		return "define " + ((Type) getChild(0)).genCode() + " @"
 				+ ((Id) getChild(1)).genCode() + "("

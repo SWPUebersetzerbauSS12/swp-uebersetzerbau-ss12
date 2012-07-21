@@ -9,6 +9,11 @@ import de.fuberlin.projecta.lexer.SyntaxErrorException;
 import de.fuberlin.projecta.lexer.io.ICharStream;
 import de.fuberlin.projecta.utils.StringUtils;
 
+/**
+ * Runnable class for executing the lexer
+ * 
+ * Prints out the token stream
+ */
 public class LexerMain {
 
 	private static void printTokens(ILexer lexer) {

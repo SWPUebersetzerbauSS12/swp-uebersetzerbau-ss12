@@ -41,6 +41,9 @@ public abstract class Expression extends AbstractSyntaxTree {
 			type = "i1";
 		else if (this.toTypeString().equals(BasicType.TYPE_STRING_STRING))
 			type = "i8*";
+		else if (this.toTypeString().equals(BasicType.TYPE_VOID_STRING)){
+			type = "void";
+		}
 		return type;
 	}
 }

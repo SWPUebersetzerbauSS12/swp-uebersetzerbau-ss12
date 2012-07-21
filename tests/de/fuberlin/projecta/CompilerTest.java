@@ -3,7 +3,9 @@ package de.fuberlin.projecta;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Categories.ExcludeCategory;
 
+import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.lexer.io.ICharStream;
 import de.fuberlin.projecta.lexer.io.StringCharStream;
 
@@ -315,5 +317,12 @@ public class CompilerTest {
 		String output = executeCode(code);
 		System.out.println(output);
 		assertEquals("3.000000", output);
+	}
+	
+	@Test(expected= SemanticException.class)
+	public void testAssignValueToParameterVariable(){
+		String code = "def void foo(int i){i = 4;}def void main(){foo(3);}";
+		String output = executeCode(code);
+		System.out.println(output);
 	}
 }

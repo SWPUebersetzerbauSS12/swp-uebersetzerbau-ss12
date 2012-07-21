@@ -158,33 +158,9 @@ public class MemoryContext {
 		return vars;
 	}
 
-	public Variable getVarFromMMXReg(int regNumber) {
-		// return registerInfo[regNumber];
-		for (MMXRegisterAddress reg : usedMMXRegisters.keySet()) {
-			if (reg.regNumber == regNumber)
-				return usedMMXRegisters.get(reg);
-		}
-		return null;
-	}
-
-	public Reference getVarFromReg(int regNumber) {
-		// return registerInfo[regNumber];
-		for (RegisterAddress reg : usedRegisters.keySet()) {
-			if (reg.regNumber == regNumber)
-				return usedRegisters.get(reg);
-		}
-		return null;
-	}
-
 	public boolean inMMXReg(String name) {
 		if (variables.containsKey(name))
 			return variables.get(name).inMMXReg();
-		return false;
-	}
-
-	public boolean inMMXReg(String name, int regNumber) {
-		if (variables.containsKey(name))
-			return variables.get(name).inMMXReg(regNumber);
 		return false;
 	}
 
@@ -192,10 +168,6 @@ public class MemoryContext {
 		if (variables.containsKey(name))
 			return variables.get(name).inReg(regNumber);
 		return false;
-	}
-
-	public boolean MMXRegisterInUse(int i) {
-		return usedMMXRegisters.containsKey(i);
 	}
 
 	public void MMXRegToStack(Variable var) {
@@ -259,18 +231,7 @@ public class MemoryContext {
 		return newVar;
 	}
 
-	public Variable newStackVar(Variable var) {
-		int size = var.getSize();
-
-		stackPointer -= size;
-		var.addStackAddress(new StackAddress(stackPointer));
-		put(var);
-		return var;
-	}
-
 	public boolean onStack(String name) {
-		// if (variables.containsKey(name))
-		// return variables.get(name).onStack();
 		if (references.containsKey(name))
 			return references.get(name).onStack();
 		return false;
@@ -328,14 +289,6 @@ public class MemoryContext {
 
 	public Array getArray(String name) {
 		return arrays.get(name);
-	}
-
-	public boolean isArrayPtr(String name) {
-		return arrayPtrs.containsKey(name);
-	}
-
-	public ArrayPointer getArraPtr(String name) {
-		return arrayPtrs.get(name);
 	}
 
 	public boolean isRecordPtr(String name) {

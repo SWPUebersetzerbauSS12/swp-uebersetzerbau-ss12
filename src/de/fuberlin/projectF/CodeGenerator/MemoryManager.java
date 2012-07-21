@@ -92,10 +92,6 @@ public class MemoryManager {
 		return current.getFreeRegister();
 	}
 
-	public Variable getHeapVar(String name) {
-		return globalReferences.get(name);
-	}
-
 	public List<Variable> getMMXRegVariables(boolean exclusive) {
 		return current.getMMXRegVariables(exclusive);
 	}
@@ -104,40 +100,16 @@ public class MemoryManager {
 		return current.getRegVariables(exclusive);
 	}
 
-	public Variable getVarFromMMXReg(int regNumber) {
-		return current.getVarFromMMXReg(regNumber);
-	}
-
-	public Reference getVarFromReg(int regNumber) {
-		return current.getVarFromReg(regNumber);
-	}
-
-	public boolean inHeap(String name) {
-		if (!globalReferences.containsKey(name))
-			return false;
-		return true;
-	}
-
 	public boolean inMMXReg(String name) {
 		if (globalReferences.containsKey(name))
 			return false;
 		return current.inMMXReg(name);
 	}
 
-	public boolean inMMXReg(String name, int regNumber) {
-		if (globalReferences.containsKey(name))
-			return false;
-		return current.inMMXReg(name, regNumber);
-	}
-
 	public boolean inReg(String name, int regNumber) {
 		if (globalReferences.containsKey(name))
 			return false;
 		return current.inReg(name, regNumber);
-	}
-
-	public boolean MMXRegisterInUse(int i) {
-		return current.MMXRegisterInUse(i);
 	}
 
 	public void MMXRegToStack(Variable var) {
@@ -177,10 +149,6 @@ public class MemoryManager {
 		return current.newStackVar(name, type);
 	}
 
-	public Variable newStackVar(Variable var) {
-		return current.newStackVar(var);
-	}
-
 	public boolean onStack(String name) {
 		if (globalReferences.containsKey(name))
 			return false;
@@ -197,14 +165,6 @@ public class MemoryManager {
 
 	public Array getArray(String name) {
 		return current.getArray(name);
-	}
-
-	public boolean isArrayPtr(String name) {
-		return current.isArrayPtr(name);
-	}
-
-	public ArrayPointer getArrayPtr(String name) {
-		return current.getArraPtr(name);
 	}
 
 	public HashMap<RegisterAddress, Reference> getUsedRegisters() {

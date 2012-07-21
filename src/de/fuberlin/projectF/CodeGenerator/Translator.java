@@ -37,6 +37,8 @@ public class Translator {
 	public void translate(ArrayList<Token> code) {
 		this.code = code;
 		int tokenNumber = 0;
+		String lastComparism = "";
+		
 		for (Token tok : code) {
 			
 			String op1, op2;
@@ -407,6 +409,8 @@ public class Translator {
 					op2 = mem.getAddress(tok.getOp2());
 				else
 					op2 = tok.getOp2();
+				
+				lastComparism = tok.getTypeTarget();
 
 				asm.mov(op1, res.getFullName(), "Compare");
 				asm.icmp(op2, res.getFullName());
@@ -432,6 +436,8 @@ public class Translator {
 				else
 					op2 = tok.getOp2();
 
+				lastComparism = tok.getTypeTarget();
+				
 				asm.movsd(op1, mmxRes2.getFullName(), "Compare");
 				asm.fcmp(op2, mmxRes2.getFullName());
 
@@ -442,41 +448,32 @@ public class Translator {
 				op2 = "label_" + mem.getContextName() + "" + tok.getOp2().substring(1);
 				
 				if (!tok.getOp1().isEmpty()) {
-					int result;
-					result = findToken(tokenNumber, true, TokenType.CompareInteger,
-							null, null, null);
-					
 					op1 = "label_" + mem.getContextName() + "" + tok.getOp1().substring(1);
-					if(result != 0) {
-						
-						if (code.get(result).getTypeTarget().equals("eq"))
-							asm.je(op1);
-						else if (code.get(result).getTypeTarget().equals("ne"))
-							asm.jne(op1);
-						else if (code.get(result).getTypeTarget().equals("slt"))
-							asm.jl(op1);
-						else if (code.get(result).getTypeTarget().equals("sgt"))
-							asm.jg(op1);
-						else if (code.get(result).getTypeTarget().equals("sle"))
-							asm.jle(op1);
-						else if (code.get(result).getTypeTarget().equals("sge"))
-							asm.jge(op1);
-					} else {
-						result = findToken(tokenNumber, true, TokenType.CompareDouble,
-								null, null, null);
-						if (code.get(result).getTypeTarget().equals("oeq"))
-							asm.je(op1);
-						else if (code.get(result).getTypeTarget().equals("une"))
-							asm.jne(op1);
-						else if (code.get(result).getTypeTarget().equals("olt"))
-							asm.jb(op1);
-						else if (code.get(result).getTypeTarget().equals("ogt"))
-							asm.ja(op1);
-						else if (code.get(result).getTypeTarget().equals("ole"))
-							asm.jbe(op1);
-						else if (code.get(result).getTypeTarget().equals("oge"))
-							asm.jae(op1);
-					}
+					
+					if (lastComparism.equals("eq"))
+						asm.je(op1);
+					else if (lastComparism.equals("ne"))
+						asm.jne(op1);
+					else if (lastComparism.equals("slt"))
+						asm.jl(op1);
+					else if (lastComparism.equals("sgt"))
+						asm.jg(op1);
+					else if (lastComparism.equals("sle"))
+						asm.jle(op1);
+					else if (lastComparism.equals("sge"))
+						asm.jge(op1);
+					else if (lastComparism.equals("oeq"))
+						asm.je(op1);
+					else if (lastComparism.equals("une"))
+						asm.jne(op1);
+					else if (lastComparism.equals("olt"))
+						asm.jb(op1);
+					else if (lastComparism.equals("ogt"))
+						asm.ja(op1);
+					else if (lastComparism.equals("ole"))
+						asm.jbe(op1);
+					else if (lastComparism.equals("oge"))
+						asm.jae(op1);
 				}
 				
 				asm.jmp(op2);

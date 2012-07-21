@@ -160,14 +160,14 @@ public class Translator {
 				break;
 
 			case Allocation:
-				// Array
 				String tT = tok.getTypeTarget();
+				// Array
 				if  (tT.startsWith("[")){
 					Array newArr = createArray(tok.getTypeTarget(), tok.getTarget());
 					asm.sub(String.valueOf(newArr.getSize()), "esp",
 							"Allocation " + tok.getTarget());
 				}
-				//Record
+				// Record
 				else if(tT.startsWith("%")) {
 					int result;
 					result = findToken(0, false, TokenType.TypeDefinition, tok.getTypeTarget(), null, null);
@@ -175,7 +175,7 @@ public class Translator {
 					asm.sub(String.valueOf(rec.getSize()), "esp",
 							"Allocation " + tok.getTarget());
 				}
-				// Kein kein Record
+				// Kein Record
 				else{
 					// Neue Variable anlegen
 					Variable newVar = mem.newStackVar(tok.getTarget(),
@@ -189,9 +189,8 @@ public class Translator {
 			case Assignment:
 				String target = mem.getAddress(tok.getTarget());
 				String source;
-				// Zuweisung Variable
-					// Zuweisung Zahl
-					if (!tok.getOp1().startsWith("%")) {
+				// Zuweisung Variable = Zahl
+				if (!tok.getOp1().startsWith("%")) {
 						if(tok.getTypeTarget().equals("i32*"))
 							asm.mov(tok.getOp1(), target, "Assignment " + tok.getTarget());
 						else if(tok.getTypeTarget().equals("double*")) {
@@ -199,33 +198,33 @@ public class Translator {
 							asm.mov(tok.getOp1().substring(0,10), target2, "Assignment " + tok.getTarget());
 							asm.mov("0x" + tok.getOp1().substring(10), target, "Assignment " + tok.getTarget());
 						}
-					}
+				}
+				
+				// Variable (Stack) = Variable (Stack)
+				else if (mem.onStack(tok.getOp1()) && mem.onStack(tok.getTarget())) {
 					
-					// Variable (Stack -> Stack)
-					else if (mem.onStack(tok.getOp1()) && mem.onStack(tok.getTarget())) {
-						
-						if(tok.getTypeOp1().equals("double")) {
-							MMXRegisterAddress tmp = mem.getFreeMMXRegister();
-							asm.movsd(mem.getAddress(tok.getOp1()), tmp.getFullName(), "Copy assignment");
-							asm.movsd(tmp.getFullName(), target, tok.getTarget() + tok.getOp1());
-						} else {
-							RegisterAddress tmp = mem.getFreeRegister();
-							asm.mov(mem.getAddress(tok.getOp1()), tmp.getFullName(), "Copy assignment");
-							asm.mov(tmp.getFullName(), target, tok.getTarget() + tok.getOp1());
-							mem.freeRegister(tmp);
-						}
-						// Variable
+					if(tok.getTypeOp1().equals("double")) {
+						MMXRegisterAddress tmp = mem.getFreeMMXRegister();
+						asm.movsd(mem.getAddress(tok.getOp1()), tmp.getFullName(), "Copy assignment");
+						asm.movsd(tmp.getFullName(), target, tok.getTarget() + tok.getOp1());
 					} else {
-						source = mem.getAddress(tok.getOp1());
-						if(tok.getTypeTarget().equals("double*"))
-							asm.movsd(source, target, "Assignment double " + tok.getTarget());
-						else
-							asm.mov(source, target, "Assignment i32 " + tok.getTarget());
+						RegisterAddress tmp = mem.getFreeRegister();
+						asm.mov(mem.getAddress(tok.getOp1()), tmp.getFullName(), "Copy assignment");
+						asm.mov(tmp.getFullName(), target, tok.getTarget() + tok.getOp1());
+						mem.freeRegister(tmp);
 					}
-
+				// Variable = Variable (min. ein Register)
+				} else {
+					source = mem.getAddress(tok.getOp1());
+					if(tok.getTypeTarget().equals("double*"))
+						asm.movsd(source, target, "Assignment double " + tok.getTarget());
+					else
+						asm.mov(source, target, "Assignment i32 " + tok.getTarget());
+				}
 				break;
 
 			case Load:
+				// Pointer anlegen
 				mem.newReference(tok.getTarget(), tok.getOp1());
 				break;
 
@@ -290,7 +289,6 @@ public class Translator {
 				break;
 
 			case ExpressionDouble:
-
 				if (tok.getOp1().startsWith("%"))
 					op1 = mem.getAddress(tok.getOp1());
 				else {
@@ -348,7 +346,6 @@ public class Translator {
 				}
 				
 				mem.addMMXRegVar(tok.getTarget(), "double*", mmxRes);
-				
 				break;
 
 			case Cast:
@@ -392,6 +389,7 @@ public class Translator {
 				}
 					
 				break;
+				
 			case Label:
 				asm.label(mem.getContextName() + "" + tok.getTarget());
 				break;
@@ -495,7 +493,7 @@ public class Translator {
 				} else if(tok.getOp1().charAt(0) == '@') {
 					mem.newReference(tok.getTarget(), tok.getOp1().substring(2));
 				} else {
-					// Continue array pointer
+					// Array Pointer basiert auf bestehendem Array Pointer (z.B. mehrdimensionales Array)
 					if (tok.getOp1().matches("%\\d+")) {
 						String offset = tok.getOp2();
 						ArrayPointer newPtr = mem.contArrayPtr(tok.getTarget(), tok.getOp1(), tok.getOp2(), tok.getTypeTarget());
@@ -513,7 +511,7 @@ public class Translator {
 						
 						mem.freeRegister(temp);
 					}
-					// New array pointer
+					// Neuen Array Pointer anlegen
 					else{
 						RegisterAddress reg = mem.getFreeRegister();
 						if (reg == null){
@@ -531,10 +529,12 @@ public class Translator {
 						Array array = mem.getArray(tok.getOp1());
 						String ptrName = tok.getTarget();
 						
+						// Offset berechnen
 						asm.mov("" + newPtr.getValue(), reg.getFullName(), "ArrayPointer " + ptrName);
 						asm.imul("" + array.getTypeSize(), reg.getFullName(), "Calculating offset");
 						asm.imul(offset, reg.getFullName(), "");
 						
+						// Array-Adresse zum Offset addieren
 						RegisterAddress temp = mem.getFreeRegister();
 						if (temp == null){
 							saveRegisters();

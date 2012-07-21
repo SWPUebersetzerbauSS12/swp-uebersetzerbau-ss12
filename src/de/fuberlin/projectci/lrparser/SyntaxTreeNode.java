@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import de.fuberlin.commons.lexer.IToken;
-import de.fuberlin.commons.parser.IParser;
 import de.fuberlin.commons.parser.ISymbol;
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.commons.util.LogFactory;

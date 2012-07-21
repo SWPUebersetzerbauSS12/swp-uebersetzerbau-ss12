@@ -2,7 +2,6 @@ package de.fuberlin.projectci.gui;
 
 import java.awt.GridLayout;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;

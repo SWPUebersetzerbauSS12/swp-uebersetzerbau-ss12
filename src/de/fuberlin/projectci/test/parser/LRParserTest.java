@@ -111,6 +111,7 @@ public class LRParserTest {
 						try {
 							try {
 								String generatedLLVMCode = semanticAnalyzer.getAST().genCode();
+								@SuppressWarnings("unused")
 								String optimized_llvm_code = null;
 								
 								try {

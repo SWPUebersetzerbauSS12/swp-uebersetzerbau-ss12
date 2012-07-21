@@ -494,12 +494,13 @@ public class RegexToDfaConverter {
 				for ( Transition<Character, StatePayload> transition : transitionSetCopy) {
 					// wenn der Übergang in einen final Zustand führt
 					if ( transition.getState().isFiniteState()) {
+						
 					  // get original payload
 						State<Character, StatePayload> targetState = transition.getState();
 						State<Character, StatePayload> sourceState = currentDfaState;
 
 						StatePayload payload = getPayloadForTransitionFromStateToStateByCharacter( payloadToStateMap, sourceState, targetState, transition.getCondition());
-					
+						
 						if ( Test.isAssigned( payload)) { 
 
 							if ( transition.getState().getElementsOfOutgoingTransitions().isEmpty()) {
@@ -520,6 +521,7 @@ public class RegexToDfaConverter {
 
 							} else {
 								// Fall 2: Es ist ein akzeptierender Zustand, aber es führen auch wieder Übergänge heraus.  ->(F)->
+								
 								StatePayload weakestPayload = null;
 								// Merke den Zustand mit ausgerechnetem niederwertigsten Payload beim ersten Besuch 
                 if ( !knownFiniteIntermediateStates.containsKey( targetState.getUUID())) {
@@ -558,6 +560,8 @@ public class RegexToDfaConverter {
 																
 							}
 						}
+						
+						
 					}
 				} 
 			}

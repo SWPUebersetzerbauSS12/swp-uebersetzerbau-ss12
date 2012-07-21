@@ -881,6 +881,21 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 	
 	
 	
+	private static boolean testBranchNullablePosibility( TreeNode node) {
+		if ( node instanceof OperatorNode) {
+			OperatorNode operatorNode = (OperatorNode) node;
+			switch ( operatorNode.getOperatorType()) {
+				case ALTERNATIVE: 
+					return testBranchNullablePosibility( operatorNode.getLeftChildNode()); 
+				case CONCATENATION: 
+					return false;
+				case REPETITION: 
+				  return true;			  		
+			}
+		}
+		return false;
+	}
+	
 	@SuppressWarnings("unchecked")
 	protected static void tryPassPayloadDownwards( Serializable payload, TreeNode ... nodes) {
 		for ( TreeNode node : nodes) {
@@ -891,7 +906,10 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 						tryPassPayloadDownwards( payload, operatorNode.getLeftChildNode(), operatorNode.getRightChildNode());
 						break;
 					case CONCATENATION: 
-						tryPassPayloadDownwards( payload, operatorNode.getRightChildNode());
+						if ( testBranchNullablePosibility( operatorNode.getRightChildNode()))
+						  tryPassPayloadDownwards( payload, operatorNode.getLeftChildNode(), operatorNode.getRightChildNode());
+						else 
+						  tryPassPayloadDownwards( payload, operatorNode.getRightChildNode());
 						break;
 					case REPETITION: 
 						tryPassPayloadDownwards( payload, operatorNode.getLeftChildNode());

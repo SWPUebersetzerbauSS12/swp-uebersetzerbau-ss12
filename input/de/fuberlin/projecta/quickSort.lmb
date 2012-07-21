@@ -5,14 +5,26 @@ def void initArray(int[10] array, int length){
         array[i] = 0;
     }
 }
+
 def void printArray(int[10] array, int length){
     int counter;
+    string begin;
+    string end;
+    string comma;
+    begin = "[";
+    comma = ",";
+    end = "]";
     counter = 0;
+    
+    print begin;
     while(counter < length){
         print array[counter];
+        print comma;
         counter = counter + 1;
     }
+    print end;
 }
+
 def void quickSort(int[10] array){
     int length;
     int pivot;
@@ -24,14 +36,14 @@ def void quickSort(int[10] array){
     int[10] con;
     int tmp1;
     int tmp2;
-    //if(length <= 1){ 
-    //    return;
-    // } 
+
     // init both arrays with 0's
     initArray(greater, 10);
     initArray(less, 10);
+
     // chose first element as pivot
     pivot = array[0];
+
     // counter vars
     i = 0;
     lessCounter = 0;
@@ -39,10 +51,17 @@ def void quickSort(int[10] array){
     tmp1 = 0;
     tmp2 = 0;
     length = 0;
+
     // first find out the current length
     while(array[length] != 0){
         length = length + 1;
     }
+    
+    if(length <= 1){ 
+        return;
+    }
+    
+
     // split the list in two lists
     while(i < length){
         if(array[i] <= pivot){
@@ -53,9 +72,11 @@ def void quickSort(int[10] array){
             greaterCounter = greaterCounter + 1;
         }
     }
+
     //  call recursivly quickSort
     quickSort(less);
     quickSort(greater);
+
     // and merge them together
     while(tmp1 < 10){
         if(less[tmp1] != 0)

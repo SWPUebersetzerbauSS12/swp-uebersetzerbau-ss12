@@ -22,7 +22,7 @@ public class CompilerTest {
 
 	static String executeCode(String code) {
 		ICharStream stream = new StringCharStream(code);
-		String output = CompilerMain.execute(stream, /*verbose =*/ true);
+		String output = CompilerMain.execute(stream, /* verbose = */true);
 		return output;
 	}
 
@@ -35,7 +35,8 @@ public class CompilerTest {
 
 	@Test
 	public void testImplicitReturnValueOnIntegerAssignment() {
-		String code = "def int foo() { int i; i = 1; }" + mainC("int j; j = foo(); print j; return 0;");
+		String code = "def int foo() { int i; i = 1; }"
+				+ mainC("int j; j = foo(); print j; return 0;");
 		String output = executeCode(code);
 		assertEquals("1", output);
 	}
@@ -200,14 +201,11 @@ public class CompilerTest {
 	}
 
 	/*
-	@Test
-	public void testUnaryOpInIfStatement() {
-		final String code = mainC("bool b; int i; b = false; if (!b) { i = 1; } else { i = 0; } print i;");
-		System.out.println(code);
-		String output = executeCode(code);
-		assertEquals("1", output);
-	}
-	*/
+	 * @Test public void testUnaryOpInIfStatement() { final String code =
+	 * mainC("bool b; int i; b = false; if (!b) { i = 1; } else { i = 0; } print i;"
+	 * ); System.out.println(code); String output = executeCode(code);
+	 * assertEquals("1", output); }
+	 */
 
 	@Test
 	public void testNestedRecords2() {
@@ -220,52 +218,33 @@ public class CompilerTest {
 
 	@Test
 	public void testArray() {
-		final String code = mainC("int[10] test; int i; int tmp;" +
-				"i = 0; " +
-				"while (i < 10){" +
-					"test[i] = i;" +
-					"tmp = test[i];" +
-					"print tmp;" +
-					"i=i+1; " +
-				"}");
+		final String code = mainC("int[10] test; int i; int tmp;" + "i = 0; "
+				+ "while (i < 10){" + "test[i] = i;" + "tmp = test[i];"
+				+ "print tmp;" + "i=i+1; " + "}");
 		System.out.println(code);
 		String output = executeCode(code);
 		assertEquals("0123456789", output);
 	}
-	
+
 	@Test
 	public void testArrayFuncCall() {
-		final String code = "def int fun(int[30] x) { return x[1]; } " +
-				"def int main(){int[30] x; int i; x[1] = 1; i = fun(x); print i; return 0;}";
+		final String code = "def int fun(int[30] x) { return x[1]; } "
+				+ "def int main(){int[30] x; int i; x[1] = 1; i = fun(x); print i; return 0;}";
 		System.out.println(code);
 		String output = executeCode(code);
 		assertEquals("1", output);
 	}
-	
+
 	@Test
 	public void testMultiDimensionalArrays() {
-		final String code = mainC("int[3][5] test; int i; int j; int tmp;" +
-				"i = 0;" +
-				"while (i < 3){" +
-					"j = 0;" +
-					"while(j < 5){"+
-						"test[i][j] = i+j;" +
-						"j=j+1;"+
-					"}"+
-					"i=i+1; " +
-				"} " +
-				"i = 0;" +
-				"while (i < 3){" +
-					"j = 0;" +
-					"while(j < 5){"+
-						"tmp = test[i][j];" +
-						"print tmp;" +
-						"j=j+1;"+
-					"}"+
-					"i=i+1; " +
-				"} "
-					
-					);
+		final String code = mainC("int[3][5] test; int i; int j; int tmp;"
+				+ "i = 0;" + "while (i < 3){" + "j = 0;" + "while(j < 5){"
+				+ "test[i][j] = i+j;" + "j=j+1;" + "}" + "i=i+1; " + "} "
+				+ "i = 0;" + "while (i < 3){" + "j = 0;" + "while(j < 5){"
+				+ "tmp = test[i][j];" + "print tmp;" + "j=j+1;" + "}"
+				+ "i=i+1; " + "} "
+
+		);
 		System.out.println(code);
 		String output = executeCode(code);
 		assertEquals("012341234523456", output);
@@ -280,14 +259,21 @@ public class CompilerTest {
 
 	@Test
 	public void testDoWhileStatement() {
-		String code = mainC("int i; i = 0; do {" +
-				"print i;" + 
-				"i = i+1;" + 
-			"} while (i < 5);");
+		String code = mainC("int i; i = 0; do {" + "print i;" + "i = i+1;"
+				+ "} while (i < 5);");
 		String output = executeCode(code);
 		System.out.println(output);
 		assertEquals("01234", output);
 	}
 
+	@Test
+	public void testPrintNestedArray() {
+		String code = "def void foo(int[30][50] array, int i)"
+				+ "{print array[i][0];} "
+				+ mainC("int[30][50] array; int i; array[0][0] = 0; i = 0; foo(array,i);");
+		String output = executeCode(code);
+		System.out.println(output);
+		assertEquals("0", output);
+	}
 
 }

@@ -185,7 +185,7 @@ public class BinaryOp extends Expression {
 			mathOp += "mul";
 			break;
 		case OP_DIV:
-			mathOp += "div";
+			mathOp += "sdiv";
 			break;
 		default:
 			assert(false); // should never happen!

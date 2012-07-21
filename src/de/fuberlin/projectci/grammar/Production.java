@@ -6,44 +6,9 @@ import java.util.List;
 import de.fuberlin.commons.util.EasyComparableObject;
 
 
-/*
-public class Production {
- 
-	private NonTerminalSymbol lhs;
-	private List<Symbol> rhs;
-	
-	public Production(NonTerminalSymbol lhs, List<?extends Symbol> rhs) {
-		super(); 
-		this.lhs = lhs;
-		this.rhs = (List<Symbol>) rhs;	
-	}
-
-	public Production(NonTerminalSymbol lhs, Symbol[] rhs) {
-		super(); 
-		this.lhs = lhs;
-		this.rhs = new ArrayList<Symbol>();
-		for (int i = 0; i < rhs.length; i++) {
-			Symbol aSymbol = rhs[i];
-			this.rhs.add(aSymbol);
-		}
-	}
-	
-	public NonTerminalSymbol getLhs() {
-		return lhs;
-	}
-
-	public List<Symbol> getRhs() {
-		return rhs;
-	}
-
-	
-
-	
-	 
-}
-
-*/
-
+/**
+ * Repräsentiert eine Produktion mit Kopf (lhs) und Rumpf (rhs).
+ */
 public class Production extends EasyComparableObject{
 	
 	// Rechte Regelseite (Nichtterminalsymbol)

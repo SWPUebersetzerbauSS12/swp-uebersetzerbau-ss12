@@ -164,6 +164,10 @@ public class Driver {
 		return nextToken;
 	}
 	
+	/**
+	 * IToken-Implementierung für Epsilon.
+	 *
+	 */
 	private static class EpsilonToken implements IToken{
 		private int lineNumber;
 		private int offset;

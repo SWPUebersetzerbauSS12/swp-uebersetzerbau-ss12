@@ -2,6 +2,9 @@ package de.fuberlin.projectci.parseTable;
 
 import de.fuberlin.projectci.grammar.Production;
 
+/**
+ * Repräsentiert die Reduce-Action eines LRParsers-Automaten mit der zur reduzierenden Produktion.
+ */
 public class ReduceAction extends Action {
 	private Production production;
 	

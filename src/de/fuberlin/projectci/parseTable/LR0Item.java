@@ -4,6 +4,9 @@ import de.fuberlin.commons.util.EasyComparableObject;
 import de.fuberlin.projectci.grammar.Production;
 import de.fuberlin.projectci.grammar.Symbol;
 
+/**
+ * Repräsentiert ein LR0Item, d.h. den "Punkt" innerhalb einer Produktion.
+ */
 public class LR0Item extends EasyComparableObject{
  
 	/**

@@ -27,6 +27,9 @@ import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projectci.lrparser.LRParser;
 import de.fuberlin.projectci.lrparser.LRParserException;
 
+/**
+ * Testet alle Beispiel-Quellprogramme in einem Verzeichnis.
+ */
 public class LRParserTest {
 	private static Logger logger = LogFactory.getLogger(LRParserTest.class);
 	private static final String testSourceFilesDirPath="input/de/fuberlin/projectci/quellprogrammdateien";
@@ -108,6 +111,7 @@ public class LRParserTest {
 						try {
 							try {
 								String generatedLLVMCode = semanticAnalyzer.getAST().genCode();
+								@SuppressWarnings("unused")
 								String optimized_llvm_code = null;
 								
 								try {

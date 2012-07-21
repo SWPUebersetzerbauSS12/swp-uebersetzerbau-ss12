@@ -24,7 +24,7 @@ import de.fuberlin.projecta.lexer.io.FileCharStream;
 import de.fuberlin.projecta.lexer.io.ICharStream;
 import de.fuberlin.projecta.parser.ParseException;
 import de.fuberlin.projecta.parser.Parser;
-import de.fuberlin.projectci.lrparser.LRParserMain;
+import de.fuberlin.projectci.LRParserMain;
 import de.fuberlin.projectcii.ParserGenerator.src.LL1Parser;
 
 public class Main {
@@ -43,6 +43,8 @@ public class Main {
 	static final String PARAM_REBUILD_DFA = "-rb"; //Gibt an, dass der DFA neu erstellt werden soll
 	// Codegenerierung
 	static final String PARAM_ASM_TYPE = "-asmType"; // "gnu" oder "intel" waehlt den Assemblertyp. Standard ist "gnu"
+	static final String PARAM_EXEC = "-e"; // angeben um die Ausgabedatei auch auszuf�hren
+	static final String PARAM_CONFIG_FILE = "-C"; // Pfad zu einer alternativen Konfigurationsdatei
 	// Allgemein
 	static final String PARAM_SOURCE_FILE = "-f"; // Gibt den Pfad zum Quellprogramm an
 	static final String PARAM_OUTPUT_FILE = "-o"; // Gibt den Pfad zur Ausgabedatei an
@@ -305,15 +307,22 @@ public class Main {
 		 * input : String llvm_code
 		 * output: String machineCode 
 		 */
-		boolean debug = true;
+		boolean debug = false;
 		boolean guiFlag = false;
 		String outputFile = null;
+		boolean exec = false;
 		String configFile = "mc_config.cfg";
+		String asmType = "gnu";
+		
+		if(arguments.containsKey(PARAM_CONFIG_FILE)) {
+			configFile = arguments.get(PARAM_CONFIG_FILE);
+		}
 		if(arguments.containsKey(PARAM_OUTPUT_FILE)) {
 			outputFile = arguments.get(PARAM_OUTPUT_FILE);
 		}
-		boolean exec = false;
-		String asmType = "gnu";
+		if (arguments.containsKey(PARAM_EXEC)) {
+			exec = true;
+		}
 		if(arguments.containsKey(PARAM_ASM_TYPE)) {
 			asmType = arguments.get(PARAM_ASM_TYPE);
 		}
@@ -411,8 +420,35 @@ public class Main {
 			} else if(args[i].equalsIgnoreCase(PARAM_LOG_FILE)) {
 				System.out.println("Benutze Logdatei : "+args[++i]);
 				arguments.put(PARAM_LOG_FILE, args[i]);
+
+
+				// -e execute
+			} else if(args[i].equalsIgnoreCase(PARAM_EXEC)) {
+				arguments.put(PARAM_EXEC, "true");
+				// -C Configdatei
+			} else if(args[i].equalsIgnoreCase(PARAM_CONFIG_FILE)) {
+				if(i+1 < args.length && !args[i+1].trim().startsWith("-")) {
+					String configFile = args[i+1].trim();
+					System.out.println("Benutze Configfile: "+ configFile);
+					arguments.put(PARAM_CONFIG_FILE, configFile);
+					i++;
+				} else {
+					System.out.println("Keine Configdatei angegeben!");
+					arguments.put(PARAM_CONFIG_FILE, null);
+				}
+				// -asmType [gnu intel]
+			} else if(args[i].equalsIgnoreCase(PARAM_ASM_TYPE)) {
+				if(i+1 < args.length && ((args[i+1].equalsIgnoreCase("gnu")) || (args[i+1].equalsIgnoreCase("intel")))) {
+					String asmType = args[i+1].trim();
+					System.out.println("Benutze " + asmType + " Assembler");
+					arguments.put(PARAM_ASM_TYPE, asmType);
+					i++;
+				} else {
+					System.out.println("AssemblerType nicht erkannt");
+					arguments.put(PARAM_ASM_TYPE, null);
+				}
 			}
-			
+
 			else {
 				System.err.println("Unbekannte Option: "+args[i]);
 			}

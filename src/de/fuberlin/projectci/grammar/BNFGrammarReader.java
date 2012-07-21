@@ -9,8 +9,11 @@ import java.io.Reader;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import de.fuberlin.commons.util.LogFactory;
 
 /**
  * 
@@ -30,6 +33,7 @@ import java.util.regex.Pattern;
  * @see <a href="http://de.wikipedia.org/wiki/Backus-Naur-Form">Wikipedia: Backus-Naur-Form</a>
  */
 public class BNFGrammarReader implements GrammarReader{
+	private static Logger logger=LogFactory.getLogger(BNFGrammarReader.class);
 	
 	/**
 	 * Liest von einem Reader-Objekt die BNF-Grammatik ein und erstellt daraus ein neues
@@ -40,6 +44,7 @@ public class BNFGrammarReader implements GrammarReader{
 	 * einlesen konnte.
 	 */
 	public Grammar readGrammar(Reader r) throws BNFParsingErrorException {
+		logger.fine("Reading grammar file...");
 		Grammar grammar = new Grammar();
 		int foundProductions = 0;
 		int lineNumber = 0;
@@ -74,8 +79,9 @@ public class BNFGrammarReader implements GrammarReader{
 		}
 		
 		if(foundProductions == 0)
-			System.out.println("GrammarReader: WARNING Created grammar contains no productions!");
-
+			logger.info("WARNING Created grammar contains no productions!");
+		
+		logger.info("Grammar successfully built.");
 		return grammar;
 	}
 	
@@ -170,23 +176,24 @@ public class BNFGrammarReader implements GrammarReader{
 						symbol = symbol.replaceAll("[<>]", "");
 						// lasse von Grammar entweder Neues erstellen oder Referenz auf Vorhandenes zurückgeben
 						rightHandSite.add(grammar.createNonTerminalSymbol(symbol));
+						
 					} else if(symbol.startsWith("\"")) { // Terminal zu RHS hinzufügen
 						symbol = symbol.replaceAll("\"", "");
 						rightHandSite.add(grammar.createTerminalSymbol(symbol));
-					} else { // "|" gematched, lege neue Produktion an
-						// System.out.print("LHS: "+leftHandSiteName+" RHS: "); // TODO Logger benutzen
-						//for(Symbol s : rightHandSite) System.out.print(s.getName()); // TODO Logger benutzen
-						//System.out.print("\n"); // TODO Logger benutzen
 						
-						productions.add(new Production(leftHandSite, rightHandSite));
+					} else { // Alternative "|" gematched, lege neue Produktion an						
+						Production p = new Production(leftHandSite, rightHandSite);
+						productions.add(p);
 						rightHandSite = new LinkedList<Symbol>();
+						
+						logger.finer("Produktion hinzugefügt: " +p);
 					}
 				}
-				//System.out.print("LHS: "+leftHandSiteName+" RHS: "); // TODO Logger benutzen
-				//for(Symbol s : rightHandSite) System.out.print(s.getName()); // TODO Logger benutzen
-				//System.out.print("\n"); // TODO Logger benutzen
+
+				Production p = new Production(leftHandSite, rightHandSite);
+				productions.add(p);
 				
-				productions.add(new Production(leftHandSite, rightHandSite));
+				logger.finer("Produktion hinzugefügt: " +p);
 			} 
 		} else {
 			throw new BNFParsingErrorException("Illegal production!");

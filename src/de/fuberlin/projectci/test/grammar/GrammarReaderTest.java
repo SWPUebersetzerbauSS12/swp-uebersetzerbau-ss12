@@ -17,7 +17,6 @@ public class GrammarReaderTest {
 			Grammar g = grammarReader.readGrammar("./input/de/fuberlin/projectci/beispielgrammatik1_ungueltig.txt");
 			System.out.println(g.toString());
 		} catch (BNFParsingErrorException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -26,7 +25,6 @@ public class GrammarReaderTest {
 			Grammar g2 = grammarReader.readGrammar("./input/de/fuberlin/projectci/beispielgrammatik1.txt");
 			System.out.println(g2.toString());
 		} catch (BNFParsingErrorException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -36,16 +34,14 @@ public class GrammarReaderTest {
 			Grammar g3 = grammarReader.readGrammar("./input/de/fuberlin/projectci/quellsprache_bnf.txt");
 			System.out.println(g3.toString());
 		} catch (BNFParsingErrorException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		System.out.println("\nnon-ambigous-Grammatik:");
+		System.out.println("\non-ambigous-Grammatik:");
 		try {
 			Grammar g4 = grammarReader.readGrammar("./input/de/fuberlin/projectci/non-ambigous.txt");
 			System.out.println(g4.toString());
 		} catch (BNFParsingErrorException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

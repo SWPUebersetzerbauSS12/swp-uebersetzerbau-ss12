@@ -20,6 +20,10 @@ import de.fuberlin.projectci.parseTable.ParseTableBuilder;
 import de.fuberlin.projectci.parseTable.SLRParseTableBuilder;
 import de.fuberlin.projectci.test.driver.DriverTest.DriverTestDataProvider;
 
+/** 
+ * Driver-Testdaten für das Fibonacci-Beispiel.
+ *
+ */
 public class DriverTestDataProvider2 implements DriverTestDataProvider{
 	private static Logger logger = LogFactory.getLogger(DriverTestDataProvider1.class);
 	private ILexer lexer;

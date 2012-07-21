@@ -18,10 +18,6 @@ public class GrammarReader {
 
 	private Vector<String> heads;
 
-//	private enum ReadingState {
-//		TERMINAL, NONTERMINAL, NONE
-//	}
-
 	/**
 	 * Getter for the Startsymbol
 	 * 

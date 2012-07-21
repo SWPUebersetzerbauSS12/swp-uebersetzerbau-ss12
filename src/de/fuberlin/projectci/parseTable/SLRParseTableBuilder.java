@@ -27,22 +27,24 @@ public class SLRParseTableBuilder extends ParseTableBuilder {
 	}
 	 
 	/**
-	 *Vgl. Drachenbuch: Algorithmus 4.32
+	 * Baut eine Parsetabelle nach dem Algorithmus aus dem Drachenbuch (Algorithmus 4.32/ 2. deutsche Auflage)
 	 *
+	 <code>
+		1. Konstruieren Sie C={I0, I1, ..., In}, die Sammlung der LR(0)-Item-Mengen für G0
+		2. Der Zustand i wird aus Ii erstellt. Die Parseraktionen für Zustand i werden wie folgt ermittelt:
+			a) Wenn [A → α.aβ] in Ii und GOTO(Ii,a) = Ij, dann setze ACTION[i,a] auf "shift j". Hier muss a ein Terminal sein.
+			b) Wenn [A → α.] in Ii, setze ACTION[i,a] für alle a in FOLLOW(A) auf "reduce A → α". Hier darf A nicht S0 sein.
+			c) Wenn [S0 → S.] in Ii, setze ACTION[i,$] auf "akzeptieren"
+			Ergeben sich aus diesen Regeln Konflikte, sprechen wir davon, dass es sich nicht um eine SLR(1)-Grammatik handelt. 
+			In diesem Fall erstellt der Algorithmus keinen Parser.
+		3. Die GOTO-Übergänge für Zustand i werden für alle Nichtterminale A nach folgender Regel konstruiert: 
+			Wenn GOTO(Ii,A)=Ij, dann GOTO(i,A)=j.
+		4. Alle nicht durch die Regeln (2) und (3) definierten Einträge werden auf "Fehler" gesetzt.
+		5. Der Ausgangszustand des Parsers ist derjenige, der aus der Item-Menge konstruiert wurde, die [S0 → .S] enthält.	 	
+	 </code>
+	 
 	 */
 	public ParseTable buildParseTable() throws InvalidGrammarException {
-		
-//		1. Konstruieren Sie C={I0, I1, ..., In}, die Sammlung der LR(0)-Item-Mengen für G0
-//		2. Der Zustand i wird aus Ii erstellt. Die Parseraktionen für Zustand i werden wie folgt ermittelt:
-//			a) Wenn [A → α.aβ] in Ii und GOTO(Ii,a) = Ij, dann setze ACTION[i,a] auf "shift j". Hier muss a ein Terminal sein.
-//			b) Wenn [A → α.] in Ii, setze ACTION[i,a] für alle a in FOLLOW(A) auf "reduce A → α". Hier darf A nicht S0 sein.
-//			c) Wenn [S0 → S.] in Ii, setze ACTION[i,$] auf "akzeptieren"
-//			Ergeben sich aus diesen Regeln Konflikte, sprechen wir davon, dass es sich nicht um eine SLR(1)-Grammatik handelt. 
-//			In diesem Fall erstellt der Algorithmus keinen Parser.
-//		3. Die GOTO-Übergänge für Zustand i werden für alle Nichtterminale A nach folgender Regel konstruiert: 
-//			Wenn GOTO(Ii,A)=Ij, dann GOTO(i,A)=j.
-//		4. Alle nicht durch die Regeln (2) und (3) definierten Einträge werden auf "Fehler" gesetzt.
-//		5. Der Ausgangszustand des Parsers ist derjenige, der aus der Item-Menge konstruiert wurde, die [S0 → .S] enthält.
 				
 		Map<Set<LR0Item>, State> itemSet2State=new HashMap<Set<LR0Item>, State>();
 		Set<NonTerminalSymbol> allNonTerminalSymbols = getGrammar().getAllNonTerminals();
@@ -151,21 +153,22 @@ public class SLRParseTableBuilder extends ParseTableBuilder {
 	}
 	 
 	/**
-	 *Vgl. Drachenbuch: Abbildung 4.32
-	 *
+	 * Berechnet das Closure-Set zu einer LR0Item-Menge (Drachenbuch: Abbildung 4.32/ 2. deutsche Auflage)
+	   <code>
+	   	SetOfItems CLOSURE(I) {
+			J=I;
+			repeat
+				for ( jedes Item A → α.Bβ in J )
+					for ( jede Produktion B → γ von G)
+						if (B → .γ ist nicht in J)
+							füge B → .γ zu J hinzu
+			until keine Items mehr in einer Runde zu J hinzugefügt wurden
+			return J;
+		}
+	   </code>
 	 */
 	public Set<LR0Item> closure(Set<LR0Item> items) {
-//		Algorithmus aus Drachenbuch: Abbildung 4.32
-//		SetOfItems CLOSURE(I) {
-//			J=I;
-//			repeat
-//				for ( jedes Item A → α.Bβ in J )
-//					for ( jede Produktion B → γ von G)
-//						if (B → .γ ist nicht in J)
-//							füge B → .γ zu J hinzu
-//			until keine Items mehr in einer Runde zu J hinzugefügt wurden
-//			return J;
-//		}
+
 		List<LR0Item> result=new ArrayList<LR0Item>(items);
 		boolean added= false;
 
@@ -194,23 +197,23 @@ public class SLRParseTableBuilder extends ParseTableBuilder {
 	 	
 	/**
 	 * Berechnet die Hülle von Items, die unmittelbar nach dem Lesen eines gegebenen 
-	 * Symbols aus einer gegebenen Item-Menge folgen.
-	 * Vgl. Drachembuch: S.296/ Beispiel 4.27
+	 * Symbols aus einer gegebenen Item-Menge folgen. (auf Lr(0) angepasster Algorithmus für LR(1) aus Drachenbuch (eng): Abbildung 4.40
 	 * 
 	 * @param items Item-Menge, zu der für jedes Element ein "Folge-Item" gesucht wird.
 	 * @param s oberstes Stack-Symbol
 	 * @return Hülle der gefundenen "Folge"-Item-Menge
+	 *
+	 <code>
+		SetOfItems GOTO(I,X) {
+			J=leere Menge;
+			for ( jedes Item [A → α.Xβ] in I )
+				füge Item [A → αX.β] zu J hinzu;
+			return CLOSURE(J);
+		}	 
+	</code>	
+	 * 
 	 */
 	public Set<LR0Item> gotoSet(Set<LR0Item> items, Symbol s) {
-		// Algorithmus für LR(1) aus Drachenbuch (eng): Abbildung 4.40
-		//	SetOfItems GOTO(I,X) {
-		//		J=leere Menge;
-		// 		for ( jedes Item [A → α.Xβ,a] in I )
-		// 			füge Item [A → αX.β,a] zu J hinzu;
-		// 		return CLOSURE(J);
-		//	}
-		// --> funktioniert analog für LR(0) Items
-		
 		Set<LR0Item> J = new HashSet<LR0Item>();
 		for(LR0Item item : items) {
 			if(s.equals(item.getNextSymbol())){ // nach Punkt soll Symbol s folgen
@@ -226,19 +229,21 @@ public class SLRParseTableBuilder extends ParseTableBuilder {
 	}
 	 
 	/**
-	 *Vgl. Drachembuch: Abbildung 4.33
+	 * Berechnet die kannonische Sammlung von LR0Items.(Drachembuch: Abbildung 4.33/ 2. deutsche Auflage) 
+	 	<code>
+			void items(G0){
+				C = {CLOSURE({[S0 --> .S]})};
+				repeat
+					for ( jede Item-Menge I in C )
+						for ( jedes Grammatiksymbol X )
+							if ( GOTO(I,X) ist nicht leer und nicht in C )
+								füge GOTO(I,X) zu C hinzu;
+				until es werden keine neuen Item-Mengen mehr in einer Runde zu C hinzugefügt
+			}	
+		</code> 		
 	 */
+	
 	public List<Set<LR0Item>> cannonicalCollectionOfLR0Items() {
-//		Drachembuch: Abbildung 4.33
-//		void items(G0){
-//			C = {CLOSURE({[S0 --> .S]})};
-//			repeat
-//				for ( jede Item-Menge I in C )
-//					for ( jedes Grammatiksymbol X )
-//						if ( GOTO(I,X) ist nicht leer und nicht in C )
-//							füge GOTO(I,X) zu C hinzu;
-//			until es werden keine neuen Item-Mengen mehr in einer Runde zu C hinzugefügt
-		
 		List<Production> startProductions=this.getGrammar().getProductionsByLhs(getGrammar().getStartSymbol());
 		if (startProductions.size()==0){
 			throw new IllegalStateException("cannonicalCollectionOfLR0Items failed to determine start production");

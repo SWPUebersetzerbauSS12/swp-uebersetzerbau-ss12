@@ -22,7 +22,7 @@ public class CompilerTest {
 
 	static String executeCode(String code) {
 		ICharStream stream = new StringCharStream(code);
-		String output = CompilerMain.execute(stream);
+		String output = CompilerMain.execute(stream, /*verbose =*/ true);
 		return output;
 	}
 
@@ -31,6 +31,13 @@ public class CompilerTest {
 		final String code = mainC("string s; s = \"foo\"; print s;");
 		String output = executeCode(code);
 		assertEquals(output, "foo");
+	}
+
+	@Test
+	public void testImplicitReturnValueOnIntegerAssignment() {
+		String code = "def int foo() { int i; i = 1; }" + mainC("int j; j = foo(); print j; return 0;");
+		String output = executeCode(code);
+		assertEquals("1", output);
 	}
 
 	@Test
@@ -262,6 +269,13 @@ public class CompilerTest {
 		System.out.println(code);
 		String output = executeCode(code);
 		assertEquals("012341234523456", output);
+	}
+
+	@Test
+	public void testVoidMain() {
+		String code = "def void main() { string s; s = \"foo\"; print s; return; }";
+		String output = executeCode(code);
+		assertEquals("foo", output);
 	}
 
 	@Test

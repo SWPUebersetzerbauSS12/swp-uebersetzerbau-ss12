@@ -1,5 +1,8 @@
 package de.fuberlin.projectci.parseTable;
 
+/**
+ * Repräsentiert die Shift-Action eines LRParsers-Automaten mit dem auf den Stack zu verschiebenen Zustand.
+ */
 public class ShiftAction extends Action {
 
 	private State targetState;

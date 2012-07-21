@@ -2,6 +2,9 @@ package de.fuberlin.projectci.parseTable;
 
 import de.fuberlin.commons.util.EasyComparableObject;
 
+/**
+ * Repräsentiert eine GOto-Aktion im LR-Parsealgorithmus.
+ */
 public class Goto extends EasyComparableObject{
 
 	private State targetState;

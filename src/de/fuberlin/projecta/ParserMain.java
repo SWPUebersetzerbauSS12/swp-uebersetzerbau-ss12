@@ -8,9 +8,14 @@ import de.fuberlin.projecta.parser.ParseException;
 import de.fuberlin.projecta.parser.Parser;
 import de.fuberlin.projecta.utils.StringUtils;
 
+/**
+ * Runnable class for executing lexer+parser
+ * 
+ * Output is a syntax tree
+ */
 public class ParserMain {
 
-	static Parser parse(ICharStream stream) {
+	static Parser parse(ICharStream stream, boolean verbose) {
 		ILexer lexer = new Lexer(stream);
 		Parser parser = new Parser();
 		try {
@@ -23,17 +28,28 @@ public class ParserMain {
 			);
 			System.out.println("Details:");
 			System.out.println(e.getDetails());
-			System.out.println("Trace:");
-			e.printStackTrace();
+
+			if (verbose) {
+				System.out.println("Trace:");
+				e.printStackTrace();
+			}
+
+			if (verbose) {
+				if (parser.getParseTree() != null)
+					parser.getParseTree().printTree();
+				throw e;
+			}
 			return null;
 		}
 
-		parser.getParseTree().printTree();
+		if (verbose) {
+			parser.getParseTree().printTree();
+		}
 		return parser;
 	}
 	
 	private static void run(ICharStream stream) {
-		Parser parser = parse(stream);
+		Parser parser = parse(stream, true);
 		if (parser == null)
 			return;
 

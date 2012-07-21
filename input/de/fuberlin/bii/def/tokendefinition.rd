@@ -24,6 +24,8 @@
 /						{return("/", "")}
 ;						{return(";", "")}
 ,						{return(",", "")}
+[0-9]*\.[0-9]+			{return("real", parseDouble())}
+(0|([1-9]+[0-9]*))		{return("num", parseInt())}
 \.						{return(".", "")}
 record					{return("record", "")}
 def						{return("def", "")}
@@ -36,8 +38,6 @@ return					{return("return", "")}
 break					{return("break", "")}
 true					{return("boolean", parseBoolean())}
 false					{return("boolean", parseBoolean())}
-[0-9]*\.[0-9]+			{return("real", parseDouble())}
-(0|([1-9]+[0-9]*))		{return("num", parseInt())}
 int						{return("basic", "int")}
 real					{return("basic", "real")}
 string					{return("basic", "string")}

@@ -19,13 +19,13 @@ public class Return extends Statement {
 		Expression argument = getArgument();
 
 		if (argument == null) {
-			return "ret void";
+			return "br label %return\n";
 		} else {
 			ret += LLVM.loadType(argument);
 			ret += "store " + getParentFunction().fromTypeStringToLLVMType()
 					+ " %" + LLVM.getMem(argument) + ", "
 					+ getParentFunction().fromTypeStringToLLVMType() + "* %1\n"
-					+ "br label %return;\n";
+					+ "br label %return\n";
 			getHighestBlock().getNewVar();
 		}
 		// } else if (argument instanceof Literal) {

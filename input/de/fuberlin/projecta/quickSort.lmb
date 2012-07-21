@@ -1,0 +1,91 @@
+def void initArray(int[10] array, int length){
+    int i;
+    i = 0;
+    while(i < length){
+        array[i] = 0;
+    }
+}
+def void printArray(int[10] array, int length){
+    int counter;
+    counter = 0;
+    while(counter < length){
+        print array[counter];
+        counter = counter + 1;
+    }
+}
+def void quickSort(int[10] array){
+    int length;
+    int pivot;
+    int i;
+    int[10] less;
+    int lessCounter;
+    int[10] greater;
+    int greaterCounter;
+    int[10] con;
+    int tmp1;
+    int tmp2;
+    //if(length <= 1){ 
+    //    return;
+    // } 
+    // init both arrays with 0's
+    initArray(greater, 10);
+    initArray(less, 10);
+    // chose first element as pivot
+    pivot = array[0];
+    // counter vars
+    i = 0;
+    lessCounter = 0;
+    greaterCounter = 0;
+    tmp1 = 0;
+    tmp2 = 0;
+    length = 0;
+    // first find out the current length
+    while(array[length] != 0){
+        length = length + 1;
+    }
+    // split the list in two lists
+    while(i < length){
+        if(array[i] <= pivot){
+            less[lessCounter] = array[i];
+            lessCounter = lessCounter + 1;
+        } else {
+            greater[greaterCounter] = array[i];
+            greaterCounter = greaterCounter + 1;
+        }
+    }
+    //  call recursivly quickSort
+    quickSort(less);
+    quickSort(greater);
+    // and merge them together
+    while(tmp1 < 10){
+        if(less[tmp1] != 0)
+        array[tmp1] = less[tmp1];
+        tmp1 = tmp1 + 1;
+    }
+    array[tmp1] = pivot;
+    while(tmp2 < 10){
+        if(greater[tmp2] != 0)
+        array[tmp1 + tmp2] = greater[tmp2];
+        tmp2 = tmp2 + 1;
+    }
+}
+def int main(){
+    string lb;
+    int[10] array;
+    lb = "bla\n";
+    array[0] = 5;
+    array[1] = 3;
+    array[2] = 7;
+    array[3] = 2;
+    array[4] = 10;
+    array[5] = 8;
+    array[6] = 1;
+    array[7] = 4;
+    array[8] = 9;
+    array[9] = 6;
+    printArray(array,10);
+    print lb;
+    quickSort(array);
+    printArray(array,10);
+    return 0;
+} 

@@ -38,6 +38,9 @@ import de.fuberlin.projectci.parseTable.ShiftAction;
 import de.fuberlin.projectci.parseTable.State;
 import de.fuberlin.projectci.test.driver.DriverTestDataProvider1;
 
+/**
+ * Testfälle für die Algorithmen zum Austellen einer SLR-Parsetabelle.
+ */
 public class SLRParseTableBuilderTest {
 	private static Logger logger = LogFactory.getLogger(SLRParseTableBuilderTest.class);
 	
@@ -203,7 +206,7 @@ public class SLRParseTableBuilderTest {
 		GrammarReader grammarReader = new BNFGrammarReader();
 		Grammar g3 = null;
 		try {
-			g3 = grammarReader.readGrammar("./doc/quellsprache_bnf.txt");
+			g3 = grammarReader.readGrammar("./input/de/fuberlin/projectci/quellsprache_bnf.txt");
 		} catch (BNFParsingErrorException e) {
 			fail(e.getClass()+": "+e.getMessage());
 		}

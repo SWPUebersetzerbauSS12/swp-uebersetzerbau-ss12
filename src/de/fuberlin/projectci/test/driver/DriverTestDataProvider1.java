@@ -18,7 +18,7 @@ import de.fuberlin.projectci.parseTable.State;
 import de.fuberlin.projectci.test.driver.DriverTest.DriverTestDataProvider;
 
 /** 
- * Testdaten anhand des Beispiels aus dem Drachenbuch (TODO Referenz angeben)
+ * Testdaten anhand des Beispiels aus dem Drachenbuch (vgl. Abbildung 4.37/ 4.38 / 2. deutsche Auflage).
  *
  */
 public class DriverTestDataProvider1 implements DriverTestDataProvider{	

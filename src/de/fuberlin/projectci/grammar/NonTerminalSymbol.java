@@ -1,7 +1,7 @@
 package de.fuberlin.projectci.grammar;
 
 /**
- * Nichtterminalsymbole
+ * Repräsentiert ein Nichtterminalsymbol
  *
  */
 public class NonTerminalSymbol extends Symbol {

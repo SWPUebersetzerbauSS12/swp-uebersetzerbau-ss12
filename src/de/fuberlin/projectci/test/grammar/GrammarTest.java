@@ -20,6 +20,10 @@ import de.fuberlin.projectci.grammar.GrammarReader;
 import de.fuberlin.projectci.grammar.NonTerminalSymbol;
 import de.fuberlin.projectci.grammar.TerminalSymbol;
 
+/**
+ * Testfälle für die Berechnung der FIRST- und FOLLOW-Mengen.
+ *
+ */
 public class GrammarTest {
 	private Grammar grammar=null;
 	private Map<NonTerminalSymbol, Set<TerminalSymbol>>nonTerminal2FirstSet=null;

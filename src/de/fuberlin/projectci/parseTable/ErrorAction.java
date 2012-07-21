@@ -1,5 +1,8 @@
 package de.fuberlin.projectci.parseTable;
 
+/**
+ * Repräsentiert die Error-Action eines LRParsers-Automaten
+ */
 public class ErrorAction extends Action {
 	
 	@Override

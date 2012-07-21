@@ -81,10 +81,6 @@ public class TokenParser {
 		tree.setSymbol(new StringSymbol(symbol));
 		tree.setParent(parent);
 		
-		//TODO Debugingausgabe entfernen
-		//System.out.println("Symbol: "+symbol+" TokenTerminal: "+TokenTerminal);
-		//System.out.println("Text: "+Token.getText()+ "Attribut: "+Token.getAttribute());
-		
 		// Leaf(Terminal) reached. Get next Token to continue parsing with
 		if (symbol.equals(TokenTerminal)){
 		    tree.setToken(Token);

@@ -2,7 +2,6 @@ package de.fuberlin.projectci.gui;
 
 import java.awt.GridLayout;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -29,6 +28,10 @@ import de.fuberlin.projectci.parseTable.ParseTableBuilder;
 import de.fuberlin.projectci.parseTable.SLRParseTableBuilder;
 import de.fuberlin.projectci.parseTable.State;
 
+/**
+ * Swing-GUI zum Darstellen einer Parsetabelle mit ACTION- und GOTO-Funtktionen.
+ *
+ */
 public class ParseTableGui {
 
 	private Grammar g;

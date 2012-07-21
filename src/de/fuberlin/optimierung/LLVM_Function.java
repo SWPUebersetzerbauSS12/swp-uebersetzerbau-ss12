@@ -29,8 +29,15 @@ public class LLVM_Function {
 		afterFunc = code.substring(code.lastIndexOf("}")+1);
 		code = code.substring(0, code.lastIndexOf("}"));
 		
-		// remove double newline
-		code = code.replaceAll("\n\n", "\n");
+		// Whitespaces und leere Zeilen entfernen 
+		String tmp_code = "";
+		for (String line : code.split("\n")){
+			line = line.trim();
+			if (line.length() == 0) continue;
+			tmp_code += line + "\n";
+		}
+		
+		code = tmp_code;
 		
 		// add newline after Branch
 		int searchindex = 0;
@@ -40,7 +47,10 @@ public class LLVM_Function {
 			if (search){
 				searchindex = code.indexOf("br ", searchindex) + 3;
 				int index = code.indexOf('\n', searchindex);
-				code = code.substring(0, index) + "\n" + code.substring(index);
+				if (index != code.length()-1){
+					code = code.substring(0, index) + "\n" + code.substring(index);
+					searchindex = index;
+				}
 			}
 		}
 		
@@ -52,7 +62,10 @@ public class LLVM_Function {
 			if (search){
 				searchindex = code.indexOf("ret ", searchindex) + 4;
 				int index = code.indexOf('\n', searchindex);
-				code = code.substring(0, index) + "\n" + code.substring(index);
+				if (index != code.length()-1){
+					code = code.substring(0, index) + "\n" + code.substring(index);
+					searchindex = index;
+				}
 			}
 		}
 		
@@ -1144,6 +1157,26 @@ public class LLVM_Function {
 					}
 					
 				}
+			}
+		}
+		else if(c.getOperation()==LLVM_Operation.SDIV) {
+			// Division gefunden
+			LinkedList<LLVM_Parameter> operands = c.getOperands();
+			
+			LLVM_Parameter o = operands.get(1);
+			if(o.getType()==LLVM_ParameterType.INTEGER) {
+				
+				// Im zweiten Operanden koennte eine Zweierpotenz stehen 	
+				int powerOfTwo = 1;
+				for(int i=1; i<32; i++) {
+					powerOfTwo = powerOfTwo * 2;
+					if ( (new Integer(powerOfTwo)).toString().equals(o.getName()) ) {
+						// Passende Zweierpotenz wurde gefunden
+						c.setOperation(LLVM_Operation.ASHR);
+						o.setName((new Integer(i)).toString());
+					}
+				}
+				
 			}
 		}
 		else if(c.getOperation()==LLVM_Operation.UDIV) {

@@ -2,6 +2,9 @@ package de.fuberlin.projectci.parseTable;
 
 import de.fuberlin.commons.util.EasyComparableObject;
 
+/**
+ * Repräsentiert einen Zustand in einem LRParser-Automaten.
+ */
 public class State extends EasyComparableObject{
 	private int id;
 

@@ -8,6 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Repräsentiert eine Grammatik mit Produktionen.
+ *
+ */
 public class Grammar {
  
 	// Die Liste enthält alle Produktion in der Reihenfolge, wie sie zur Grammatik hinzugefügt worden
@@ -39,8 +43,7 @@ public class Grammar {
 	// Set für die Terminalsymbole
 	private Set<TerminalSymbol> terminalSymbols = new HashSet<TerminalSymbol>();
 	
-	//TODO Leeres Wort definieren
-	// XXX Warum nicht Epsilon: EMPTY_STRING = "\u03B5";
+	
 	public static final String EMPTY_STRING = "@" ;
 	
 	public static final TerminalSymbol EPSILON = new TerminalSymbol(EMPTY_STRING);

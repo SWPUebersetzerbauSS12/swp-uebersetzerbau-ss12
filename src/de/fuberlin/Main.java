@@ -24,7 +24,7 @@ import de.fuberlin.projecta.lexer.io.FileCharStream;
 import de.fuberlin.projecta.lexer.io.ICharStream;
 import de.fuberlin.projecta.parser.ParseException;
 import de.fuberlin.projecta.parser.Parser;
-import de.fuberlin.projectci.lrparser.LRParserMain;
+import de.fuberlin.projectci.LRParserMain;
 import de.fuberlin.projectcii.ParserGenerator.src.LL1Parser;
 
 public class Main {
@@ -43,7 +43,7 @@ public class Main {
 	static final String PARAM_REBUILD_DFA = "-rb"; //Gibt an, dass der DFA neu erstellt werden soll
 	// Codegenerierung
 	static final String PARAM_ASM_TYPE = "-asmType"; // "gnu" oder "intel" waehlt den Assemblertyp. Standard ist "gnu"
-	static final String PARAM_EXEC = "-e"; // angeben um die Ausgabedatei auch auszuführen
+	static final String PARAM_EXEC = "-e"; // angeben um die Ausgabedatei auch auszufï¿½hren
 	static final String PARAM_CONFIG_FILE = "-C"; // Pfad zu einer alternativen Konfigurationsdatei
 	// Allgemein
 	static final String PARAM_SOURCE_FILE = "-f"; // Gibt den Pfad zum Quellprogramm an
@@ -307,7 +307,7 @@ public class Main {
 		 * input : String llvm_code
 		 * output: String machineCode 
 		 */
-		boolean debug = true;
+		boolean debug = false;
 		boolean guiFlag = false;
 		String outputFile = null;
 		boolean exec = false;

@@ -276,4 +276,33 @@ public class CompilerTest {
 		assertEquals("0", output);
 	}
 
+	@Test 
+	public void testPrintBasicParameter() {
+		String code = "def void foo(int i, real r, string s){" + 
+				"print i; print r; print s; return;}" + 
+				"def void main(){" + 
+				"int a; real b; string c; a = 2; b = 1.0; c = \"bar\"; foo(a,b,c);}";
+		String output = executeCode(code);
+		System.out.println(output);
+		assertEquals("21.0bar", output);
+	}
+	
+	@Test
+	public void testBasicParameter(){
+		String code = "def void foo(int i, real r, string s){" + 
+				"int a; a = i; a = i+1; print i; print r; print s;}" + 
+				"def void main(){" + 
+				"int a; real b; string c; a = 2; b = 1.0; c = \"bar\"; foo(a,b,c);}";
+		String output = executeCode(code);
+		System.out.println(output);
+		assertEquals("21.0bar", output);
+	}
+	
+	@Test
+	public void testRealEquations(){
+		String code = "def void main(){real r; real x; r = 1.0; x = 2.0; r = r + x; print r;}";
+		String output = executeCode(code);
+		System.out.println(output);
+		assertEquals("3.000000", output);
+	}
 }

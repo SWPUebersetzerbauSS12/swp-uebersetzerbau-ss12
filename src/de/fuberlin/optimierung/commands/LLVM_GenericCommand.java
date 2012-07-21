@@ -255,11 +255,6 @@ public abstract class LLVM_GenericCommand{
 					foundOptString = optional;
 				}
 			}
-//			// opt einlesen
-//			if (foundOptString != ""){
-//				finalOptString += cmdLine.substring(0, cmdLine.indexOf(" ", foundOptString.length())).trim() + " ";
-//				cmdLine = cmdLine.substring(cmdLine.indexOf(cmdLine.indexOf(" ", foundOptString.length()))).trim();
-//			}
 			
 			// opt einlesen
 			if (foundOptString != ""){

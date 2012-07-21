@@ -11,7 +11,7 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 	private LinkedList<LLVM_Function> functions;
 	
 	public static final boolean DEBUG = false;
-	public static final boolean STATISTIC = true;
+	public static final boolean STATISTIC = false;
 	
 	public LLVM_Optimization(){
 		functions = new LinkedList<LLVM_Function>();
@@ -218,8 +218,8 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/llvm_maschco");//test_new.ll");
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/srem_test.ll");
 				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/emptyBlocksTest.s");
-				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/test.s");
-				String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/doubleTest1.s");
+				String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/test.s");
+				//String optimizedCode = optimization.optimizeCodeFromFile("input/de/fuberlin/optimierung/doubleTest1.s");
 				
 				System.out.println("###########################################################");
 				System.out.println("################## Optimization Input #####################");

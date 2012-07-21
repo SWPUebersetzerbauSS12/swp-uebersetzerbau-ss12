@@ -1,0 +1,21 @@
+%struct.test = type { i32, float }
+
+@.str = private unnamed_addr constant [7 x i8] c"int:%i\00", align 1
+
+define i32 @main(i32 %argc, i8** %argv) nounwind {
+	%a = alloca %struct.test, align 4 
+	%1 = getelementptr inbounds %struct.test* %a, i32 0, i32 0 
+	store i32 5, i32* %1, align 4 
+	%2 = getelementptr inbounds %struct.test* %a, i32 0, i32 1 
+	store float 5.000000e+00, float* %2, align 4 
+	%3 = getelementptr inbounds %struct.test* %a, i32 0, i32 0 
+	%4 = load i32* %3, align 4 
+	%s = getelementptr inbounds [7 x i8]* @.str, i32 0, i32 0 
+	%5 = call i32 (i8*, ...)* @printf(i8* %s, i32 %4)  
+	%6 = getelementptr inbounds %struct.test* %a, i32 0, i32 0 
+	%7 = load i32* %6, align 4 
+	ret i32 %7  
+}
+
+
+declare i32 @printf(i8*, ...)

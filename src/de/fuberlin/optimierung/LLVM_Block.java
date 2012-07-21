@@ -60,7 +60,7 @@ public class LLVM_Block{
 	/**
 	 * Löscht alle doppelten Befehle in einem Block
 	 * Bei Änderungen wird ConstantPropagation aufgerufen
-	 * Doppelte Befehle werden nur überprüft, falls in Whitelist
+	 * Doppelte Befehle werden nur überprüft, falls nicht in Blacklist
 	 */
 	public void removeCommonExpressions() throws LLVM_OptimizationException{
 		LinkedList<LLVM_GenericCommand> changed = new LinkedList<LLVM_GenericCommand>();

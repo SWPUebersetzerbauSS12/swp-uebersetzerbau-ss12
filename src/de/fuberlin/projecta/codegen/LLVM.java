@@ -7,6 +7,7 @@ import de.fuberlin.projecta.analysis.ast.AbstractSyntaxTree;
 import de.fuberlin.projecta.analysis.ast.Args;
 import de.fuberlin.projecta.analysis.ast.Array;
 import de.fuberlin.projecta.analysis.ast.ArrayCall;
+import de.fuberlin.projecta.analysis.ast.BasicType;
 import de.fuberlin.projecta.analysis.ast.Block;
 import de.fuberlin.projecta.analysis.ast.Declaration;
 import de.fuberlin.projecta.analysis.ast.Expression;
@@ -77,11 +78,17 @@ public class LLVM {
 		} else if (id != null && isInParams(id) && id.getVar() == 0) {
 			int memory = id.getHighestBlock().getNewVar();
 			id.setValMemory(memory);
+			String value = "0";
+			String op = "= add ";
+			if(id.toTypeString().equals(BasicType.TYPE_REAL_STRING)){
+				value += ".0";
+				op = "= fadd ";
+			}
 			ret += "%"
 					+ memory
-					+ " = add "
+					+ op
 					+ SymbolTableHelper.lookup(id.getValue(), id).getType()
-							.genCode() + " %" + id.getValue() + ", 0\n";
+							.genCode() + " %" + id.getValue() + ", "+ value +"\n";
 		}
 		return ret;
 	}

@@ -3,6 +3,7 @@ def void initArray(int[10] array, int length){
     i = 0;
     while(i < length){
         array[i] = 0;
+        i = i + 1;
     }
 }
 
@@ -26,6 +27,7 @@ def void printArray(int[10] array, int length){
 }
 
 def void quickSort(int[10] array, int length){
+
     int pivot;
     int i;
     int[10] less;
@@ -35,6 +37,8 @@ def void quickSort(int[10] array, int length){
     int[10] con;
     int tmp1;
     int tmp2;
+    string test;
+    test = "test";
 
     // init both arrays with 0's
     initArray(greater, 10);
@@ -53,7 +57,9 @@ def void quickSort(int[10] array, int length){
     if(length <= 1){ 
         return;
     }    
-
+    
+    
+	
     // split the list in two lists
     while(i < length){
         if(array[i] <= pivot){
@@ -63,9 +69,11 @@ def void quickSort(int[10] array, int length){
             greater[greaterCounter] = array[i];
             greaterCounter = greaterCounter + 1;
         }
+        i = i + 1;
     }
-
+	
     //  call recursivly quickSort
+    
     quickSort(less, length/2);
     quickSort(greater, length/2);
 
@@ -81,11 +89,13 @@ def void quickSort(int[10] array, int length){
         array[tmp1 + tmp2] = greater[tmp2];
         tmp2 = tmp2 + 1;
     }
+    
+
+    return;
 }
 def int main(){
     string lb;
     int[10] array;
-    lb = "bla\n";
     array[0] = 5;
     array[1] = 3;
     array[2] = 7;
@@ -97,7 +107,6 @@ def int main(){
     array[8] = 9;
     array[9] = 6;
     printArray(array,10);
-    print lb;
     quickSort(array,10);
     printArray(array,10);
     return 0;

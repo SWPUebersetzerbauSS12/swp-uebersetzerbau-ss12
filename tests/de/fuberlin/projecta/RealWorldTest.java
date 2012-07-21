@@ -27,7 +27,7 @@ public class RealWorldTest {
 		}
 		System.out.println(source);
 		String output = CompilerTest.executeCode(source);
-		assertEquals("", output);
+		assertEquals("[5,3,7,2,10,8,1,4,9,6,][1,2,3,4,5,6,7,8,9,10,]", output);
 	}
 
 	@Test

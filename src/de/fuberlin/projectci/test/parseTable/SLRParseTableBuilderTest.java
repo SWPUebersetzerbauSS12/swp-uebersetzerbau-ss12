@@ -38,6 +38,9 @@ import de.fuberlin.projectci.parseTable.ShiftAction;
 import de.fuberlin.projectci.parseTable.State;
 import de.fuberlin.projectci.test.driver.DriverTestDataProvider1;
 
+/**
+ * Testfälle für die Algorithmen zum Austellen einer SLR-Parsetabelle.
+ */
 public class SLRParseTableBuilderTest {
 	private static Logger logger = LogFactory.getLogger(SLRParseTableBuilderTest.class);
 	

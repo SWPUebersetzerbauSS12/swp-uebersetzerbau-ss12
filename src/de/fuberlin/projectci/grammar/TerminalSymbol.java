@@ -2,7 +2,7 @@ package de.fuberlin.projectci.grammar;
 
 
 /**
- * Terminalsymbole.
+ * Repräsentiert ein Terminalsymbol.
  *
  */
 public class TerminalSymbol extends Symbol {

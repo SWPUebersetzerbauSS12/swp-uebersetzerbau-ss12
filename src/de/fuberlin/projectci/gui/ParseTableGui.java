@@ -29,6 +29,10 @@ import de.fuberlin.projectci.parseTable.ParseTableBuilder;
 import de.fuberlin.projectci.parseTable.SLRParseTableBuilder;
 import de.fuberlin.projectci.parseTable.State;
 
+/**
+ * Swing-GUI zum Darstellen einer Parsetabelle mit ACTION- und GOTO-Funtktionen.
+ *
+ */
 public class ParseTableGui {
 
 	private Grammar g;

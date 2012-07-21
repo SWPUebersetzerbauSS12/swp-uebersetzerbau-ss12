@@ -13,10 +13,10 @@ import de.fuberlin.commons.util.EasyComparableObject;
 import de.fuberlin.projectci.grammar.NonTerminalSymbol;
 import de.fuberlin.projectci.grammar.TerminalSymbol;
 
-//TODO [Dustin] ein paar Kommentare wäre cool =)
+
 
 /**
- * Repräsention der Action- und Goto-Tabellen.
+ * Repräsention einer Parsetabelle mit Action- und Goto-Funktionen.
  *
  */
 public class ParseTable extends EasyComparableObject{		
@@ -29,29 +29,54 @@ public class ParseTable extends EasyComparableObject{
 		return new Object[]{initialState,state2ActionTable,state2GotoTable};
 	}
 	
+	/**
+	 * 
+	 * @return Startzustand
+	 */
 	public State getInitialState(){
 		return initialState;
 	}
 
-	public Action getAction(State s, TerminalSymbol ts) {
-		return getActionTableForState(s).getAction(ts);
+	/**
+	 * Liefert die {@link Action} zu einem {@link State} und einem {@link TerminalSymbol}
+	 * @param state
+	 * @param terminalSymbol
+	 * @return
+	 */
+	public Action getAction(State state, TerminalSymbol terminalSymbol) {
+		return getActionTableForState(state).getAction(terminalSymbol);
 	}
 	 
+	/**
+	 * Liefert den Wert der Goto-Funktion zu einem {@link State} und einem {@link NonTerminalSymbol}
+	 * @param s
+	 * @param nts
+	 * @return
+	 */
 	public Goto getGoto(State s, NonTerminalSymbol nts) {
 		return getGotoTableForState(s).getGoto(nts);
 	}
-	
+	/** Setzt den Startzustand*/
 	public void setInitialState(State initialState){
 		this.initialState=initialState;
 	}
 	
+	/**
+	 * Liefert den internen {@link ActionTable} für einen {@link State}
+	 * @param s
+	 * @return
+	 */
 	public ActionTable getActionTableForState(State s){
 		if (!state2ActionTable.containsKey(s)){
 			state2ActionTable.put(s, new ActionTable());
 		}
 		return state2ActionTable.get(s);
 	}
-	
+	/**
+	 * Liefert den internen {@link GotoTable} für einen {@link State}
+	 * @param s
+	 * @return
+	 */
 	public GotoTable getGotoTableForState(State s){
 		if (!state2GotoTable.containsKey(s)){
 			state2GotoTable.put(s, new GotoTable());
@@ -59,6 +84,10 @@ public class ParseTable extends EasyComparableObject{
 		return state2GotoTable.get(s);
 	}
 	
+	/**
+	 * Mappt ein {@link TerminalSymbol} auf eine {@link Action}
+	 *
+	 */
 	public static class ActionTable extends EasyComparableObject{
 		private static Action ERROR_ACTION=new ErrorAction();
 		private Map<TerminalSymbol, Action> terminalSymbol2Action= new HashMap<TerminalSymbol, Action>();
@@ -118,6 +147,11 @@ public class ParseTable extends EasyComparableObject{
 		
 	}
 	
+	/**
+	 * 
+	 * Mappt ein {@link NonTerminalSymbol} auf ein {@link Goto}
+	 *
+	 */
 	public static class GotoTable extends EasyComparableObject{
 		private Map<NonTerminalSymbol, Goto> nonTerminalSymbol2Goto= new HashMap<NonTerminalSymbol, Goto>();
 		
@@ -171,6 +205,7 @@ public class ParseTable extends EasyComparableObject{
 		return strBuf.toString();
 	}
 	
+	/** Zum Sortieren der States nach ihrer ID. */
 	private static Comparator<State> StateComparator=new Comparator<State>() {
 		@Override
 		public int compare(State s1, State s2) {
@@ -178,6 +213,7 @@ public class ParseTable extends EasyComparableObject{
 		}
 	};
 	
+	/** Liefert ein {@link SortedSet} der States.*/
 	SortedSet<State> sortedStates(){
 		SortedSet<State> result=new TreeSet<State>(StateComparator);
 		result.addAll(state2ActionTable.keySet());

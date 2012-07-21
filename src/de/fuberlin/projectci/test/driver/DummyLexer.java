@@ -8,6 +8,9 @@ import de.fuberlin.commons.lexer.ILexer;
 import de.fuberlin.commons.lexer.IToken;
 import de.fuberlin.commons.lexer.TokenType;
 
+/**
+ * Stub für {@link ILexer} mit der Möglichkeit der manuellen Initilaisierung. 
+ */
 public class DummyLexer implements ILexer{
 	private List<IToken> tokens=new ArrayList<IToken>();
 	private int tokenIndex=0;

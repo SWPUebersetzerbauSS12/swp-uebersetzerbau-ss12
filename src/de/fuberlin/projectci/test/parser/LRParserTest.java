@@ -27,6 +27,9 @@ import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projectci.lrparser.LRParser;
 import de.fuberlin.projectci.lrparser.LRParserException;
 
+/**
+ * Testet alle Beispiel-Quellprogramme in einem Verzeichnis.
+ */
 public class LRParserTest {
 	private static Logger logger = LogFactory.getLogger(LRParserTest.class);
 	private static final String testSourceFilesDirPath="input/de/fuberlin/projectci/quellprogrammdateien";

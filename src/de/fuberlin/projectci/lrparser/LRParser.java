@@ -23,6 +23,11 @@ import de.fuberlin.projectci.parseTable.InvalidGrammarException;
 import de.fuberlin.projectci.parseTable.ParseTable;
 import de.fuberlin.projectci.parseTable.ParseTableBuilder;
 
+
+/**
+ * 
+ *
+ */
 public class LRParser implements IParser {
 	private static Logger logger = LogFactory.getLogger(LRParser.class);
 	
@@ -34,20 +39,35 @@ public class LRParser implements IParser {
 	public LRParser() {
 	}
 
+	/**
+	 * Ermöglicht das Reduzieren des SyntaxTree durch "Hochziehen aller Einzelkinder".
+	 * @param reduceToAbstractSyntaxTree
+	 */
 	public void setReduceToAbstractSyntaxTree(boolean reduceToAbstractSyntaxTree) {
 		this.reduceToAbstractSyntaxTree = reduceToAbstractSyntaxTree;
 	}
 
+	/**
+	 * Ermöglicht das Entfernen aller Epsilon-Knoten (Blätter) aus dem SyntaxTree.
+	 * @param removeEpsilonNodes
+	 */
 	public void setRemoveEpsilonNodes(boolean removeEpsilonNodes) {
 		this.removeEpsilonNodes = removeEpsilonNodes;
 	}
 
+	/**
+	 * Ermöglicht das Öffnen einer Swing-GUI zum Darstellen der Parsetabelle.
+	 * @param displayParseTableGui
+	 */
 	public void setDisplayParseTableGui(boolean displayParseTableGui) {
 		this.displayParseTableGui = displayParseTableGui;
 	}
 
-	
-	@Override
+	/**
+	 * Führt das Parsen durch
+	 * @param lexer ILexer für die Eingabe
+	 * @param grammarPath Pfad zur Grammtikdatei
+	 */
 	public ISyntaxTree parse(ILexer lexer, String grammarPath) {
 		File grammarFile = new File(grammarPath);
 		Grammar grammar = null;
@@ -64,7 +84,11 @@ public class LRParser implements IParser {
 
 		return parse(lexer, grammar);
 	}
-	
+	/**
+	 * Führt das Parsen durch
+	 * @param lexer ILexer für die Eingabe
+	 * @param grammar Grammtik
+	 */
 	public ISyntaxTree parse(ILexer lexer, Grammar grammar) {
 		logger.fine("Start parsing...");
 		

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import de.fuberlin.commons.lexer.IToken;
+import de.fuberlin.commons.parser.IParser;
 import de.fuberlin.commons.parser.ISymbol;
 import de.fuberlin.commons.parser.ISyntaxTree;
 import de.fuberlin.commons.util.LogFactory;
@@ -16,7 +17,7 @@ import de.fuberlin.projectci.grammar.Symbol;
 import de.fuberlin.projectci.grammar.TerminalSymbol;
 
 /**
- * Repräsentiert einen 	Knoten eines Syntaxbaums 
+ * Repräsentiert den Knoten eines Syntaxbaums und realisiert {@link ISyntaxTree}
  *
  */
 public class SyntaxTreeNode implements ISyntaxTree{
@@ -33,11 +34,19 @@ public class SyntaxTreeNode implements ISyntaxTree{
 	private List<ISyntaxTree> children=new LinkedList<ISyntaxTree>();
 	
 	
-	
+	/**
+	 * Erzeugt einen inneren Knoten für das übergebene (Nichtterminal-)Symbol.
+	 * @param symbol (Nichtterminal-)Symbol
+	 */
 	public SyntaxTreeNode(Symbol symbol) {
 		this.symbol = symbol;
 	}
 
+	/**
+	 * Erzeugt ein Blatt im SyntaxTree für ein Terminalsymbol mit zugehörigen Eingabetoken.
+	 * @param token Eingabetoken
+	 * @param symbol Terminalsymbol
+	 */ 
 	public SyntaxTreeNode(IToken token, TerminalSymbol symbol) {
 		this.symbol = symbol;
 		this.token=token;
@@ -156,20 +165,14 @@ public class SyntaxTreeNode implements ISyntaxTree{
 		children.add(0, tree);		
 	}
 	
+	/**
+	 * Entfernt einen Kindknoten.
+	 * @param childNode
+	 */
 	void removeChildNode(ISyntaxTree childNode){
 		children.remove(childNode);
 	}
-//	/**
-//	 * Gibt eine (einfache um 90 Grad gedrehte) menschenlesbare Konsolenausgabe des Teilbaums zurück.
-//	 * TODO Zum Debuggen wäre eine Ausgabe als HTML, XML oder Bilddatei wünschenswert
-//	 */
-//	@Override
-//	public String toString() {
-//		StringBuffer strBuf= new StringBuffer();
-//		toString(strBuf, 0);
-//		return strBuf.toString();
-//	}
-	
+
 	@Override
 	public String toString() {
 		return toXML();
@@ -242,7 +245,10 @@ public class SyntaxTreeNode implements ISyntaxTree{
 	}
 	
 	
-	
+	/**
+	 * Erzeugt eine XML-Repräsentation des Parsebaums.
+	 * @return
+	 */
 	public String toXML(){
 		StringBuffer strBuf= new StringBuffer();
 		strBuf.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
@@ -282,6 +288,11 @@ public class SyntaxTreeNode implements ISyntaxTree{
 		}				
 	}
 	
+	/**
+	 * Ersetzt Zeichen, die nicht in einem XML-Attribut erlaubt sind durch die zugehörige HTML-Entity.
+	 * @param s
+	 * @return
+	 */
 	private String escape( String s){
 		if (s.contains("<")){
 			s=s.replaceAll("<", "&lt;");

@@ -2,6 +2,9 @@ package de.fuberlin.projectci.parseTable;
 
 import de.fuberlin.projectci.grammar.Grammar;
 
+/**
+ * Abstrakte Beschreibung eines ParseTableBuilders.
+ */
 public abstract class ParseTableBuilder {
  
 	private Grammar grammar;

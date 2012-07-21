@@ -8,10 +8,8 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,9 +27,6 @@ import de.fuberlin.projectci.grammar.BNFGrammarReader;
 import de.fuberlin.projectci.grammar.BNFParsingErrorException;
 import de.fuberlin.projectci.grammar.Grammar;
 import de.fuberlin.projectci.grammar.GrammarReader;
-import de.fuberlin.projectci.grammar.NonTerminalSymbol;
-import de.fuberlin.projectci.grammar.Production;
-import de.fuberlin.projectci.grammar.Symbol;
 import de.fuberlin.projectci.lrparser.LRParser;
 import de.fuberlin.projectci.lrparser.LRParserException;
 
@@ -53,22 +48,40 @@ public class LRParserMain implements IParser{
 	private boolean displayParseTableGui=false;
 	
 	
-	
+	/**
+	 * Fassade des LRParsers zur Außenwelt.
+	 */
 	public LRParserMain() {
 	}
 
+	/**
+	 * Ermöglicht das Reduzieren des erzeugten SyntaxTree durch "Hochziehen aller Einzelkinder".
+	 * @param reduceToAbstractSyntaxTree
+	 */
 	public void setReduceToAbstractSyntaxTree(boolean reduceToAbstractSyntaxTree) {
 		this.reduceToAbstractSyntaxTree = reduceToAbstractSyntaxTree;
 	}
 
+	/**
+	 * Ermöglicht das Entfernen der Epsilon-Knoten aus dem erzeugten SyntaxTree
+	 * @param removeEpsilonNodes
+	 */
 	public void setRemoveEpsilonNodes(boolean removeEpsilonNodes) {
 		this.removeEpsilonNodes = removeEpsilonNodes;
 	}
 
+	/**
+	 * Öffnet eine Swing-GUI zum Darstellen der Parsetabelle mit ACTION- und GOTO-Funktionen
+	 * @param displayParseTableGui
+	 */
 	public void setDisplayParseTableGui(boolean displayParseTableGui) {
 		this.displayParseTableGui = displayParseTableGui;
 	}
 
+	/**
+	 * Schreibt die XML-Repräsentation des SyntaxTree in den übergebenen StringBuffer.
+	 * @param strBuf
+	 */
 	public void printParseTree(StringBuffer strBuf) {
 		 if (syntaxTree==null){
 			 throw new IllegalStateException("printParseTree must not be called before parse.");
@@ -77,52 +90,24 @@ public class LRParserMain implements IParser{
 	}
 	
 	/**
-	 * Erweitert die übergebene Grammatik mit einem neuen Startsymbol 
-	 * und einer neuen Produktion vom neuen Startsymbol auf das alte Startsymbol.	
-	 * @param grammar eine Grammatik, die erweitert werden soll
+	 * Parst ein Eingabeprogramm für eine Grammatik und gibt den erzeugten ISyntaxTree zurück.
+	 * @param lexer ILexer für das Eingabeprogramm
+	 * @param grammarPath Pfad zu einer Grammtikdatei in BNF
+	 * @return der resultierende Parsebaum
+	 * @throws #{@link LRParserException}, falls das Parsen fehlschlägt.
 	 */
-	private void extendGrammar(Grammar grammar){
-		// alle Namen der Nichtterminale aus der Grammatik holen
-		Set<String> nonTerminalsNames = grammar.getAllNonterminalNames();
-		
-		NonTerminalSymbol oldStartSymbol = grammar.getStartSymbol();
-		
-		String freeName = null;
-		
-		// zuerst folgende Namen für neues Startsymbol probieren
-		String[] firstChoiceStartSymbols = new String[]{"S0","S'","Start","Startsymbol","start"};
-		for(String s : firstChoiceStartSymbols){
-			if(!nonTerminalsNames.contains(s)){
-				freeName = s;
-				break;
-			}
-		}
-		
-		// ansonsten Zufallsname "S"+TIMESTAMP probieren
-		while(freeName == null){
-			String s = "S"+System.currentTimeMillis();
-			if(!nonTerminalsNames.contains(s))
-				freeName = s;
-		}
-		
-		// neues Nichtterminal erzeugen und als Startsymbol festlegen
-		NonTerminalSymbol startSymbol = grammar.createNonTerminalSymbol(freeName);
-		
-		// neue Produktion vom neuen zum alten Startsymbol anlegen
-		List<Symbol> rhs = new LinkedList<Symbol>();
-		rhs.add(oldStartSymbol);
-		Production production = new Production(startSymbol, rhs);
-		grammar.addProduction(production);
-		
-		grammar.setStartSymbol(startSymbol);
-	}
-
 	@Override
 	public ISyntaxTree parse(ILexer lexer, String grammarPath) {		
 		File grammarFile = new File(grammarPath);
 		return parse(lexer, grammarFile);
 	}
-	
+	/**
+	 * Parst ein Eingabeprogramm für eine Grammatik und gibt den erzeugten ISyntaxTree zurück.
+	 * @param lexer ILexer für das Eingabeprogramm
+	 * @param grammarFile Grammtikdatei in BNF
+	 * @return der resultierende Parsebaum
+	 * @throws #{@link LRParserException}, falls das Parsen fehlschlägt.
+	 */
 	public ISyntaxTree parse(ILexer lexer, File grammarFile) {
 		Grammar grammar = null;
 		// Grammatik einlesen
@@ -137,6 +122,13 @@ public class LRParserMain implements IParser{
 		return parse(lexer, grammar);
 	}
 	 
+	/**
+	 * Parst ein Eingabeprogramm für eine Grammatik und gibt den erzeugten ISyntaxTree zurück.
+	 * @param lexer ILexer für das Eingabeprogramm
+	 * @param grammarReader #{@link java.io.Reader} für eine Grammtikdatei in BNF
+	 * @return der resultierende Parsebaum
+	 * @throws #{@link LRParserException}, falls das Parsen fehlschlägt.
+	 */
 	public ISyntaxTree parse(ILexer lexer, Reader grammarReader) {
 		Grammar grammar = null;
 		// Grammatik einlesen
@@ -151,6 +143,13 @@ public class LRParserMain implements IParser{
 		return parse(lexer, grammar);
 	}
 	
+	/**
+	 * Parst ein Eingabeprogramm für eine Grammatik und gibt den erzeugten ISyntaxTree zurück.
+	 * @param lexer ILexer für das Eingabeprogramm
+	 * @param grammar Grammtik
+	 * @return der resultierende Parsebaum
+	 * @throws #{@link LRParserException}, falls das Parsen fehlschlägt.
+	 */
 	private ISyntaxTree parse(ILexer lexer, Grammar grammar) {
 		this.syntaxTree=null; // reset SyntaxTree
 		LRParser parser=new LRParser();
@@ -160,7 +159,10 @@ public class LRParserMain implements IParser{
 		this.syntaxTree= parser.parse(lexer, grammar); // SyntaxTree für printParseTree speichern
 		return this.syntaxTree;
 	}
-	
+	/**
+	 * 
+	 * @return Beschreibung des Kommandozeilen-Interfaces.
+	 */
 	private static String usage(){
 		StringBuffer strBuf=new StringBuffer();
 		strBuf.append("NAME");
@@ -195,6 +197,40 @@ public class LRParserMain implements IParser{
 		return strBuf.toString();
 	}
 	
+	/**
+	 * Ermöglicht die Verwendung des LRParsers über die Kommandozeile.
+	 <code>
+		NAME
+			LRParserMain - parses a source file using the LR-parse-algorithm.
+		SYNOPSIS
+			LRParserMain [OPTIONS] <source_file>
+		OPTIONS
+			-v --version
+				Print version and exit.
+			-h --help
+				Print usage and exit
+			-o --print-parse-tree <target_file>
+				Print the resulting parse tree to <target_file>.
+			-l --lexer bi|bii|a
+				Use lexer bi, bii or a. Defaults to bi
+			-t --token-definitions <token_definitions_file>
+				Use token defintions from <token_definitions_file>. Defaults to input/de/fuberlin/bii/def/tokendefinition.rd
+			-g --grammar <grammar_file>
+				Use grammar from <grammar_file>. Defaults to input/de/fuberlin/projectci/non-ambigous.txt
+			--reduce-to-abstract-syntax-tree
+				Reduce the resulting parse tree by pulling up all single child nodes. Defaults to don't reduce
+			--dont-remove-epsilon-nodes
+				Don't remove epsilon nodes from the resulting parse tree. Defaults to remove epsilon nodes
+			--displayParseTable
+				Open a swing gui displaying the Action and Goto table.
+			--log-level-console OFF|SEVERE|WARNING|INFO|CONFIG|FINE|FINER|FINEST|ALL
+				Set the logging level for console output. Defaults to INFO
+			--log-level-file OFF|SEVERE|WARNING|INFO|CONFIG|FINE|FINER|FINEST|ALL
+				Set the logging level for logfile output. Defaults to ALL
+			--log-file <log_file>
+				Write logging output to <log_file>. Defaults to no logfile.
+	 </code>
+	 */
 	public static void main(String[] args) {
 		if (args.length==0){
 			System.out.println(usage());
@@ -308,6 +344,7 @@ public class LRParserMain implements IParser{
 		System.out.println("OK");
 	}
 	
+	/** Initialisiert das Logging anhand der Kommandozeilen-Argumente */
 	private static void initLogging(CommandLine commandLine){
 		Level logLevelConsole=DEFAULT_LOG_LEVEL_CONSOLE;
 		Level logLevelFile=DEFAULT_LOG_LEVEL_FILE;
@@ -340,6 +377,9 @@ public class LRParserMain implements IParser{
 		LogFactory.init(logLevelConsole, logLevelFile, logFile!=null?logFile.getAbsolutePath():null);
 	}
 	
+	/**
+	 * Hilfsklasse zum Parsen der Kommandozeilen-Argumente.
+	 */
 	private static class CommandLine{
 		private Map<Option,Object> option2Value= new HashMap<Option, Object>();
 		private List<String> arguments=new ArrayList<String>();
@@ -349,8 +389,8 @@ public class LRParserMain implements IParser{
 				String arg = args[i];
 				if (Option.pattern2Option.containsKey(arg)){
 					Option option=Option.pattern2Option.get(arg);
-					if (option.value!=null){
-						option2Value.put(option, option.value);
+					if (option.defaultValue!=null){
+						option2Value.put(option, option.defaultValue);
 					}
 					else{
 						if (i<args.length-1){ // nicht das letzte Argument
@@ -379,6 +419,10 @@ public class LRParserMain implements IParser{
 			return arguments;
 		}
 		
+		/**
+		 * Beschreibung der erlaubten Kommandozeilen-Optionen
+		 * 
+		 */
 		private static enum Option{
 			DisplayVersion("--version", "-v", true),
 			DisplayHelp("--help", "-h", true),
@@ -395,12 +439,18 @@ public class LRParserMain implements IParser{
 			
 			private final String pattern;
 			private final String aliasPattern;
-			private final Object value;
+			private final Object defaultValue;
 			
-			private Option(String pattern, String alias, Object value){
+			/**
+			 * Erzeugt eine neue Kommandozeilen-Option
+			 * @param pattern Hauptpattern für die Kommandozeilen-Option
+			 * @param alias Alternativpattern für die Kommandozeilen-Option
+			 * @param defaultValue Default-Wert für Switches (Null, wenn zur Option noch ein Wert übergeben werden muss).
+			 */
+			private Option(String pattern, String alias, Object defaultValue){
 				this.pattern=pattern;
 				this.aliasPattern=alias;
-				this.value=value;
+				this.defaultValue=defaultValue;
 			}
 			
 			private static Map<String,Option> pattern2Option= new HashMap<String, Option>();
@@ -414,6 +464,8 @@ public class LRParserMain implements IParser{
 				}
 			}
 		}
+		/** Signalisiert einen Fehler in den Kommandozeilen-Argumenten */
+		@SuppressWarnings("serial")
 		private static class CommandLineParseException extends RuntimeException{
 			public CommandLineParseException(String message) {
 				super(message);				

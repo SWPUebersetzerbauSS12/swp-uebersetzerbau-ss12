@@ -84,7 +84,7 @@ public class FuncDef extends Type {
 					+ this.fromTypeStringToLLVMType() + " %"
 					+ n + "\n";
 			} else {
-				ret += "ret " + this.fromTypeStringToLLVMType();
+				ret += "ret " + this.fromTypeStringToLLVMType() + "\n";
 			}
 		}
 		return "define " + ((Type) getChild(0)).genCode() + " @"

@@ -110,7 +110,7 @@ public class CodeGenerator {
 	public static void main(String[] args) {
 		boolean debug = false;
 		boolean gui = false;
-		boolean exec = true;
+		boolean exec = false;
 		String asmType = "gnu";
 
 		ArrayList<String> inputFile = new ArrayList<String>();
@@ -125,18 +125,33 @@ public class CodeGenerator {
 				if ((i + 1) <= args.length)
 					outputFile = args[++i];
 				else {
-					System.out.println("Option -o needs a second parameter");
+					System.err.println("Option -o needs a second parameter");
 					return;
 				}
 			} else if (args[i].compareTo("-C") == 0 || args[i].compareTo("--config") == 0) {
 				if ((i + 1) <= args.length)
 					configFile = args[++i];
 				else {
-					System.out.println("Option -C needs a second parameter");
+					System.err.println("Option -C needs a second parameter");
 					return;
 				}
-			} else if (args[i].compareTo("-c") == 0 || args[i].compareTo("--compile") == 0) {
-				exec = false;
+			} else if (args[i].compareTo("-asmType") == 0) {
+				if ((i + 1) <= args.length){
+					i++;
+					if(args[i].compareTo("intel") == 0)
+						asmType = "intel";
+					else if(args[i].compareTo("gnu") == 0)
+						asmType = "gnu";
+					else {
+						System.err.println("The assembler type " + args[i] + " is not supported");
+						return;
+					}
+				} else {
+					System.err.println("Option -asmType needs a second parameter");
+					return;
+				}
+			} else if (args[i].compareTo("-e") == 0 || args[i].compareTo("--exec") == 0) {
+				exec = true;
 			} else if (args[i].compareTo("-intel") == 0) {
 				asmType = "intel";
 			} else if (args[i].compareTo("-gnu") == 0) {
@@ -151,7 +166,7 @@ public class CodeGenerator {
 
 		// Argumente Fehlerbehandlung
 		if (inputFile.size() == 0) {
-			System.out.println("No inputfile spezified!");
+			System.err.println("No inputfile spezified!");
 			return;
 		}
 		
@@ -221,7 +236,7 @@ public class CodeGenerator {
 				fstream.close();
 
 			} catch (FileNotFoundException e) {
-				System.err.println("Could't found config file");
+				System.err.println("Could't find config file");
 				e.printStackTrace();
 			} catch(IOException e) {
 				System.err.println("Failed to read from config file");

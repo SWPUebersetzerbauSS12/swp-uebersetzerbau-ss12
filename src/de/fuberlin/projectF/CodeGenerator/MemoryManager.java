@@ -92,12 +92,12 @@ public class MemoryManager {
 		return current.getFreeRegister();
 	}
 
-	public List<Variable> getMMXRegVariables(boolean exclusive) {
-		return current.getMMXRegVariables(exclusive);
+	public List<Variable> getMMXRegVariables() {
+		return current.getMMXRegVariables();
 	}
 
-	public List<Variable> getRegVariables(boolean exclusive) {
-		return current.getRegVariables(exclusive);
+	public List<Variable> getRegVariables() {
+		return current.getRegVariables();
 	}
 
 	public boolean inMMXReg(String name) {

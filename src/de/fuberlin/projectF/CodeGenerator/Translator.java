@@ -561,7 +561,7 @@ public class Translator {
 	}
 	
 	private void saveRegisters(){
-		List<Variable> regVars = mem.getRegVariables(true);
+		List<Variable> regVars = mem.getRegVariables();
 		RegisterAddress movedFrom;
 		StackAddress movedTo;
 		for (Variable var : regVars) {
@@ -574,7 +574,7 @@ public class Translator {
 	}
 	
 	private void saveMMXRegisters(){
-		List<Variable> regVars = mem.getMMXRegVariables(true);
+		List<Variable> regVars = mem.getMMXRegVariables();
 		MMXRegisterAddress movedFrom;
 		StackAddress movedTo;
 		for (Variable var : regVars) {

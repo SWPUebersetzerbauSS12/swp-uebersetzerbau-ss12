@@ -13,7 +13,7 @@ public class Print extends Statement {
 	@Override
 	/*
 	 * we use the puts function to print to screen %forprinting = load i8**
-	 * %str3 tail call i32 (i8*)* @puts(i8* %forprinting)
+	 * %str3 call i32 (i8*)* @puts(i8* %forprinting)
 	 */
 	public String genCode() {
 		String out = "";
@@ -66,18 +66,8 @@ public class Print extends Statement {
 						+ tempReg + ", i8 0, i8 0 \n";
 				// now we print
 				int valReg = 0;
-				if (getChild(0) instanceof Id) {
-					valReg = block.getNewVar();
-					out += "%" + valReg + " = load " + idType.genCode() + "* %"
-							+ ((Id) getChild(0)).getValue() + "\n";
-				} else if (getChild(0) instanceof RecordVarCall) {
-					out += LLVM.loadType((RecordVarCall) getChild(0));
-					valReg = block.getCurrentRegister();
-				} else if (getChild(0) instanceof ArrayCall) {
-					String bla = LLVM.loadType((ArrayCall) getChild(0));
-					out += bla;
-					valReg = block.getCurrentRegister();
-				}
+				out += LLVM.loadType((Expression)getChild(0));
+				valReg = block.getCurrentRegister();
 				out += "call i32 (i8*, ...)* @printf(i8* %" + tempReg2 + ", "
 						+ idType.genCode() + " %" + valReg + ")";
 				// implicit return of printf increments var counter!

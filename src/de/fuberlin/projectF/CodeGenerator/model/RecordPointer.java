@@ -3,7 +3,6 @@ package de.fuberlin.projectF.CodeGenerator.model;
 public class RecordPointer extends Reference{
 	private Record rec;
 	private RecordPointer pRec;
-	private StackAddress addr;
 	private int var;
 	
 	public RecordPointer(String name, Record record, int var)

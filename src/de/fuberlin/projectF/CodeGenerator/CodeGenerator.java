@@ -8,7 +8,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.ArrayList;
 
 import de.fuberlin.projectF.CodeGenerator.model.Token;
@@ -216,8 +215,8 @@ public class CodeGenerator {
 					line = line.replace("<input>", outputFile + ".s");
 					line = line.replace("<output>", outputFile);
 					System.out.println(line);
-					Process process = Runtime.getRuntime().exec(line);
-					Process sleep = Runtime.getRuntime().exec("sleep 1");
+					Runtime.getRuntime().exec(line);
+					Runtime.getRuntime().exec("sleep 1");
 				}
 				fstream.close();
 

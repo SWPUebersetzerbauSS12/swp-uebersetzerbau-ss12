@@ -94,6 +94,10 @@ public abstract class Assembler {
 
 	protected abstract void add(String source, String target, String comment);
 	
+	protected abstract void shl(String source, String target, String comment);
+
+	protected abstract void sar(String source, String target, String comment);
+	
 	protected abstract void addsd(String source, String target, String comment);
 	
 	protected abstract void subsd(String source, String target, String comment);

@@ -199,6 +199,20 @@ public class GNUAssembler extends Assembler {
 				.append(target).append("\t#").append(comment).append("\n");
 	}
 	
+	protected void shl(String source, String target, String comment) {
+		source = translate(source);
+		target = translate(target);
+		sectionText.append("\tshll ").append(source).append(", ")
+				.append(target).append("\t#").append(comment).append("\n");
+	}
+	
+	protected void sar(String source, String target, String comment) {
+		source = translate(source);
+		target = translate(target);
+		sectionText.append("\tsarl ").append(source).append(", ")
+				.append(target).append("\t#").append(comment).append("\n");
+	}
+	
 	protected void addsd(String source, String target, String comment) {
 		source = translate(source);
 		target = translate(target);

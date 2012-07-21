@@ -255,7 +255,7 @@ public class Translator {
 					asm.and(op2, res.getFullName(), tok.getOp1() + " + " + tok.getOp2());
 				
 				else if (tok.getTypeTarget().equals("xor"))
-					asm.xor(op2, res.getFullName(), tok.getOp1() + " + " + tok.getOp2());
+					asm.xor(op2, res.getFullName(), tok.getOp1() + " ^ " + tok.getOp2());
 				
 				else if (tok.getTypeTarget().equals("add"))
 					asm.add(op2, res.getFullName(), tok.getOp1() + " + " + tok.getOp2());
@@ -265,6 +265,12 @@ public class Translator {
 				
 				else if (tok.getTypeTarget().equals("mul"))
 					asm.imul(op2, res.getFullName(), tok.getOp1() + " * " + tok.getOp2());
+				
+				else if (tok.getTypeTarget().equals("shl"))
+					asm.shl(op2, res.getFullName(), tok.getOp1() + " << " + tok.getOp2());
+				
+				else if (tok.getTypeTarget().equals("ashr"))
+					asm.sar(op2, res.getFullName(), tok.getOp1() + " >> " + tok.getOp2());
 				
 				else if (tok.getTypeTarget().equals("sdiv")) {
 					if (!isRegisterFree(new RegisterAddress(0))) {

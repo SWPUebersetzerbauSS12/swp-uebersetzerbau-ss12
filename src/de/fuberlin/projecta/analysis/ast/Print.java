@@ -38,13 +38,21 @@ public class Print extends Statement {
 					this).getType();
 		}
 		if (idType instanceof BasicType) {
-			
+
 			if (((BasicType) idType).getTokenType() == BasicTokenType.STRING) {
-				int reg = block.getNewVar();
-				out += "%" + reg + " = load i8** %"
-						+ ((Id) getChild(0)).getValue() + "\n";
-				out += "%" + getHighestBlock().getNewVar() + " = "
-						+ "call i32 (i8*)* @puts(i8* %" + reg + ")";
+
+				if (LLVM.isInParams((Id) getChild(0))) {
+					out += "%" + getHighestBlock().getNewVar() + " = "
+							+ "call i32 (i8*)* @puts(i8* %"
+							+ ((Id) getChild(0)).getValue() + ")";
+				} else {
+					int reg = block.getNewVar();
+					out += "%" + reg + " = load i8** %"
+							+ ((Id) getChild(0)).getValue() + "\n";
+					out += "%" + getHighestBlock().getNewVar() + " = "
+							+ "call i32 (i8*)* @puts(i8* %" + reg + ")";
+				}
+
 			} else {
 				String format = "";
 				if (((BasicType) idType).getTokenType() == BasicTokenType.INT) {
@@ -66,7 +74,7 @@ public class Print extends Statement {
 						+ tempReg + ", i8 0, i8 0 \n";
 				// now we print
 				int valReg = 0;
-				out += LLVM.loadType((Expression)getChild(0));
+				out += LLVM.loadType((Expression) getChild(0));
 				valReg = block.getCurrentRegister();
 				out += "call i32 (i8*, ...)* @printf(i8* %" + tempReg2 + ", "
 						+ idType.genCode() + " %" + valReg + ")";

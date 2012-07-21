@@ -23,8 +23,9 @@ result=$(lli $llvm_file)
 echo $result
 
 # mit Optimierung
-cd ../../../../src
-java de.fuberlin.optimierung.LLVM_Optimization $llvm_ir_file > $llvm_ir_file_optimized
+#cd ../../../../src
+java -jar optimierung.jar $llvm_ir_file > $llvm_ir_file_optimized
+#java de.fuberlin.optimierung.LLVM_Optimization $llvm_ir_file > $llvm_ir_file_optimized
 llvm-as $llvm_ir_file_optimized
 result_optimized=$(lli $llvm_file_optimized)
 echo $result_optimized

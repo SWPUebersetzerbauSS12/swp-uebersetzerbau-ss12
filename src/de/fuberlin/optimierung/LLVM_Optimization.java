@@ -11,7 +11,7 @@ public class LLVM_Optimization implements ILLVM_Optimization {
 	private LinkedList<LLVM_Function> functions;
 	
 	public static final boolean DEBUG = false;
-	public static final boolean STATISTIC = true;
+	public static final boolean STATISTIC = false;
 	
 	public LLVM_Optimization(){
 		functions = new LinkedList<LLVM_Function>();

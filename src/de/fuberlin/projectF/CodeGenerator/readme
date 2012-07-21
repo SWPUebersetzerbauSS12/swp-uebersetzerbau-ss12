@@ -1,0 +1,22 @@
+Benötigt mc_config.cfg im gleichen Verzeichnis wie die JAR.
+
+-asmType gnu | intel
+Wahl zwischen Gnu-Assembler und Intel-Assembler, wobei Gnu-Assembler der Standard ist.
+
+-o
+Mit dieser Option wird die Ausgabedatei angegeben.
+
+-e
+Der erzeugte Assemblercode wird im Nachhinein in eine ausführbare Datei compiliert.
+
+-C
+Als Standard Config-Datei, wird die Datei mc_config.cfg aus dem Hauptverzeichnis des Code-Generators benutzt. Mit diesem Flag ist es möglich eine eigene Config-Datei zu wählen. Eine Config-Datei enthält Befehle, welche auszuführen sind um den erzeugten Assembler-Code in eine ausführbare Datei zu compilieren.
+
+folgende Optionen gibt es nur im separaten Projekt:
+-v | --verbose
+Ausgabe von debug Informationen.
+
+-g | --gui
+Ausgabe vo debug Informationen in einer GUI
+
+Es ist äußerst wichtig, dass es sich bei dem eingegebenen LLVM-Code um solchen für 32-Bit Systeme handelt. Ansonsten kann kein Maschinencode erzeugt werden, da im 64-Bit-LLVM unbekannte Befehle verwendet werden um z. B. mit den größeren Pointern umzugehen. Bei clang wird dies mit der Flag -m32 gesichert.

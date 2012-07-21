@@ -25,8 +25,8 @@ def void printArray(int[10] array, int length){
     print end;
 }
 
-def void quickSort(int[10] array){
-    int length;
+def void quickSort(int[10] array, int length){
+    //int length;
     int pivot;
     int i;
     int[10] less;
@@ -53,14 +53,13 @@ def void quickSort(int[10] array){
     length = 0;
 
     // first find out the current length
-    while(array[length] != 0){
-        length = length + 1;
-    }
+    //while(array[length] != 0){
+    //    length = length + 1;
+    //}
     
     if(length <= 1){ 
         return;
-    }
-    
+    }    
 
     // split the list in two lists
     while(i < length){
@@ -74,8 +73,8 @@ def void quickSort(int[10] array){
     }
 
     //  call recursivly quickSort
-    quickSort(less);
-    quickSort(greater);
+    quickSort(less, length/2);
+    quickSort(greater, length/2);
 
     // and merge them together
     while(tmp1 < 10){
@@ -106,7 +105,7 @@ def int main(){
     array[9] = 6;
     printArray(array,10);
     print lb;
-    quickSort(array);
+    quickSort(array,10);
     printArray(array,10);
     return 0;
 } 

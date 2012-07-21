@@ -191,6 +191,7 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 	private TreeNode terminatorNode;
 	
 	
+
 	
 	@SuppressWarnings("unchecked")
 	public RegexOperatorTree( RegularExpressionElement<StatePayloadType>[] regularExpression) throws Exception {
@@ -201,11 +202,13 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 	  // extends regex string
 		regularExpression = Arrays.copyOf( regularExpression, regularExpression.length +1);
 		regularExpression[regularExpression.length -1] = new RegularExpressionElement( RegexCharSet.TERMINATOR, null);
+				
 		ast = new AbstractSyntaxTree<RegularExpressionElement<StatePayloadType>>( regexGrammar, regexSdd, regularExpression) {
 				
 			@Override
 			protected ItemAutomat<RegularExpressionElement<StatePayloadType>> getNewItemAutomat( Grammar grammar) {
-				return new Slr1ItemAutomat<RegularExpressionElement<StatePayloadType>>( (ContextFreeGrammar) grammar);
+				boolean usePersistentParserTable = true;
+				return new Slr1ItemAutomat<RegularExpressionElement<StatePayloadType>>( (ContextFreeGrammar) grammar, usePersistentParserTable);
 			}
     };
 		operatorTreeAttributor.attributizeOperatorTree( this);

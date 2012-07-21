@@ -29,8 +29,15 @@ public class LLVM_Function {
 		afterFunc = code.substring(code.lastIndexOf("}")+1);
 		code = code.substring(0, code.lastIndexOf("}"));
 		
-		// remove double newline
-		code = code.replaceAll("\n\n", "\n");
+		// Whitespaces und leere Zeilen entfernen 
+		String tmp_code = "";
+		for (String line : code.split("\n")){
+			line = line.trim();
+			if (line.length() == 0) continue;
+			tmp_code += line + "\n";
+		}
+		
+		code = tmp_code;
 		
 		// add newline after Branch
 		int searchindex = 0;
@@ -40,7 +47,25 @@ public class LLVM_Function {
 			if (search){
 				searchindex = code.indexOf("br ", searchindex) + 3;
 				int index = code.indexOf('\n', searchindex);
-				code = code.substring(0, index) + "\n" + code.substring(index);
+				if (index != code.length()-1){
+					code = code.substring(0, index) + "\n" + code.substring(index);
+					searchindex = index;
+				}
+			}
+		}
+		
+		// add newline after Return
+		searchindex = 0;
+		search = true;
+		while(search){
+			search = code.indexOf("ret ", searchindex) >= 0;
+			if (search){
+				searchindex = code.indexOf("ret ", searchindex) + 4;
+				int index = code.indexOf('\n', searchindex);
+				if (index != code.length()-1){
+					code = code.substring(0, index) + "\n" + code.substring(index);
+					searchindex = index;
+				}
 			}
 		}
 		

@@ -22,6 +22,7 @@
  * Projectgroup: bi, bii
  * 
  * Authors: Johannes Dahlke
+ * 					Benjamin Weißenfels
  * 
  * Module:  Softwareprojekt Übersetzerbau 2012 
  * 
@@ -67,6 +68,7 @@ import de.fuberlin.bii.utils.Test;
  * {@link ItemAutomata#isReduceConflictFree()} den Wert true.
  * 
  * @author Johannes Dahlke
+ *         Benjamin Weißenfels
  * 
  * @param <Element>
  *            der Typ eines Elementes der zu verarbeitenden Eingabe.
@@ -79,16 +81,25 @@ public class Slr1ItemAutomat<Element extends Symbol> extends
 	 * 
 	 */
 	private static final long serialVersionUID = -3994075596507437910L;
+	
+	private boolean usePersistentParserTable = false;
 
 	public Slr1ItemAutomat(ContextFreeGrammar grammar) {
 		super(grammar);
 	}
+	
+	public Slr1ItemAutomat(ContextFreeGrammar grammar, boolean usePersistentParserTable) {
+		super(grammar);
+		this.usePersistentParserTable = usePersistentParserTable;
+	}
+	
 
 	@SuppressWarnings({ "unchecked"})
 	@Override
 	protected void SetupParserTable(Lr0Closure startClosure) {
 
-		if (readPersistenParserTable()) {
+		if ( usePersistentParserTable && 
+				 readPersistentParserTable()) {
 			return;
 		}
 		
@@ -207,11 +218,15 @@ public class Slr1ItemAutomat<Element extends Symbol> extends
 			parserTable.put(currentClosure, handlerMap);
 		}
 
-		writePersistentParserTable();
+		
+		if ( usePersistentParserTable) {
+				writePersistentParserTable();
+		}
+		
 	}
 
 	@SuppressWarnings("unchecked")
-	private boolean readPersistenParserTable() {
+	private boolean readPersistentParserTable() {
 		File dir = new File("/tmp/lexergen/");
 		File parserTableObject = new File("/tmp/lexergen/parserTable");
 		long start;

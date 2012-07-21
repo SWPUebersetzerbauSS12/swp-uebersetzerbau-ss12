@@ -1,32 +1,48 @@
 0|([1-9]+[0-9]*)		{num}
-test{num}dfse			{test}
-def{test}				{dummy}
 
 %%
 
-\(						{return("BRACKET", "(")}
-\)						{return("BRACKET", ")")}
-\{						{return("BRACKET", "{")}
-\}						{return("BRACKET", "}")}
-\=						{return("ASSIGNEMENT", "=")}
-<						{return("OP", "L")}
->						{return("OP", "G")}
-<=						{return("OP", "LE")}
->=						{return("OP", "GE")}
-==						{return("OP", "EQ")}
-!=						{return("OP", "NEQ")}
-\+						{return("OP", "PLUS")}
-\*						{return("OP", "MUL")}
-/						{return("OP", "DIVIDE")}
-;						{return("KEYWORD", "SEMIKOLON")}
-def						{return("KEYWORD", "DEF")}
-if						{return("KEYWORD", "IF")}
-else					{return("KEYWORD", "ELSE")}
-do						{return("KEYWORD", "DO")}
-print					{return("KEYWORD", "PRINT")}
-return					{return("KEYWORD", "RETURN")}
-break					{return("KEYWORD", "BREAK")}
-while					{return("KEYWORD", "WHILE")}
-{num}					{return("NUM", parseInt())}
-{num}?\.{num}			{return("RAT", parseDouble())}
-[a-z]+[a-zA-Z0-9]*		{return("ID", parseString())}
+\(						{return("(", "")}
+\)						{return(")", "")}
+\{						{return("{", "")}
+\}						{return("}", "")}
+\[						{return("[", "")}
+\]						{return("]", "")}
+=						{return("=", "")}
+<						{return("<", "")}
+>						{return(">", "")}
+<=						{return("<=", "")}
+>=						{return(">=", "")}
+==						{return("==", "")}
+!=						{return("!=", "")}
+&&						{return("&&", "")}
+\|\|					{return("||", "")}
+!						{return("!", "")}
+\+						{return("+", "")}
+-						{return("-", "")}
+\*						{return("*", "")}
+/						{return("/", "")}
+;						{return(";", "")}
+,						{return(",", "")}
+(0|([1-9]+[0-9]*))?\.(([0-9])[0-9]*)		{return("real", parseDouble())}
+(0|([1-9]+[0-9]*))					{return("num", parseInt())}
+\.						{return(".", "")}
+record					{return("record", "")}
+def						{return("def", "")}
+if						{return("if", "")}
+while					{return("while", "")}
+do						{return("do", "")}
+else					{return("else", "")}
+print					{return("print", "")}
+return					{return("return", "")}
+break					{return("break", "")}
+true					{return("boolean", parseBoolean())}
+false					{return("boolean", parseBoolean())}
+[0-9]+\.[0-9]+			{return("real", parseDouble())}
+int						{return("basic", "int")}
+real					{return("basic", "real")}
+string					{return("basic", "string")}
+bool					{return("basic", "bool")}
+{num}					{return("num", parseInt())}
+"[a-zA-Z0-9 ßäöü]*"		{return("string", parseString())}
+[a-z]+[a-zA-Z0-9]*		{return("id", parseString())}

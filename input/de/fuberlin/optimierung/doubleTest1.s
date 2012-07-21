@@ -25,10 +25,12 @@ define i32 @main(i32 %argc, i8** %argv) nounwind {
 ; <label>:10                                      ; preds = %0
   %11 = load double* %b, align 8
   %12 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([15 x i8]* @.str1, i32 0, i32 0), double %11)
-  br label %13
+  br label %14
 
 ; <label>:13                                      ; preds = %10, %7
   ret i32 0
+  
+  ret i32 1
 }
 
 declare i32 @printf(i8*, ...)

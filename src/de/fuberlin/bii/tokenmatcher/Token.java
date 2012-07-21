@@ -70,7 +70,8 @@ public class Token implements IToken {
 
 	public String getType() {
 		try {
-			return TokenType.byTerminalSymbol(type).toString();
+			TokenType tokenType = TokenType.byTerminalSymbol(type);
+			return Test.isAssigned( tokenType) ? tokenType.toString() : this.type;
 		} catch (Exception e) {
 			// Should be the EOF token...
 //			System.err.println("getType failed for "+type);

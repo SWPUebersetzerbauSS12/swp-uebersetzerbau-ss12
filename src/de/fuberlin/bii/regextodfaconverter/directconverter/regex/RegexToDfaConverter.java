@@ -86,7 +86,7 @@ public class RegexToDfaConverter {
 	
 	
 	/**
-	 * Wandelt einen vereinfachten regulären Ausdruck in einen DFA um.
+	 * Wandelt einen regulären Ausdruck in einen DFA um.
 	 * 
 	 * @param Regex
 	 *          der reguläre Ausdruck in vereinfachter Form.
@@ -140,6 +140,8 @@ public class RegexToDfaConverter {
 			throws DirectConverterException {
 		try {
 			RegexOperatorTree<StatePayload> regexTree = convertRegexToTree( regularExpression);
+			if ( Test.isUnassigned(  commonPayload))
+        commonPayload = getWeakestPayload( regularExpression);
 			FiniteStateMachine<Character, StatePayload> dfa = convertRegexTreeToDfa( regexTree, commonPayload);
 		  return dfa;
 		} catch ( Exception e) {
@@ -150,6 +152,23 @@ public class RegexToDfaConverter {
 			}
 			throw new DirectConverterException( String.format( "Cannot convert regex '%s' to DFA.", regularExpression));
 		}
+	}
+	
+	private static StatePayload getWeakestPayload( RegularExpressionElement<StatePayload>[] regularExpression) {
+		StatePayload weakestPayload = null;
+		for ( RegularExpressionElement<StatePayload> regularExpressionElement : regularExpression) {
+			if ( Test.isUnassigned( regularExpressionElement))
+				continue;
+      if ( Test.isAssigned( weakestPayload)) {
+      	if ( Test.isAssigned( regularExpressionElement.getPayload())) {
+          if ( weakestPayload.getPriority() > regularExpressionElement.getPayload().getPriority())
+          	weakestPayload = regularExpressionElement.getPayload();
+      	}
+      } else {
+      	weakestPayload = regularExpressionElement.getPayload();	
+      }
+    }
+		return weakestPayload;
 	}
 	
 	
@@ -364,7 +383,6 @@ public class RegexToDfaConverter {
 				handledStates.put( currentCollection, currentState);
 
 				HashMap<Character, TreeNodeCollection> stateCandidates = new HashMap<Character, TreeNodeCollection>();
-				Character currentTerminalCharacter;
 				
 				for ( RegularExpressionElement<StatePayload> currentRegexElement : alphabetSubset) {
 					TreeNodeCollection followPositionsOfTerminal = new TreeNodeSet();
@@ -377,7 +395,7 @@ public class RegexToDfaConverter {
 						}
 					}
 
-
+					
 					// if set not empty, then add set to states
 					State<Character, StatePayload> targetState = null;
 				
@@ -403,43 +421,60 @@ public class RegexToDfaConverter {
 						// setze Übergang
 						dfa.addTransition( targetState, currentRegexElement.getValue());
 
-						// falls ein Payload gegeben, setze finite
-						if ( Test.isAssigned( currentStatePayload) &&
-							   followPositionsOfTerminal.contains( regexTree.getTerminatorNode())) {
+						// falls das Terminalzeichen # folgt, 
+						if ( followPositionsOfTerminal.contains( regexTree.getTerminatorNode())) {
+							// dann ist der Zustand ein Endzustand ...
 							
-							if ( targetState.isFiniteState()) {
-								// es ist bereits ein payload gesetzt.
-								// überschreibe je nach Priorität
-								if ( Test.isAssigned( currentStatePayload)) {
-									if ( Test.isUnassigned( targetState.getPayload())
-											|| ( Test.isAssigned( targetState.getPayload())
-													&& targetState.getPayload().getPriority() < currentStatePayload.getPriority()))
-										targetState.setPayload( currentStatePayload); 
+							
+						  // falls kein spezifischer Payload gegeben ist ..
+							if ( Test.isUnassigned( currentStatePayload)) {
+								// dann setzte denn allgemeinen Payload
+								currentStatePayload = commonPayload;
+							}
 
+							// Ist der Folgezustand bereits als Endzustand markiert, ...							
+							if ( targetState.isFiniteState()) {
+								
+								// ... dann, sofern ein Payload gegeben ist
+								if ( Test.isAssigned( currentStatePayload)) {
 									
-									storePayloadPriorityDependentForTransitionFromStateToStateByCharacter( payloadToStateMap, currentState, targetState, currentRegexElement.getValue(), currentStatePayload);
+									// Teste, ob dem Folgezustand bereits ein Payload zuvor zugewiesen wurde
+									if ( Test.isAssigned( targetState.getPayload())) {
+										// In diesem Fall vergleiche die Prioritäten den neuen Payloads mit dem alten Payload
+										if ( targetState.getPayload().getPriority() < currentStatePayload.getPriority())
+										  // und setze den neuen Payload nur, wenn dieser eine höhere Priorität hat
+											targetState.setPayload( currentStatePayload); 		
+											// merke den Payload und dessen Priorität
+ 		  								storePayloadPriorityDependentForTransitionFromStateToStateByCharacter( payloadToStateMap, currentState, targetState, currentRegexElement.getValue(), currentStatePayload);										
+									} else {
+										// anderenfalls (es wurde kein früherer Payload gefunden) , dann detzte den neuen Payload bedingungslos.
+										targetState.setPayload( currentStatePayload);
+										
+										// merke den Payload und dessen Priorität
+										storePayloadPriorityDependentForTransitionFromStateToStateByCharacter( payloadToStateMap, currentState, targetState, currentRegexElement.getValue(), currentStatePayload);										
+									}
 								}
 							} else {
-								// setze Folgezustand finite
+								// der Folgezustand ist bislang kein Endzustand
+							  // dann setze den Zustand finite
 								targetState.setFinite( true);
-								// and set payload
-								targetState.setPayload( currentStatePayload);
+								// and set payload (be care: currentStatePayload can here be null, if Commonpayload is null)
+								if ( Test.isAssigned( currentStatePayload)) {
+								  targetState.setPayload( currentStatePayload);
+								
 								// speichere Datum für die Nachbereitung
-								storePayloadPriorityDependentForTransitionFromStateToStateByCharacter(payloadToStateMap, currentState, targetState, currentRegexElement.getValue(), currentStatePayload);
+								
+								  storePayloadPriorityDependentForTransitionFromStateToStateByCharacter(payloadToStateMap, currentState, targetState, currentRegexElement.getValue(), currentStatePayload);
+								}
 							}
-						
-							
-						} else if (followPositionsOfTerminal.contains( regexTree.getTerminatorNode())) {
-							// falls ein Endzustand nach dem Terminalzeichen # ist, dann setzte Zustand in jedem Fall final
-							targetState.setFinite( true);
-						}
-						
+								  
+						}		
 					}
 
 				}
 
 			}
-			
+
 
 		  //------------------------------------
 			// +++ slightly Modification of algorithm of Glushkov / McNaughton and Yamada +++
@@ -464,6 +499,7 @@ public class RegexToDfaConverter {
 						State<Character, StatePayload> sourceState = currentDfaState;
 
 						StatePayload payload = getPayloadForTransitionFromStateToStateByCharacter( payloadToStateMap, sourceState, targetState, transition.getCondition());
+					
 						if ( Test.isAssigned( payload)) { 
 
 							if ( transition.getState().getElementsOfOutgoingTransitions().isEmpty()) {
@@ -483,7 +519,7 @@ public class RegexToDfaConverter {
 								}
 
 							} else {
-								// Fall 2: Es ist ein akzeptierender Zustand, aber es führen auch wieder Übergänger heraus.  ->(F)->
+								// Fall 2: Es ist ein akzeptierender Zustand, aber es führen auch wieder Übergänge heraus.  ->(F)->
 								StatePayload weakestPayload = null;
 								// Merke den Zustand mit ausgerechnetem niederwertigsten Payload beim ersten Besuch 
                 if ( !knownFiniteIntermediateStates.containsKey( targetState.getUUID())) {

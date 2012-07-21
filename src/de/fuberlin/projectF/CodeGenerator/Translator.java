@@ -142,8 +142,7 @@ public class Translator {
 				
 				// Rückgabe speichern
 				if (tok.getTypeTarget().equals("i32")) {
-					RegisterAddress reg = mem.getFreeRegister();
-					mem.addRegVar(tok.getTarget(), tok.getTypeTarget(), reg);
+					mem.addRegVar(tok.getTarget(), tok.getTypeTarget(), new RegisterAddress(0));
 				}
 				else if (tok.getTypeTarget().equals("double")) {
 					mmxRes = new MMXRegisterAddress(0);

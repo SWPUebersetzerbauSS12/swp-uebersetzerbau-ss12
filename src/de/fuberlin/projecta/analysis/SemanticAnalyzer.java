@@ -36,6 +36,9 @@ import de.fuberlin.projecta.parser.NonTerminal;
 import de.fuberlin.projecta.parser.Symbol;
 import de.fuberlin.projecta.parser.Symbol.Reserved;
 
+/**
+ * Converts a parse tree to an AST
+ */
 public class SemanticAnalyzer {
 
 	private static final String L_ATTRIBUTE = "L_ATTRIBUTE";

@@ -1,5 +1,10 @@
 package de.fuberlin.projectF.CodeGenerator;
 
+/* Class: Assembler
+* Diese abstrakte Klasse enthält die abstrakten Methoden der zu übersetzenden Funktionen
+* Diese sind in GNUAssembler bzw IntelAssembler implementiert
+*/
+
 public abstract class Assembler {
 
 	public StringBuffer sectionHead;

@@ -299,6 +299,17 @@ public class CompilerTest {
 	}
 	
 	@Test
+	public void testWritingToParameter(){
+		String code = "def int foo(int i){" + 
+				"i = 1; return i;}" + 
+				"def void main(){" + 
+				"int a; a = foo(a); print a;}";
+		String output = executeCode(code);
+		System.out.println(output);
+		assertEquals("1", output);
+	}
+	
+	@Test
 	public void testRealEquations(){
 		String code = "def void main(){real r; real x; r = 1.0; x = 2.0; r = r + x; print r;}";
 		String output = executeCode(code);

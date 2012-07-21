@@ -8,11 +8,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.ArrayList;
 
 import de.fuberlin.projectF.CodeGenerator.model.Token;
 
+//Dies ist die Hauptklasse des Projekts und kümmert sich um globale angelegenheiten wie
+//die übergebenen Parameter. Sie stellt auch das Interface zur Anbindung an das Hauptprojekt dar.
 public class CodeGenerator {
 
 	//Variante f�r File-Input
@@ -32,7 +33,7 @@ public class CodeGenerator {
 	
 	//Variante f�r String-Input
 	public static String generateCode(String llvmCode, String asmType, boolean debug,
-			boolean guiFlag) {
+			boolean guiFlag, boolean exec, String configFile) {
 		
 		Debuginfo debuginfo = new Debuginfo(debug);
 		Lexer lex = new StringLexer(llvmCode, debuginfo);
@@ -111,7 +112,7 @@ public class CodeGenerator {
 	public static void main(String[] args) {
 		boolean debug = false;
 		boolean gui = false;
-		boolean exec = true;
+		boolean exec = false;
 		String asmType = "gnu";
 
 		ArrayList<String> inputFile = new ArrayList<String>();
@@ -126,18 +127,33 @@ public class CodeGenerator {
 				if ((i + 1) <= args.length)
 					outputFile = args[++i];
 				else {
-					System.out.println("Option -o needs a second parameter");
+					System.err.println("Option -o needs a second parameter");
 					return;
 				}
 			} else if (args[i].compareTo("-C") == 0 || args[i].compareTo("--config") == 0) {
 				if ((i + 1) <= args.length)
 					configFile = args[++i];
 				else {
-					System.out.println("Option -C needs a second parameter");
+					System.err.println("Option -C needs a second parameter");
 					return;
 				}
-			} else if (args[i].compareTo("-c") == 0 || args[i].compareTo("--compile") == 0) {
-				exec = false;
+			} else if (args[i].compareTo("-asmType") == 0) {
+				if ((i + 1) <= args.length){
+					i++;
+					if(args[i].compareTo("intel") == 0)
+						asmType = "intel";
+					else if(args[i].compareTo("gnu") == 0)
+						asmType = "gnu";
+					else {
+						System.err.println("The assembler type " + args[i] + " is not supported");
+						return;
+					}
+				} else {
+					System.err.println("Option -asmType needs a second parameter");
+					return;
+				}
+			} else if (args[i].compareTo("-e") == 0 || args[i].compareTo("--exec") == 0) {
+				exec = true;
 			} else if (args[i].compareTo("-intel") == 0) {
 				asmType = "intel";
 			} else if (args[i].compareTo("-gnu") == 0) {
@@ -152,7 +168,7 @@ public class CodeGenerator {
 
 		// Argumente Fehlerbehandlung
 		if (inputFile.size() == 0) {
-			System.out.println("No inputfile spezified!");
+			System.err.println("No inputfile spezified!");
 			return;
 		}
 		
@@ -165,17 +181,22 @@ public class CodeGenerator {
 			}
 		}
 		
+		//Wenn -e gesetzt dann erstelle die auszuführende Datei anhand der Befehle
+		//aus der mit -C angegebenen Config datei
 		if (exec == true) {
 			exec(outputFile, configFile);
 		}
 		
 	}
 
+	//Schreiben des erzeugten Assemblercodes in die Ausgabedatei
 	public static void writeFile(boolean exec, String outputFile, String output) {
 		try{
 			FileOutputStream schreibeStrom;
+			//Falls -e gesetzt schreibe den Code in eine .asm Datei
 			if(exec == true)
-				schreibeStrom = new FileOutputStream(outputFile + ".s");
+				schreibeStrom = new FileOutputStream(outputFile + ".asm");
+			//Falls -e nicht gesetzt schreibeCode direkt in die Ausgabedatei
 			else
 				schreibeStrom = new FileOutputStream(outputFile);
 		    for (int i=0; i < output.length(); i++){
@@ -189,13 +210,14 @@ public class CodeGenerator {
 		}
 	}
 
+	//Diese Funktion liesst die einzelnen Zeilen der Config Datei,
+	//ersetzt in den gelesenen Zeilen die Platzhalter <input> und <output>
+	//und führt dies dann als Befehle auf der Commandozeile aus
 	public static void exec(String outputFile, String configFile) {
-		if(System.getProperty("os.name").toLowerCase().indexOf("windows") >= 0) {
-			System.err.println("Creating an executable file is not supported for windows systems.");
-			System.err.println("Please change your operating system. We do not support such stuff like windows :P");
-			return;
-		} else if(System.getProperty("os.name").toLowerCase().indexOf("linux") >= 0) {
-			System.out.println("Yeah LINUX :-)");
+		
+		//Testen on Windows oder Linux 
+		if(System.getProperty("os.name").toLowerCase().indexOf("windows") >= 0 ||
+			System.getProperty("os.name").toLowerCase().indexOf("linux") >= 0) {
 			
 			String line;
 			FileInputStream fstream;
@@ -203,6 +225,7 @@ public class CodeGenerator {
 			BufferedReader br;
 			
 			try {
+				//Lesen der Config Datei Zeilen
 				fstream = new FileInputStream(configFile);
 				in = new DataInputStream(fstream);
 				br = new BufferedReader(new InputStreamReader(in));
@@ -213,19 +236,24 @@ public class CodeGenerator {
 						continue;
 					}
 					
-					line = line.replace("<input>", outputFile + ".s");
+					//ersetzen der Platzhalter
+					line = line.replace("<input>", outputFile + ".asm");
 					line = line.replace("<output>", outputFile);
-					System.out.println(line);
-					Process process = Runtime.getRuntime().exec(line);
-					Process sleep = Runtime.getRuntime().exec("sleep 1");
+					
+					//ausführen der gelesenen Zeile
+					Runtime.getRuntime().exec(line).waitFor();
 				}
 				fstream.close();
 
+			//Fehlerbehandlung
 			} catch (FileNotFoundException e) {
-				System.err.println("Could't found config file");
+				System.err.println("Could't find config file");
 				e.printStackTrace();
 			} catch(IOException e) {
 				System.err.println("Failed to read from config file");
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				System.err.println("Failed to execute command");
 				e.printStackTrace();
 			}
 		} else {

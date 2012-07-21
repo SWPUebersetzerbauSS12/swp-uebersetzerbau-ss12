@@ -7,6 +7,10 @@ import java.util.Map;
 import de.fuberlin.projectF.CodeGenerator.model.Token;
 import de.fuberlin.projectF.CodeGenerator.model.TokenType;
 
+// Diese Klasse ist für das Einlesen des llvm codes zuständig. Sie Parst die
+// ganze Datei oder den ganzen String (je nach implementierung) und erstellt einen
+// Tokenstream der dann  über den CodeGenerator dem Translator zur Übersetzung 
+// übergeben wird
 public abstract class Lexer {
 	
 	ArrayList<Token> tokenStream;
@@ -36,6 +40,7 @@ public abstract class Lexer {
 		return tokenStream;
 	}
 	
+	//Vorverarbeitung einer LLVM-Code-Zeile
 	protected String[] splitInformation(String line) {
 		line = line.trim();
 
@@ -77,6 +82,7 @@ public abstract class Lexer {
 		
 		tmpSplitLine = line.split(" ");
 
+		//Filtern von nicht relevanten "wörtern"
 		int count = 0;
 		for (int i = 0; i < tmpSplitLine.length; i++) {
 			if (tmpSplitLine[i].isEmpty()) {
@@ -132,6 +138,8 @@ public abstract class Lexer {
 		return splitLine;
 	}
 
+	//Diese Funktion ersetzt bestimmte Zeichen in einem bestimmten Bereich des Strings
+	//Mit einem anderen Zeichen
 	private String replaceBetween(String line, int startpoint, int endpoint,
 			char oldChar, char newChar) {
 
@@ -149,6 +157,7 @@ public abstract class Lexer {
 		return line;
 	}
 
+	//Erstellen eines Token aus einer LLVM-Code-Zeile
 	protected Token fillToken(String[] line) {
 		Token newToken = new Token();
 
@@ -171,6 +180,7 @@ public abstract class Lexer {
 		// Wertzuweisungen
 		else if (line[0].contentEquals("store")) {
 			if(line[2].startsWith("c\"")) {
+				//inline Strings
 				debug.println("\t\tFound inline string definition");
 				newToken.setType(TokenType.String);
 				newToken.setOp1(line[2].substring(1));
@@ -197,6 +207,7 @@ public abstract class Lexer {
 			}
 		}
 
+		//Aufruf einer Funktion
 		else if (line[0].contentEquals("call")) {
 			debug.print("\t\tFound call of ");
 			newToken.setTypeTarget(line[1]);
@@ -228,10 +239,12 @@ public abstract class Lexer {
 				for(j = i; j < line.length; j++)
 					if(line[j].charAt(0) == '(')
 						break;
+				//lesen der Parameter
 				fillParameter(newToken, line[j].replace((char) 1, ' '));
 			}
 		}
 
+		//Sprung befehl
 		else if (line[0].contentEquals("br")) {
 			debug.println("\t\tFound branch ");
 			newToken.setType(TokenType.Branch);
@@ -268,6 +281,7 @@ public abstract class Lexer {
 			newToken.setType(TokenType.DefinitionEnd);
 		}
 		
+		//Label gefunden
 		else if (line[1].contentEquals(":")) {
 			debug.println("\t\tFound label " + line[0]);
 			newToken.setType(TokenType.Label);
@@ -284,6 +298,7 @@ public abstract class Lexer {
 				fillParameter(newToken, line[3].replace((char) 1, ' '));
 			}
 
+			//globaler String
 			else if (line[0].startsWith("@.str")) {
 				debug.println("\t\tFound a global string definition ");
 				newToken.setType(TokenType.String);
@@ -308,7 +323,10 @@ public abstract class Lexer {
 					|| line[2].contentEquals("sdiv")
 					|| line[2].contentEquals("or")
 					|| line[2].contentEquals("and")
-					|| line[2].contentEquals("xor")) {
+					|| line[2].contentEquals("xor") 
+					|| line[2].contentEquals("shl")
+					|| line[2].contentEquals("ashr")
+					|| line[2].contentEquals("lshr")){
 				debug.println("\t\tFound an integer expression");
 				newToken.setType(TokenType.ExpressionInt);
 				newToken.setTarget(line[0]);
@@ -334,6 +352,7 @@ public abstract class Lexer {
 				newToken.setOp2(line[5]);
 			}
 			
+			//Cast von Integer zu Double
 			else if (line[2].contentEquals("sitofp")
 					|| line[2].contentEquals("fptosi")) {
 				debug.println("\t\tFound cast from integer to double");
@@ -344,6 +363,7 @@ public abstract class Lexer {
 				newToken.setTypeOp1(line[3]);
 			}
 			
+			//Pointer auf ein Array, Record, oder String
 			else if (line[2].contentEquals("getelementptr")) {
 				debug.println("\t\tFound a pointer declaration");
 				newToken.setType(TokenType.Getelementptr);
@@ -371,6 +391,7 @@ public abstract class Lexer {
 				newToken.setTarget(line[0]);
 				newToken.setTypeTarget(line[3].replace((char) 1, ' '));
 				
+			//Aufruf einer Funktion mit Rückgabewert
 			} else if (line[2].contentEquals("call")) {
 				debug.print("\t\tFound a call to ");
 				newToken.setTarget(line[0]);
@@ -386,6 +407,7 @@ public abstract class Lexer {
 				
 				newToken.setOp1(line[i]);
 				
+				//printf call
 				if(line[i].equals("@printf")) {
 					int j;
 					for(j = i; j < line.length; j++)
@@ -403,10 +425,12 @@ public abstract class Lexer {
 					for(j = i; j < line.length; j++)
 						if(line[j].charAt(0) == '(')
 							break;
+					//Parsen der Parameter
 					fillParameter(newToken, line[j].replace((char) 1, ' '));
 				}
 			}
 
+			//Integer Compare Befehl
 			else if (line[2].contentEquals("icmp")) {
 				debug.println("\t\tFound a comparism");
 				newToken.setType(TokenType.CompareInteger);
@@ -416,6 +440,7 @@ public abstract class Lexer {
 				newToken.setTypeOp1(line[4]);
 				newToken.setOp2(line[6]);
 				
+			//Compare Befehl für Double werte
 			} else if (line[2].contentEquals("fcmp")) {
 				debug.println("\t\tFound a comparism");
 				newToken.setType(TokenType.CompareDouble);
@@ -425,6 +450,7 @@ public abstract class Lexer {
 				newToken.setTypeOp1(line[4]);
 				newToken.setOp2(line[6]);
 
+			//Unbekannte LLVM-Code-Zeile
 			} else {
 				debug.println("\t\tToken is undefined");
 				newToken.setType(TokenType.Undefined);
@@ -436,6 +462,8 @@ public abstract class Lexer {
 		return newToken;
 	}
 
+	//Diese Funktion konvertiert die Darstellung von Double Werten aus der LLVM-Code-Datei,
+	//in das für den Prozessor übliche Format IEEE754
 	private String transformInIEEE(String string) {
 		String[] sString = string.split("e");
 		
@@ -458,8 +486,8 @@ public abstract class Lexer {
 		return new String("0x" + tmp2);
 	}
 
-
-
+	//Parst die Parameter die in llvm entwerde in {}, () oder [] enthalten sind
+	//und packt diese in den Token
 	private void fillParameter(Token newToken, String line) {
 		line = line.replace('(', ' ');
 		line = line.replace(')', ' ');
@@ -494,6 +522,7 @@ public abstract class Lexer {
 		}
 	}
 	
+	//Nachverarbeitung des erzeugten Tokenstreams
 	private void postprocessing() {
 		//inline strings umbenennen 
 		for (Map.Entry<String, ArrayList<String>> entry : renameCandidate.entrySet()) {

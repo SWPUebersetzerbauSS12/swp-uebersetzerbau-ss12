@@ -24,6 +24,10 @@ public class ArrayPointer extends Reference{
 		return " " + address.getFullName();
 	}
 	
+	public RegisterAddress getRegAddress() {
+		return this.address;
+	}
+	
 	public String getPtrAddress() {
 		return address.getFullName();
 	}

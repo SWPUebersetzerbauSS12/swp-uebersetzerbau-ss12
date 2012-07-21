@@ -190,4 +190,8 @@ public class MemoryManager {
 	public StackAddress mmxRegToStack(Variable var) {
 		return current.mmxRegToStack(var);
 	}
+
+	public void freeArrayPointer(String target) {
+		current.freeArrayPointer(target);
+	}
 }

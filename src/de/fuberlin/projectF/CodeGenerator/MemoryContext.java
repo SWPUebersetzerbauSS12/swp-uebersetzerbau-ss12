@@ -358,4 +358,9 @@ public class MemoryContext {
 	public boolean isFree(int i) {
 		return freeRegisters.contains(registers.get(i));
 	}
+
+	public void freeArrayPointer(String target) {
+		if (arrayPtrs.containsKey(target))
+			freeRegister(arrayPtrs.get(target).getRegAddress());
+	}
 }

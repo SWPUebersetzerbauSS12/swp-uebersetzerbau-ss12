@@ -221,6 +221,9 @@ public class Translator {
 					else
 						asm.mov(source, target, "Assignment i32 " + tok.getTarget());
 				}
+				
+				// Falls Zuweisung auf Array Pointer, kann dieser nun freigegeben werden.
+				mem.freeArrayPointer(tok.getTarget());
 				break;
 
 			case Load:

@@ -187,6 +187,9 @@ public class BinaryOp extends Expression {
 		default:
 			assert(false); // should never happen!
 		}
+		if(expr.toTypeString().equals(BasicType.TYPE_REAL_STRING)){
+			return "f" + mathOp;
+		}
 		return mathOp;
 	}
 

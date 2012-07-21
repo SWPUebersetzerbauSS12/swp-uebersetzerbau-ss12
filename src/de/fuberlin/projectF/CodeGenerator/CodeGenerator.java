@@ -12,6 +12,8 @@ import java.util.ArrayList;
 
 import de.fuberlin.projectF.CodeGenerator.model.Token;
 
+//Dies ist die Hauptklasse des Projekts und kümmert sich um globale angelegenheiten wie
+//die übergebenen Parameter. Sie stellt auch das Interface zur Anbindung an das Hauptprojekt dar.
 public class CodeGenerator {
 
 	//Variante f�r File-Input
@@ -179,17 +181,22 @@ public class CodeGenerator {
 			}
 		}
 		
+		//Wenn -e gesetzt dann erstelle die auszuführende Datei anhand der Befehle
+		//aus der mit -C angegebenen Config datei
 		if (exec == true) {
 			exec(outputFile, configFile);
 		}
 		
 	}
 
+	//Schreiben des erzeugten Assemblercodes in die Ausgabedatei
 	public static void writeFile(boolean exec, String outputFile, String output) {
 		try{
 			FileOutputStream schreibeStrom;
+			//Falls -e gesetzt schreibe den Code in eine .asm Datei
 			if(exec == true)
-				schreibeStrom = new FileOutputStream(outputFile + ".s");
+				schreibeStrom = new FileOutputStream(outputFile + ".asm");
+			//Falls -e nicht gesetzt schreibeCode direkt in die Ausgabedatei
 			else
 				schreibeStrom = new FileOutputStream(outputFile);
 		    for (int i=0; i < output.length(); i++){
@@ -203,13 +210,14 @@ public class CodeGenerator {
 		}
 	}
 
+	//Diese Funktion liesst die einzelnen Zeilen der Config Datei,
+	//ersetzt in den gelesenen Zeilen die Platzhalter <input> und <output>
+	//und führt dies dann als Befehle auf der Commandozeile aus
 	public static void exec(String outputFile, String configFile) {
-		if(System.getProperty("os.name").toLowerCase().indexOf("windows") >= 0) {
-			System.err.println("Creating an executable file is not supported for windows systems.");
-			System.err.println("Please change your operating system. We do not support such stuff like windows :P");
-			return;
-		} else if(System.getProperty("os.name").toLowerCase().indexOf("linux") >= 0) {
-			System.out.println("Yeah LINUX :-)");
+		
+		//Testen on Windows oder Linux 
+		if(System.getProperty("os.name").toLowerCase().indexOf("windows") >= 0 ||
+			System.getProperty("os.name").toLowerCase().indexOf("linux") >= 0) {
 			
 			String line;
 			FileInputStream fstream;
@@ -217,6 +225,7 @@ public class CodeGenerator {
 			BufferedReader br;
 			
 			try {
+				//Lesen der Config Datei Zeilen
 				fstream = new FileInputStream(configFile);
 				in = new DataInputStream(fstream);
 				br = new BufferedReader(new InputStreamReader(in));
@@ -227,19 +236,24 @@ public class CodeGenerator {
 						continue;
 					}
 					
+					//ersetzen der Platzhalter
 					line = line.replace("<input>", outputFile + ".asm");
 					line = line.replace("<output>", outputFile);
-					System.out.println(line);
-					Runtime.getRuntime().exec(line);
-					Runtime.getRuntime().exec("sleep 1");
+					
+					//ausführen der gelesenen Zeile
+					Runtime.getRuntime().exec(line).waitFor();
 				}
 				fstream.close();
 
+			//Fehlerbehandlung
 			} catch (FileNotFoundException e) {
 				System.err.println("Could't find config file");
 				e.printStackTrace();
 			} catch(IOException e) {
 				System.err.println("Failed to read from config file");
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				System.err.println("Failed to execute command");
 				e.printStackTrace();
 			}
 		} else {

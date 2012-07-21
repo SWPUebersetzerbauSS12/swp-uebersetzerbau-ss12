@@ -31,6 +31,22 @@ public class RealWorldTest {
 	}
 
 	@Test
+	public void testBubbleSort() throws IOException {
+		File file = new File("input/de/fuberlin/projecta/bubbleSort.lmb");
+		String source = "";
+		if (file.canRead()) {
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			String line;
+			while ((line = reader.readLine()) != null) {
+				source += line + "\n";
+			}
+		}
+		System.out.println(source);
+		String output = CompilerTest.executeCode(source);
+		assertEquals("[5,3,7,2,10,8,1,4,9,6,][1,2,3,4,5,6,7,8,9,10,]", output);
+	}
+
+	@Test
 	public void testFibonacciFunction() {
 		String source = "def int main(){int x; x = fib(4); print x; return 0;}\n"
 				+ "def int fib(int x){"

@@ -16,6 +16,11 @@ import de.fuberlin.projectF.CodeGenerator.model.RegisterAddress;
 import de.fuberlin.projectF.CodeGenerator.model.StackAddress;
 import de.fuberlin.projectF.CodeGenerator.model.Variable;
 
+/* Class: MemoryContext
+ * Diese Klasse verwaltet die Register- und Stackbelegungen
+ * eines bestimmten Kontext's, sprich einer Funktion. 
+ */
+
 public class MemoryContext {
 
 	private String name;

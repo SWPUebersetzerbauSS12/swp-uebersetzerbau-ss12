@@ -34,7 +34,8 @@ public class CompilerMain {
 
 		for(int i = 0; i < args.length; i++) {
 			if (args[i].equals("-f")) {
-				filePath = args[i++];
+				readFromStdin = false;
+				filePath = args[++i];
 			} else if (args[i].equals("-v")) {
 				verbose = true;
 			} else if (args[i].equals("-h")) {
@@ -51,7 +52,8 @@ public class CompilerMain {
 					.println("Reading from stdin. Exit with new line and Ctrl+D.");
 			ICharStream stream = StringUtils.readFromStdin();
 			run(stream, verbose);
-		} else if (filePath.isEmpty()) {
+		} else if (!filePath.isEmpty()) {
+			System.out.println("Reading from file: " + filePath);
 			FileCharStream stream = StringUtils.readFromFile(filePath);
 			run(stream, verbose);
 		} else {

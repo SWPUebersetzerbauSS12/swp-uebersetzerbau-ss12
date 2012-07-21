@@ -310,7 +310,8 @@ public abstract class Lexer {
 					|| line[2].contentEquals("and")
 					|| line[2].contentEquals("xor") 
 					|| line[2].contentEquals("shl")
-					|| line[2].contentEquals("ashr")){
+					|| line[2].contentEquals("ashr")
+					|| line[2].contentEquals("lshr")){
 				debug.println("\t\tFound an integer expression");
 				newToken.setType(TokenType.ExpressionInt);
 				newToken.setTarget(line[0]);

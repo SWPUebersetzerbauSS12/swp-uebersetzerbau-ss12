@@ -270,7 +270,10 @@ public class Translator {
 					asm.shl(op2, res.getFullName(), tok.getOp1() + " << " + tok.getOp2());
 				
 				else if (tok.getTypeTarget().equals("ashr"))
-					asm.sar(op2, res.getFullName(), tok.getOp1() + " >> " + tok.getOp2());
+					asm.sar(op2, res.getFullName(), tok.getOp1() + " >a> " + tok.getOp2());
+				
+				else if (tok.getTypeTarget().equals("lshr"))
+					asm.shr(op2, res.getFullName(), tok.getOp1() + " >l> " + tok.getOp2());
 				
 				else if (tok.getTypeTarget().equals("sdiv")) {
 					if (!mem.isFree(0)) {

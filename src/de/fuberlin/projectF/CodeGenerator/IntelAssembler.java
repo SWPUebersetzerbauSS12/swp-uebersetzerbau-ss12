@@ -220,6 +220,13 @@ public class IntelAssembler extends Assembler{
 				.append(source).append("\t;").append(comment).append("\n");
 	}
 	
+	protected void shr(String source, String target, String comment) {
+		source = translate(source);
+		target = translate(target);
+		sectionText.append("\tshr ").append(target).append(", ")
+				.append(source).append("\t;").append(comment).append("\n");
+	}
+	
 	protected void sar(String source, String target, String comment) {
 		source = translate(source);
 		target = translate(target);

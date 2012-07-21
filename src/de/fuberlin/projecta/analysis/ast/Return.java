@@ -19,7 +19,9 @@ public class Return extends Statement {
 		Expression argument = getArgument();
 
 		if (argument == null) {
+			getHighestBlock().getNewVar();
 			return "br label %return\n";
+			
 		} else {
 			ret += LLVM.loadType(argument);
 			ret += "store " + getParentFunction().fromTypeStringToLLVMType()
@@ -28,16 +30,6 @@ public class Return extends Statement {
 					+ "br label %return\n";
 			getHighestBlock().getNewVar();
 		}
-		// } else if (argument instanceof Literal) {
-		// ret += "ret " + argument.genCode() + "\n";
-		// } else {
-		// ret += LLVM.loadType(argument);
-		// ret += "ret " + argument.fromTypeStringToLLVMType() + " %"
-		// + LLVM.getMem(argument) + "\n";
-		// }
-		// if (!ret.equals("")) {
-		// ret += "\n; <label>:" + block.getNewVar();
-		// }
 		return ret;
 	}
 

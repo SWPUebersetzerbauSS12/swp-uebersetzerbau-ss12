@@ -40,10 +40,14 @@ public class FuncCall extends Expression {
 			func = SymbolTableHelper.lookup(getId().getValue(), this);
 		}
 		if (func != null) {
-			ret = "call " + func.getType().genCode();
+			// at first, load all params!
+			if (getChildrenCount() > 1)
+				ret += LLVM.loadParams((Args) getChild(1));
+			ret += "call " + func.getType().genCode();
 			ret += " @" + func.getId() + "(";
 			boolean tmp = false;
 			if (getChildrenCount() > 1)
+
 				for (ISyntaxTree child : getChild(1).getChildren()) {
 					tmp = true;
 					Expression node = (Expression) child;
@@ -58,7 +62,8 @@ public class FuncCall extends Expression {
 					} else if (node instanceof Id
 							&& SymbolTableHelper.lookup(((Id) node).getValue(),
 									node).getType() instanceof Array) {
-						ret += ((Id) node).getType().genCode() + "* %" + ((Id) node).getValue() + ", ";
+						ret += ((Id) node).getType().genCode() + "* %"
+								+ ((Id) node).getValue() + ", ";
 					}
 
 				}
@@ -70,8 +75,6 @@ public class FuncCall extends Expression {
 			if (!searchUpAssign()
 					&& !func.getType().toTypeString().equals("void")) {
 				getHighestBlock().getNewVar();
-				System.out.println("in funcCall " + getId().getValue()
-						+ " and searchUpAssign() is" + searchUpAssign());
 			}
 
 		}
@@ -80,7 +83,7 @@ public class FuncCall extends Expression {
 
 	public boolean searchUpAssign() {
 		BinaryOp bOp = null;
-		if(getParent() instanceof Return)
+		if (getParent() instanceof Return)
 			return true;
 		if (getParent() != null) {
 			ISyntaxTree parent = getParent();
@@ -89,7 +92,7 @@ public class FuncCall extends Expression {
 					bOp = (BinaryOp) parent;
 					if (bOp.getOp() == TokenType.OP_ASSIGN)
 						return true;
-				} else if (parent instanceof Return){
+				} else if (parent instanceof Return) {
 					return true;
 				}
 				parent = parent.getParent();

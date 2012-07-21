@@ -40,7 +40,7 @@ public class Params extends AbstractSyntaxTree {
 			ret += ((Type) getChild(i)).genCode();
 			// hack for arrays...
 			if(getChild(i) instanceof Array)
-				ret+="* byval";
+				ret+="* ";
 			ret +=  " %" + ((Id) getChild(i + 1)).genCode() + ", ";
 		}
 		if (atLeastOne) {

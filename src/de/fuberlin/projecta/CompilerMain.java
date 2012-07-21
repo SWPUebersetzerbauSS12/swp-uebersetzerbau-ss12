@@ -23,7 +23,7 @@ public class CompilerMain {
 
 	static final String LLC_EXE = "llc";
 	static final String GCC_EXE = "gcc";
-	
+
 	public static void main(String[] args) {
 		// action
 		boolean printHelp = false;
@@ -94,12 +94,11 @@ public class CompilerMain {
 			// call "llc"
 			File assemblyFile = File.createTempFile("code", ".s");
 			{
-				String[] command = {LLC_EXE,
-						llvmFile.getCanonicalPath(),
-						"-o", assemblyFile.getCanonicalPath()
-				};
+				String[] command = { LLC_EXE, llvmFile.getCanonicalPath(),
+						"-o", assemblyFile.getCanonicalPath() };
 				Process p = Runtime.getRuntime().exec(command);
-				BufferedReader in = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+				BufferedReader in = new BufferedReader(new InputStreamReader(
+						p.getErrorStream()));
 				String text;
 				while ((text = in.readLine()) != null) {
 					System.out.println(text);
@@ -111,10 +110,8 @@ public class CompilerMain {
 			File executableFile = File.createTempFile("code", ".bin");
 			executableFile.setExecutable(true);
 			{
-				String[] command = { GCC_EXE,
-						assemblyFile.getCanonicalPath(),
-						"-o", executableFile.getCanonicalPath() 
-				};
+				String[] command = { GCC_EXE, assemblyFile.getCanonicalPath(),
+						"-o", executableFile.getCanonicalPath() };
 				Process p = Runtime.getRuntime().exec(command);
 				BufferedReader in = new BufferedReader(new InputStreamReader(
 						p.getErrorStream()));
@@ -128,7 +125,8 @@ public class CompilerMain {
 			// call generated executable
 			{
 				String[] command = { executableFile.getCanonicalPath() };
-				System.err.println("Running " + executableFile.getCanonicalPath());
+				System.err.println("Running "
+						+ executableFile.getCanonicalPath());
 				Process p = Runtime.getRuntime().exec(command);
 				BufferedReader in = new BufferedReader(new InputStreamReader(
 						p.getInputStream()));

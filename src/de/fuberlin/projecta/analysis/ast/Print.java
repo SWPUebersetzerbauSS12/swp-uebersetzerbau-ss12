@@ -13,7 +13,7 @@ public class Print extends Statement {
 	@Override
 	/*
 	 * we use the puts function to print to screen %forprinting = load i8**
-	 * %str3 tail call i32 (i8*)* @puts(i8* %forprinting)
+	 * %str3 call i32 (i8*)* @puts(i8* %forprinting)
 	 */
 	public String genCode() {
 		String out = "";
@@ -23,17 +23,36 @@ public class Print extends Statement {
 			idType = SymbolTableHelper
 					.lookupRecordVarCall((RecordVarCall) getChild(0));
 			idType = (Type) idType.getParent().getChild(0);
+		} else if (getChild(0) instanceof ArrayCall) {
+			ArrayCall tmp = (ArrayCall) getChild(0);
+			while (tmp.getChild(1) instanceof ArrayCall) {
+				tmp = (ArrayCall) tmp.getChild(1);
+			}
+			if (tmp.getChild(1) instanceof Id) {
+				String arrayId = ((Id) tmp.getChild(1)).getValue();
+				idType = SymbolTableHelper.lookup(arrayId, this).getType();
+				idType = ((Array) idType).getBasicType();
+			}
 		} else {
 			idType = SymbolTableHelper.lookup(((Id) getChild(0)).getValue(),
 					this).getType();
 		}
 		if (idType instanceof BasicType) {
+
 			if (((BasicType) idType).getTokenType() == BasicTokenType.STRING) {
-				int reg = block.getNewVar();
-				out += "%" + reg + " = load i8** %"
-						+ ((Id) getChild(0)).getValue() + "\n";
-				out += "%" + getHighestBlock().getNewVar() + " = "
-						+ "call i32 (i8*)* @puts(i8* %" + reg + ")";
+
+				if (LLVM.isInParams((Id) getChild(0))) {
+					out += "%" + getHighestBlock().getNewVar() + " = "
+							+ "call i32 (i8*)* @puts(i8* %"
+							+ ((Id) getChild(0)).getValue() + ")";
+				} else {
+					int reg = block.getNewVar();
+					out += "%" + reg + " = load i8** %"
+							+ ((Id) getChild(0)).getValue() + "\n";
+					out += "%" + getHighestBlock().getNewVar() + " = "
+							+ "call i32 (i8*)* @puts(i8* %" + reg + ")";
+				}
+
 			} else {
 				String format = "";
 				if (((BasicType) idType).getTokenType() == BasicTokenType.INT) {
@@ -44,9 +63,7 @@ public class Print extends Statement {
 				} else if (((BasicType) idType).getTokenType() == BasicTokenType.BOOL) {
 					format = "%d";
 				}
-				
-				
-				
+
 				// format string
 				int tempReg = block.getNewVar();
 				out += "%" + tempReg + " = alloca [4 x i8]\n";
@@ -57,14 +74,8 @@ public class Print extends Statement {
 						+ tempReg + ", i8 0, i8 0 \n";
 				// now we print
 				int valReg = 0;
-				if (getChild(0) instanceof Id){
-					valReg = block.getNewVar(); 
-					out += "%" + valReg + " = load " + idType.genCode() + "* %"
-							+ ((Id) getChild(0)).getValue() + "\n";
-				} else if (getChild(0) instanceof RecordVarCall) {
-					out += LLVM.loadType((RecordVarCall)getChild(0));
-					valReg = block.getCurrentRegister();
-				}
+				out += LLVM.loadType((Expression) getChild(0));
+				valReg = block.getCurrentRegister();
 				out += "call i32 (i8*, ...)* @printf(i8* %" + tempReg2 + ", "
 						+ idType.genCode() + " %" + valReg + ")";
 				// implicit return of printf increments var counter!

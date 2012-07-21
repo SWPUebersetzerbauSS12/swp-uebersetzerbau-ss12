@@ -7,6 +7,7 @@ import de.fuberlin.projecta.analysis.ast.AbstractSyntaxTree;
 import de.fuberlin.projecta.analysis.ast.Args;
 import de.fuberlin.projecta.analysis.ast.Array;
 import de.fuberlin.projecta.analysis.ast.ArrayCall;
+import de.fuberlin.projecta.analysis.ast.BasicType;
 import de.fuberlin.projecta.analysis.ast.Block;
 import de.fuberlin.projecta.analysis.ast.Declaration;
 import de.fuberlin.projecta.analysis.ast.Expression;
@@ -74,11 +75,25 @@ public class LLVM {
 					+ " = load "
 					+ SymbolTableHelper.lookup(id.getValue(), id).getType()
 							.genCode() + "* %" + id.getValue() + "\n";
+		} else if (id != null && isInParams(id) && id.getVar() == 0) {
+			int memory = id.getHighestBlock().getNewVar();
+			id.setValMemory(memory);
+			String value = "0";
+			String op = "= add ";
+			if(id.toTypeString().equals(BasicType.TYPE_REAL_STRING)){
+				value += ".0";
+				op = "= fadd ";
+			}
+			ret += "%"
+					+ memory
+					+ op
+					+ SymbolTableHelper.lookup(id.getValue(), id).getType()
+							.genCode() + " %" + id.getValue() + ", "+ value +"\n";
 		}
 		return ret;
 	}
 
-	private static String loadParams(Args args) {
+	public static String loadParams(Args args) {
 		String ret = "";
 		if (args != null) {
 			for (ISyntaxTree child : args.getChildren()) {
@@ -120,6 +135,12 @@ public class LLVM {
 		return null;
 	}
 
+	/**
+	 * genCode must be called before for this to work properly !!!
+	 * 
+	 * @param expr
+	 * @return the memory address of the loaded expression
+	 */
 	public static String getMem(Expression expr) {
 		String ret = "";
 		if (expr instanceof Id) {
@@ -188,17 +209,20 @@ public class LLVM {
 				int n = block.getNewVar();
 				ret += "%" + n + " = " + expr.genCode() + "\n";
 				expr.setValMemory(n);
-			} else if(expr instanceof ArrayCall){
+			} else if (expr instanceof ArrayCall) {
 				ArrayCall array = (ArrayCall) expr;
 				ret += getArrayCallPointer(array);
 				int pointer = array.getVar();
 				Id id = array.getVarId();
-				Type t = SymbolTableHelper.lookup(id.getValue(), array).getType();
+				Type t = SymbolTableHelper.lookup(id.getValue(), array)
+						.getType();
 				int val = block.getNewVar();
-				ret += "%"+val + " = load "+ ((Array)t).getBasicType().fromTypeStringToLLVMType() + "* %"+pointer;
+				ret += "%" + val + " = load "
+						+ ((Array) t).getBasicType().fromTypeStringToLLVMType()
+						+ "* %" + pointer;
 				expr.setValMemory(val);
 				ret += "\n";
-				
+
 			} else if (expr instanceof RecordVarCall) {
 				int n = -1;
 				RecordVarCall recVarCall = (RecordVarCall) expr;
@@ -273,29 +297,32 @@ public class LLVM {
 
 		return ret;
 	}
-	
-	public static String getArrayCallPointer(ArrayCall array){
+
+	public static String getArrayCallPointer(ArrayCall array) {
 		String ret = "";
-		Expression t1 = (Expression)array.getChild(0);
+		Expression t1 = (Expression) array.getChild(0);
 		ret += LLVM.loadType(t1);
 		int num = t1.getVar();
 		String index = ", i32 %" + num;
 		ArrayCall tmpT2 = array;
-		// collect all array references. unlike declaration we have to go bottom up for arrayCall
+		// collect all array references. unlike declaration we have to go bottom
+		// up for arrayCall
 		// thus we build index in reverse order...
-		while(tmpT2.getChild(1) instanceof ArrayCall){
-			tmpT2 = (ArrayCall)tmpT2.getChild(1);
-			Expression tmpT1 = (Expression)tmpT2.getChild(0);
+		while (tmpT2.getChild(1) instanceof ArrayCall) {
+			tmpT2 = (ArrayCall) tmpT2.getChild(1);
+			Expression tmpT1 = (Expression) tmpT2.getChild(0);
 			ret += LLVM.loadType(tmpT1);
-			index = ", i32 %" + tmpT1.getVar() + index;	
+			index = ", i32 %" + tmpT1.getVar() + index;
 		}
-		//first resolve the array pointer than append remaining indexes
+		// first resolve the array pointer than append remaining indexes
 		index = ", i32 0" + index;
-		//last ArrayCall contains the id of the array! (weird, but we deal with it)
+		// last ArrayCall contains the id of the array! (weird, but we deal with
+		// it)
 		Id id = (Id) tmpT2.getChild(1);
 		Type t = SymbolTableHelper.lookup(id.getValue(), array).getType();
 		int pointer = array.getHighestBlock().getNewVar();
-		ret += "%"+ pointer + " = getelementptr inbounds "+ ((Array)t).genCode() +"* %"+ id.getValue();
+		ret += "%" + pointer + " = getelementptr inbounds "
+				+ ((Array) t).genCode() + "* %" + id.getValue();
 		ret += index + "\n";
 		array.setValMemory(pointer);
 		return ret;

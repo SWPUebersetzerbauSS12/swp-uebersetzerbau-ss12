@@ -3,7 +3,6 @@ package de.fuberlin.projecta;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Categories.ExcludeCategory;
 
 import de.fuberlin.projecta.analysis.SemanticException;
 import de.fuberlin.projecta.lexer.io.ICharStream;
@@ -286,29 +285,18 @@ public class CompilerTest {
 				"int a; real b; string c; a = 2; b = 1.0; c = \"bar\"; foo(a,b,c);}";
 		String output = executeCode(code);
 		System.out.println(output);
-		assertEquals("21.0bar", output);
+		assertEquals("21.000000bar", output);
 	}
 	
 	@Test
 	public void testBasicParameter(){
-		String code = "def void foo(int i, real r, string s){" + 
-				"int a; a = i; a = i+1; print i; print r; print s;}" + 
+		String code = "def void foo(int i, real r){" + 
+				"int a; a = i; a = i+1; print i; print r;}" + 
 				"def void main(){" + 
-				"int a; real b; string c; a = 2; b = 1.0; c = \"bar\"; foo(a,b,c);}";
+				"int a; real b; string c; a = 2; b = 1.0; foo(a,b);}";
 		String output = executeCode(code);
 		System.out.println(output);
-		assertEquals("21.0bar", output);
-	}
-	
-	@Test
-	public void testWritingToParameter(){
-		String code = "def int foo(int i){" + 
-				"i = 1; return i;}" + 
-				"def void main(){" + 
-				"int a; a = foo(a); print a;}";
-		String output = executeCode(code);
-		System.out.println(output);
-		assertEquals("1", output);
+		assertEquals("21.000000", output);
 	}
 	
 	@Test

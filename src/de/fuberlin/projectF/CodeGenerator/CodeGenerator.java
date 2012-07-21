@@ -227,7 +227,7 @@ public class CodeGenerator {
 						continue;
 					}
 					
-					line = line.replace("<input>", outputFile + ".s");
+					line = line.replace("<input>", outputFile + ".asm");
 					line = line.replace("<output>", outputFile);
 					System.out.println(line);
 					Runtime.getRuntime().exec(line);

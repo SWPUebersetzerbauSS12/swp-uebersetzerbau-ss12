@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # Bedienung:
-# in java-code muessen DEBUG und STATISTIC flags auf false sein
 # aufruf aus gleichem ordner mit z.B.: ./opt.sh /home/dakn/Studium/swp_compiler/swp-uebersetzerbau-ss12/tests/de/fuberlin/optimierung/test.c
+# muss absoluter pfad sein, c-datei und opt.sh muessen im gleichen ordner sein, aufruf aus diesem ordner
+# in java-code muessen DEBUG und STATISTIC flags auf false sein
 
 # $1 enthaelt zu verarbeitende C-Datei
 c_file=$1

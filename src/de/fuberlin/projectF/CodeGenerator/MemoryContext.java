@@ -26,8 +26,10 @@ public class MemoryContext {
 	private HashMap<String, Record> records;
 	private HashMap<String, ArrayPointer> arrayPtrs;
 	private HashMap<String, RecordPointer> recordPtrs;
+	private ArrayList<RegisterAddress> registers;
 	private ArrayList<RegisterAddress> freeRegisters;
 	private HashMap<RegisterAddress, Reference> usedRegisters;
+	private ArrayList<MMXRegisterAddress> mmxRegisters;
 	private ArrayList<MMXRegisterAddress> freeMMXRegisters;
 	private HashMap<MMXRegisterAddress, Variable> usedMMXRegisters;
 
@@ -40,19 +42,25 @@ public class MemoryContext {
 		records = new HashMap<String, Record>();
 		arrayPtrs = new HashMap<String, ArrayPointer>();
 		recordPtrs = new HashMap<String, RecordPointer>();
+		registers = new ArrayList<RegisterAddress>();
 		freeRegisters = new ArrayList<RegisterAddress>();
 		usedRegisters = new HashMap<RegisterAddress, Reference>();
+		mmxRegisters = new ArrayList<MMXRegisterAddress>();
 		freeMMXRegisters = new ArrayList<MMXRegisterAddress>();
 		usedMMXRegisters = new HashMap<MMXRegisterAddress, Variable>();
 		for (int i = 0; i < 6; i++) {
-			freeRegisters.add(new RegisterAddress(i));
+			RegisterAddress r = new RegisterAddress(i);
+			registers.add(r);
+			freeRegisters.add(r);
 		}
 		for (int i = 0; i < 8; i++) {
-			freeMMXRegisters.add(new MMXRegisterAddress(i));
+			MMXRegisterAddress mr = new MMXRegisterAddress(i);
+			freeMMXRegisters.add(mr);
+			mmxRegisters.add(mr);
 		}
 
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -80,17 +88,17 @@ public class MemoryContext {
 		put(newVar);
 	}
 
-	public ArrayPointer contArrayPtr(String name, String lastPtr, String offset,
-			String values) {
+	public ArrayPointer contArrayPtr(String name, String lastPtr,
+			String offset, String values) {
 		int value = 1;
 		values = values.substring(values.indexOf('x'), values.lastIndexOf('x'));
 		Pattern p = Pattern.compile("\\d+");
 		Matcher m = p.matcher(values);
-		
-		while (m.find()){
+
+		while (m.find()) {
 			value *= new Integer(m.group(0));
 		}
-		
+
 		ArrayPointer oldPtr = arrayPtrs.get(lastPtr);
 		ArrayPointer arrPtr = new ArrayPointer(name, oldPtr, value);
 		put(arrPtr);
@@ -98,8 +106,8 @@ public class MemoryContext {
 	}
 
 	public void freeMMXRegister(MMXRegisterAddress tmp) {
-		usedMMXRegisters.remove(tmp.regNumber);
-		freeMMXRegisters.add(0, tmp);
+		usedMMXRegisters.remove(tmp);
+		freeMMXRegisters.add(tmp);
 	}
 
 	public void freeRegister(RegisterAddress reg) {
@@ -113,39 +121,29 @@ public class MemoryContext {
 
 	public MMXRegisterAddress getFreeMMXRegister() {
 		try {
-			return freeMMXRegisters.get(0);
+			return freeMMXRegisters.remove(0);
 		} catch (IndexOutOfBoundsException e) {
 			return null;
 		}
-	}
-
-	public MMXRegisterAddress getFreeMMXRegister(int i) {
-		for (MMXRegisterAddress r : freeMMXRegisters)
-			if (r.regNumber == i)
-				return r;
-		return null;
 	}
 
 	public RegisterAddress getFreeRegister() {
 		try {
-			return freeRegisters.get(0);
+			RegisterAddress r = freeRegisters.remove(0);
+			return r;
 		} catch (IndexOutOfBoundsException e) {
 			return null;
 		}
 	}
 
-	public RegisterAddress getFreeRegister(int i) {
-		for (RegisterAddress r : freeRegisters)
-			if (r.regNumber == i)
-				return r;
-		return null;
+	public RegisterAddress getRegister(int i) {
+		return registers.get(i);
 	}
 
 	public List<Variable> getMMXRegVariables(boolean exclusive) {
-		ArrayList<Variable> vars = new ArrayList<Variable>(
-				usedMMXRegisters.values());
-		for (Variable v : vars) {
-			if (v.onStack())
+		ArrayList<Variable> vars = new ArrayList<Variable>(variables.values());
+		for (Variable v : variables.values()) {
+			if (v.onStack() || v.inReg())
 				vars.remove(v);
 		}
 		return vars;
@@ -215,21 +213,22 @@ public class MemoryContext {
 		put(newArr);
 		return newArr;
 	}
-	
+
 	public Record newRecord(Record rec) {
 		rec.setAddress(stackPointer);
 		put(rec);
 		return rec;
 	}
 
-	public ArrayPointer newArrayPtr(String name, String arrayName, String values, RegisterAddress reg) {
+	public ArrayPointer newArrayPtr(String name, String arrayName,
+			String values, RegisterAddress reg) {
 		Array arr = arrays.get(arrayName);
 		int value = arr.getLength() / new Integer(values.split(" ")[1]);
-		
+
 		ArrayPointer arrPtr = new ArrayPointer(name, arr, value, reg);
 		stackPointer -= arrPtr.getSize();
 		put(arrPtr);
-		
+
 		freeRegisters.remove(reg);
 		usedRegisters.put(reg, arrPtr);
 		return arrPtr;
@@ -237,10 +236,11 @@ public class MemoryContext {
 
 	public RecordPointer newRecordPtr(String name, String rec, String offset) {
 		RecordPointer tmp;
-		if(isRecordPtr(rec))
-			tmp = new RecordPointer(name, recordPtrs.get(rec),new Integer(offset));
+		if (isRecordPtr(rec))
+			tmp = new RecordPointer(name, recordPtrs.get(rec), new Integer(
+					offset));
 		else
-			tmp = new RecordPointer(name, records.get(rec),new Integer(offset));
+			tmp = new RecordPointer(name, records.get(rec), new Integer(offset));
 		put(tmp);
 		return tmp;
 	}
@@ -269,9 +269,10 @@ public class MemoryContext {
 	}
 
 	public boolean onStack(String name) {
-		//if (variables.containsKey(name))
-			//return variables.get(name).onStack();
-		if (references.containsKey(name)) return references.get(name).onStack();
+		// if (variables.containsKey(name))
+		// return variables.get(name).onStack();
+		if (references.containsKey(name))
+			return references.get(name).onStack();
 		return false;
 	}
 
@@ -280,7 +281,7 @@ public class MemoryContext {
 		arrays.put(name, arr);
 		references.put(name, arr);
 	}
-	
+
 	private void put(Record rec) {
 		String name = rec.getName();
 		records.put(name, rec);
@@ -292,7 +293,7 @@ public class MemoryContext {
 		arrayPtrs.put(name, arrPtr);
 		references.put(name, arrPtr);
 	}
-	
+
 	private void put(RecordPointer recPtr) {
 		String name = recPtr.getName();
 		recordPtrs.put(name, recPtr);
@@ -305,10 +306,6 @@ public class MemoryContext {
 		references.put(name, var);
 	}
 
-	public boolean registerInUse(int i) {
-		return usedRegisters.containsKey(i);
-	}
-
 	public StackAddress regToStack(Variable var) {
 		stackPointer -= var.getSize();
 		RegisterAddress reg = var.getRegAddress();
@@ -316,6 +313,16 @@ public class MemoryContext {
 		var.addStackAddress(movedTo);
 		var.freeRegister(reg);
 		freeRegister(reg);
+		return movedTo;
+	}
+	
+	public StackAddress mmxRegToStack(Variable var) {
+		stackPointer -= var.getSize();
+		MMXRegisterAddress reg = var.getMMXRegAddress();
+		StackAddress movedTo = new StackAddress(stackPointer);
+		var.addStackAddress(movedTo);
+		var.freeMMXRegister(reg);
+		freeMMXRegister(reg);
 		return movedTo;
 	}
 
@@ -330,7 +337,7 @@ public class MemoryContext {
 	public ArrayPointer getArraPtr(String name) {
 		return arrayPtrs.get(name);
 	}
-	
+
 	public boolean isRecordPtr(String name) {
 		return recordPtrs.containsKey(name);
 	}
@@ -341,5 +348,17 @@ public class MemoryContext {
 
 	public HashMap<RegisterAddress, Reference> getUsedRegisters() {
 		return usedRegisters;
+	}
+	
+	public HashMap<MMXRegisterAddress, Variable> getUsedMMXRegisters() {
+		return usedMMXRegisters;
+	}
+
+	public MMXRegisterAddress getMMXRegister(int i) {
+		return mmxRegisters.get(i);
+	}
+
+	public boolean isFree(int i) {
+		return freeRegisters.contains(registers.get(i));
 	}
 }

@@ -71,6 +71,10 @@ public class Variable extends Reference {
 		return false;
 	}
 	
+	public boolean inReg() {
+		return !regAddresses.isEmpty();
+	}
+	
 	public boolean inMMXReg(int i) {
 		for (MMXRegisterAddress r : mmxAddresses)
 			if (r.regNumber == i)
@@ -93,5 +97,10 @@ public class Variable extends Reference {
 
 	public void freeRegister(RegisterAddress reg) {
 		regAddresses.remove(reg);		
+	}
+
+	public void freeMMXRegister(MMXRegisterAddress reg) {
+		mmxAddresses.remove(reg);
+		
 	}
 }

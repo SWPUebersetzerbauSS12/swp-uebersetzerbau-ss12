@@ -3,6 +3,7 @@ package de.fuberlin.projectF.CodeGenerator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import de.fuberlin.projectF.CodeGenerator.model.Token.Parameter;
@@ -83,17 +84,17 @@ public class Translator {
 				// Variable zurückgeben
 				if (tok.getOp1().startsWith("%")) {
 					if(tok.getTypeOp1().equals("double"))
-						asm.movsd(mem.getAddress(tok.getOp1()), new MMXRegisterAddress(0).getFullName(), "Return value");
+						asm.movsd(mem.getAddress(tok.getOp1()), mem.getMMXRegister(0).getFullName(), "Return value");
 					else
-						asm.mov(mem.getAddress(tok.getOp1()), new RegisterAddress(0).getFullName(), "Return value");
+						asm.mov(mem.getAddress(tok.getOp1()), mem.getRegister(0).getFullName(), "Return value");
 					
 				}
 				// Fester Wert
 				else {
 					if(tok.getTypeOp1().equals("double"))
-						asm.mov(tok.getOp1(), new MMXRegisterAddress(0).getFullName(), "Return Value");
+						asm.mov(tok.getOp1(), mem.getMMXRegister(0).getFullName(), "Return Value");
 					else
-						asm.mov(tok.getOp1(), new RegisterAddress(0).getFullName(), "Return Value");
+						asm.mov(tok.getOp1(), mem.getRegister(0).getFullName(), "Return Value");
 				}
 				asm.funcEnd();
 				break;
@@ -106,7 +107,6 @@ public class Translator {
 				String function = tok.getOp1().substring(1);
 				
 				// Variablen, die nur in Registern sind, auf dem Stack speichern
-				// TODO: MMX-Register sichern
 				saveRegisters();
 				// Alle Register sind nun frei und werden möglicherweise in der
 				// Aufgerufenen Funktion verwendet.
@@ -144,10 +144,10 @@ public class Translator {
 				
 				// Rückgabe speichern
 				if (tok.getTypeTarget().equals("i32")) {
-					mem.addRegVar(tok.getTarget(), tok.getTypeTarget(), new RegisterAddress(0));
+					mem.addRegVar(tok.getTarget(), tok.getTypeTarget(), mem.getRegister(0));
 				}
 				else if (tok.getTypeTarget().equals("double")) {
-					mmxRes = new MMXRegisterAddress(0);
+					mmxRes = mem.getMMXRegister(0);
 					mem.addMMXRegVar(tok.getTarget(), tok.getTypeTarget(), mmxRes);
 					Variable tmp = mem.newStackVar(tok.getTarget(), tok.getTypeTarget());
 					
@@ -175,7 +175,7 @@ public class Translator {
 					asm.sub(String.valueOf(rec.getSize()), "esp",
 							"Allocation " + tok.getTarget());
 				}
-				// Kein Array kein Record
+				// Kein kein Record
 				else{
 					// Neue Variable anlegen
 					Variable newVar = mem.newStackVar(tok.getTarget(),
@@ -273,20 +273,18 @@ public class Translator {
 					asm.sar(op2, res.getFullName(), tok.getOp1() + " >> " + tok.getOp2());
 				
 				else if (tok.getTypeTarget().equals("sdiv")) {
-					if (!isRegisterFree(new RegisterAddress(0))) {
-						System.err.println("Register eax is not free");
-						saveRegisterValue(new RegisterAddress(0));
+					if (!mem.isFree(0)) {
+						saveRegisters();
 					}
-					if (!isRegisterFree(new RegisterAddress(3))) {
-						System.err.println("Register edx is not free");
-						saveRegisterValue(new RegisterAddress(3));
+					if (!mem.isFree(3)) {
+						saveRegisters();
 					}
-					asm.mov(op1, new RegisterAddress(0).getFullName(), "");
+					asm.mov(op1, mem.getRegister(0).getFullName(), "");
 					asm.mov(new String("0"),
-							new RegisterAddress(3).getFullName(), "");
+							mem.getRegister(3).getFullName(), "");
 
 					asm.idiv(op2);
-					res = new RegisterAddress(0);
+					res = mem.getRegister(0);
 				}
 				mem.addRegVar(tok.getTarget(), "i32*", res);
 				break;
@@ -518,8 +516,13 @@ public class Translator {
 					// New array pointer
 					else{
 						RegisterAddress reg = mem.getFreeRegister();
-						String offset = tok.getOp2();
+						if (reg == null){
+							saveRegisters();
+							reg = mem.getFreeRegister();
+						}
 						
+						String offset = tok.getOp2();
+	
 						ArrayPointer newPtr = mem.newArrayPtr(tok.getTarget(), tok.getOp1(), tok.getTypeTarget(), reg);
 						
 						if (offset.startsWith("%")){
@@ -533,6 +536,10 @@ public class Translator {
 						asm.imul(offset, reg.getFullName(), "");
 						
 						RegisterAddress temp = mem.getFreeRegister();
+						if (temp == null){
+							saveRegisters();
+							temp = mem.getFreeRegister();
+						}
 						asm.lea(array.getAddress(), temp.getFullName(), "Load array address");
 						asm.add(temp.getFullName(), reg.getFullName(), "Add array address");
 						mem.freeRegister(temp);						
@@ -557,6 +564,19 @@ public class Translator {
 		for (Variable var : regVars) {
 			movedFrom = var.getRegAddress();
 			movedTo = mem.regToStack(var);
+			// Stackpointer verschieben
+			asm.sub(String.valueOf(var.getSize()), "esp", "Move var to stack");
+			asm.mov(movedFrom.getFullName(), movedTo.getFullName(), var.getName());
+		}
+	}
+	
+	private void saveMMXRegisters(){
+		List<Variable> regVars = mem.getMMXRegVariables(true);
+		MMXRegisterAddress movedFrom;
+		StackAddress movedTo;
+		for (Variable var : regVars) {
+			movedFrom = var.getMMXRegAddress();
+			movedTo = mem.mmxRegToStack(var);
 			// Stackpointer verschieben
 			asm.sub(String.valueOf(var.getSize()), "esp", "Move var to stack");
 			asm.mov(movedFrom.getFullName(), movedTo.getFullName(), var.getName());
@@ -604,49 +624,35 @@ public class Translator {
 	}
 
 	private boolean freeUnusedRegister(int tokenNumber) {
-		boolean result = false;
 		HashMap<RegisterAddress, Reference> usedRegisters = mem.getUsedRegisters();
-		for (RegisterAddress k : usedRegisters.keySet()) {
-			Reference v = usedRegisters.get(k);
+		ArrayList<RegisterAddress> toFree = new ArrayList<RegisterAddress>();		
+		for (Entry<RegisterAddress, Reference> entry : usedRegisters.entrySet()) {
+			RegisterAddress k = entry.getKey();
+			Reference v = entry.getValue();
 			if (findToken(tokenNumber, false, null, null, v.getName(), v.getName()) == 0) {
-				mem.freeRegister(k);
-				result = true;
+				toFree.add(k);
 			}
 		}
-		return result;
+		for (RegisterAddress r : toFree) {
+			mem.freeRegister(r);
+		}
+		return !toFree.isEmpty();
 	}
 	
 	private boolean freeUnusedMMXRegister(int tokenNumber) {
-		boolean result = false;
-		for (int i = 0; i < 6; i++) {
-			Variable tmp = mem.getVarFromMMXReg(i);
-			if (findToken(tokenNumber, false, null, null, tmp.getName(), tmp.getName()) == 0) {
-				mem.freeMMXRegister(new MMXRegisterAddress(i));
-				result = true;
+		HashMap<MMXRegisterAddress, Variable> usedRegisters = mem.getUsedMMXRegisters();
+		ArrayList<MMXRegisterAddress> toFree = new ArrayList<MMXRegisterAddress>();		
+		for (Entry<MMXRegisterAddress, Variable> entry : usedRegisters.entrySet()) {
+			MMXRegisterAddress k = entry.getKey();
+			Reference v = entry.getValue();
+			if (findToken(tokenNumber, false, null, null, v.getName(), v.getName()) == 0) {
+				toFree.add(k);
 			}
 		}
-		return result;
-	}
-
-	// TODO
-	private boolean isRegisterFree(RegisterAddress res) {
-		boolean result = true;
-		
-		return result;
-	}
-
-	// TODO
-	private void saveRegisterValue(RegisterAddress res) {
-		List<Variable> regVars = mem.getRegVariables(true);
-		RegisterAddress movedFrom;
-		StackAddress movedTo;
-		for (Variable var : regVars) {
-			movedFrom = var.getRegAddress();
-			movedTo = mem.regToStack(var);
-			// Stackpointer verschieben
-			asm.sub(String.valueOf(var.getSize()), "esp", "Move var to stack");
-			asm.mov(movedFrom.getFullName(), movedTo.getFullName(), var.getName());
+		for (MMXRegisterAddress r : toFree) {
+			mem.freeMMXRegister(r);
 		}
+		return !toFree.isEmpty();
 	}
 	
 	private int findToken(int start, boolean backwards, TokenType type,

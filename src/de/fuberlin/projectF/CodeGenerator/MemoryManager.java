@@ -24,7 +24,7 @@ public class MemoryManager {
 
 	public void addGlobalVar(String name) {
 		Variable tmp;
-		if(current != null) {
+		if (current != null) {
 			tmp = new Variable(current.getName() + "." + name, 0);
 		} else {
 			tmp = new Variable("main." + name, 0);
@@ -35,9 +35,9 @@ public class MemoryManager {
 	public void addGlobalVar(Variable var) {
 		globalReferences.put(var.getName(), var);
 	}
-	
+
 	public String getContextName() {
-		if(current != null)
+		if (current != null)
 			return current.getName();
 		return "main";
 	}
@@ -54,8 +54,8 @@ public class MemoryManager {
 		current.addStackVar(name, type, stackAddress);
 	}
 
-	public ArrayPointer contArrayPtr(String name, String lastPtr, String offset,
-			String value) {
+	public ArrayPointer contArrayPtr(String name, String lastPtr,
+			String offset, String value) {
 		return current.contArrayPtr(name, lastPtr, offset, value);
 	}
 
@@ -68,12 +68,13 @@ public class MemoryManager {
 	}
 
 	public String getAddress(String name) {
-		if(current != null) {
-			if(globalReferences.containsKey(current.getName() + "." + name))
-				return globalReferences.get(current.getName() + "." + name).getName();
+		if (current != null) {
+			if (globalReferences.containsKey(current.getName() + "." + name))
+				return globalReferences.get(current.getName() + "." + name)
+						.getName();
 			return current.get(name).getAddress();
 		} else {
-			if(globalReferences.containsKey("main." + name))
+			if (globalReferences.containsKey("main." + name))
 				return globalReferences.get("main." + name).getName();
 			return null;
 		}
@@ -87,16 +88,8 @@ public class MemoryManager {
 		return current.getFreeMMXRegister();
 	}
 
-	public MMXRegisterAddress getFreeMMXRegister(int i) {
-		return current.getFreeMMXRegister(i);
-	}
-
 	public RegisterAddress getFreeRegister() {
 		return current.getFreeRegister();
-	}
-
-	public RegisterAddress getFreeRegister(int i) {
-		return current.getFreeRegister(i);
 	}
 
 	public Variable getHeapVar(String name) {
@@ -154,12 +147,13 @@ public class MemoryManager {
 	public Array newArray(String name, String type, int length) {
 		return current.newArray(name, type, length);
 	}
-	
+
 	public Record newRecord(Record rec) {
 		return current.newRecord(rec);
 	}
 
-	public ArrayPointer newArrayPtr(String name, String arr, String offset, RegisterAddress reg) {
+	public ArrayPointer newArrayPtr(String name, String arr, String offset,
+			RegisterAddress reg) {
 		return current.newArrayPtr(name, arr, offset, reg);
 	}
 
@@ -172,8 +166,9 @@ public class MemoryManager {
 	}
 
 	public void newReference(String name, String var) {
-		if(globalReferences.containsKey(current.getName() + "." + var))
-			globalReferences.put(current.getName() + "." + name, globalReferences.get(current.getName() + "." + var));
+		if (globalReferences.containsKey(current.getName() + "." + var))
+			globalReferences.put(current.getName() + "." + name,
+					globalReferences.get(current.getName() + "." + var));
 		else
 			current.newReference(name, var);
 	}
@@ -190,10 +185,6 @@ public class MemoryManager {
 		if (globalReferences.containsKey(name))
 			return false;
 		return current.onStack(name);
-	}
-
-	public boolean registerInUse(int i) {
-		return current.registerInUse(i);
 	}
 
 	public StackAddress regToStack(Variable var) {
@@ -218,5 +209,25 @@ public class MemoryManager {
 
 	public HashMap<RegisterAddress, Reference> getUsedRegisters() {
 		return current.getUsedRegisters();
+	}
+
+	public RegisterAddress getRegister(int i) {
+		return current.getRegister(i);
+	}
+
+	public MMXRegisterAddress getMMXRegister(int i) {
+		return current.getMMXRegister(i);
+	}
+
+	public boolean isFree(int i) {
+		return current.isFree(i);
+	}
+
+	public HashMap<MMXRegisterAddress, Variable> getUsedMMXRegisters() {
+		return current.getUsedMMXRegisters();
+	}
+
+	public StackAddress mmxRegToStack(Variable var) {
+		return current.mmxRegToStack(var);
 	}
 }

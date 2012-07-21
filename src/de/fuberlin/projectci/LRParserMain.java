@@ -1,4 +1,4 @@
-package de.fuberlin.projectci.lrparser;
+package de.fuberlin.projectci;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -32,6 +32,8 @@ import de.fuberlin.projectci.grammar.GrammarReader;
 import de.fuberlin.projectci.grammar.NonTerminalSymbol;
 import de.fuberlin.projectci.grammar.Production;
 import de.fuberlin.projectci.grammar.Symbol;
+import de.fuberlin.projectci.lrparser.LRParser;
+import de.fuberlin.projectci.lrparser.LRParserException;
 
 
 public class LRParserMain implements IParser{

@@ -24,7 +24,7 @@ import de.fuberlin.projecta.lexer.io.FileCharStream;
 import de.fuberlin.projecta.lexer.io.ICharStream;
 import de.fuberlin.projecta.parser.ParseException;
 import de.fuberlin.projecta.parser.Parser;
-import de.fuberlin.projectci.lrparser.LRParserMain;
+import de.fuberlin.projectci.LRParserMain;
 import de.fuberlin.projectcii.ParserGenerator.src.LL1Parser;
 
 public class Main {

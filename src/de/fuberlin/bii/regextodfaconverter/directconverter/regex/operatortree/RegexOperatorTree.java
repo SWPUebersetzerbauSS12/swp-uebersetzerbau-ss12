@@ -207,7 +207,8 @@ public class RegexOperatorTree<StatePayloadType extends Serializable> implements
 				
 			@Override
 			protected ItemAutomat<RegularExpressionElement<StatePayloadType>> getNewItemAutomat( Grammar grammar) {
-				return new Slr1ItemAutomat<RegularExpressionElement<StatePayloadType>>( (ContextFreeGrammar) grammar);
+				boolean usePersistentParserTable = true;
+				return new Slr1ItemAutomat<RegularExpressionElement<StatePayloadType>>( (ContextFreeGrammar) grammar, usePersistentParserTable);
 			}
     };
 		operatorTreeAttributor.attributizeOperatorTree( this);

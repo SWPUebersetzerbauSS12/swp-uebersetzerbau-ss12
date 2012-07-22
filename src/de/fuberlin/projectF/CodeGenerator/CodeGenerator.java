@@ -33,7 +33,7 @@ public class CodeGenerator {
 	
 	//Variante f�r String-Input
 	public static String generateCode(String llvmCode, String asmType, boolean debug,
-			boolean guiFlag, boolean exec, String configFile) {
+			boolean guiFlag) {
 		
 		Debuginfo debuginfo = new Debuginfo(debug);
 		Lexer lex = new StringLexer(llvmCode, debuginfo);
